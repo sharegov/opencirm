@@ -1,0 +1,548 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." name="CiRM Services" default="make-dist">
+	<description>CiRM Services Build and Deployment File</description>
+    <property name="versionSuffix" value=""/> <!-- e.g. "beta" or "rc" -->
+    <property name="opencirm" value="../opencirm"/>
+    <property name="build" value="classes"/>    
+    <property name="dist" value="dist"/>
+    <property name="backup" value="backup"/>
+    <property name="javadoc" value="javadoc"/>    
+    <property name="jars" value="lib"/>
+    <property name="debug" value="on"/>
+	<!-- jmeter setup for running simulation -->
+	<property name="jmeter.home" location="C:/Work/Apps/apache-jmeter-2.8" />
+	<property name="jmeter.tests" location="conf" />
+	<property name="jmeter.results.dir" location="simulation-results" />
+	<property name="jmeter.results.xsl" location="${jmeter.home}/extras/jmeter-results-detail-report_21.xsl" />
+	<property name="maxwaitstart" value="4800"/>
+    <property file="build_info.properties"/>	
+    <property name="build.number" value="${majorVersion}.${minorVersion}.${revisionNumber}"/>
+
+	<!-- classpath for compiling-->
+	<path id="compile-classpath">
+		<fileset dir="lib">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="c:/work/opencirm/lib">
+			<include name="**/*.jar" />
+		</fileset>		
+		<pathelement location="${opencirm}/classes"/>		
+		<pathelement path="${java.class.path}" />
+	</path>
+
+	<target name="show">
+		    <echo>Classpath is ${toString:compile-classpath}</echo>
+   </target>
+	<target name="updateTomsClients">
+		<updateClients server="w203-777:8182"/>
+    </target>	
+	
+    <target name="init" description="Create build directories, cleanup old build files.">
+		<mkdir dir="${build}"/>
+		<delete includeemptydirs="true">
+		  <fileset dir="${build}" includes="**/*"/>
+		  <fileset dir="${opencirm}/${build}" includes="**/*"/>
+		</delete>		
+        <mkdir dir="${javadoc}"/>
+		<delete includeemptydirs="true">
+		  <fileset dir="${javadoc}" includes="**/*"/>
+		  <fileset dir="${opencirm}/${javadoc}" includes="**/*"/>		  
+		</delete>		        
+    </target>
+
+    <target name="current-number" description="Show current build number.">
+      <echo>Current build number:${build.number}</echo>
+    </target>
+
+    <target name="version-increment" description="Increment to next build number in the build_info.properties file.">
+      <propertyfile  file="build_info.properties">
+        <entry key="revisionNumber" type="int" operation="+" value="1"/>
+      </propertyfile>
+    </target>
+
+	<target name="compile" depends="init" description="Compile all OpenCiRM classes in build directory.">
+	    <ant antfile = "${opencirm}/build.xml" useNativeBasedir="true" target = "compile" /> 
+		<javac classpathref="compile-classpath" debug="${debug}" destdir="${build}" srcdir="src/java">
+		</javac>
+		<copy todir="${build}">
+		    <fileset dir="src/java">
+		        <include name="**/*.sparql"/>
+		    </fileset>
+		</copy>
+	</target>
+	
+	<target name="docgen" depends="init" description="Generate JavaDocs for CiRM Serevices">
+	    <javadoc sourcepath="src/java" destdir="${javadoc}" classpathref="compile-classpath"/>
+	</target>
+	
+    <!-- 
+    To construct the distribution folder, we collect files from both opencirm
+    and mdcirm. The order of copy is important here so that MDC specific files
+    overwrite OpenCiRM files! Otherwise, since the two projects have a similar
+    structure, basically every task is repeated twice: once for opencirm files
+    and then for the mdcirm files. Whenever a given folder should really be
+    disjoint in both projects (i.e. no common files), we use a single copy task
+    with multiple filesets inside.
+    -->
+    <target name="make-dist" depends="compile" description="Create distribution deployment.">
+        <mkdir dir="${dist}"/>
+        <mkdir dir="${dist}/logs"/>
+        <!--
+        <mkdir dir="${dist}/hotdeploy/org/sharegov/cirm"/>
+        -->
+        <copy todir="${dist}/bin"><fileset dir="${opencirm}/bin"/></copy>
+        <copy todir="${dist}/bin"><fileset dir="bin"/></copy>
+        <copy todir="${dist}/conf">
+            <fileset dir="${opencirm}/conf">
+            </fileset>
+        </copy>
+        <copy todir="${dist}/conf">
+            <fileset dir="conf">
+                <exclude name="wrapper.conf"/>
+            </fileset>
+        </copy>
+        <sync todir="${dist}/lib" verbose="true">
+		    <fileset dir="${opencirm}/lib"/>
+		    <fileset dir="lib"/>
+		</sync>
+
+        <sync todir="${dist}/classes" verbose="true">
+		    <fileset dir="${opencirm}/classes"/>
+		    <fileset dir="classes"/>
+		</sync>
+         <!--
+         <copy todir="${dist}/hotdeploy/org/sharegov/cirm/rest">
+            <fileset dir="${build}/org/sharegov/cirm/rest"/>
+         </copy>
+         -->
+         <copy todir="${dist}/src">
+            <fileset dir="${opencirm}/src">
+                <include name="html/**"/>
+                <include name="javascript/**"/>
+                <include name="resources/**"/>
+                <include name="ontology/County_Working.owl"/>
+                <include name="ontology/legacy.owl"/>
+                <include name="ontology/csr.owl"/>
+                <include name="ontology/srgeoinfo.csv"/>
+            </fileset>
+         </copy>
+         <copy todir="${dist}/src">
+            <fileset dir="src">
+                <include name="html/**"/>
+                <include name="javascript/**"/>
+                <include name="resources/**"/>
+                <include name="ontology/County_Working.owl"/>
+                <include name="ontology/legacy.owl"/>
+                <include name="ontology/csr.owl"/>
+                <include name="ontology/srgeoinfo.csv"/>
+            </fileset>
+         </copy>
+   </target>
+      
+  <macrodef name="deploy" description="Deploy to server specified in the 'server' parameter">
+    <attribute name="server"/>
+    <sequential>
+      <antcall target="backup-deployment"><param name="server" value="@{server}"/></antcall>
+      <delete dir="\\@{server}\cirmservices\classes"/>
+   	  <mkdir dir="\\@{server}\cirmservices\classes"/>
+     <!--      
+      <delete dir="\\@{server}\cirmservices\hotdeploy"/>
+   	  <mkdir dir="\\@{server}\cirmservices\hotdeploy"/>
+   	   -->
+      <copy todir="\\@{server}\cirmservices">
+        <fileset dir="${dist}">
+          <exclude name="bin\wrapper.exe"/>
+          <exclude name="bin\wrapper.dll"/>
+        </fileset>
+      </copy>
+    </sequential>
+  </macrodef>
+
+ <macrodef name="updateClients" description="Triggers a client update event on the server.">
+	   <attribute name="server"/>
+	   <sequential>
+	      <waitfor maxwait="15" maxwaitunit="minute">
+	          <http requestMethod="POST" url="http://@{server}/manage/applicationUpdated" />
+	     </waitfor>        
+		</sequential>
+  </macrodef>  
+  
+	<target name="updateClients-prod" description="Browser clients will receive an event that tells them to reload their application.">
+		<updateClients server="s2030050"/>
+		<updateClients server="s2030051"/>
+		<updateClients server="s2030057"/>
+		<updateClients server="s2030059"/>
+		<updateClients server="s2030060"/>
+	</target>
+
+	<target name="updateClients-test" description="Browser clients will receive an event that tells them to reload their application.">
+		<updateClients server="s0020269"/>
+		<updateClients server="s0020284"/>		
+	</target>
+
+	<target name="updateClients-public" description="Browser clients will receive an event that tells them to reload their application.">
+		<updateClients server="s0142012"/>		
+	</target>
+
+  <macrodef name="restart" description="Restarts a server, fills ServiceCase cache and sends a client update event to all its clients.">
+     <attribute name="server"/>
+     <sequential>
+        <echo message="Stopping cirmservices at @{server}"/>
+        <exec executable="sc.exe">
+            <arg value="\\@{server}"/>
+            <arg value="stop"/>
+            <arg value="cirmservices"/>
+        </exec>
+        <echo message="Wait 1 minutes for it to stop."/>
+        <sleep seconds="15"/>
+        <echo message="Starting cirmservices at @{server}"/>
+        <exec executable="sc.exe">
+            <arg value="\\@{server}"/>
+            <arg value="start"/>
+            <arg value="cirmservices"/>
+        </exec>
+        <echo message="Wait until home page shows...${maxwaitstart} seconds"/>
+        <waitfor maxwait="${maxwaitstart}" maxwaitunit="second">
+            <http url="http://@{server}/individuals?q=legacy:ServiceCase"/>
+        </waitfor>
+     	<updateClients server="@{server}"/>
+     </sequential>
+  </macrodef>
+
+   <target name="deploy-test" depends="get-revision, fail, tag-test, make-dist" description="Deploy to test server">
+     <deploy server="s0020269"/>   
+     <deploy server="s0020284"/>
+   </target>
+
+   <target name="deploy-public" depends="get-revision, fail, tag-test, make-dist" description="Deploy to public server">
+     <deploy server="s0142012"/>
+   </target>
+
+	<target name="restart-test">
+     <restart server="s0020269"/>
+     <restart server="s0020284"/>
+     <!--
+     <antcall target="start-departmental-interface"><param name="server" value="s0020284"/></antcall>
+-->     
+   </target>
+
+   <target name="update-test" depends="deploy-test, restart-test" description="Deploy to test servers, then restart the test cluster one server after the other."/>
+
+   <target name="deploy-to" depends="get-revision, fail, tag-release, make-dist" description="Deploy to specified 'server'.">
+        <deploy server="${server}"/>
+   </target>
+
+    <target name="prepare-release"   
+              depends="get-revision, fail, tag-release, make-dist" 
+              description="Compile, revision tag, make distribution ready for deployment."/> 
+   <target name="deploy-prod" depends="prepare-release" description="Deploy to production server, does not autorestart.">
+    <echo message="Deploying ${changesetid} to production..."/>     
+     <deploy server="s2030050"/>
+     <deploy server="s2030051"/>
+     <deploy server="s2030057"/>
+     <deploy server="s2030059"/>
+     <deploy server="s2030060"/>
+   </target>
+	
+   <target name="restart-prod" description="Restart all production servers one after the other.">
+     <restart server="s2030050"/>
+     <restart server="s2030051"/>
+     <restart server="s2030057"/>
+     <restart server="s2030059"/>
+     <restart server="s2030060"/>
+     <!--
+     <antcall target="start-departmental-interface"><param name="server" value="s2030060"/></antcall>
+     -->
+   </target>
+   
+   <target name="deploy50" depends="make-dist"><deploy server="s2030050"/></target>
+   <target name="restart50"><restart server="s2030050"/></target>    
+   <target name="deploy51" depends="make-dist"><deploy server="s2030051"/></target>
+   <target name="restart51"><restart server="s2030051"/></target>    
+   <target name="deploy57" depends="make-dist"><deploy server="s2030057"/></target>
+   <target name="restart57"><restart server="s2030057"/></target>    
+   <target name="deploy59" depends="make-dist"><deploy server="s2030059"/></target>
+   <target name="restart59"><restart server="s2030059"/></target>    
+   <target name="deploy60" depends="make-dist"><deploy server="s2030060"/></target>
+   <target name="restart60"><restart server="s2030060"/></target>    
+    
+	<target name="update-prod" depends="deploy-prod, restart-prod" description="Deploy latest release to production, then restart each server in the cluster one by one."/>	
+
+    <target name="deployserver" description="Deploy on a specific server">
+         <deploy server="${server}"/>
+   </target>
+
+   <target name="wipeonto" description="Delete ontology DB at specified 'server'">
+    <echo message="Delete ontology DB at ${server}"/>
+      <delete dir="\\${server}\cirmservices\db"/>
+   	  <mkdir dir="\\${server}\cirmservices\db"/>          
+   </target>
+   <target name="take-offline" description="Rename healthcheck.htm file to take server offline (use -Dserver=servername)">
+     <move file="\\${server}\cirmservices\src\html\healthcheck.htm" tofile="\\${server}\cirmservices\src\html\healthcheck.offline.htm"/>
+   </target>
+   <target name="take-online" description="Rename healthcheck.htm file to take server offline (use -Dserver=servername)">
+     <move file="\\${server}\cirmservices\src\html\healthcheck.offline.htm" tofile="\\${server}\cirmservices\src\html\healthcheck.htm"/>
+   </target>
+   <target name="stop" description="Stop server specified with -Dserver=hostname parameter.">
+     <echo message="Stopping ${server}"/>
+        <exec executable="sc.exe">
+            <arg value="\\${server}"/>
+            <arg value="stop"/>
+            <arg value="cirmservices"/>
+        </exec>
+        <sleep seconds="10"/>
+   </target>
+   <target name="start" description="Start server specified with -Dserver=hostname parameter.">
+     <echo message="Starting ${server}"/>
+        <exec executable="sc.exe">
+            <arg value="\\${server}"/>
+            <arg value="start"/>
+            <arg value="cirmservices"/>
+        </exec>
+   </target>
+   <target name="restart-with-fresh-ontodb" depends="stop, wipeonto, start" description="Restart all servers by deleting onto database for a fresh copy of it."/>
+   <target name="restart-now" depends="stop, start" description="Restart server specified with -Dserver=hostname parameter."/>   
+   <target name="restart-all-now" description="Restart all production servers abruptly, without waiting for each of them get up.">
+    <antcall target="restart-now">
+        <param name="server" value="s2030050"/>
+    </antcall>
+    <antcall target="restart-now">
+        <param name="server" value="s2030051"/>
+    </antcall>
+    <antcall target="restart-now">
+        <param name="server" value="s2030057"/>
+    </antcall>
+    <antcall target="restart-now">
+        <param name="server" value="s2030059"/>
+    </antcall>
+    <antcall target="restart-now">
+        <param name="server" value="s2030060"/>
+    </antcall>
+   </target>
+   
+   <target name="restart-all-with-fresh-ontodb" description="Restart all servers after deleting their ontologies local DBs (which forces a clean reload of onto data)">
+    <antcall target="restart-with-fresh-ontodb">
+        <param name="server" value="s2030050"/>
+    </antcall>
+    <antcall target="restart-with-fresh-ontodb">
+        <param name="server" value="s2030051"/>
+    </antcall>
+    <antcall target="restart-with-fresh-ontodb">
+        <param name="server" value="s2030057"/>
+    </antcall>
+    <antcall target="restart-with-fresh-ontodb">
+        <param name="server" value="s2030059"/>
+    </antcall>
+    <antcall target="restart-with-fresh-ontodb">
+        <param name="server" value="s2030060"/>
+    </antcall>
+   	
+   </target>
+	   <target name="restart-test-with-fresh-ontodb" description="Restart test servers (69 and 84) after deleting their ontologies local DBs (which forces a clean reload of onto data)">
+	    <antcall target="restart-with-fresh-ontodb">
+	        <param name="server" value="s0020269"/>
+	    </antcall>
+	    <antcall target="restart-with-fresh-ontodb">
+	        <param name="server" value="s0020284"/>
+	    </antcall>
+   </target>
+   
+   <target name="clean" description="Delete are temporary build files as well as the distribution directory.">
+	    <delete dir="${build}" />
+        <delete dir="${dist}"/>
+        <delete dir="${javadoc}"/>
+	</target>
+	
+    <target name="start-departmental-interface"
+               unless="noDepartmentalInterface"
+               description="Call REST service to start processing incoming message from departments.">
+         <echo message="Starting departmental interface on server ${server}"/>
+         <waitfor maxwait="2" maxwaitunit="minute">
+            <http url="http://${server}/legacy/departments/start" requestMethod="POST"/>
+         </waitfor>
+    </target>  
+  
+	<target name="backup-deployment" if="backupDeployment" description="Backs up cirm on a given deployment 'server'">
+	    <tstamp>
+	    	<format property="backupDateTime" pattern="yyyy-MM-dd-HH-mm-ss" />
+	 	</tstamp>
+		<echo>Creating BackupFile: "\\${server}\${backup}\${backupDateTime}-Cirmservices.zip"</echo>
+			<zip destfile="\\${server}\${backup}\${backupDateTime}-Cirmservices.zip">
+	   	    <zipfileset dir="\\${server}\cirmservices">
+	            <exclude name="db\*.*"/>
+			</zipfileset>
+		  	</zip>
+		<echo>Backup completed.</echo>
+	</target>
+  
+  <target name="start-server-monitor" depends="compile">
+  	<property name="jmxPort" value="9010"/>
+  	<property name="pollPeriod" value="1"/>
+  	<property name="samples" value="43200"/>
+  	<parallel>
+  	<exec executable="typeperf">
+  	    <arg line="&quot;\Processor(_Total)\% Processor Time&quot; -o ${jmeter.results.dir}\${server}-cpu.csv -f CSV -si ${pollPeriod} -sc ${samples} -s ${server} -y"/>
+    </exec>
+  	<java classname="org.sharegov.cirm.utils.ServerMonitorClient" classpathref="compile-classpath" fork="yes" failonerror="true">
+		<classpath path="${build}"></classpath>
+		<arg value="${server}" />
+		<arg value="${jmxPort}" />
+		<arg value="${jmeter.results.dir}/${server}-jvm.json" />
+  		<arg value="${jmeter.results.dir}/${server}-jvm.csv" />
+  		<arg value="${pollPeriod}" />
+  		<arg value="${samples}" />
+	</java>
+  	<echo message="Server ${server} is being monitored."></echo>
+  	</parallel>
+  </target>
+	
+  <target name="simulation-init">
+    <mkdir dir="${jmeter.results.dir}" />
+  </target>
+
+  <target name="simulation-clean">
+    <!--delete failonerror="false">
+      <fileset dir="${jmeter.results.dir}">
+        <include name="**/*" />
+      </fileset>
+    </delete-->
+  </target>
+
+  <target name="simulation-reformat-report">
+    <xslt in="${jmeter.results.jtl}" out="${jmeter.results.html}" style="${jmeter.results.xsl}" />
+  </target> 
+
+ <target name="jmeter-run">
+ 	<property name="jmeter.results.jtl" location="${jmeter.results.dir}/localhost-jmeter.xml" />
+ 	<property name="jmeter.results.html" location="${jmeter.results.dir}/localhost-jmeter.html" />
+ 	<jmeter jmeterhome="${jmeter.home}" resultlog="${jmeter.results.jtl}" failureproperty="failure-property" testplan="conf/cirmsimulation.jmx">
+ 	      <property name="simulation.server" value="${server}"/>
+ 	      <property name="simulation.server.port" value="${server.port}"/>
+ 	      <property name="simulation.threads" value="1"/>
+ 	      <property name="simulation.threads.loop" value="1"/>
+ 	      <property name="loginCount" value="0"/>
+ 	      <property name="jmeter.save.saveservice.output_format" value="xml" />
+ 	      <property name="jmeter.save.saveservice.response_data.on_error" value="true" /> 
+    </jmeter>
+ 	<antcall target="simulation-reformat-report" />
+ </target>
+ 
+ <target name="simulation-run-local" depends="simulation-init, simulation-clean" >
+	<property name="jmeter.results.jtl" location="${jmeter.results.dir}/localhost-jmeter.xml" />
+	<property name="jmeter.results.html" location="${jmeter.results.dir}/localhost-jmeter.html" />
+ 	<property name="server" value="localhost"/>
+ 	<property name="server.port" value="8182"/>
+ 	<parallel>
+ 		<antcall target="start-server-monitor" />
+ 		<!--antcall target="jmeter-run" /-->
+ 	</parallel>
+  </target>
+
+  <target name="simulation-run-test" depends="simulation-init, simulation-clean">
+	<property name="jmeter.results.jtl" location="${jmeter.results.dir}/s0020269-jmeter.xml" />
+	<property name="jmeter.results.html" location="${jmeter.results.dir}/s0020269-jmeter.html" />
+ 	<property name="server" value="s0020269"/>
+ 	<property name="server.port" value="8182"/>
+  	<parallel>
+  		<antcall target="start-server-monitor" />
+  		<antcall target="jmeter-run" />
+ 	</parallel>
+  </target>
+	
+  <target name="simulation-run-prod" depends="simulation-init, simulation-clean">
+	<property name="jmeter.results.jtl" location="${jmeter.results.dir}/s0020284-jmeter.xml" />
+	<property name="jmeter.results.html" location="${jmeter.results.dir}/s0020284-jmeter.html" />
+  	<property name="server" value="s0020284"/>
+ 	<property name="server.port" value="80"/>
+  	<parallel>
+  		<antcall target="start-server-monitor" />
+  	 	<antcall target="jmeter-run" />
+  	</parallel>
+  </target>
+  
+  <!--task definitions	
+  
+  <taskdef name="jmeter" classname="org.programmerplanet.ant.taskdefs.jmeter.JMeterTask">
+    <classpath>
+      <fileset dir="${jmeter.home}/extras">
+        <include name="ant-jmeter-*.jar" />
+      </fileset>
+    </classpath>
+  </taskdef>
+  -->
+  
+  <!-- A release tag should be executed only once, when deploying to production.
+   This is because it has a side effect to increment the version number for 
+   the next release. Test deployments on the other hand can be tagged multiple
+   times.
+   
+   There's no easy way to detect if the current version is already tagged because
+   tagging creates a new changeset. This task will commit the tag, so one
+   must make sure it is not called to inadvertantly commit other pending local changes
+  -->
+  <target name="tag-release" depends="get-revision, version-increment" description="Tag the release in Mercurial.">
+    <exec executable="hg">
+      <arg value="tag"/>
+      <arg value="v${build.number}"/>
+    </exec>
+    <exec executable="hg">
+      <arg value="commit"/>
+      <arg value="-m"/>
+      <arg value="autocommit release tag"/>
+    </exec>
+    <!-- Auto-push right away. It's better to push separately after one
+     makes sure that the deployment went ok and the servers are up and running,
+     but production deployments are usually done late at night and I (Boris) often forget 
+     to do the push. -->
+    <exec executable="hg">
+      <arg value="push"/>
+      <arg value="-f"/>
+      <arg value="-B"/>
+      <arg value="rel"/>
+    </exec>    
+  </target>
+
+  <!-- Add a test tag by appending "b" for beta to the current build number.
+    This can be called many times for many test deployments. Tagging with the same
+    identifier is forced in Mercurial. -->
+  <target name="tag-test" depends="get-revision" description="Tag a beta version to be deployed in test.">
+    <exec executable="hg">
+      <arg value="tag"/>
+      <arg value="-f"/>
+      <arg value="v${build.number}b"/>
+    </exec>
+  </target>
+
+	<target name="get-revision" description="Get latest version number (changeset hash) from Mercurial.">
+    <!-- get latest changeset id-->  
+    <exec executable="hg" outputproperty="changesetid">
+      <arg value="id"/>
+      <arg value="-i"/>
+    </exec>
+    <condition property="hasChangedLocally">
+      <contains string="${changesetid}" substring="+"/>
+    </condition>
+    <!-- get current bookmark branch - should be 'rel' -->
+    <exec executable="hg" outputproperty="bookmarks">
+      <arg value="id"/>
+      <arg value="-B"/>
+    </exec>
+    <condition property="isReleaseBranch">
+        <matches string="${bookmarks}" pattern=".*\brel\b.*"/>
+    </condition>
+    <echo message="Storing changeset id ${changesetid} in configuration files."/>
+    <copy file="${dist}/conf/testconfig.json.template" tofile="${dist}/conf/testconfig.json" overwrite="true"/>
+    <replace file="${dist}/conf/testconfig.json" token="@changeset@" value="${changesetid}"/>
+    <replace file="${dist}/conf/testconfig.json" token="@version@" value="v${build.number}b"/>    
+    <!-- this doesn't work full because of the SSL certificate s2030050 that appears in both places
+      we need to insert the certificate filename somehow contextually...-->     
+    <copy file="${dist}/conf/prodconfig.json.template" tofile="${dist}/conf/prodconfig.json" overwrite="true"/>
+    <echo message="copied file"/>
+    <replace file="${dist}/conf/prodconfig.json" token="@changeset@" value="${changesetid}"/>
+    <replace file="${dist}/conf/prodconfig.json" token="@version@" value="v${build.number}"/>    
+  </target>
+  
+  <target name="fail" depends="get-revision" if="hasChangedLocally" description="Conditional failure if there are uncommitted changes.">
+    <fail message="Refusing to deploy, hasChangeLocally=${hasChangedLocally}, isReleaseBranch=${isReleaseBranch} - make sure you push first and you are using a release branch."/>
+  </target>
+</project>

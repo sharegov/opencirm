@@ -1,0 +1,25 @@
+{
+  "port":8182,
+   "keyPass":"password",
+   "customIRIMappingFile":"C:/work/cirmservices/customIRIMap.properties",
+   "_metaDatabaseLocation":"c:/temp/testontodb_clone",
+   "ignorePasswords":true,
+   "defaultOntologyIRI":"http://www.miamidade.gov/cirm/legacy",
+   "mainApplication" : "http://www.miamidade.gov/ontology#CIRMApplication",   
+   "allClientsExempt":true,
+   "ontologyPrefixes":{
+       "legacy:":"http://www.miamidade.gov/cirm/legacy#",
+       ":":"http://www.miamidade.gov/cirm/legacy#",
+       "mdc:":"http://www.miamidade.gov/ontology#"},
+   "network":{
+       "bff":"cirmdevelopmentontology",
+       "password":"password",
+       "user":"bolerio-dev",
+       "serverUrl":"s0141667"},
+   "keystore":"cirm.jks",
+   "storePass":"password",
+   "ontologyConfigSet":"http://www.miamidade.gov/ontology#TestConfigSet",
+   "ssl-port":8183,
+   "workingDir":"C:/work/cirmservices",
+   "startTest":true
+}

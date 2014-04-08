@@ -1,0 +1,93 @@
+[
+ {
+ 	"ID" : "PcirmDB", 
+	"TYPE" : "ORA",
+	"URL" : "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=prodgrid2-scan.miamidade.gov)(PORT=1521)))(CONNECT_DATA=(SERVICE_NAME=pcirm.miamidade.gov)))",
+	"USER" : "cirmschm",
+	"PASS" : "SET PASS HERE",
+	"QUERY" : "SELECT COUNT(*) FROM CIRM_SR_REQUESTS"
+	},
+{
+	"ID" : "PcirmDW", 
+	"TYPE" : "ORA",
+	"URL" : "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=prodgrid2-scan.miamidade.gov)(PORT=1521)))(CONNECT_DATA=(SERVICE_NAME=pcirmdw.miamidade.gov)))",
+	"USER" : "cirmdwuser",
+	"PASS" : "SET PASS HERE",
+	"QUERY" : "SELECT COUNT(*) FROM CIRM_SR_REQUESTS"
+	},
+{
+	"ID" : "P Time Machine",
+	"TYPE" : "URL",
+	"URL" : "http://s0141670:9192/timemachine-0.1/time",
+},
+{
+	"ID" : "P GIS UP",
+	"TYPE" : "URL",
+	"URL" : "https://311hub.miamidade.gov:9196/mdc/mdcgis-0.1/testme",
+},
+{
+	"ID" : "P GIS DEP",
+	"TYPE" : "URL",
+	"URL" : "https://311hub.miamidade.gov:9196/mdc/mdcgis-0.1/candidates?street=11826%20sw%2097th%20street",
+},
+{
+	"ID" : "50 Version",
+	"TYPE" : "URL",
+	"URL" : "https://s2030050.miamidade.gov/manage/sysinfo",
+	"REGEX" : ".*\"version\":\"([\\w|.]+)\","
+},
+{
+	"ID" : "50 Trans",
+	"TYPE" : "URL",
+	"URL" : "https://s2030050.miamidade.gov/monitor/transactionInfo",
+	"REGEX" : ".*\"NrOfTotalTransactions\":([\\d]+),\""
+},
+{
+	"ID" : "51 Version",
+	"TYPE" : "URL",
+	"URL" : "https://s2030051.miamidade.gov/manage/sysinfo",
+	"REGEX" : ".*\"version\":\"([\\w|.]+)\","
+},
+{
+	"ID" : "51 Login",
+	"TYPE" : "URL",
+	"URL" : "https://s2030051.miamidade.gov/monitor/transactionInfo",
+	"REGEX" : ".*\"NrOfTotalTransactions\":([\\d]+),\""
+},
+{
+	"ID" : "57 Version",
+	"TYPE" : "URL",
+	"URL" : "https://s2030057.miamidade.gov/manage/sysinfo",
+	"REGEX" : ".*\"version\":\"([\\w|.]+)\","
+},
+{
+	"ID" : "57 Login",
+	"TYPE" : "URL",
+	"URL" : "https://s2030057.miamidade.gov/monitor/transactionInfo",
+	"REGEX" : ".*\"NrOfTotalTransactions\":([\\d]+),\""
+},
+{
+	"ID" : "59 Version",
+	"TYPE" : "URL",
+	"URL" : "https://s2030059.miamidade.gov/manage/sysinfo",
+	"REGEX" : ".*\"version\":\"([\\w|.]+)\","
+},
+{
+	"ID" : "59 Login",
+	"TYPE" : "URL",
+	"URL" : "https://s2030059.miamidade.gov/monitor/transactionInfo",
+	"REGEX" : ".*\"NrOfTotalTransactions\":([\\d]+),\""
+},
+{
+	"ID" : "60 Version",
+	"TYPE" : "URL",
+	"URL" : "https://s2030060.miamidade.gov/manage/sysinfo",
+	"REGEX" : ".*\"version\":\"([\\w|.]+)\","
+},
+{
+	"ID" : "60 Login",
+	"TYPE" : "URL",
+	"URL" : "https://s2030060.miamidade.gov/monitor/transactionInfo",
+	"REGEX" : ".*\"NrOfTotalTransactions\":([\\d]+),\""
+}
+]	

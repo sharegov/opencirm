@@ -1,0 +1,31 @@
+{
+    "workingDir":"c:/cirmservices",
+    "port":80,
+    "ssl":true,
+    "ssl-port":443,
+    "keystore", "cirmsslcertificate.jks",
+    "storePass", "cirmservices",
+    "keyPass", "password",
+    "defaultOntologyIRI":"http://www.miamidade.gov/ontology#",
+    "metaDatabaseLocation", "c:/cirmservices/db/",
+    "mainApplication" : "http://www.miamidade.gov/ontology#CIRMApplication",
+    "ontologyConfigSet":"http://www.miamidade.gov/ontology#ProdConfigSet",    
+	"network" : { "user": "bolerio-dev",
+				"password":"password",
+				"serverUrl":"s0141667",
+				"bff":"cirmdevelopmentontology"},
+
+    "ontologyPrefixes": {
+    	"legacy:" : "http://www.miamidade.gov/cirm/legacy#",
+	"mdc:" : "http://www.miamidade.gov/ontology#",
+	":" : "http://www.miamidade.gov/cirm/legacy#" 
+     },
+     "cachedReasonerPopulate": true,
+     "ftpServer":"ftp.miamidade.gov",
+     "ftpCredentials":true,
+     "ftpUsername":"miamidade\\SW-report",
+     "ftpPassword":"P@$$w0rd1",
+     "ftpLocation":"swm\\data",
+     "changeset":"7ee7017a4431",
+     "version":"v0.0.120"
+}

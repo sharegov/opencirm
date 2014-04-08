@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# ./wrapper -c ../conf/wrapper.conf
+
+# OS specific support.  $var _must_ be set to either true or false.
+pathsep=':'
+systemname='windows'
+systemarch=''
+cygwin=false
+case "`uname`" in
+CYGWIN*) 
+  cygwin=true
+  systemname='windows'
+  ;;
+*) 
+  systemname='linux'
+  ;;
+esac
+
+if [ `uname -m` = 'x86_64' ]; then
+  systemarch='/x86_64'
+fi
+
+cd ..
+export CIRM_HOME="."
+echo "Using Cirm home directory '$CIRM_HOME'"
+
+JAVA_EXEC=java
+
+CIRM_CLASSPATH="$CIRM_HOME/classes"
+
+for f in lib/*.jar; do
+  CIRM_CLASSPATH="$CIRM_CLASSPATH$pathsep$f"
+done;
+
+for f in lib/rdb/*.jar; do
+  CIRM_CLASSPATH="$CIRM_CLASSPATH$pathsep$f"
+done;
+
+CIRM_NATIVE=$CIRM_HOME/bin
+
+if $cygwin; then
+  [ -n "$CIRM_HOME" ] && CIRM_CLASSPATH=`cygpath --absolute --path --windows "$CIRM_CLASSPATH"`
+  [ -n "$CIRM_NATIVE" ] && CIRM_NATIVE=`cygpath --path --windows "$CIRM_NATIVE"`
+fi
+
+echo $CIRM_NATIVE
+
+exec $JAVA_EXEC -XX:+HeapDumpOnOutOfMemoryError -cp $CIRM_CLASSPATH  -Djava.library.path=$CIRM_NATIVE org.sharegov.cirm.StartUp $CIRM_HOME/conf/testconfig.json
