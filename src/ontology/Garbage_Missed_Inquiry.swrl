@@ -1,0 +1,84 @@
+Prefix(swrlb:=<http://www.w3.org/2003/11/swrlb#>)
+Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)
+Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
+Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)
+Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
+Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
+Prefix(skos:=<http://www.w3.org/2004/02/skos/core#>)
+Prefix(mdc:=<http://www.miamidade.gov/ontology#>)
+Prefix(mdcsrv:=<http://www.miamidade.gov/ontology/webservices#>)
+Prefix(f:=<http://www.miamidade.gov/builtins#>)
+Prefix(:=<http://www.miamidade.gov/swrl#>)
+
+Ontology(<http://www.miamidade.gov/swrl/Garbage_Missed_Inquiry>
+
+Import(<http://www.miamidade.gov/ontology>)
+
+DLSafeRule(
+  Body(
+    ObjectPropertyAtom(mdc:atAddress Variable(:bo) Variable(:address))  
+    BuiltInAtom(mdc:newBusinessObject "Garbage_Missed_Complaint"^^xsd:string Variable(:sr)) 
+  )
+  Head(
+   ObjectPropertyAtom(mdc:hasFormalServiceRequest Variable(:bo) Variable(:sr))
+  )
+)
+
+DLSafeRule(
+  Body(
+   ObjectPropertyAtom(mdc:hasFormalServiceRequest Variable(:bo) Variable(:sr))  
+   ObjectPropertyAtom(mdc:hasServiceRequestStatus Variable(:sr) mdc:ServiceRequestCompleted) 
+  )
+  Head(
+    ObjectPropertyAtom(mdc:hasInquiryStatus Variable(:bo) mdc:InquiryResolved)
+  )
+)
+
+DLSafeRule(
+  Body(
+   ObjectPropertyAtom(mdc:atAddress Variable(:bo) Variable(:address))
+   DataPropertyAtom(mdc:truckPassed Variable(:bo) "true"^^xsd:boolean)
+   DataPropertyAtom(mdc:hasDoorHanger Variable(:bo) "true"^^xsd:boolean)  
+  )
+  Head(
+    DataPropertyAtom(mdc:hasExplanation Variable(:bo) "Please correct the problem described in the door hanger."^^xsd:string)
+    ObjectPropertyAtom(mdc:hasInquiryStatus Variable(:bo) mdc:InquiryResolved)
+  )
+)
+
+
+DLSafeRule(
+  Body(
+   ObjectPropertyAtom(mdc:atAddress Variable(:bo) Variable(:address))
+   DataPropertyAtom(mdc:truckPassed Variable(:bo) "true"^^xsd:boolean)
+   DataPropertyAtom(mdc:hasDoorHanger Variable(:bo) "false"^^xsd:boolean)  
+  )
+  Head(
+    ObjectPropertyAtom(mdc:hasInquiryStatus Variable(:bo) mdc:InquiryFormalRequestCreated)
+  )
+)
+
+
+DLSafeRule(
+  Body(
+  
+    ObjectPropertyAtom(mdc:atAddress Variable(:bo) Variable(:address))
+    BuiltInAtom(mdc:webServiceCall "garbageTruckRouteCheck"^^xsd:string Variable(:address) "yes"^^xsd:string) 
+  )
+  Head(
+    DataPropertyAtom(mdc:isGarbageLateRoute Variable(:address) "true"^^xsd:boolean)
+  )
+)
+
+DLSafeRule(
+  Body(
+    ObjectPropertyAtom(mdc:atAddress Variable(:bo) Variable(:address))
+    DataPropertyAtom(mdc:isGarbageLateRoute Variable(:address) "true"^^xsd:boolean)
+  )
+  Head(
+    DataPropertyAtom(mdc:hasExplanation Variable(:bo) "The garbage truck has a late route today, please be patient."^^xsd:string)  
+    ObjectPropertyAtom(mdc:hasInquiryStatus Variable(:bo) mdc:InquiryResolved)
+  )
+)
+
+)

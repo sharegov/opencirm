@@ -1,0 +1,71 @@
+Prefix(swrlb:=<http://www.w3.org/2003/11/swrlb#>)
+Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)
+Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
+Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)
+Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
+Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
+Prefix(skos:=<http://www.w3.org/2004/02/skos/core#>)
+Prefix(mdc:=<http://www.miamidade.gov/ontology#>)
+Prefix(mdcsrv:=<http://www.miamidade.gov/ontology/webservices#>)
+Prefix(f:=<http://www.miamidade.gov/builtins#>)
+Prefix(:=<http://www.miamidade.gov/swrl#>)
+
+Ontology(<http://www.miamidade.gov/swrl/Bulky_Trash_Request>
+
+Import(<http://www.miamidade.gov/ontology>)
+
+DLSafeRule(
+  Body(
+    ObjectPropertyAtom(mdc:atAddress Variable(:bo) Variable(:address))  
+    BuiltInAtom(mdc:newBusinessObject "Bulky_Trash_Request"^^xsd:string Variable(:sr)) 
+   )
+  Head(
+   ObjectPropertyAtom(mdc:hasFormalServiceRequest Variable(:bo) Variable(:sr))
+  )
+)
+DLSafeRule(
+  Body(
+   	ObjectPropertyAtom(mdc:atAddress Variable(:bo) Variable(:address))
+   	ObjectPropertyAtom(mdc:hasStreetType Variable(:address) Variable(:streetTypeIndividual))
+   	ObjectPropertyAtom(mdc:Street_Direction Variable(:address) Variable(:directionIndividual))
+   	DataPropertyAtom(mdc:Street_Name Variable(:address) Variable(:streetName))
+   	DataPropertyAtom(mdc:Street_Number Variable(:address) Variable(:streetNumber))
+   	DataPropertyAtom(mdc:Street_Unit_Number Variable(:address) Variable(:unitNumber))
+   	DataPropertyAtom(mdc:USPS_Abbreviation Variable(:directionIndividual) Variable(:streetDirection))
+   	DataPropertyAtom(mdc:USPS_Suffix Variable(:streetTypeIndividual) Variable(:streetType))
+   	BuiltInAtom(mdc:webServiceCall "SolidWasteAccountQueryByAddress" Variable(:streetNumber) Variable(:streetDirection) Variable(:streetName) Variable(:streetType) Variable(:unitNumber) Variable(:queryResults))
+   	BuiltInAtom(mdc:transform Variable(:queryResults) "WCSAccountStylesheet" Variable(:ontology))
+   	BuiltInAtom(mdc:merge Variable(:ontology) Variable(:success))
+    )
+  Head(
+  	DataPropertyAtom(mdc:hasQuerySuccessful Variable(:bo) "true"^^xsd:boolean)
+   )
+)
+DLSafeRule(
+  Body(
+  	DataPropertyAtom(mdc:hasQuerySuccessful Variable(:bo) "true"^^xsd:boolean)
+  	ObjectPropertyAtom(mdc:hasAccountCandidate Variable(:bo) Variable(:account))
+        DataPropertyAtom(mdc:hasAccountNumber Variable(:account) Variable(:accountNumber))
+        DataPropertyAtom(mdc:startsWith Variable(:accountNumber) "1")
+        DataPropertyAtom(mdc:hasAccountCode Variable(:account) Variable(:accountCode))
+        DataPropertyAtom(mdc:stringEqualIgnoreCase Variable(:accountCode) "UH")
+   )
+  Head(
+      BuiltInAtom(mdc:webServiceCall "SolidWasteAccountQueryByAccount" Variable(:accountNumber) Variable(:queryDetails))
+      ObjectPropertyAtom(mdc:hasSelectedAccount Variable(:bo) Variable(:account))  	
+   )
+)
+DLSafeRule(
+  Body(
+  	DataPropertyAtom(mdc:hasQuerySuccessful Variable(:bo) "true"^^xsd:boolean)
+  	ObjectPropertyAtom(mdc:hasSelectedAccount Variable(:bo) Variable(:account))  
+  	DataPropertyAtom(mdc:hasBulkyFreeTrips Variable(:account) Variable(:freeTrips))
+  	BuiltInAtom(mdc:lessThan Variable(:freeTrips) "1"^^xsd:int)
+  )
+  Head(
+   	DataPropertyAtom(mdc:hasExplanation Variable(:bo) "No bulky free trips."^^xsd:string)
+   	ObjectPropertyAtom(mdc:hasInquiryStatus Variable(:bo) mdc:InquiryResolved)
+  )
+)
+)
+

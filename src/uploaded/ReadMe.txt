@@ -1,0 +1,1 @@
+This folder is to store all the uploaded images for any Service Request.

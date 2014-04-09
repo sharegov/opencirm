@@ -1,0 +1,1066 @@
+<div class="app_container">
+
+    <div class="left_column grid_2">
+
+    <div id="sr_details_left">
+    
+   	  <ul class="arrow_list" data-bind="foreach: sections">
+   	     <li><a href='#' data-bind="text: $data.title, 
+               css: { arrow_on: $data == $root.currentSection() },
+               click: $root.goToSection"></a></li>
+        </ul>
+    
+    	<div class="button_group left_buttons">
+            <input name="E-mail" type="button" value="E-mail" data-bind="click: doEmail">
+            <input name="Print" type="button" value="Print" data-bind="click: doPrint">
+            <!--
+            <input name="Store Offline" type="button" value="Store Offline" data-bind="click: saveOffline">
+            -->
+        </div>
+    
+     </div> <!-- end sr details left -->
+    
+    </div> <!-- left column grid -->
+    
+    <div class="content_area grid_8"> <!-- middle of application -->
+    
+    <div id="sr_details" class="grid_breaker" data-bind="visible: currentSection().div == 'sr_details'">
+        <div class="grid_5 alpha" id="srTypeList">
+			<span class="input_clear">
+	        	<input id="srTypeID" data-bind="jqueryui: {widget: 'autocomplete', options:{source:getFilteredSCList()} }, event: {keydown: validateOnEnter}, css: {color_green: data().type().length > 0}" class="ic_field" style="width:312px" type="text" placeholder="Service Request Type">
+				<input class="ic_clear button_icon" type="button" value="Clear" data-bind="event: {click: function(data,event){$root.clearSR();}}" style="border-top-right-radius:0; -moz-border-radius-topright:0; border-bottom-right-radius:0; -moz-border-radius-bottomright:0;">
+            	<input class="submit h23_submit" type="button" value="Search" data-bind="click: srTypeLookup">
+            </span>
+        </div>
+        
+        <div class="grid_2 omega">
+			<input type="button" value="Clear All TABS" data-bind="click: clearAllTabs">
+        </div>
+
+		<div id="sh_dialog_alert" class="display_none" title="Service Request Alert"> </div>
+		<div id="sh_dialog_clear" class="display_none" title="Service Request Clear Message"> </div>
+		<div id="all_clear_dialog" class="display_none" title="Master Clear"> </div>
+
+		<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+
+		<div data-bind="if: srType().hasLegacyCode">
+			<div data-bind="if: srType().hasLegacyCode=='MDROADS' ">
+				<div data-bind="if: address().addressData()">
+					<div class="grid_2 alpha">
+						<h5>Road Maint. Code:</h5>
+					</div>
+					<div class="grid_2 omega" data-bind="if: address().addressData().streetsMaintenance.length == 1">
+						<h5><label data-bind="text: address().addressData().streetsMaintenance[0].maintenanceCode"/> </h5>
+					</div>
+					<div class="grid_2 omega" data-bind="if: address().addressData().streetsMaintenance.length > 1">
+						<div data-bind="foreach: address().addressData().streetsMaintenance">
+							<h5><label data-bind="text: $root.data().properties().atAddress().fullAddress().indexOf(streetName) != -1 ? maintenanceCode : ''"/> </h5>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="clear">&nbsp;</div>
+
+        <div class="grid_5 alpha">
+        	<span class="input_clear">
+				<input class="ic_field h24" type="text" spellcheck="false" value="" placeholder="Address" style="width:312px" data-bind="value:data().properties().atAddress().fullAddress, valueUpdate:'afterkeydown', css: {color_green: address().addressData(), error: checkAddressError(data().properties().atAddress().fullAddress)}, event: {keydown: validateOnTab}">
+				<input class="ic_clear h32 button_icon" type="button" value="Clear" data-bind="click: clearLocation, css : {error: checkAddressError(data().properties().atAddress().fullAddress)}" style="border-top-right-radius:0; -moz-border-radius-topright:0; border-bottom-right-radius:0; -moz-border-radius-bottomright:0;">
+				<input class="submit h32" type="button" value="Search" data-bind="click: searchAddress">
+            </span>
+        </div>
+        <div class="grid_2 omega">
+			<input name="Map" type="button" value="Map" data-bind="click: launchMap">
+        </div>
+		<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+        <div class="grid_2 alpha">
+    		<input name="city" type="text" placeholder="City" class="f_left" data-bind="value:data().properties().atAddress().Street_Address_City().label, valueUpdate:'afterkeydown', css: {color_green: address().addressData(), error: checkAddressError(data().properties().atAddress().Street_Address_City().label)}">
+        </div>
+        <div class="grid_1">
+            <select class="f_left">
+                <option>FL</option>
+        	</select>
+        </div>
+        <div class="grid_1">
+            <input name="zip" maxlength="5" type="text" placeholder="Zip" class="f_left" data-bind="value:data().properties().atAddress().Zip_Code, valueUpdate:'afterkeydown', css: {color_green: address().addressData(), error: checkAddressError(data().properties().atAddress().Zip_Code)}">
+        </div>
+        <div class="grid_1">
+            <input id="sh_unit" name="unit" type="text" placeholder="Unit" class="f_left" 
+            		data-bind="value:data().properties().atAddress().Street_Unit_Number, css: {color_red: address().addressData() && address().addressData().propertyInfo && address().addressData().propertyInfo.propertyType == 'MULTI', error: checkAddressError(data().properties().atAddress().Street_Unit_Number)}">
+        </div>
+        <div class="grid_2 omega">
+			<span class="searchbox">
+                <input class="search" type="text" value="" placeholder="Folio" data-bind="value: data().properties().atAddress().folio, event: {keydown: searchFolioOnEnter}">
+                <input class="submit h23_submit" type="button" value="Search" data-bind="click: searchFolio">
+            </span>
+        </div>
+		<div class="clear" style="margin-bottom:15px;">&nbsp;</div>
+        
+        <div class="grid_7 alpha omega">
+        	<span style="color:red" data-bind="text:data().properties().hasDepartmentError"></span>
+        </div>
+        <div class="grid_7 alpha omega" data-bind="if: data().type() != ''">
+			<textarea rows=3 class="tooltip" cols=70 data-bind="value:data().properties().hasDetails, valueUpdate: 'afterkeydown', css:{hasPlaceholder: setTextAreaColor(data().properties().hasDetails), error: data().properties().hasDetails.hasError}, attr :{title: data().properties().hasDetails, disabled: $root.isDisabledDescription()}" placeholder="Description"></textarea>
+        </div>
+        <div class="grid_7 alpha omega" data-bind="if: data().type() != ''">
+		    <label data-bind='visible: data().properties().hasDetails.hasError, text: data().properties().hasDetails.validationMessage, css: { red_text: data().properties().hasDetails.hasError }' />
+        </div>        
+		<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+		
+		<!-- Start: Citizen customer fields on SR MAIN -->
+		<span data-bind="if: data().type() != '' && $root.getFirstCitizenActor() != null">
+	        <div class="grid_7 alpha omega">
+				<h4>Contact Information: </h4>
+	        </div>
+			<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+			<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+			<div class="grid_3 alpha">
+				<input data-bind="value: $root.getCitizenActorField('Name'), attr:{disabled: $root.isCustomerLocked()}" placeholder="First Name / Company Name"/>
+			</div>
+			<div class="grid_3 omega">
+				<input data-bind="value: $root.getCitizenActorField('LastName'), attr:{disabled: $root.isCustomerLocked()}" placeholder="Last Name"/>
+			</div>
+			<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+	        <div class="grid_3 alpha">
+				<input data-bind="value: $root.getCitizenActorEmail(), valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: $root.getCitizenActorEmailError()}" placeholder="email"/>
+			</div>
+	        <div class="grid_2">
+				<input data-bind="value: $root.getCitizenActorCellPhone(), valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: $root.getCitizenActorCellPhoneError()}" placeholder="Phone Number"/>
+			</div>
+			<div class="grid_2 omega">
+				<input type="checkbox" style="width:18px;display:inline;" data-bind="checked: $root.getCitizenActorField('isAnonymous'), event:{change: $root.isCitizenAnonymous()}, attr:{disabled: $root.isCustomerLocked()}"/>
+				<label>Anonymous</label>
+			</div>
+			<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+			<div class="grid_7 alpha omega">
+				<input type="checkbox" style="width:18px;display:inline;" data-bind="checked: $root.getCitizenActorEmailCustomer()"/>
+				<label>After creating/updating the Service Request, send an email to this Customer</label>
+			</div>
+			<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+			<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+		</span>
+		<!-- End: Citizen customer fields on SR MAIN -->
+        
+        <div class="grid_7 alpha omega" data-bind="visible: data().type() != ''">
+        	<h4>Questions:</h4>
+        </div>
+		<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+        <div class="grid_7 alpha omega" data-bind="css : {scroller: setScroller(data().type())}">
+            <div class="input_margins" data-bind="template: {name: selectTemplate, foreach: data().properties().hasServiceAnswer, afterRender: handleAfterRender}" ></div>
+            <!--
+            <textarea rows=3 cols=70 data-bind="visible: data().type() != '', value:data().properties().Comments, css:{hasPlaceholder: setTextAreaColor(data().properties().Comments())}" placeholder="Notes / Comments:"></textarea>
+            -->
+        </div>
+        <div class="clear">&nbsp;</div>
+        
+    </div> <!-- end sr_details -->
+
+	<!-- SR ACTORS -->
+
+    <div id="sr_actors" class="grid_breaker" data-bind="visible: currentSection().div == 'sr_actors'">
+		<div style="margin-bottom:10px;" data-bind="ifnot: srType().label">
+			Cannot create Customers for an empty Service Request.
+		</div>
+		<div style="margin-bottom:10px;" data-bind="if: srType().label">
+			<!-- visible: srType().hasServiceActor.length > 0 -->
+			<div data-bind="template: {name: $root.getAddrSRTypeTemplate}"></div>
+			<h4>New Customer</h4>
+<!--
+			<select id="serviceActorList" data-bind="foreach: srType().hasServiceActor, attr:{disabled: $root.isCustomerLocked()}" style="width:480px;"> 
+				<option data-bind=" value: iri, text: label"></option>
+			</select>
+-->
+	        <select id="serviceActorList" data-bind="options: srType().hasServiceActor, optionsText: 'label', optionsValue: 'iri', optionsCaption:'Select One..', attr:{disabled: $root.isCustomerLocked()}" style="width:480px;">
+	        </select>
+			<button data-bind="click: addActor, visible: $root.isCustomerLocked() == false">Add</button>
+		</div>
+
+		<div class="sr_aa_block" data-bind="visible: data().properties().hasServiceCaseActor().length > 0">
+			<h4>Current Customer List</h4>
+			<div class="grid_2 alpha"><h5>Service Customer</h5></div>
+			<div class="grid_2"><h5>First / Company Name</h5></div>
+			<div class="grid_2"><h5>Last Name</h5></div>
+			<div class="grid_1 omega"></div>
+			<div class="clear">&nbsp;</div>
+		</div>
+		
+		<div data-bind="foreach: data().properties().hasServiceCaseActor, visible: data().properties().hasServiceCaseActor().length > 0">
+			<div class="selectRow" data-bind="attr: {id: $root.newActorRow($data)}">
+				<div class="grid_2 alpha">
+				    <a href="#" data-bind="event: {click: $parent.selectActorRow}, text: hasServiceActor().label, attr: {name: $root.newActorRow($data)}"></a>
+				</div>
+				<div class="grid_2"><label data-bind="text: Name"/></label>&nbsp;</div>
+				<div class="grid_2"><label data-bind="text: LastName"/></label>&nbsp;</div>
+				<div class="grid_1 omega"><a href="#" data-bind="click: $root.removeActor, visible: $root.isCustomerLocked() == false" >Remove</a></div>
+				<div class="clear">&nbsp;</div>
+			</div>
+		
+			<div class="sr_aa_fields" style="display:none" data-bind="attr: {id: $root.newActorDetailsRow($data)}" >
+				<div class="sr_aa">
+					<h5>Customer Name:</h5>
+					<div class="grid_4 alpha">
+						<input data-bind="value: Name, attr:{disabled: $root.isCustomerLocked()}" placeholder="First Name / Company Name"/>
+					</div>
+					<div class="grid_3 omega">
+						<input data-bind="value: LastName, attr:{disabled: $root.isCustomerLocked()}" placeholder="Last Name"/>
+					</div>
+					<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+					<h5>Contact Information:</h5>
+
+					<select style="width:210px;" data-bind="attr: {id: $root.getActorPhoneTypeListRowId($data), disabled: $root.isCustomerLocked()} ">
+						<option value="undefined">Select Contact Number Type</option>
+						<option value="HomePhoneNumber">Home Phone Number</option>
+						<option value="CellPhoneNumber">Cell Phone Number</option>
+						<option value="BusinessPhoneNumber">Business Phone Number</option>
+						<option value="FaxNumber">Fax Number</option>
+						<option value="OtherPhoneNumber">Other Phone Number</option>
+					</select>
+					<img src="images/add.png" data-bind="visible: $root.isCustomerLocked() == false, click: $root.addContactNumber" title="Add" onmouseover="this.style.cursor='pointer';" style="cursor: pointer;">
+
+					<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+					
+					<div data-bind="foreach: HomePhoneNumber">
+						 <div class="grid_2 alpha">
+						 	<label>Home Phone No:</label>
+						 </div>
+						 <input style="width:132px;" data-bind="value: number, valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: number.hasError }" placeholder="Home Phone Number"/>
+						 &nbsp; &nbsp;
+						 <input style="width:52px;" data-bind="value: extn, valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: extn.hasError }" placeholder="extn"/>
+						 <img src="images/delete.png" data-bind="visible: $root.isCustomerLocked() == false, click: function(data, event){$root.deleteContactNumber($data, 'HomePhoneNumber', $parent)}" title="Delete" onmouseover="this.style.cursor='pointer';" style="cursor: pointer;">
+						<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+					</div>
+					<div data-bind="foreach: CellPhoneNumber">
+						 <div class="grid_2 alpha">
+						 	<label>Cell Phone No:</label>
+						 </div>
+						 <input style="width:132px;" data-bind="value: number, valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: number.hasError }" placeholder="Cell Phone Number"/>
+						 &nbsp; &nbsp;
+						 <input style="width:52px;" data-bind="value: extn, valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: extn.hasError }" placeholder="extn"/>
+						 <img src="images/delete.png" data-bind="visible: $root.isCustomerLocked() == false, click: function(data, event){$root.deleteContactNumber($data, 'CellPhoneNumber', $parent)}" title="Delete" onmouseover="this.style.cursor='pointer';" style="cursor: pointer;">
+						<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+					</div>
+					<div data-bind="foreach: BusinessPhoneNumber">
+						 <div class="grid_2 alpha">
+						 	<label>Business Phone No:</label>
+						 </div>
+						 <input style="width:132px;" data-bind="value: number, valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: number.hasError }" placeholder="Business Phone Number"/>
+						 &nbsp; &nbsp;
+						 <input style="width:52px;" data-bind="value: extn, valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: extn.hasError }" placeholder="extn"/>
+						 <img src="images/delete.png" data-bind="visible: $root.isCustomerLocked() == false, click: function(data, event){$root.deleteContactNumber($data, 'BusinessPhoneNumber', $parent)}" title="Delete" onmouseover="this.style.cursor='pointer';" style="cursor: pointer;">
+						<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+					</div>
+					<div data-bind="foreach: FaxNumber">
+						 <div class="grid_2 alpha">
+						 	<label>Fax No:</label>
+						 </div>
+						 <input style="width:132px;" data-bind="value: number, valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: number.hasError }" placeholder="Fax Number"/>
+						 &nbsp; &nbsp;
+						 <input style="width:52px;" data-bind="value: extn, valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: extn.hasError }" placeholder="extn"/>
+						 <img src="images/delete.png" data-bind="visible: $root.isCustomerLocked() == false, click: function(data, event){$root.deleteContactNumber($data, 'FaxNumber', $parent)}" title="Delete" onmouseover="this.style.cursor='pointer';" style="cursor: pointer;">
+						<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+					</div>
+					<div data-bind="foreach: OtherPhoneNumber">
+						 <div class="grid_2 alpha">
+						 	<label>Other Phone No:</label>
+						 </div>
+						 <input style="width:132px;" data-bind="value: number, valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: number.hasError }" placeholder="Other Phone Number"/>
+						 &nbsp; &nbsp;
+						 <input style="width:52px;" data-bind="value: extn, valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: extn.hasError }" placeholder="extn"/>
+						 <img src="images/delete.png" data-bind="visible: $root.isCustomerLocked() == false, click: function(data, event){$root.deleteContactNumber($data, 'OtherPhoneNumber', $parent)}" title="Delete" onmouseover="this.style.cursor='pointer';" style="cursor: pointer;">
+						<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+					</div>
+					<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+					<div>
+						 <div class="grid_2 alpha">
+						 	<label>e-mail address:</label>
+						 </div>
+						<input style="width:292px;" data-bind="value: hasEmailAddress().label, valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: hasEmailAddress().label.hasError }" placeholder="email"/>
+					</div>
+					<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+					<input type="checkbox" style="width:18px;display:inline;" data-bind="checked: emailCustomer"/>
+					<label>After creating/updating the Service Request, send an email to this Customer</label>
+					<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+					<h5>Address Information:</h5>
+					<input type="checkbox" data-bind="click: $root.checkboxAddress, attr:{disabled: $root.isCustomerLocked()}" style="width:18px;display:inline;" name="sr_address" value="sr_address"/> 
+					<label>Same as Service Request Address</label> 
+					<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+					
+			    	<div class="grid_5 alpha omega">
+		                <input class="f_left" type="text" data-bind="value: atAddress().fullAddress, attr:{disabled: $root.isCustomerLocked()}" spellcheck="false" placeholder="Address">
+			        </div>
+					<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+			        <div class="grid_3 alpha">
+			    		<input class="f_left" type="text" data-bind="value: atAddress().Street_Address_City().label, attr:{disabled: $root.isCustomerLocked()}" spellcheck="false" placeholder="City">
+					</div>
+			        <div class="grid_1">
+						<select class="f_left" data-bind="options: $root.allStates(), value:atAddress().Street_Address_State().iri, 
+						optionsValue:'iri', optionsText:'USPS_Abbreviation', optionsCaption:'State', attr:{disabled: $root.isCustomerLocked()} " style="width:67px;"></select>
+					</div>
+			        <div class="grid_1">
+			            <input class="f_left" type="text" data-bind="value: atAddress().Zip_Code, attr:{disabled: $root.isCustomerLocked()}" placeholder="Zip">
+					</div>
+			        <div class="grid_1 omega">
+			            <input class="f_left" type="text" data-bind="value: atAddress().Street_Unit_Number, attr:{disabled: $root.isCustomerLocked()}" placeholder="Unit">
+					</div>
+					<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+				</div>
+			</div>
+			<br/><br/>
+			
+		</div>
+		
+	</div> <!-- sr_actors -->
+
+	
+    <!-- SR ACTIVITIES -->
+    
+    <div id="sr_activities" class="grid_breaker" data-bind="visible: currentSection().div == 'sr_activities'">
+		<div style="margin-bottom:10px;" data-bind="if: data().boid().length > 0 ">
+			<div data-bind="template: {name: $root.getAddrSRTypeTemplate}"></div>
+			<h4>New Activity</h4>
+<!--
+			<select id="serviceActivityList" data-bind="foreach: $root.activityList()" style="width:480px;"> 
+				<option data-bind="value: iri, text: label"></option>
+			</select>
+-->
+	        <select id="serviceActivityList" data-bind="options: $root.activityList(), optionsText: 'label', optionsValue: 'iri', optionsCaption:'Select One..'" style="width:480px;">
+	        </select>
+			<button data-bind="click: addActivity, visible: $root.activityList().length > 0">Add</button>
+		</div>
+		<div style="margin-bottom:10px;" data-bind="visible: data().boid().length == 0 ">
+			Cannot create Activities for a new or empty Service Request.
+		</div>
+		
+		<div class="sr_aa_block" data-bind="visible: data().properties().hasServiceActivity().length > 0">
+			<h4>Current Activity List</h4>
+			<div class="grid_2 alpha"><h5>Service Activity</h5></div>
+			<div class="grid_1"><h5>Asgn'd To</h5></div>
+			<div class="grid_2"><h5>Created Dt.</h5></div>
+			<div class="grid_1"><h5>Due Dt.</h5></div>
+			<div class="grid_1 omega"></div>
+			<div class="clear">&nbsp;</div>
+		</div>
+
+		<div data-bind="foreach: data().properties().hasServiceActivity, visible: data().properties().hasServiceActivity().length > 0">
+		<!-- if check for statuschange activity-->
+		<div data-bind="if:hasActivity().label() != 'StatusChangeActivity'">
+		
+		<div class="selectRow" data-bind="attr: {id: $root.newActivityRow($data)}">
+            <div class="grid_2 alpha">
+                <a href="#" data-bind="event: {click: $parent.selectActivityRow}, text: hasActivity().label, attr: {name: $root.newActivityRow($data)}"></a>
+             </div>
+			<div class="grid_1"><a href="#" class="id_email" data-bind="event: {click: function(data,event){$root.showProfile($data.isAssignedTo, data, event);}}, text: isAssignedTo"/></a>&nbsp;</div>
+			<div class="grid_2"><label data-bind="text: $root.computeDateTime(hasDateCreated)"/></label>&nbsp;</div>
+			<div class="grid_1"><label data-bind="text: $root.computeDate(hasDueDate)"/></label>&nbsp;</div>
+			<div class="grid_1 omega" data-bind="template: {name: $root.removeActivityCheckerTemplate}"></div>
+			<div class="clear">&nbsp;</div>
+            <div class="grid_7 alpha omega" data-bind="attr: {name: $root.newActivityDetailsRow($data)}">
+            	<strong> Details : </strong>
+            	<label data-bind="text: hasDetails"/>
+            </div>
+			<div class="clear">&nbsp;</div>
+		</div>
+		
+		<div class="sr_aa_fields" style="display:none" data-bind="attr: {id: $root.newActivityDetailsRow($data)}">
+			<div class="sr_aa">
+				<h5>Record Information:</h5>
+				<div class="grid_4 alpha">
+	                <input type="text" placeholder="Assigned To" style="width:300px;"
+	                	data-bind="value:isAssignedTo, valueUpdate: 'afterKeydown', 
+	                			jqueryui: { widget: 'autocomplete', 
+	                						options: {
+	                							source:$root.lookupAssignedStaff(),
+	                							delay:500,
+	                							select: function(event, ui) {
+	                								isAssignedTo(ui.item.value);
+	                							}
+	                						}
+	                					 }, 
+	                			 attr:{disabled: $root.disabledAssignedTo($data)} " />
+
+				</div>
+				<div class="grid_3 omega" data-bind="template: {name: $root.outcomeTemplate}"> </div>
+				<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+				<div data-bind="template: {name: $root.acceptedTemplate}"> </div>
+				<div data-bind="template: {name: $root.activityPdfTemplate}"> </div>
+				<div class="grid_7 alpha omega">
+					<textarea rows=3 cols=70 class="tooltip" data-bind="value: hasDetails, valueUpdate: 'afterkeydown', css:{hasPlaceholder: $root.setTextAreaColor(hasDetails())}, attr :{title: hasDetails }", attr:{disabled: $root.disabledHasDetails($data)}" placeholder="Details"></textarea>
+				</div>				
+			<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+			</div>
+							
+		</div>
+
+		<br/><br/>
+		</div> <!-- if check for statuschange activity -->
+		
+		</div>
+		
+	</div> <!-- sr_activities -->
+	
+	<div id='sr_geo_info' class="grid_breaker" data-bind="visible: currentSection().div == 'sr_geo_info'">
+		<div data-bind="ifnot:address().addressData()">
+		  <h3>No address was selected</h3>
+		</div>  
+		<div data-bind="if:address().addressData()">
+			<div data-bind="template: {name: $root.getAddrSRTypeTemplate}"></div>
+<!--
+		  <div id="coordinates">
+		    <ul class="modal_infolist">
+		      <li><label>X:</label><span data-bind="text: address().addressData().location.x"></span></li>
+		      <li><label>Y:</label><span data-bind="text: address().addressData().location.y"></span></li>
+		    </ul>
+		  </div>
+-->		
+		  <div id="commission">
+		    <ul class="modal_infolist">
+		      <li><label>County Commissioner Name:</label><span data-bind="text: address().addressData().commissionerName"></span></li>
+		      <li><label>District Number:</label><span data-bind="text: address().addressData().districtNumber"></span></li>
+		      <li><label>Municipality Name:</label><span data-bind="text: address().addressData().municipality"></span></li>
+		    </ul>
+		  </div>
+		  <div id="hoa">
+		    <ul class="modal_infolist">
+		      <li><label>House District:</label><span data-bind="text: address().addressData().houseDistrictId"></span></li>
+		      <li><label>Senate District:</label><span data-bind="text: address().addressData().senateDistrictId"></span></li>
+		      <li><label>Elections Precinct:</label>
+		      	<span>
+		      		<div data-bind="text: address().addressData().electionsPrecinctId"></div>
+		      		<div data-bind="text: address().addressData().pollingLocation" style="width: 320px;"></div>
+		      	</span>	
+		      </li>
+		    </ul>
+		  </div>
+		  <div id="wastePickup">
+		    <ul class="modal_infolist">		
+		      <li><label>Garbage Pickup Day:</label><span data-bind="text: $root.getGarbagePickupDayInfo(address().addressData())"></span></li>
+		      <li><label>Garbage Route:</label><span data-bind="text: address().addressData().garbagePickupRoute"></span></li>
+		      <li>
+		        <label>Recycling Route:</label><span data-bind="text: address().addressData().recyclingRoute"></span>
+		        &nbsp; &nbsp; &nbsp;
+				<a data-bind="if:address().addressData().recyclingCalendarUrl, attr:{ href: address().addressData().recyclingCalendarUrl}" target="_blank">Calendar</a>
+		      </li>
+		      <li><label>Recycling Pickup Day:</label><span data-bind="text: address().addressData().recyclingWeekDay"></span></li>
+		      <li><label>COM Bulky Day:</label><span data-bind="text: address().addressData().bulkyTrashPickupDayAlias"></span></li>
+		    </ul>
+		  </div>
+		  <div id="publicWorks">
+		    <ul class="modal_infolist">
+		      <li><label>Road Maintenance</label><span></span></li>
+		      <ul class="modal_infolist" data-bind="foreach: address().addressData().streetsMaintenance">
+		        <li><label>Street Name:</label><span data-bind="text: streetName"></span></li>
+		        <li><label>Maintenance Code:</label><span data-bind="text: $root.getMaintenanceInfo($data)"></span></li>
+		      </ul>
+		      <li><label>Street Light Maintenance</label><span></span></li>
+		      <ul class="modal_infolist" data-bind="foreach: address().addressData().streetsLightMaintenance">
+		        <li><label>Street Name:</label><span data-bind="text: streetName"></span></li>
+		        <li><label>Maintenance Code:</label><span data-bind="text: $root.getMaintenanceInfo($data)"></span></li>
+		      </ul>
+		    </ul>
+		  </div>
+		  <div id="wastePickup_continued">
+		    <ul class="modal_infolist">		
+		      <li><label>City Commissioner Name:</label><span data-bind="text: address().addressData().cityCommissionerName"></span></li>
+		      <li><label>Net Office Name:</label><span data-bind="text: address().addressData().netOfficeName"></span></li>
+		      <li>
+		      	<label>Code Enforcement Zone:</label>
+		      	<span data-bind="text: $root.getCodeEnforcementZonePhone(address().addressData().codeEnforcementZone)"></span>
+		      </li>
+		    </ul>
+		  </div>
+		  <div id="hurricane">
+		    <ul class="modal_infolist">
+		      <li><label>Storm Surge Zone:</label><span data-bind="text: address().addressData().hurricaneEvacZone"></span></li>
+		      <li><label>Flood Zone:</label><span data-bind="text: address().addressData().floodZone"></span></li>
+		      <li><label>Turkey Point Evac Zone:</label><span data-bind="text: address().addressData().turkeyPointAreaId"></span></li>
+		      <li><label>Water Service Area:</label><span data-bind="text: $root.getUtilityInfo(address().addressData())"></span></li>
+		    </ul>
+		  </div>
+		  <div id="hoa_continued">
+		    <ul class="modal_infolist">
+		      <li><label>Homeowners Association:</label><span data-bind="text: address().addressData().propertyInfo.homeOwnerAssociationName"></span></li>
+		    </ul>
+		  </div>
+
+		</div>
+	</div>  <!-- sr_geo_info -->
+	
+	<div id='sr_images' class="grid_breaker" data-bind="visible: currentSection().div == 'sr_images'">
+		<div style="margin-bottom:10px;" data-bind="ifnot: srType().label">
+			Cannot add images to an empty Service Request.
+		</div>
+		<div style="margin-bottom:10px;" data-bind="if: srType().label">
+			<div data-bind="template: {name: $root.getAddrSRTypeTemplate}"></div>
+			<h5> Please upload any pictures related to the current Service Request. </h5>
+			<div class="grid_5 alpha">
+				<input id="fileUploader" type="file" name="uploadImage" accept="image/*"/>
+			</div>
+			<div class="grid_2 omega">
+            	<input name="Upload File" type="button" value="Upload File" data-bind="event: {click: uploadFiles}">
+			</div>
+			<div class="clear">&nbsp;</div>
+		</div>
+		
+		<div class="sr_aa" data-bind="foreach: data().properties().hasImage">
+			<div class="grid_6 alpha">
+				<img data-bind="attr:{src : $data}"/>
+				<!-- <img data-bind="attr:{src : $root.getImageSource($data)}"/> -->
+			</div>
+			<div class="grid_1 omega"><a href="#" data-bind="click: $root.removeImage" >Remove</a></div>
+			<div class="clear">&nbsp;</div>
+		</div>
+	</div>  <!-- sr_images -->
+	
+	<div id="sh_progress" class="display_none" title="SR# Lookup">
+		<p>Fetching Service Request Record....</p>
+		<div id="sh_progressbar">
+	   		<img style="width: 37%;"  src="images/ajax-loader.gif" />
+		</div>
+	</div>
+	
+	<div id="sh_save_progress" class="display_none" title="Save Service Request">
+		<p>Saving Service Request Record....</p>
+		<div id="sh_progressbar">
+	   		<img style="width: 37%;"  src="images/ajax-loader.gif" />
+		</div>
+	</div>
+	
+	<div id="sh_email_progress" class="display_none" title="eMail Service Request">
+		<p>eMailing Service Request Record....</p>
+		<div id="sh_progressbar">
+	   		<img style="width: 37%;"  src="images/ajax-loader.gif" />
+		</div>
+	</div>
+
+   </div> <!-- middle of application -->
+   
+ <div class="right_column grid_2">
+ 
+ <span class="searchbox">
+    <input class="search" type="text" name="SR Lookup" placeholder="SR# Lookup" 
+            data-bind="event: {keydown: srLookupOnEnter}">
+    <input class="submit h23_submit" type="button" value="Search" data-bind="click: srLookup">
+ </span>
+ 
+ 	<div class="activity">
+      	
+        <label>Created:</label>
+		<input name="Status" type="text" data-bind="value: computeDate(data().properties().hasDateCreated)" readonly=true/><br>
+        
+        <label>Modified:</label>
+		<input name="Status" type="text" data-bind="value: computeDate(data().properties().hasDateLastModified)" readonly=true/><br>
+        
+        <label>Input By:</label>
+		<span data-bind="if: data().properties().isCreatedBy">
+			<input name="Status" type="text" data-bind="value: data().properties().isCreatedBy, click: $root.getProfile" readonly="true" style="text-decoration: underline" onmouseover="this.style.cursor='pointer';"/><br>
+		</span>
+		<span data-bind="ifnot: data().properties().isCreatedBy">
+			<input name="Status" type="text" data-bind="value: data().properties().isCreatedBy" readonly="true"/><br>
+        </span>
+        <div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+
+        <select data-bind="options: allStatus(), value: data().properties().hasStatus().iri, optionsText: 'label', optionsValue: 'iri', optionsCaption:'Select Status..', attr:{disabled: isStatusUpdateDisabled(data().properties().hasStatus()) }, css: { error: data().properties().hasStatus().iri.hasError }", title="Status">
+        </select>
+        <div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+        <!-- 
+        <label>Status:</label>
+        <input name="Status" type="text" data-bind="value: data().properties().hasStatus().label, css:{red_activity: $root.setStatusColor()}" readonly=true/><br>
+        -->
+        
+        <select name="Rec" id="Rec" data-bind="options: allIntake(), value: data().properties().hasIntakeMethod().iri, optionsText: 'label', optionsValue: 'iri', optionsCaption:'Select Meth Recd..', css: { error: data().properties().hasIntakeMethod().iri.hasError }", title="Method Received">
+        </select>
+        <div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+
+        <select name="Priority" id="Priority" data-bind="options: allPriority(), value: data().properties().hasPriority().iri, optionsText:'label', optionsValue:'iri', optionsCaption:'Select Priority..', css: { error: data().properties().hasPriority().iri.hasError }", title="Priority">
+        </select>
+        
+     </div>
+ 
+ 
+    <div class="alignment_center">
+        
+        <div id="sr_details_right">
+			<div id="dup_checking" class="display_none">checking for related SRs..</div>
+			<input type="button" class="red_button" data-bind="visible: duplicateCount() > 0, click: showDuplicates, value:'Related SRs ('+duplicateCount()+')'">
+           <input id="save" name="Save" type="button" data-bind="value:saveButtonLabel, click: doSubmit, attr:{disabled: $root.isSaveDisabled()}">
+           <div class="interaction_success"></div>            
+           <div id='callInteractionContainer'></div>
+        </div>
+        
+    </div>
+    </div>
+  	<div id="sh_dialog_type_invalid" class="display_none" title="Outside Service Area.">
+	</div>
+
+	<div id="sh_dialog_type_validate" class="display_none" title="Validating...">
+		<p>Validating Service Area for the current Service Request Type.</p>
+		<div id="ah_progressbar">
+   		<img style="width: 37%;"  src="images/ajax-loader.gif" />
+		</div>
+	</div>
+
+	<div id="sh_dialog_sr_lookup" class="display_none" title="Fetching SR...">
+		<p>Fetching the SR.....</p>
+		<div id="ah_progressbar">
+   		<img style="width: 37%;"  src="images/ajax-loader.gif" />
+		</div>
+	</div>
+	
+	<div id="sh_dialog_sr_duplicates_detail" class="display_none" title="Related Service Requests">
+		<div>
+			<table>
+				<thead>
+					<tr>
+						<th>SR #</th>
+						<th>SR Type</th>
+						<th>Address</th>
+						<th>Status</th>
+						<th>Created Date</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody data-bind="foreach: duplicateDetails()">
+					<tr>
+						<td ><a href="#" data-bind="event: {click: $root.populateSR}, text: hasCaseNumber"></td>
+						<!-- <td data-bind="text: $root.srType().label + ' [' +$root.srType().hasJurisdictionCode +']'"></td> -->
+						<td data-bind="text: $root.getSRType($data)"></td>
+						<td data-bind="text: $root.computeFullAddress($data)"></td>
+						<td data-bind="text: hasStatus"></td>
+						<td data-bind="text: $root.computeDateTime(hasDateCreated)"></td>
+						<td data-bind="text: $root.isParent($data), style: {color: 'green', fontWeight: 'bold'}"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	
+	<div id="sh_dialog_email" class="display_none" title="Service Request eMail.">
+		Please fill in the below details to eMail this Service Request :
+		<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+		<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+
+		<input type="text" data-bind="value: $root.emailData().subject, valueUpdate: 'afterkeydown'", placeholder="eMail Subject*" style="width:300px;"/>
+		<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+
+		<input type="text" data-bind="value: $root.emailData().to, valueUpdate: 'afterkeydown'", placeholder="eMail TO:*" style="width:300px;" title="Seperate email IDs with a semi-colon (;)"/>
+		<label>Seperate email IDs with a semi-colon (;)</label>
+		<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+
+		<input type="text" data-bind="value: emailData().cc, valueUpdate: 'afterkeydown'", placeholder="eMail CC: " style="width:300px;" title="Seperate email IDs with a semi-colon (;)"/>
+		<label>Seperate email IDs with a semi-colon (;)</label>
+		<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+
+		<input type="text" data-bind="value: emailData().bcc, valueUpdate: 'afterkeydown'" placeholder="eMail BCC:" style="width:300px;" title="Seperate email IDs with a semi-colon (;)"/>
+		<label>Seperate email IDs with a semi-colon (;)</label>
+		<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+		
+		<input type="text" data-bind="value: emailData().comments, valueUpdate: 'afterkeydown'" placeholder="eMail Comments" style="width:300px;"/>
+		<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+		<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+		<input type="button" value="Send" style="width:132px;" data-bind="click: $root.sendEmail"/>
+		<input type="button" value="Clear" style="width:132px;" data-bind="click: $root.clearEmail"/>
+		<input type="button" value="Cancel" style="width:132px;" data-bind="click: $root.cancelEmail"/>
+	</div>
+
+	<div id="sh_dialog_sr_err" class="display_none" title="Service Request Error."> </div>
+
+	<div id="sh_dialog_sr_type" class="display_none" title="Fetching SR Form...">
+		<p>Fetching a new Service Request Form for the requested Type...</p>
+		<div id="ah_progressbar">
+   		<img style="width: 37%;"  src="images/ajax-loader.gif" />
+		</div>
+	</div>
+
+	<div id="sh_dialog_address_search" class="display_none" title="Searching...">
+		<p>Gathering address data. Patience is a virtue.</p>
+		<div id="sh_progressbar">
+	   		<img style="width: 37%;"  src="images/ajax-loader.gif" />
+		</div>
+	</div>
+	
+	<div id="sh_dialog_profile" class="display_none" title="User Profile">
+	<div id="profile_info" data-bind="if: activeProfile().userid">
+		<ul id="profile_tabs">
+			<li data-bind="visible: activeProfile().enet"><a href="#enet">Enet</a></li>
+			<li data-bind="visible: activeProfile().bluebook"><a href="#bluebook">Bluebook</a></li>
+			<li data-bind="visible: activeProfile().intranet"><a href="#intranet">Intranet</a></li>
+			<li data-bind="visible: activeProfile().onto"><a href="#onto">Ontology</a></li>
+			<li id="ui-tab-dialog-close"></li>
+		</ul>
+		<div id="profile_content">
+			<div id="enet">
+				<div id="enetData">
+					<fieldset>
+						<div>
+							<label>First Name: </label><span data-bind="text: activeProfile().enet.givenName"></span>
+							<label>Last Name: </label><span data-bind="text: activeProfile().enet.sn"></span>
+						</div>
+						<div>
+							<label>Department: </label><span data-bind="text: activeProfile().enet.mdcDepartment"></span>
+							<label>Division: </label><span data-bind="text: activeProfile().enet.mdcDivision"></span>
+							<label>Location: </label><span data-bind="text: activeProfile().enet.mdcLocation"></span>
+						</div>
+						<div>
+							<img id="sh_profile_img" height="96px" width="96px"></img>
+						</div>
+					</fieldset>
+				</div>
+			</div>
+			<div id="bluebook" data-bind="if: activeProfile().bluebook">
+				<div id="bluebookData">
+					<fieldset>
+						<div>
+							<label>Home Email: </label><span data-bind="text: activeProfile().bluebook.Home_email"></span>
+						</div>
+						<div>
+							<label>Work Email: </label><span data-bind="text: activeProfile().bluebook.WK_email"></span>
+						</div>
+					</fieldset>
+				</div>
+			</div>
+			<div id="intranet" data-bind="if: activeProfile().intranet">
+				<div id="intranetData">
+					<fieldset>
+						<div>
+							<label>Work Phone: </label><span data-bind="text: activeProfile().intranet.telephoneNumber"></span>
+						</div>	
+						<div>
+							<label>Department Name: </label><span data-bind="text: activeProfile().intranet.department"></span>
+						</div>
+						<div>
+							<label>Street Address: </label><span data-bind="text: activeProfile().intranet.streetAddress"></span>
+						</div>
+					</fieldset>
+				</div>
+			</div>
+			<div id="onto" data-bind="if: activeProfile().onto">
+				<div id="ontoData">
+					<fieldset>
+						<div>
+							<label>First Name: </label><span data-bind="text: activeProfile().onto.FirstName"></span>
+						</div>
+						<div>
+							<label>Last Name: </label><span data-bind="text: activeProfile().onto.LastName"></span>
+						</div>
+						<div>
+							<label>Email: </label><span data-bind="text: activeProfile().onto.email"></span>
+						</div>
+						<div>
+							<label>Phone: </label><span data-bind="text: activeProfile().onto.PhoneNumber"></span>
+						</div>
+					</fieldset>
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
+
+</div> <!-- app_container -->
+     
+<!--
+HTML templates
+-->
+
+<div id="sh_text_dialog" class="display_none"></div>
+
+<script type="text/html" id="eventBoundTemplate">
+	<label data-bind="text: hasServiceField().label()"></label>
+	<input data-bind="value: hasAnswerValue().literal"></input>
+	<br><br>
+</script>
+
+<script type="text/html" id="charTemplate">
+	<div class="grid_7 alpha omega">
+		<label data-bind="text: hasServiceField().label(), css: {highlight_text : $root.isHighlighted($data)} "></label>
+	</div>
+	<div class="grid_5 alpha">
+		<input placeholder="" class="tooltip" data-bind="value: hasAnswerValue().literal, valueUpdate: 'afterkeydown', css: { error: hasAnswerValue().literal.hasError }, attr :{title: hasAnswerValue().literal }" ></input>
+	</div>
+	<div class="grid_1 omega">
+		<label data-bind='visible: hasAnswerValue().literal.hasError, text: hasAnswerValue().literal.validationMessage, css: { red_text: hasAnswerValue().literal.hasError }' />
+	</div>
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+</script>
+
+<script type="text/html" id="charStreetTemplate">
+	<div class="grid_7 alpha omega">
+		<label data-bind="text: hasServiceField().label(), css: {highlight_text : $root.isHighlighted($data)} "></label>
+	</div>
+	<div class="grid_5 alpha">
+       	<span class="input_clear">
+			<input placeholder="" class="ic_field tooltip" style="width:340px" data-bind="value: hasAnswerValue().literal, valueUpdate: 'afterkeydown', event: {keydown: $root.standardizeStreet}, css: { error: hasAnswerValue().literal.hasError }, attr :{title: hasAnswerValue().literal, id:hasLegacyCode }" ></input>
+			<input class="submit" type="button" value="Search" data-bind="click: $root.getStandardizeStreet" title="Click to validate the Street">
+        </span>
+	</div>
+	<div class="grid_1 omega">
+		<label data-bind='visible: hasAnswerValue().literal.hasError, text: hasAnswerValue().literal.validationMessage, css: { red_text: hasAnswerValue().literal.hasError }' />
+	</div>
+	<div class="grid_7 alpha omega">
+		<label data-bind='visible: $root.isStandardizedStreetMsgVisible(hasAnswerValue().literal), css: { red_text: !hasAnswerValue().literal.isStandardizeStreet }'>Please Standardize the above Street by clicking on it's search icon</label>
+	</div>
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+</script>
+
+<script type="text/html" id="charStreetDisabledTemplate">
+	<div class="grid_7 alpha omega">
+		<label data-bind="text: hasServiceField().label(), css: {highlight_text : $root.isHighlighted($data)} "></label>
+	</div>
+	<div class="grid_5 alpha omega">
+		<input placeholder="" disabled="disabled" class="tooltip" data-bind="value: hasAnswerValue().literal, valueUpdate: 'afterkeydown', event: {keydown: $root.standardizeStreet}, attr: {title: hasAnswerValue().literal, id:hasLegacyCode}"></input>
+	</div>
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+</script>
+
+<script type="text/html" id="charDisabledTemplate">
+	<div class="grid_7 alpha omega">
+		<label data-bind="text: hasServiceField().label(), css: {highlight_text : $root.isHighlighted($data)} "></label>
+	</div>
+	<div class="grid_6 alpha omega">
+		<input placeholder="" disabled="disabled" class="tooltip" data-bind="value: hasAnswerValue().literal,  attr: { title: hasAnswerValue().literal }"></input>
+	</div>
+	
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+</script>
+
+<script type="text/html" id="dateTemplate">
+	<div class="grid_7 alpha omega">
+		<label name="dateLabel" data-bind="text: hasServiceField().label(), css: {highlight_text : $root.isHighlighted($data)} "></label>
+	</div>
+	<div class="grid_5 alpha">
+		<input placeholder="" name="dateInput" data-bind="value: hasAnswerValue().literal, valueUpdate: 'afterkeydown', css: { error: hasAnswerValue().literal.hasError } " title="Please enter in MM/DD/YYYY format"></input>
+	</div>
+	<div class="grid_1 omega">
+		<label data-bind='visible: hasAnswerValue().literal.hasError, text: hasAnswerValue().literal.validationMessage, css: { red_text: hasAnswerValue().literal.hasError }'> </label>
+	</div>
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+</script>
+<script type="text/html" id="dateDisabledTemplate">
+	<div class="grid_7 alpha omega">
+		<label name="dateLabel" data-bind="text: hasServiceField().label(), css: {highlight_text : $root.isHighlighted($data)} "></label>
+	</div>
+	<div class="grid_5 alpha omega">
+		<input placeholder="" name="dateInput" disabled="disabled" data-bind="value: hasAnswerValue().literal"></input>
+	</div>
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+</script>
+
+<script type="text/html" id="timeTemplate">
+	<div class="grid_7 alpha omega">
+		<label data-bind="text: hasServiceField().label(), css: {highlight_text : $root.isHighlighted($data)}"></label>
+	</div>
+	<div class="grid_5 alpha">
+		<input placeholder="" data-bind="value: hasAnswerValue().literal, valueUpdate: 'afterkeydown', css: { error: hasAnswerValue().literal.hasError } " title="Please enter the time in HH:MM AM/PM format"></input>
+	</div>
+	<div class="grid_1 omega">
+		<label data-bind='visible: hasAnswerValue().literal.hasError, text: hasAnswerValue().literal.validationMessage, css: { red_text: hasAnswerValue().literal.hasError }'> </label>
+	</div>
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+</script>
+<script type="text/html" id="timeDisabledTemplate">
+	<div class="grid_7 alpha omega">
+		<label data-bind="text: hasServiceField().label(), css: {highlight_text : $root.isHighlighted($data)}"></label>
+	</div>
+	<div class="grid_5 alpha omega">
+		<input placeholder="" disabled="disabled" data-bind="value: hasAnswerValue().literal"></input>
+	</div>
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+</script>
+
+<script type="text/html" id="noUpdateTemplate">
+	<div class="grid_7 alpha omega">
+		<label data-bind="text: hasServiceField().label(), css: {highlight_text : $root.isHighlighted($data)} "></label>
+	</div>
+	<div class="grid_5 alpha">
+		<input placeholder="" data-bind="value: hasAnswerValue().literal, valueUpdate: 'afterkeydown', css: { error: hasAnswerValue().literal.hasError } " readonly="true" style="border:none"/>
+	</div>
+	<div class="grid_1 omega">
+		<label data-bind='visible: hasAnswerValue().literal.hasError, text: hasAnswerValue().literal.validationMessage, css: { red_text: hasAnswerValue().literal.hasError }'> </label>
+	</div>
+	<div class="clear">&nbsp;</div>
+</script>
+<script type="text/html" id="deletedTemplate">
+	<div class="grid_7 alpha omega">
+		<label class="blue_text" data-bind="text: hasServiceField().label()"></label>
+	</div>
+	<div class="grid_5 alpha omega">
+		<input placeholder="" data-bind="value: hasAnswerValue().literal" readonly="true"/>
+	</div>
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+</script>
+<script type="text/html" id="deletedObjectTemplate">
+	<div class="grid_7 alpha omega">
+		<label class="blue_text" data-bind="text: hasServiceField().label()"></label>
+	</div>
+	<div class="grid_5 alpha omega">
+		<select disabled="disabled" data-bind="options: hasChoiceValueList().hasChoiceValue, value: hasAnswerObject().iri, optionsValue:'iri', optionsText:'label', optionsCaption:'Select One..' "></select>
+	</div>
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+</script>
+<script type="text/html" id="disabledTemplate">
+	<div class="grid_7 alpha omega">
+		<label class="blue_text" data-bind="text: hasServiceField().label()"></label> &nbsp;(This question is disabled) 
+	</div>
+	<div class="grid_5 alpha omega">
+		<input placeholder="" data-bind="value: hasAnswerValue().literal" readonly="true"/>
+	</div>
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+</script>
+<script type="text/html" id="disabledObjectTemplate">
+	<div class="grid_7 alpha omega">
+		<label class="blue_text" data-bind="text: hasServiceField().label()"></label> &nbsp;(This question is disabled) 
+	</div>
+	<div class="grid_5 alpha omega">
+		<select disabled="disabled" data-bind="options: hasChoiceValueList().hasChoiceValue, value: hasAnswerObject().iri, optionsValue:'iri', optionsText:'label', optionsCaption:'Select One..' "></select>
+	</div>
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+</script>
+
+<script type="text/html" id="charListTemplate">
+	<div class="grid_7 alpha omega">
+		<label data-bind="text: hasServiceField().label(), css: {highlight_text : $root.isHighlighted($data)} "></label>
+	</div>
+	<div class="grid_5 alpha">
+		<select data-bind="options: $root.getChoiceValueList($data), value: hasAnswerObject().iri, valueUpdate: 'afterkeydown', event: {change: $root.maybeAlertPopup}, optionsValue:'iri', optionsText:'label', optionsCaption:'Select One..', css: { error: hasAnswerObject().iri.hasError } "/>
+	</div>
+	<div class="grid_1 omega">
+		<label data-bind='visible: hasAnswerObject().iri.hasError, text: hasAnswerObject().iri.validationMessage, css: { red_text: hasAnswerObject().iri.hasError }'> </label>
+	</div>
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+</script>
+<script type="text/html" id="charListDisabledTemplate">
+	<div class="grid_7 alpha omega">
+		<label data-bind="text: hasServiceField().label(), css: {highlight_text : $root.isHighlighted($data)} " ></label>
+	</div>
+	<div class="grid_5 alpha omega">
+		<select disabled="disabled" data-bind="options: $root.getChoiceValueList($data), value: hasAnswerObject().iri, event: {change: $root.maybeAlertPopup}, optionsValue:'iri', optionsText:'label', optionsCaption:'Select One..' "></select>
+	</div>
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+</script>
+
+<script type="text/html" id="charMultTemplate">
+	<div class="grid_7 alpha omega">
+		<label data-bind="text: hasServiceField().label(), css: {highlight_text : $root.isHighlighted($data)} "></label>
+	</div>
+	<div class="grid_5 alpha">
+		<select data-bind="foreach: $root.getChoiceValueList($data), selectedOptions: hasAnswerObject().iri, event: {change: $root.maybeAlertPopup}, css: { error: hasAnswerObject().iri.hasError }" multiple="multiple" title="To select multiple options - press CTRL and select the options you wish to.">
+			<option data-bind="value: iri, text: label"></option>
+		</select>
+	</div>
+	<div class="grid_1 omega">
+		<label data-bind='visible: hasAnswerObject().iri.hasError, text: hasAnswerObject().iri.validationMessage, css: { red_text: hasAnswerObject().iri.hasError }'> </label>
+	</div>
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+</script>
+<script type="text/html" id="charMultDisabledTemplate">
+	<div class="grid_7 alpha omega">
+		<label data-bind="text: hasServiceField().label(), css: {highlight_text : $root.isHighlighted($data)} " ></label>
+	</div>
+	<div class="grid_5 alpha omega">
+		<select disabled="disabled" data-bind="foreach: $root.getChoiceValueList($data), selectedOptions: hasAnswerObject().iri, event: {change: $root.maybeAlertPopup}" multiple="multiple">
+			<option data-bind="value: iri, text: label, css:{disabledSelectedOption: $root.isSelectedOption($parent, iri)}"></option>
+		</select>
+	</div>
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+</script>
+
+<script type="text/html" id="charOptTemplate">
+	<div class="grid_7 alpha omega">
+		<label name="charOptLabel" data-bind="text: hasServiceField().label(), css: {highlight_text : $root.isHighlighted($data)} "></label>
+	</div>
+	<div class="grid_5 alpha">
+		<select name="charOptSelect" data-bind="value: hasAnswerObject().iri, valueUpdate: 'afterkeydown', foreach: $root.getChoiceValueList($data), event: {change: $root.maybeAlertPopup}, css: { error: hasAnswerObject().iri.hasError } " title="When OTHER, select the first blank option and start typing the text there.">
+			<option data-bind="value: iri, text: label"></option>
+		</select>
+	</div>
+	<div class="grid_1 omega">
+		<label data-bind='visible: hasAnswerObject().iri.hasError, text: hasAnswerObject().iri.validationMessage, css: { red_text: hasAnswerObject().iri.hasError }'> </label>
+	</div>
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+</script>
+<script type="text/html" id="charOptDisabledTemplate">
+	<div class="grid_7 alpha omega">
+		<label name="charOptLabel" data-bind="text: hasServiceField().label(), css: {highlight_text : $root.isHighlighted($data)} " ></label>
+	</div>
+	<div class="grid_5 alpha omega">
+		<select disabled="disabled" name="charOptSelect" data-bind="value: hasAnswerObject().iri, event: {change: $root.maybeAlertPopup}, foreach: $root.getChoiceValueList($data) ">
+			<option data-bind="value: iri, text: label"></option>
+		</select>
+	</div>
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+</script>
+
+<script type="text/html" id="OutcomeInputTemplate">
+	<input placeholder="" disabled="disabled" data-bind="value: hasOutcome().label"></input>
+</script>
+<script type="text/html" id="OutcomeSelectTemplate">
+	<select data-bind="options: $root.getAllowableOutcomes($data), value:hasOutcome().iri, optionsValue:'iri', optionsText:'label', optionsCaption:'Select Outcome..' "></select>
+</script>
+<script type="text/html" id="OutcomeDisabledTemplate">
+	<select disabled="disabled" data-bind="options: $root.getAllowableOutcomes($data), value:hasOutcome().iri, optionsValue:'iri', optionsText:'label', optionsCaption:'Select One..' " title="Cannot change the Outcome, once it is set."></select>
+</script>
+<script type="text/html" id="OutcomeClosedTemplate">
+	<select disabled="disabled" data-bind="options: $root.getAllowableOutcomes($data), value:hasOutcome().iri, optionsValue:'iri', optionsText:'label', optionsCaption:'Select One..' " title="Cannot set the Outcome if SR Status is not OPEN."></select>
+</script>
+<script type="text/html" id="DefaultOutcomeTemplate">
+	<select disabled="disabled" title="Cannot select Outcome for this Activity, as it has a Default Outcome">
+		<option>Select One..</option>
+	</select>
+</script>
+
+<script type="text/html" id="RemoveActivityTemplate">
+	<a href="#" data-bind="click: $root.removeActivity">Remove</a>
+</script>
+
+<script type="text/html" id="hasAcceptedTemplate">
+	<div class="grid_4 alpha">
+		<input type="checkbox" style="width:18px;display:inline;" data-bind="checked: isAccepted"/>
+		<strong> Please check to Accept the Activity</strong>
+	</div>
+	<div class="grid_2">
+		<strong>Completed Date : </strong>
+	</div>
+	<div class="grid_1 omega">
+		<label data-bind="text: $root.computeDate(hasCompletedTimestamp)"/>
+	</div>
+</script>
+<script type="text/html" id="noAcceptedTemplate">
+	<div class="grid_2 alpha">
+		<strong>Completed Date : </strong>
+	</div>
+	<div class="grid_1 omega">
+		<label data-bind="text: $root.computeDate(hasCompletedTimestamp)"/>
+	</div>
+</script>
+
+<script type="text/html" id="hasActivityPdfTemplate">
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+	<div class="grid_7 alpha omega">
+		<label data-bind="text: 'Click pdf icon to view '+hasActivity().label()"> </label>
+		<img src="images/pdf.png" title="Adobe Acrobat" onmouseover="this.style.cursor='pointer';" 
+				data-bind="click: function(data, event){$root.printHETRebateLetter($data)}"/>
+	</div>
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+</script>
+<script type="text/html" id="noActivityPdfTemplate">
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+</script>
+
+
+<script type="text/html" id="showAddrSRTypeTemplate">
+	<div class="grid_2 alpha">
+		<label><b>Service Request Type:</b></label>
+	</div>
+	<div class="grid_5 omega">
+		<label data-bind="text: buildSRType()"/>
+	</div>
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+	<div class="grid_2 alpha">
+		<label><b>Address:</b></label>
+	</div>
+	<div class="grid_5 omega">
+		<label data-bind="text: buildAddress()"/>
+	</div>
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+</script>
+
+<script type="text/html" id="emptyTemplate"></script>

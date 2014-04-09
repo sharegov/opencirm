@@ -1,0 +1,47 @@
+Prefix(swrlb:=<http://www.w3.org/2003/11/swrlb#>)
+Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)
+Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
+Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)
+Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
+Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
+Prefix(skos:=<http://www.w3.org/2004/02/skos/core#>)
+Prefix(mdc:=<http://www.miamidade.gov/ontology#>)
+Prefix(mdcsrv:=<http://www.miamidade.gov/ontology/webservices#>)
+Prefix(f:=<http://www.miamidade.gov/builtins#>)
+Prefix(:=<http://www.miamidade.gov/swrl#>)
+
+Ontology(<http://www.miamidade.gov/swrl/CAHS_School_Readiness>
+
+Import(<http://www.miamidade.gov/ontology>)
+
+DLSafeRule(
+  Body(
+    	DataPropertyAtom(mdc:hasResidentFullName Variable(:bo) Variable(:fullName))  
+    	DataPropertyAtom(mdc:hasPhoneNumber Variable(:bo) Variable(:phoneNumber))
+    	DataPropertyAtom(mdc:hasReasonForCall Variable(:bo) Variable(:reason))
+    	BuiltInAtom(mdc:newBusinessObject "CAHS_School_Readiness"^^xsd:string Variable(:sr)) 
+   )
+  Head(
+   	ObjectPropertyAtom(mdc:hasFormalServiceRequest Variable(:bo) Variable(:sr))
+  )
+)
+DLSafeRule(
+  Body(
+  	ObjectPropertyAtom(mdc:hasFormalServiceRequest Variable(:bo) Variable(:sr))
+  	DataPropertyAtom(mdc:hasCallbackPerformed Variable(:bo) "Yes") 
+  )
+  Head(
+   	ObjectPropertyAtom(mdc:hasInquiryStatus Variable(:bo) mdc:InquiryResolved)
+  )
+)
+DLSafeRule(
+  Body(
+ 	ObjectPropertyAtom(mdc:hasFormalServiceRequest Variable(:bo) Variable(:sr))
+  	DataPropertyAtom(mdc:hasResidentCallingBack Variable(:bo) "Yes")
+  	BuiltInAtom(mdc:add dateofSRCreation "3days")
+   )
+  Head(
+   	 BuiltInAtom(mdc:email "cahsstaff@miamidade.gov"^^xsd:string "Urgent: Please perform CAHS callback for this SR.")
+  )
+)
+)

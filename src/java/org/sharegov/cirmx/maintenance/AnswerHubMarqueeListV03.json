@@ -1,0 +1,49 @@
+{
+  "hasMember": [
+    {
+      "hasMarqueeImportance": "low",
+      "label": "AnswerHubConfiguration1218377",
+      "type": "AnswerHubConfiguration",
+      "hasText": "OWNER CAN EMAIL CITACOLLECT@MIAMIDADE.GOV ABOUT ASD CITATION MATTERS",
+      "iri": "http://www.miamidade.gov/ontology#AnswerHubConfiguration1218377"
+    },
+    {
+      "hasMarqueeImportance": "low",
+      "label": "AnswerHubConfiguration1218378",
+      "type": "AnswerHubConfiguration",
+      "hasText": "DIAL EXT 6311 TO REACH A SUPERVISOR",
+      "iri": "http://www.miamidade.gov/ontology#AnswerHubConfiguration1218378"
+    },
+    {
+      "hasMarqueeImportance": "low",
+      "label": "AnswerHubConfiguration1218379",
+      "type": "AnswerHubConfiguration",
+      "hasText": "EMAIL 311PW@MIAMIDADE.GOV FOR OVERDUE PUBLIC WORKS SR",
+      "iri": "http://www.miamidade.gov/ontology#AnswerHubConfiguration1218379"
+    },
+    {
+      "hasMarqueeImportance": "low",
+      "label": "AnswerHubConfiguration1218380",
+      "type": "AnswerHubConfiguration",
+      "hasText": "ROUTE 150 AIRPORT FLYER CONTINUES TO DETOUR TO EARLINGTON HEIGHTS STATION UNTIL FURTHER NOTICE",
+      "iri": "http://www.miamidade.gov/ontology#AnswerHubConfiguration1218380"
+    },
+    {
+      "hasMarqueeImportance": "low",
+      "label": "AnswerHubConfiguration1218381",
+      "type": "AnswerHubConfiguration",
+      "hasText": "LAST NB FROM MERCY HOSP LEAVES AT 10:45 PM AND ARRIVES NORTHSIDE AT 11:35 PM",
+      "iri": "http://www.miamidade.gov/ontology#AnswerHubConfiguration1218381"
+    },
+    {
+      "hasMarqueeImportance": "low",
+      "label": "AnswerHubConfiguration1218382",
+      "type": "AnswerHubConfiguration",
+      "hasText": "LONG TERM PARKING FOR AIRPORT STATION REFERS TO 2 DAYS - 30 DAYS OF PARKING",
+      "iri": "http://www.miamidade.gov/ontology#AnswerHubConfiguration1218382"
+    }
+  ],
+  "label": "AnswerHubMarqueeList",
+  "type": "AnswerHubConfiguration",
+  "iri": "http://www.miamidade.gov/ontology#AnswerHubMarqueeList"
+}

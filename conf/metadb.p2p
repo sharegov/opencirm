@@ -1,0 +1,16 @@
+{
+"interfaceType"	: "org.hypergraphdb.peer.xmpp.XMPPPeerInterface",
+"localDB" : "c:/temp/ontdb",
+"peerName"	: "CiRMDevelopmentOntology",
+"bootstrap" : [ {"class" : "org.hypergraphdb.peer.bootstrap.AffirmIdentityBootstrap", "config" : {}},
+                {"class" : "org.hypergraphdb.peer.bootstrap.CACTBootstrap", "config" : {}}
+              ],
+"interfaceConfig" :
+{
+    "user" : "CiRMDevelopmentOntology",
+    "password" : "cirm",
+    "serverUrl"	: "s0141667.miamidade.gov",
+    "autoRegister" : true,
+    "ignoreRoster" : false
+}
+}

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<!--
+  Copyright 2014 Miami-Dade County
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+    http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ -->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" >
+<title>CiRM Services Development</title>
+<link type="text/css" href="/html/css/smoothness/jquery-ui-1.8.17.custom.css" rel="stylesheet" />
+<link type="text/css" href="/html/css/grid.css" rel="stylesheet" />
+<link type="text/css" href="/html/css/jquery.rating.css" rel="stylesheet" />
+<link type="text/css" href="/html/css/styles.css" rel="stylesheet" />
+
+<style type="text/css">
+.banner {
+	background:none;
+	background-color:#369;
+	padding-top:25px;
+
+	border-bottom-left-radius:10px;
+	-moz-border-radius-bottomleft:10px;
+	border-top-right-radius:10px;
+	-moz-border-radius-topright:10px;
+
+}
+
+.app_title {
+	font-size:48px;
+	text-transform:uppercase;
+	letter-spacing:-3px;
+	color:#00a0db;
+	margin:0;
+	padding:0;
+}
+</style>
+
+<script type="text/javascript" charset="utf-8" src="/javascript/require.js"></script>
+<script type="text/javascript" charset="utf-8" src="/javascript/knockout-2.0.0.js"></script>
+
+<script type='text/javascript'>
+var modulesInGlobalNamespace = true; // will force every module to put itself as a global 'window' variable
+require({
+        baseUrl: "/javascript",
+        paths: {
+            "jquery":    "jquery-1.7.1.min",
+            "jquery-ui": "jquery-ui-1.8.17.custom.min",
+            "jquery-tmpl":"jquery.tmpl.min",
+            "jquery-autoresize": "jquery.autoresize",
+            "jquery-marquee":"jquery.marquee.min"
+        },
+        priority: ["jquery"],
+        urlArgs: "cache_bust=" + (new Date()).getTime()
+    },  [ "rest", "U", "cirm", "legacy", "jquery-ui", "jquery-tmpl", "jquery-autoresize", "jquery-marquee"],
+    function (rest, U, cirm, legacy) {       
+        legacy.popularSearchAdmin().embed($('#searchAdminContainer'));        
+        legacy.marqueeAdmin().embed($('#marqueeAdminContainer'));        
+    });
+</script>
+
+</head>
+<body>
+
+<div class="container_12">
+
+<div class="grid_12" style="margin-top:10px;">
+<h1 class="app_title" style="display:inline; vertical-align:baseline">311 Hub</h1>
+<img src="images/md-logo.png" width="114" height="54" alt="Miami-Dade County" style="vertical-align:baseline; float:right;">
+</div>
+
+<h2>Define Popular Searches - Search Shortcuts for Call Takers</h2> 
+<div id='searchAdminContainer'></div>
+
+<h2>Manage Marquee Messages</h2>
+<div id='marqueeAdminContainer'></div>
+
+</div>
+
+</body>
+</html>
