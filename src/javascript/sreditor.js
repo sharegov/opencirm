@@ -2305,17 +2305,12 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		
 		self.getAllowableOutcomes = function(activity) {
 			var activityType = getActivityType(activity);
-/*
-			var activityType = $.grep(data.hasActivity, function (t) {
-				if(typeof activity.hasActivity == "object") 
-					return activity.hasActivity.label == t.label;
-				else if(typeof activity.hasActivity == "function")
-					return activity.hasActivity().label() == t.label;
-			});
-*/
 			var A = U.ensureArray(activityType[0].hasAllowableOutcome);
-			return $.map(A, function(el) {	
-				return {iri:el.iri, label:el.label};
+			return $.map(A, function(el) {
+				if(el.isDisabled != 'true')
+					return {iri:el.iri, label:el.label};
+				else if(el.isDisabled == 'true' && activity.hasOutcome().iri() == el.iri)
+					return {iri:el.iri, label:el.label};
 			});
 		};
 		
