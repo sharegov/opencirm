@@ -201,7 +201,11 @@ public class CMSClient extends RestService
 						 return ko("Could not find SR number by CMS case: " + srnum);
 				}
 				Json sr = emulator.lookupByCaseNumber(srnum); 
-				if (!sr.isNull())
+				if (sr.isNull())
+					result = ko("Case not found.");
+				else if (sr.is("ok", false))
+					result = sr;
+				else
 				{
 					sr = sr.at("bo");
 					caseNumber = sr.at("properties").at("hasCaseNumber").asString();
@@ -210,8 +214,6 @@ public class CMSClient extends RestService
 					else if (event.is("CSR_ACTION", "UPDATE"))
 						result = updateData(sr, event);					
 				}
-				else
-					result = ko("Case not found.");
 			}
 			// So we have an issue here, even though we can repeat the markProcessed
 			// success action as many times as we like in case of a serialization failure
@@ -451,6 +453,7 @@ public class CMSClient extends RestService
 	@Path("/event/{eventid}")
 	public Json getEvent(@PathParam("eventid") int eventid)
 	{
+		forceClientExempt.set(true);
 		return ok().set("event", getEventRecord(eventid));
 	}
 	
@@ -458,6 +461,7 @@ public class CMSClient extends RestService
 	@Path("/event/process/{eventid}")
 	public Json processUpdate(@PathParam("eventid") int eventid)
 	{
+		forceClientExempt.set(true);
 		Json event = getEventRecord(eventid);
 		if (event.isNull())
 			return ko("Event not found");
@@ -468,6 +472,7 @@ public class CMSClient extends RestService
 	@Path("/event/processBatch/{count}")
 	public Json processAllEvents(@PathParam("count") int batchSize)
 	{
+		forceClientExempt.set(true);
 		Json events = getReadyEvents(batchSize);
 		int successCount = 0;
 		for (Json event : events.asJsonList())
