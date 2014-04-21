@@ -85,6 +85,7 @@ public class StartUp extends ServerResource
 		.set("keystore", "cirm.jks")
 		.set("storePass", "password")
 		.set("keyPass", "password")
+		.set("mainApplication", "http://www.miamidade.gov/ontology#CIRMApplication")
 		.set("defaultOntologyIRI", "http://www.miamidade.gov/cirm/legacy")
 		//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#ProdConfigSet")
 		.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#TestConfigSet")
