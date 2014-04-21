@@ -499,7 +499,7 @@ public class PDFViewReport
 						if(city != null)
 							actorAddr.append(", ").append(city.getLiteral());
 					}
-					if(addr.has("Street_Address_State"))
+					if(addr.has("fullAddress") && addr.has("Street_Address_State"))
 					{
 						OWLNamedIndividual stateInd = individual(addr, "Street_Address_State");
 						OWLLiteral state = dataProperty(stateInd, "USPS_Abbreviation");
