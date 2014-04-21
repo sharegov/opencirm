@@ -56,11 +56,11 @@
 	<classpathentry kind="lib" path="/opencirm/lib/smack-3.1.0.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/smackx-3.1.0.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/staxon-1.0.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/wrapper.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/xsdlib.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/opencirm"/>
 	<classpathentry kind="lib" path="/opencirm/lib/rdb/ojdbc6.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/rdb/ucp.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/rdb/sqljdbc4.jar"/>
+	<classpathentry kind="lib" path="lib/wrapper.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
