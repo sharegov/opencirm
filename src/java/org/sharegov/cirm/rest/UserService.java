@@ -54,6 +54,7 @@ import org.sharegov.cirm.AutoConfigurable;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.StartUp;
+import org.sharegov.cirm.owl.Model;
 import org.sharegov.cirm.owl.OWLObjectPropertyCondition;
 import org.sharegov.cirm.user.UserProvider;
 import org.sharegov.cirm.utils.GenUtils;
@@ -78,11 +79,11 @@ import com.clarkparsia.pellet.owlapiv3.Reasoner;
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserService extends RestService implements AutoConfigurable
 {	
-	public static final IRI DEFAULT_STOP_EXPANSION_CONDITION_IRI1 = IRI.create("http://www.miamidade.gov/ontology#Department"); 
-	public static final IRI DEFAULT_STOP_EXPANSION_CONDITION_IRI2 = IRI.create("http://www.miamidade.gov/ontology#Divison"); 
-	public static final IRI DEFAULT_STOP_EXPANSION_CONDITION_IRI3 = IRI.create("http://www.miamidade.gov/ontology#hasDivision"); 
-	public static final IRI DEFAULT_STOP_EXPANSION_CONDITION_IRI4 = IRI.create("http://www.miamidade.gov/ontology#hasObject"); 
-	public static final String CIRM_ADMIN = "http://www.miamidade.gov/ontology#CirmAdmin"; 
+	public static final IRI DEFAULT_STOP_EXPANSION_CONDITION_IRI1 = Model.upper("Department"); 
+	public static final IRI DEFAULT_STOP_EXPANSION_CONDITION_IRI2 = Model.upper("Divison"); 
+	public static final IRI DEFAULT_STOP_EXPANSION_CONDITION_IRI3 = Model.upper("hasDivision"); 
+	public static final IRI DEFAULT_STOP_EXPANSION_CONDITION_IRI4 = Model.upper("hasObject"); 
+	public static final String CIRM_ADMIN = Model.upper("CirmAdmin").toString(); 
 
 	private final OWLObjectPropertyCondition stopExpansionCondition = getStopExpansionCondition();
 	
@@ -457,7 +458,7 @@ public class UserService extends RestService implements AutoConfigurable
 		catch (Throwable t)
 		{
 		    InconsistentOntologyException ex = (InconsistentOntologyException)t.getCause();
-		    PelletExplanation expl = new PelletExplanation(OWL.ontology("http://www.miamidade.gov/ontology"));
+		    PelletExplanation expl = new PelletExplanation(Refs.topOntology.resolve());
 		    System.out.println(expl.getInconsistencyExplanation());
 		    System.out.println(ex.getMessage());
 		}

@@ -79,7 +79,6 @@
 	<classpathentry kind="lib" path="lib/smack-3.1.0.jar"/>
 	<classpathentry kind="lib" path="lib/smackx-3.1.0.jar"/>
 	<classpathentry kind="lib" path="lib/staxon-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/wrapper.jar"/>
 	<classpathentry kind="lib" path="lib/xsdlib.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>

@@ -205,19 +205,10 @@ public class WorkflowExecutionContext implements HGGraphHolder, JsonSerializable
 	public BOntology getBusinessObjectOntology()
 	{
 		return bontology;
-//		return ontology(
-//				individual(
-//						businessObjectId(businessObjectTypeIri.getFragment(), 
-//										 businessObjectId)));
-//		return MetaService.get().getOntologyLoader().getBusinessObjectOntology(
-//				businessObjectTypeIri, 
-//				businessObjectId);
 	}
 	
 	public OWLNamedIndividual getBusinessObject()
 	{
-//		IRI boIRI = IRI.create("http://www.miamidade.gov/bo/" + 
-//				businessObjectTypeIri.getFragment() + "/" + businessObjectId);
 		return OWL.individual(bontology.getOntology().getOntologyID().getOntologyIRI().resolve("#bo"));
 	}
 	

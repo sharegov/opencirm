@@ -29,6 +29,7 @@ import org.semanticweb.owlapi.model.SWRLAtom;
 import org.semanticweb.owlapi.model.SWRLBuiltInAtom;
 import org.semanticweb.owlapi.model.SWRLIndividualArgument;
 import org.semanticweb.owlapi.model.SWRLVariable;
+import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.rules.EvaluateAtom;
 import org.sharegov.cirm.workflows.AppliedRule;
 import org.sharegov.cirm.workflows.AtomValue;
@@ -39,13 +40,13 @@ public class EvalUtils
 	
 	public static IRI newImplicationVar()
 	{
-		return IRI.create("http://www.miamidade.gov/ontology/variable/implication#" + 
+		return IRI.create(Refs.nameBase.resolve() + "/variable/implication#" + 
 				implicationCount.incrementAndGet());	
 	}
 	
 	public static boolean isImplicationVar(IRI var)
 	{
-		return var.toString().startsWith("http://www.miamidade.gov/ontology/variable/implication#");
+		return var.toString().startsWith(Refs.nameBase.resolve() + "/variable/implication#");
 	}
 	
 	/**

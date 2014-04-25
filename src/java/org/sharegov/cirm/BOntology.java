@@ -109,7 +109,7 @@ public class BOntology implements JsonSerializable
 	 */
 	public static boolean isValidBO(IRI entityIRI)
 	{
-		if(entityIRI != null && entityIRI.toString().startsWith(Refs.BO_PREFIX))
+		if(entityIRI != null && entityIRI.toString().startsWith(Refs.boIriPrefix.resolve()))
 			return true;
 		else
 			return false;
@@ -119,7 +119,7 @@ public class BOntology implements JsonSerializable
 			throws OWLOntologyCreationException
 	{
 		OWLOntologyManager manager = Refs.tempOntoManager.resolve();
-		IRI iriPrefix = IRI.create(Refs.BO_PREFIX + "/"
+		IRI iriPrefix = IRI.create(Refs.boIriPrefix.resolve() + "/"
 				+ type.getIRI().getFragment());
 		IRI ontologyIRI = iriPrefix.resolve(Refs.idFactory.resolve().newId(
 				type.getIRI().getFragment()));
@@ -147,7 +147,7 @@ public class BOntology implements JsonSerializable
 		try
 		{
 			OWLOntologyManager manager = Refs.tempOntoManager.resolve();
-			IRI ontologyIRI = IRI.create("http://www.miamidade.gov/bo/"
+			IRI ontologyIRI = IRI.create(Refs.boIriPrefix.resolve() + "/"
 					+ data.at("type").asString().replace("legacy:", "") + "/"
 					+ data.at("boid").asString());
 			OWLOntology o = manager.getOntology(ontologyIRI);

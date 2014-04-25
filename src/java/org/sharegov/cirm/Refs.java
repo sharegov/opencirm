@@ -16,12 +16,15 @@
 package org.sharegov.cirm;
 
 import java.util.logging.Logger;
+
+import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLNamedObject;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.sharegov.cirm.event.ClientPushQueue;
 import org.sharegov.cirm.gis.GisInterface;
+import org.sharegov.cirm.owl.Model;
 import org.sharegov.cirm.owl.OWLProtectedClassCache;
 import org.sharegov.cirm.owl.OWLSerialEntityCache;
 import org.sharegov.cirm.owl.OwlRepo;
@@ -42,25 +45,21 @@ import org.sharegov.cirm.utils.SingletonRef;
 
 public class Refs
 {
-	public static boolean USE_SYNCHRONIZED_TEMP_OWL_MANAGER = true;
+	public static final String hasContents = Model.upper("hasContents").toString();
+	public static final String hasNext = Model.upper("hasNext").toString();
+	public static final String EmptyList = Model.upper("EmptyList").toString();
+	public static final String isJsonMapper = Model.upper("isJsonMapper").toString();
+	public static final String hasJsonMapper = Model.upper("hasJsonMapper").toString();
+	public static final String hasParentClass = Model.upper("hasParentClass").toString();
+	public static final String hasPropertyResolver = Model.upper("hasPropertyResolver").toString();
+	public static final String OWLClass = Model.upper("OWLClass").toString();
+	public static final String OWLProperty = Model.upper("OWLProperty").toString();
+	public static final String OWLDataProperty = Model.upper("OWLDataProperty").toString();
+	public static final String OWLObjectProperty = Model.upper("OWLObjectProperty").toString();
 	
-	public static final String SWRL_PREFIX = "http://www.miamidade.gov/swrl";
-	public static final String BO_PREFIX = "http://www.miamidade.gov/bo";
-	
-	public static final String MDC_PREFIX = "http://www.miamidade.gov/ontology";
-	public static final String LEGACY_PREFIX = "http://www.miamidade.gov/cirm/legacy";
-	
-	public static final String hasContents = "http://www.miamidade.gov/ontology#hasContents";
-	public static final String hasNext = "http://www.miamidade.gov/ontology#hasNext";
-	public static final String EmptyList = "http://www.miamidade.gov/ontology#EmptyList";
-	public static final String isJsonMapper = "http://www.miamidade.gov/ontology#isJsonMapper";
-	public static final String hasJsonMapper = "http://www.miamidade.gov/ontology#hasJsonMapper";
-	public static final String hasParentClass = "http://www.miamidade.gov/ontology#hasParentClass";
-	public static final String hasPropertyResolver = "http://www.miamidade.gov/ontology#hasPropertyResolver";
-	public static final String OWLClass = "http://www.miamidade.gov/ontology#OWLClass";
-	public static final String OWLProperty = "http://www.miamidade.gov/ontology#OWLProperty";
-	public static final String OWLDataProperty = "http://www.miamidade.gov/ontology#OWLDataProperty";
-	public static final String OWLObjectProperty = "http://www.miamidade.gov/ontology#OWLObjectProperty";
+	public static final Ref<String> nameBase = new Ref<String>() {
+		public String resolve() { return StartUp.config.at("nameBase").asString(); }
+	};
 	
 	public static final Ref<OWLOntology> topOntology = new Ref<OWLOntology>() {
 		public OWLOntology resolve()
@@ -75,18 +74,11 @@ public class Refs
 			return "http://www.miamidade.gov/ontology";
 		}
 	};
-
-	public static final Ref<OWLOntology> legacyOntology = new Ref<OWLOntology>() {
-		public OWLOntology resolve()
-		{
-			return OWL.ontology("http://www.miamidade.gov/cirm/legacy");
-		}
-	};
 	
 	public static final Ref<String> defaultOntologyIRI = new Ref<String>() {
 		public String resolve()
 		{
-			return "http://www.miamidade.gov/cirm/legacy";
+			return StartUp.config.at("defaultOntologyIRI").asString();
 		}
 	};
 	
@@ -171,4 +163,11 @@ public class Refs
 	
 	public static final Ref<GisInterface> gisClient = 
 	        new SingletonRef<GisInterface>(new DescribedRef<GisInterface>(GisInterface.class.getName()));
+	
+	public static final Ref<String> boIriPrefix = new Ref<String>() {
+		public String resolve() 
+		{
+			return ((OWLLiteral)configSet.resolve().get("businessObjectIRIPrefix")).getLiteral();
+		}
+	}; 
 }

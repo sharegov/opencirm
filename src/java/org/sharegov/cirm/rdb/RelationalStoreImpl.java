@@ -16,7 +16,6 @@
 package org.sharegov.cirm.rdb;
 
 import static org.sharegov.cirm.OWL.fullIri;
-
 import static org.sharegov.cirm.OWL.hash;
 import static org.sharegov.cirm.OWL.individual;
 import static org.sharegov.cirm.OWL.objectProperty;
@@ -29,9 +28,8 @@ import static org.sharegov.cirm.rdb.Concepts.TIMESTAMP;
 import static org.sharegov.cirm.rdb.Concepts.VARCHAR;
 import static org.sharegov.cirm.rdb.Sql.DELETE_FROM;
 import static org.sharegov.cirm.rdb.Sql.INSERT_INTO;
-import static org.sharegov.cirm.rdb.Sql.MERGE_INTO;
-import static org.sharegov.cirm.rdb.Sql.SELECT;
 import static org.sharegov.cirm.rdb.Sql.UPDATE;
+import static org.sharegov.cirm.utils.GenUtils.dbg;
 
 import java.io.StringReader;
 import java.math.BigDecimal;
@@ -58,8 +56,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
@@ -67,6 +65,8 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
 import mjson.Json;
+import oracle.net.aso.a;
+
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.EntityType;
@@ -130,7 +130,7 @@ import org.sharegov.cirm.utils.ThreadLocalStopwatch;
  */
 public class RelationalStoreImpl implements RelationalStore
 {
-	public static boolean DBG = false;
+//	public static boolean DBG = false;
 	public static boolean DBGX = false;
 	public static boolean DBGLOCK = true;
 	public static boolean DBG_ALL_TRANSACTIONS_LOCK = false;
@@ -552,10 +552,10 @@ public class RelationalStoreImpl implements RelationalStore
 		// long iriCount = selectIRICount(conn);
 		try
 		{
-			if (DBG)
+			if (dbg())
 				ThreadLocalStopwatch.getWatch().reset("selectInsertIDsAndEntitiesByIRIs() - start");
 			result = selectIDsAndEntitiesByIRIs(objects, conn, false);
-			if (DBG)
+			if (dbg())
 				ThreadLocalStopwatch.getWatch().time("selectInsertIDsAndEntitiesByIRIs() - DB select to find existing IRIs");
 			if ((result.size() < objects.size() /* || !result.keySet().equals(objects) */) && insertIfMissing)
 			{
@@ -563,7 +563,7 @@ public class RelationalStoreImpl implements RelationalStore
 				// o.addAll(objects);
 				entitiesToInsert.removeAll(result.keySet());
 				Map<OWLEntity, DbId> insertedIDsNew = insertNewEntities(entitiesToInsert, conn);
-				if (DBG)
+				if (dbg())
 					ThreadLocalStopwatch.getWatch().time("selectInsertIDsAndEntitiesByIRIs() - DB insert new IRIs");
 				// long iriCountPostInsert = selectIRICount(conn);
 				// if (iriCount + entitiesToInsert.size() != iriCountPostInsert)
@@ -583,7 +583,7 @@ public class RelationalStoreImpl implements RelationalStore
 									+ insertedIDsNew.size());
 					throw new IllegalStateException("Deep trouble. See log.");
 				}
-				if (DBG)
+				if (dbg())
 					ThreadLocalStopwatch
 							.getWatch()
 							.time("selectInsertIDsAndEntitiesByIRIs() - DB select to find all IRIs (newly inserted + existing) IRIs");
@@ -2235,7 +2235,7 @@ public class RelationalStoreImpl implements RelationalStore
 	 */
 	public void merge(OWLOntology ontology, DbId boObj)
 	{
-		if (DBG)
+		if (dbg())
 		{
 			ThreadLocalStopwatch.getWatch().reset(
 					"Start merge ontology "
@@ -2247,7 +2247,7 @@ public class RelationalStoreImpl implements RelationalStore
 		Timestamp time = new Timestamp(getStoreTimeInt().getTime());
 		// 1. Get all IDs, insert if missing
 		Map<OWLEntity, DbId> identifiers = selectIDsAndEntitiesByIRIs(ontology, boObj, true);
-		if (DBG)
+		if (dbg())
 			ThreadLocalStopwatch.getWatch().time("Done get IRIs ");
 		// 2. Determine mapped and unmapped individuals
 		Set<OWLNamedIndividual> allIndividuals = ontology.getIndividualsInSignature();
@@ -2264,7 +2264,7 @@ public class RelationalStoreImpl implements RelationalStore
 		// selectLiterals(notMappedDataPropertyAssertionAxioms, true);
 		Map<Object, Long> literalValueToIDsNotMapped = selectLiteralValueIDsFromAxioms(notMappedDataPropertyAssertionAxioms, true);// Literals(notMappedDataPropertyAssertionAxioms,
 															// true);
-		if (DBG)
+		if (dbg())
 			ThreadLocalStopwatch.getWatch().time("Done get Literal IDs ");
 		// TABLE: This affexets CIRM_OWL_DATA_VALU
 		// System.out.println(new BOntology(ontology).toJSON());
@@ -2303,7 +2303,7 @@ public class RelationalStoreImpl implements RelationalStore
 					executeBatch(inserts, identifiers, conn);
 				}
 			}
-			if (DBG)
+			if (dbg())
 				ThreadLocalStopwatch.getWatch().time("Done batch statements ");
 			//
 			// mapped tables merge
@@ -2316,12 +2316,12 @@ public class RelationalStoreImpl implements RelationalStore
 			for (Map.Entry<OWLNamedIndividual, List<Statement>> entry : mergeMappedIndividuals(
 					ontology, identifiers).entrySet())
 			{
-				if (DBG)
+				if (dbg())
 					logger.info("executing Statements for individual:"
 							+ entry.getKey());
 				execute(entry.getValue(), identifiers, conn);
 			}
-			if (DBG)
+			if (dbg())
 				ThreadLocalStopwatch.getWatch().time("Done mapped statements ");
 			conn.commit();
 
@@ -2332,7 +2332,7 @@ public class RelationalStoreImpl implements RelationalStore
 		} finally
 		{
 			close(conn);
-			if (DBG)
+			if (dbg())
 			{
 				ThreadLocalStopwatch.getWatch().time(
 						"End merge "
@@ -2395,7 +2395,7 @@ public class RelationalStoreImpl implements RelationalStore
 			doneMappedMinusNonMapped.removeAll(doneNotMapped);
 			hasSymmetricDifference = !(doneNotMappedMinusMapped.isEmpty() && doneMappedMinusNonMapped
 					.isEmpty());
-			if (DBG)
+			if (dbg())
 				System.out.println("DoneNotMappedMinusMapped = "
 						+ doneNotMappedMinusMapped.size()
 						+ "; DoneMappedMinusNonMapped = "
@@ -2570,7 +2570,7 @@ public class RelationalStoreImpl implements RelationalStore
 		OWLClass classFromIRI = findClassInLoadedOntologiesFor(ind);
 		if (!RelationalOWLMapper.isMapped(classFromIRI))
 		{
-			if (DBG)
+			if (dbg())
 			{
 				System.out
 						.println("readIndividualData called with non mapped individual: "
@@ -2669,7 +2669,7 @@ public class RelationalStoreImpl implements RelationalStore
 					}
 				}
 			}
-			if (DBG)
+			if (dbg())
 			{
 				System.out.println("Many Properties found for ind: " + indTable
 						+ " joinT " + joinTable + " other " + otherTable
@@ -2992,7 +2992,7 @@ public class RelationalStoreImpl implements RelationalStore
 			} 
 			else
 			{
-				if (DBG)
+				if (dbg())
 					System.out
 							.println("Info: Null value for non xsd:String mapped Column "
 									+ columnNameSql
@@ -3025,7 +3025,7 @@ public class RelationalStoreImpl implements RelationalStore
 						referenced = object;
 					} else
 					{
-						if (DBG)
+						if (dbg())
 							System.out
 									.println("Info: Entity for id not found. Id was:  "
 											+ value
@@ -3472,7 +3472,7 @@ public class RelationalStoreImpl implements RelationalStore
 		// logger.info("Merging individual" + ind.getIRI());
 		if (done.containsKey(ind))
 			return;
-		if (DBG)
+		if (dbg())
 		{
 			System.out.println("Merging mapped ind: " + ind.getIRI()
 					+ " Foreign keys: " + foreignKeys);
@@ -3719,8 +3719,7 @@ public class RelationalStoreImpl implements RelationalStore
 			if (joinTable == null)
 				continue;
 			boolean manyToMany = !joinTable.equals(manyTable);
-			OWLNamedIndividual joinColumnIRI = RelationalOWLMapper
-					.foreignKeyByjoinColumnAndTable(column, joinTable);
+			OWLNamedIndividual joinColumnIRI = RelationalOWLMapper.foreignKeyByjoinColumnAndTable(column, joinTable);
 			Set<OWLNamedIndividual> manyColumnIRI = RelationalOWLMapper.columnIriPK(manyTable);
 			String joinTableFragment = joinTable.getIRI().getFragment();
 			String joinColumnIRIFragment = joinColumnIRI.getIRI().getFragment().replace(joinTableFragment + ".", "");
@@ -4816,7 +4815,7 @@ public class RelationalStoreImpl implements RelationalStore
 		int lastParameterSize = -1;
 		try
 		{
-			if (DBG)
+			if (dbg())
 			{
 				System.out.println("executeBatch()");
 				System.out.println(statements.get(0).getSql().SQL());
@@ -5263,14 +5262,14 @@ public class RelationalStoreImpl implements RelationalStore
 	                                             Statement s,
 	                                             Map<OWLEntity, DbId> identifiers) throws SQLException
 	{
-		if (DBG)
+		if (dbg())
 			System.out.println(s.getSql().SQL());
 		PreparedStatement ps = conn.prepareStatement(s.getSql().SQL());
 		for (int i = 0; i < s.getParameters().size(); i++)
 		{
 			addParameter(ps, s.getParameters().get(i), s.getTypes().get(i), i + 1, identifiers);
 		}
-		if (DBG)
+		if (dbg())
 			System.out.println();
 		return ps;
 	}
@@ -5355,7 +5354,7 @@ public class RelationalStoreImpl implements RelationalStore
 			throw new IllegalArgumentException("Value Type not recognized"
 					+ value + " class: " + value.getClass());
 		}
-		if (DBG)
+		if (dbg())
 		{
 			System.out.println("[" + index + " = "
 					+ ((id == null) ? value : id + "(" + value + ")") + "] ");

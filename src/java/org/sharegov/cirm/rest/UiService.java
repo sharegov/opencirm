@@ -317,9 +317,9 @@ public class UiService extends RestService
 		// First check if this points to a business object, just be the format of the IRI
 		// in which case we are looking for a template defined for the class of the object.
 		
-		if (iriAsString.startsWith(Refs.BO_PREFIX))
+		if (iriAsString.startsWith(Refs.boIriPrefix.resolve()))
 		{
-			String className = iriAsString.substring(Refs.BO_PREFIX.length()).split("/")[1];
+			String className = iriAsString.substring(Refs.boIriPrefix.resolve().length()).split("/")[1];
 			iri = OWL.fullIri(className);
 		}
 		else 

@@ -36,9 +36,11 @@ import java.util.TreeSet;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
+import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
 import static org.sharegov.cirm.OWL.*;
 
+import org.sharegov.cirm.owl.Model;
 import org.sharegov.cirm.owl.SynchronizedOWLManager;
 import org.sharegov.cirm.rules.EvaluateAtom;
 //import org.sharegov.cirm.rules.PromptUserBuiltIn;
@@ -84,26 +86,19 @@ import org.hypergraphdb.util.RefResolver;
 
 public class RulesToWorkflow
 {
-	static IRI hasInquiryStatus = IRI
-			.create("http://www.miamidade.gov/ontology#hasInquiryStatus");
-	static IRI inquiryResolved = IRI
-			.create("http://www.miamidade.gov/ontology#InquiryResolved");
+	static IRI hasInquiryStatus = Model.upper("hasInquiryStatus");
+	static IRI inquiryResolved = Model.upper("InquiryResolved");
 
-//	public final static IRI impliesVar = IRI
-//			.create("http://www.miamidade.gov/ontology/variable#implies"); 
-//	public final static IRI impliedVar = IRI
-//			.create("http://www.miamidade.gov/ontology/variable#implied");
-
-	public final static IRI closesVar = IRI
-		.create("http://www.miamidade.gov/ontology/variable#closes");
+	public final static IRI closesVar = IRI 
+		.create(Refs.nameBase.resolve() + "/variable#closes");
 
 	public final static IRI closedByVar = IRI
-		.create("http://www.miamidade.gov/ontology/variable#closedBy");
+		.create(Refs.nameBase.resolve() + "/variable#closedBy");
 
-	public final static IRI boVar = IRI.create(Refs.SWRL_PREFIX + "#bo");
+	public final static IRI boVar = IRI.create(Refs.nameBase.resolve() + "/swrl" + "#bo");
 	
-	public final static IRI nowVar = IRI.create(Refs.SWRL_PREFIX + "#now");
-	public final static IRI timeElapsed = IRI.create(Refs.MDC_PREFIX + "#timeElapsed");
+	public final static IRI nowVar = IRI.create(Refs.nameBase.resolve() + "/swrl" + "#now");
+	public final static IRI timeElapsed = OWL.fullIri("timeElapsed");
 	
 	HyperGraph graph;
 	OWLOntologyManager manager;

@@ -61,7 +61,7 @@ public class RulesManager
 	
 	public OWLOntology getRuleOntology(String type)
 	{
-		return OWL.loader().get(Refs.SWRL_PREFIX + "/" + type);
+		return OWL.loader().get(Refs.nameBase.resolve() + "/swrl/" + type);
 	}
 	
 	public void setRules(String type, Set<SWRLRule> rules) throws OWLOntologyCreationException,OWLOntologyStorageException,IOException
@@ -69,7 +69,7 @@ public class RulesManager
 		
 		OWLOntologyManager manager = Refs.tempOntoManager.resolve();
 		OWLOntology ontology = manager.createOntology
-								(IRI.create(Refs.SWRL_PREFIX + "/" + type));
+								(IRI.create(Refs.nameBase.resolve() + "/swrl/" + type));
 		List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 		for(SWRLRule rule: rules)
 		{

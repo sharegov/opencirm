@@ -17,6 +17,7 @@ package org.sharegov.cirm.rest;
 
 import static mjson.Json.array;
 
+
 import static mjson.Json.object;
 import static mjson.Json.read;
 import static org.sharegov.cirm.OWL.dataProperty;
@@ -77,7 +78,6 @@ import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 import org.semanticweb.owlapi.model.AddAxiom;
-import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -109,13 +109,13 @@ import org.sharegov.cirm.legacy.ActivityManager;
 import org.sharegov.cirm.legacy.CirmMessage;
 import org.sharegov.cirm.legacy.MessageManager;
 import org.sharegov.cirm.legacy.Permissions;
+import org.sharegov.cirm.owl.Model;
 import org.sharegov.cirm.rdb.Concepts;
 import org.sharegov.cirm.rdb.DBIDFactory;
 import org.sharegov.cirm.rdb.Query;
 import org.sharegov.cirm.rdb.QueryTranslator;
 import org.sharegov.cirm.rdb.RelationalOWLPersister;
 import org.sharegov.cirm.rdb.RelationalStore;
-import org.sharegov.cirm.rdb.RelationalStoreImpl;
 import org.sharegov.cirm.rdb.Sql;
 import org.sharegov.cirm.rdb.Statement;
 import org.sharegov.cirm.utils.ExcelExportUtil;
@@ -1337,35 +1337,23 @@ public class LegacyEmulator extends RestService
             // If the individual lives in the CiRM namespace, we add all information about it.
             if (OWL.ontology().containsEntityInSignature(ind, true))
             {
-                for (OWLIndividualAxiom axiom : 
-                        OWL.ontology().getAxioms(AxiomType.OBJECT_PROPERTY_ASSERTION, true))
-                {
-                    if (axiom.getSignature().contains(ind))
-                    {
-                        if (((OWLObjectPropertyAssertionAxiom) axiom)
-                                .getObjectPropertiesInSignature()
-                                .contains(objectProperty("legacy:hasLegacyInterface")))
-                            continue;
-                        else if (((OWLObjectPropertyAssertionAxiom) axiom)
-                                .getObjectPropertiesInSignature()
-                                .contains(objectProperty("legacy:hasAllowableEvent")))
-                            continue;
-                        changes.add(new AddAxiom(result, axiom));
-                    }
-                }
-                for (OWLIndividualAxiom axiom : 
-                        OWL.ontology().getAxioms(AxiomType.DATA_PROPERTY_ASSERTION, true))
-                {
-                    if (axiom.getSignature().contains(ind))
-                    {
-                        changes.add(new AddAxiom(result, axiom));
-                    }
-                }
-            }
+            	ind = OWL.individual(ind.getIRI());            	
+            	for (OWLOntology O : OWL.ontologies())
+            	{
+            		for (OWLIndividualAxiom axiom : O.getDataPropertyAssertionAxioms(ind))
+            			changes.add(new AddAxiom(result, axiom));
+            		for (OWLObjectPropertyAssertionAxiom axiom : O.getObjectPropertyAssertionAxioms(ind))
+            			// I'm not sure why we are skipping those two properties. Perhaps they are not needed
+            			// but are they harmful? That logic takes away the generality of the method.
+            			if (!axiom.getProperty().equals(objectProperty("legacy:hasLegacyInterface")) &&
+            				!axiom.getProperty().equals(objectProperty("legacy:hasAllowableEvent")))
+            			changes.add(new AddAxiom(result, axiom));
+            	}
+           }
             else
             {
                 // add boid to businessObject in the BOntology
-                OWLDataProperty boid = factory.getOWLDataProperty(IRI.create(Refs.MDC_PREFIX + "#boid"));
+                OWLDataProperty boid = factory.getOWLDataProperty(Model.legacy("boid"));
                 if (ind.getDataPropertyValues(boid, result).isEmpty())
                 {
                     Long id = Long.valueOf(bo.getObjectId()); // identifiers.get(ind);
@@ -1603,13 +1591,16 @@ public class LegacyEmulator extends RestService
 					getPersister().saveBusinessObjectOntology(bontology.getOntology());			
 					// delete any removed Images, if save succeeds only																	
 					OWLNamedIndividual emailTemplate = objectProperty(individual(type), "legacy:hasEmailTemplate");
+					// It's an array only because it has to be a final variable, so we can insert or not.
+					final ArrayList<BOntology> withMetadata = new ArrayList<BOntology>();					
 					if (emailTemplate != null)
 					{
 						try
 						{
-							final BOntology withMetadata = addMetaDataAxioms(bontology);
+							BOntology withMeta = addMetaDataAxioms(bontology);
+							withMetadata.add(withMeta);
 							CirmMessage msg = MessageManager.get().createMessageFromTemplate(
-									withMetadata,
+									withMeta,
 									dataProperty(individual(type),
 											"legacy:hasLegacyCode"), emailTemplate);
 							msg.addExplanation("createNewKOSR SR template " + emailTemplate.getIRI().getFragment());
@@ -1632,13 +1623,14 @@ public class LegacyEmulator extends RestService
 					    	{
 					    		try
 					    		{
-					    			BOntology withMetadata = LegacyEmulator.this.addMetaDataAxioms(bontology);
-							        EventDispatcher.get().dispatch(
-							                OWL.individual("legacy:NewServiceCaseEvent"), 
-							                bontology.getBusinessObject(), 
-							                OWL.individual("BO_New"),
-							                Json.object("case", OWL.toJSON(withMetadata.getOntology(), bontology.getBusinessObject()),
-							                            "locationInfo", locationInfo));
+					    			BOntology withMeta = withMetadata.isEmpty() ?
+						    			    LegacyEmulator.this.addMetaDataAxioms(bontology):withMetadata.get(0);
+								        EventDispatcher.get().dispatch(
+								                OWL.individual("legacy:NewServiceCaseEvent"), 
+								                bontology.getBusinessObject(), 
+								                OWL.individual("BO_New"),
+								                Json.object("case", OWL.toJSON(withMeta.getOntology(), bontology.getBusinessObject()),
+								                            "locationInfo", locationInfo));
 					    		}
 					    		catch (Exception ex)
 					    		{
@@ -2370,24 +2362,21 @@ public class LegacyEmulator extends RestService
 		boolean useAddressBuffer = false;
 		OWLClass statusLimit;
 		OWLNamedIndividual duplicateCheckRule = objectProperty(
-				individual(srType.getIRI().toString()), Refs.LEGACY_PREFIX
-						+ "#hasDuplicateCheckRule");
+				individual(srType.getIRI().toString()), Model.legacy("hasDuplicateCheckRule").toString());
 		Set<OWLClass> S = null;
 		if (duplicateCheckRule != null)
 			S = reasoner().getTypes(duplicateCheckRule, true).getFlattened();
 		if (S == null || S.isEmpty())
 			return null;
 		OWLClass type = S.iterator().next();
-		if (type.getIRI().toString()
-				.equals(Refs.LEGACY_PREFIX + "#StreetAddressOnlyCheckRule"))
+		if (type.getIRI().equals(Model.legacy("StreetAddressOnlyCheckRule")))
 		{
 			if (Isintersection == false)
 			{
 				useAddressBuffer = true; // use and address buffer only for
 											// StreetAddressOnlyRule.
 				OWLLiteral addressBufferLiteral = dataProperty(
-						duplicateCheckRule, Refs.LEGACY_PREFIX
-								+ "#hasAddressBuffer");
+						duplicateCheckRule, Model.legacy("hasAddressBuffer").toString());
 				if (addressBufferLiteral != null)
 				{
 					addressBuffer = addressBufferLiteral.parseInteger();
@@ -2403,8 +2392,7 @@ public class LegacyEmulator extends RestService
 			}
 
 		}
-		else if (type.getIRI().toString()
-				.equals(Refs.LEGACY_PREFIX + "#FullAddressCheckRule"))
+		else if (type.getIRI().equals(Model.legacy("FullAddressCheckRule")))
 		{
 			/**
 			 * The default settings check the all address fields so nothing
@@ -2419,14 +2407,14 @@ public class LegacyEmulator extends RestService
 		}
 
 		OWLLiteral thresholdDaysLiteral = dataProperty(duplicateCheckRule,
-				Refs.LEGACY_PREFIX + "#hasThresholdDays");
+				Model.legacy("hasThresholdDays").toString());
 		if (thresholdDaysLiteral != null)
 		{
 			thresholdDays = thresholdDaysLiteral.parseInteger();
 		}
 
 		OWLNamedIndividual statusLimitIndividual = objectProperty(
-				duplicateCheckRule, Refs.LEGACY_PREFIX + "#hasStatusLimit");
+				duplicateCheckRule, Model.legacy("hasStatusLimit").toString());
 		if (statusLimitIndividual != null)
 		{
 			statusLimit = owlClass(statusLimitIndividual.getIRI());
@@ -2704,11 +2692,8 @@ public class LegacyEmulator extends RestService
 	}
 	
 	public static void main(String args[])
-	{
-		RelationalStoreImpl.DBG = true;
-		RelationalStoreImpl.DBG = true;
+	{		
 		LegacyEmulator emulator = new LegacyEmulator();
-
 		String json = new Scanner(emulator.getClass().getResourceAsStream(
 				"test.json")).useDelimiter("\\A").next();
 		emulator.updateServiceCase(json);

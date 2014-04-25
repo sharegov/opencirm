@@ -42,6 +42,7 @@ import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.OntologyLoader;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.StartUp;
+import org.sharegov.cirm.owl.Model;
 import org.sharegov.cirm.owl.OwlRepo;
 import org.sharegov.cirm.owl.SynchronizedOWLManager;
 
@@ -71,7 +72,7 @@ public class PrepareDeploymentEnvironment
 		//Manager tries all parsers to load from file:
 
 		OWLOntology onto = manager.loadOntologyFromOntologyDocument(
-				IRI.create("http://www.miamidade.gov/cirm/legacy"));
+				IRI.create(Refs.defaultOntologyIRI.resolve()));
 		
 //		OWLOntology onto = manager.loadOntologyFromOntologyDocument(
 //				IRI.create(new File("c:/work/cirmservices/src/ontology/County_Working.owl")));
@@ -149,8 +150,8 @@ public class PrepareDeploymentEnvironment
 			for (BrowseRepositoryActivity.BrowseEntry e : browseAc.getRepositoryBrowseEntries())
 			{
 				System.out.println(e.getOwlOntologyIRI() + " --> " + e.getUuid());
-				if (e.getOwlOntologyIRI().equals("http://www.miamidade.gov/ontology") ||
-					e.getOwlOntologyIRI().equals("http://www.miamidade.gov/cirm/legacy"))
+				if (e.getOwlOntologyIRI().equals(Refs.topOntologyIRI.resolve()) ||
+					e.getOwlOntologyIRI().equals(Refs.defaultOntologyIRI.resolve()))
 				{
 					PullActivity pull = new PullActivity(repo.repo().getPeer(), 
 													     e.getUuid(),
@@ -182,8 +183,6 @@ public class PrepareDeploymentEnvironment
 		OWLOntology o1 = manager.loadOntologyFromOntologyDocument(f1),
 				o2 = manager.loadOntologyFromOntologyDocument(f2);
 		
-		OWLNamedIndividual ind = manager.getOWLDataFactory().getOWLNamedIndividual(IRI.create(
-				"http://www.miamidade.gov/ontology#LegacyServiceCaseListInput"));
 		OWLReasonerFactory reasonerFactory = PelletReasonerFactory.getInstance();
 		OWLReasoner reasoner = reasonerFactory.createReasoner(o1);
 	}

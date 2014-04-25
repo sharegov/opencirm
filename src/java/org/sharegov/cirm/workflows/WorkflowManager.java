@@ -107,9 +107,9 @@ public class WorkflowManager
 			return result;
 		OWLOntologyManager manager = Refs.tempOntoManager.resolve();		
 		OntologyLoader loader = OWL.loader();
-		OWLOntology rulesOntology = loader.get(Refs.SWRL_PREFIX + "/" + boType.getFragment());
+		OWLOntology rulesOntology = loader.get(Refs.nameBase.resolve() + "/swrl/" + boType.getFragment());
 		
-		IRI ontologyIRI = IRI.create("http://www.miamidade.gov/bo/" + 
+		IRI ontologyIRI = IRI.create(Refs.boIriPrefix.resolve() + 
 									  boType.getFragment() + "/prototype");
 		// The business object is created in its own ontology.
 		OWLOntology boOntology;

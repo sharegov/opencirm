@@ -9,7 +9,7 @@
    "allClientsExempt":true,
    "ontologyPrefixes":{
        "legacy:":"http://www.miamidade.gov/cirm/legacy#",
-       ":":"http://www.miamidade.gov/cirm/legacy#",
+       ":":"http://www.miamidade.gov/ontology#",
        "mdc:":"http://www.miamidade.gov/ontology#"},
    "network":{
        "bff":"cirmdevelopmentontology",

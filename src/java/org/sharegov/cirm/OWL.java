@@ -91,12 +91,14 @@ import org.semanticweb.owlapi.model.OWLPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLPropertyAssertionObject;
 import org.semanticweb.owlapi.model.OWLPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLPropertyExpression;
+import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 import org.semanticweb.owlapi.model.PrefixManager;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.semanticweb.owlapi.util.OWLEntityRemover;
 import org.semanticweb.owlapi.util.ShortFormProvider;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
+import org.sharegov.cirm.owl.Model;
 import org.sharegov.cirm.owl.OWLObjectPropertyCondition;
 import org.sharegov.cirm.owl.OwlRepo;
 import org.sharegov.cirm.owl.SynchronizedOWLManager;
@@ -124,8 +126,8 @@ public class OWL
 	public static boolean DBG_HGDB_ENTITY_CREATION = false;
 			
 	private static volatile OWLObjectPropertyCondition DEFAULT_STOP_EXPANSION_CONDITION; 
-	public static final IRI DEFAULT_STOP_EXPANSION_CONDITION_IRI = IRI.create("http://www.miamidade.gov/cirm/legacy#providedBy"); 
-	public static final IRI DEFAULT_STOP_EXPANSION_CONDITION_IRI2 = IRI.create("http://www.miamidade.gov/cirm/legacy#hasChoiceValue"); 
+	public static final IRI DEFAULT_STOP_EXPANSION_CONDITION_IRI = Model.legacy("providedBy"); 
+	public static final IRI DEFAULT_STOP_EXPANSION_CONDITION_IRI2 = Model.legacy("hasChoiceValue"); 
 
 	private static volatile OWLOntologyManager manager;
 	private static volatile OWLDataFactory factory;
@@ -159,10 +161,12 @@ public class OWL
 						OwlRepo repo = Refs.owlRepo.resolve();
 						if (!VDHGDBOntologyRepository.hasInstance())
 						{
+							// TODO: hard-coded list, we need to have this in bootstrap JSON config.
 							repo.createRepositoryFromDefaultPeer(
 								StartUp.config.at("metaDatabaseLocation").asString(), 
-								new HashSet<IRI>(Arrays.asList(IRI.create("http://www.miamidade.gov/ontology"),
-														  IRI.create("http://www.miamidade.gov/cirm/legacy"))));
+								new HashSet<IRI>(Arrays.asList(
+										IRI.create("http://www.miamidade.gov/ontology"),
+										IRI.create("http://www.miamidade.gov/cirm/legacy"))));
 						}
 					}
 					VDHGDBOntologyRepository.getInstance();
@@ -304,7 +308,7 @@ public class OWL
 		{
 			return prefixManager().getIRI(s);
 		}
-		return fullIri(s, Refs.topOntologyIRI.resolve());
+		return fullIri(s, StartUp.config.at("nameBase").asString());
 	}
 	
 	public static IRI fullIri(String s, String ontologyIri)
@@ -324,7 +328,7 @@ public class OWL
 	
 	public static IRI businessObjectId(String type, String id)
 	{
-		return IRI.create("http://www.miamidade.gov/bo/" + type + "/" + id + "#bo");		
+		return IRI.create(Refs.boIriPrefix.resolve() + type + "/" + id + "#bo");		
 	}
 	
 	public static String businessObjectId(OWLOntology bonto)
@@ -379,10 +383,8 @@ public class OWL
 		return boOntology.getOWLOntologyManager().getOWLDataFactory().getOWLNamedIndividual(boOntology.getOntologyID().getOntologyIRI().resolve("#bo"));	
 	}
 	/**
-	 * Will return an OWLClass with an iri based on iriBase, never /cirm/legacy.
-	 * e.g. http://www.miamidade.gov/ontology#BULKYTRA
+	 * Will return an OWLClass with an iri based on iriBase
 	 * 
-	 * hilpoldq: shouldn;t that be cirm/legacy...
 	 * @param boIri
 	 * @return
 	 */
@@ -1194,7 +1196,7 @@ public class OWL
 			{
 				if(entry.getValue().isString() && 
 					!entry.getKey().equals("iri")
-					&& entry.getValue().asString().startsWith("http://www.miamidade.gov/") && 
+					&& entry.getValue().asString().startsWith(Refs.nameBase.resolve()) && 
 					entry.getValue() != null )
 				{
 					try
@@ -1214,8 +1216,9 @@ public class OWL
 			for (int i = 0; i < x.asJsonList().size(); i++)
 			{
 				Json el = x.at(i);
-				if (el.isString() && (el.asString().contains("http://www.miamidade.gov/cirm/legacy")||
-						el.asString().contains("http://www.miamidade.gov/ontology")) &&
+				if (el.isString() && 
+					(el.asString().contains(Refs.nameBase.resolve())||
+						el.asString().contains(Refs.defaultOntologyIRI.toString())) &&
 						jsonMap.containsKey(el.asString()))
 					x.asJsonList().set(i, jsonMap.get(el.asString()));
 				else
@@ -1326,6 +1329,15 @@ public class OWL
 	
 	public static Json prefix(Json json, Set<OWLProperty<?,?>> properties)
 	{
+		// All prefixes that are equivalent to the default prefix are ignored because
+		// obviously they are not needed since the resulting IRI will be the same. This
+		// is not some sort of optimization. Those properties are referred to in Java
+		// code and that code is refers to property names without the prefixes so we have
+		// to make sure we don't put them.
+		String defaultPrefixValue = "";
+		for(Map.Entry<String,String> prefixes : prefixManager().getPrefixName2PrefixMap().entrySet())
+			if (prefixes.getKey().equals(":")) { defaultPrefixValue = prefixes.getValue(); break; }
+		
 		if(json.isObject())
 		{
 			Iterator<Map.Entry<String, Json>> iterator = json.asJsonMap().entrySet().iterator();
@@ -1335,7 +1347,8 @@ public class OWL
 				Map.Entry<String, Json> entry = iterator.next();
 				for(Map.Entry<String,String> prefixes : prefixManager().getPrefixName2PrefixMap().entrySet())
 				{
-					if(!prefixes.getKey().equals(":") && !prefixes.getValue().contains(Refs.MDC_PREFIX)
+					if(!prefixes.getKey().equals(":") && 
+					   !prefixes.getValue().equals(defaultPrefixValue)
 							&& (properties.contains(dataProperty(prefixes.getValue() + entry.getKey()))
 							|| properties.contains(objectProperty(prefixes.getValue() + entry.getKey()))))
 					{
@@ -1700,5 +1713,10 @@ public class OWL
 			OntoAdmin oadmin = new OntoAdmin();
 			oadmin.push(O.getOntologyID().getOntologyIRI().toString());
 		}
+		OWLSubObjectPropertyOfAxiom axiom = null;
+//		Set<OWLClassExpression> S = new HashSet<OWLClassExpression>();
+//		for (OWLClassExpression ind:expr.getOperands())
+//			S.add(R(ind));
+		
 	}
 }

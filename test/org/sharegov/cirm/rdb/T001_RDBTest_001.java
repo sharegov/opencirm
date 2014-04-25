@@ -71,8 +71,7 @@ public class T001_RDBTest_001
 	public void testSaveLoadBusinessObjectOntology100K()
 	{
 		int nrOfBOsToInsert = 100 * 1000;
-		RelationalOWLPersister.DBG = false;
-		RelationalStoreImpl.DBG = false;
+		GenUtils.dbg(false);
 		
 		System.out.println("TEST testSaveLoadBusinessObjectOntology100K STARTED. " + new Date());
 		long startTime = System.currentTimeMillis();

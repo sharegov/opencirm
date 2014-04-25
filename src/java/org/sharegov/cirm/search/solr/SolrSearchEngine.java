@@ -35,14 +35,15 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.sharegov.cirm.OWL;
+import org.sharegov.cirm.owl.Model;
 import org.sharegov.cirm.utils.Mapping;
 
 public class SolrSearchEngine
 {
-	static final String noJurisdiction = "http://www.miamidade.gov/ontology#NO_JURISDICTION";
-	static final String fedGov = "http://www.miamidade.gov/ontology#Federal_Government";
-	static final String stateGov = "http://www.miamidade.gov/ontology#State_of_Florida";
-	static final String countyGov = "http://www.miamidade.gov/ontology#Miami-Dade_County";
+	static final String noJurisdiction = Model.upper("NO_JURISDICTION").toString();
+	static final String fedGov = Model.upper("Federal_Government").toString();
+	static final String stateGov = Model.upper("State_of_Florida").toString();
+	static final String countyGov = Model.upper("Miami-Dade_County").toString();
 	
     public static final String ESTIMATED_RESULT_COUNT = "estimatedResultCount";
     public static final String START_PAGE = "start";

@@ -61,6 +61,7 @@ public class OntologyLoader
 	
 	public OntologyLoader(OWLOntologyManager manager)
 	{
+		// TODO: all this should be in customIRIMappings file only..
 		locations.put(IRI.create("http://www.miamidade.gov/cirm/legacy"), 
 				  new File(StartUp.config.at("workingDir").asString() + "/src/ontology/legacy.owl"));		
 		locations.put(IRI.create("http://www.miamidade.gov/cirm/legacy/exported"),
@@ -114,9 +115,10 @@ public class OntologyLoader
 		File f = locations.get(IRI.create(iriString));
 		if (f != null)
 			return f;
-		if (iriString.startsWith(Refs.SWRL_PREFIX))
+		String prefix = Refs.nameBase.resolve() + "/swrl/";
+		if (iriString.startsWith(prefix))
 			return new File(new File(StartUp.config.at("workingDir").asString() + "/src/ontology"), 
-					iriString.substring(Refs.SWRL_PREFIX.length() + 1) + ".swrl");
+					iriString.substring(prefix.length()) + ".swrl");
 		f = new File(iriString);
 		return f.exists() ? f : null;
 	}
@@ -249,7 +251,8 @@ public class OntologyLoader
 		});
 		for(String file: files)
 		{
-			IRI iri = IRI.create(Refs.SWRL_PREFIX + "/" + file.substring(0, file.length()-5));
+			IRI iri = IRI.create(Refs.nameBase.resolve() + "/swrl/" + 
+							file.substring(0, file.length()-5));
 			result.add(iri);
 		}
 		return result;

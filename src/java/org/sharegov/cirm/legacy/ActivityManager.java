@@ -37,6 +37,7 @@ import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.sharegov.cirm.BOntology;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.OWL;
+import org.sharegov.cirm.owl.Model;
 import org.sharegov.cirm.rest.LegacyEmulator;
 import org.sharegov.cirm.utils.GenUtils;
 
@@ -88,7 +89,7 @@ public class ActivityManager
 	
 	private String findAutoAssignment(OWLNamedIndividual rule, BOntology bo, OWLNamedIndividual serviceActivity, OWLNamedIndividual outcome)
 	{
-		if (rule.getIRI().toString().equals(Refs.LEGACY_PREFIX + "#AssignActivityToCaseCreator"))
+		if (rule.getIRI().equals(Model.legacy("AssignActivityToCaseCreator")))
 		{
 			OWLLiteral createdBy = bo.getDataProperty("isCreatedBy");
 			if (createdBy != null)
@@ -105,13 +106,13 @@ public class ActivityManager
 		if (S.isEmpty())
 			return null;
 		OWLClass type = S.iterator().next();
-		if (type.getIRI().toString().equals(Refs.LEGACY_PREFIX + "#AssignActivityToUserRule"))
+		if (type.getIRI().equals(Model.legacy("AssignActivityToUserRule")))
 		{
 			OWLLiteral assignment = dataProperty(rule, "hasUsername");
 			if (assignment != null)
 				return assignment.getLiteral();
 		}
-		else if (type.getIRI().toString().equals(Refs.LEGACY_PREFIX + "#AssignActivityFromGeoAttribute"))
+		else if (type.getIRI().equals(Model.legacy("AssignActivityFromGeoAttribute")))
 		{			
 			// Get property info first
 			Json locationInfo = Refs.gisClient.resolve().getLocationInfo(
@@ -131,7 +132,7 @@ public class ActivityManager
 					return username.getLiteral();
 			}
 		} 
-		else if (type.getIRI().toString().equals(Refs.LEGACY_PREFIX + "#AssignActivityToOutcomeEmail")) 
+		else if (type.getIRI().equals(Model.legacy("AssignActivityToOutcomeEmail"))) 
 		{
 			return getAssignActivityToOutcomeEmail(outcome, bo);
 		}
@@ -1111,7 +1112,7 @@ public class ActivityManager
 				"legacy:hasAssignmentRule"); 
 		for (OWLNamedIndividual rule : assignRules)
 		{
-			if ((Refs.LEGACY_PREFIX + "#AssignActivityToOutcomeEmail").equals(rule.getIRI().toString()))
+			if (Model.legacy("AssignActivityToOutcomeEmail").equals(rule.getIRI()))
 				return true;
 		}
 		return false;

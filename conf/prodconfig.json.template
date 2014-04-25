@@ -18,7 +18,7 @@
     "ontologyPrefixes": {
     	"legacy:" : "http://www.miamidade.gov/cirm/legacy#",
 	"mdc:" : "http://www.miamidade.gov/ontology#",
-	":" : "http://www.miamidade.gov/cirm/legacy#" 
+	":" : "http://www.miamidade.gov/ontology#" 
      },
      "cachedReasonerPopulate": true,
      "ftpServer":"ftp.miamidade.gov",

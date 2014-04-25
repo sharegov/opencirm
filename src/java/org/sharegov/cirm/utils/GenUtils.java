@@ -190,7 +190,7 @@ public class GenUtils
 	
 	public static boolean dbg()
 	{
-	    return dbgLevelTracing;
+	    return true || dbgLevelTracing;
 	}
 	
 	public static void dbg(boolean newdbgLevelTracing)
@@ -333,7 +333,8 @@ public class GenUtils
 		{
 			// disable retries from within the HTTP client			 
 			client.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
-					new DefaultHttpMethodRetryHandler(0, false));			
+					new DefaultHttpMethodRetryHandler(0, false));
+			client.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, 0);
 			int statusCode = client.executeMethod(method);
 			if (statusCode != HttpStatus.SC_OK)
 				throw new RuntimeException("HTTP Error " + statusCode

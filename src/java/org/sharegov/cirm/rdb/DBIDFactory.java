@@ -55,7 +55,7 @@ public class DBIDFactory implements CIRMIDFactory
 		String resultIri; 
 		long n = generateSequenceNumber();
 		if (boType != null)	{
-			resultIri = Refs.BO_PREFIX + "/" + boType + "/" + n + "#bo";
+			resultIri = Refs.boIriPrefix.resolve() + "/" + boType + "/" + n + "#bo";
 		} else {
 			resultIri  = Long.toString(n);
 		}

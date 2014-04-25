@@ -48,7 +48,7 @@ import org.semanticweb.owlapi.model.OWLPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLPropertyExpression;
 import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.sharegov.cirm.OWL;
-import org.sharegov.cirm.Refs;
+import org.sharegov.cirm.owl.Model;
 import org.sharegov.cirm.utils.DBGUtils;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
@@ -78,11 +78,11 @@ public class OntologyTransformer
 	 */
 	public static boolean DBGX_CLASS_ASSERTION_REMOVE = true;
 
-	public static OWLObjectProperty objectPropertyToCollapse = OWL.objectProperty(Refs.LEGACY_PREFIX + "#hasServiceAnswer");  
-	public static OWLObjectProperty objectSubPropertyForOptimizedPredicate = OWL.objectProperty(Refs.LEGACY_PREFIX + "#hasServiceField");  
-	public static OWLObjectProperty objectSubPropertyForOptimizedObject = OWL.objectProperty(Refs.LEGACY_PREFIX + "#hasAnswerObject");  
-	public static OWLDataProperty dataSubPropertyForOptimizedValue = OWL.dataProperty(Refs.LEGACY_PREFIX + "#hasAnswerValue");  
-	public static OWLClass optimizedPredicateClassification = OWL.owlClass(Refs.LEGACY_PREFIX + "#ServiceField");
+	public static OWLObjectProperty objectPropertyToCollapse = OWL.objectProperty(Model.legacy("hasServiceAnswer"));  
+	public static OWLObjectProperty objectSubPropertyForOptimizedPredicate = OWL.objectProperty(Model.legacy("hasServiceField"));  
+	public static OWLObjectProperty objectSubPropertyForOptimizedObject = OWL.objectProperty(Model.legacy("hasAnswerObject"));  
+	public static OWLDataProperty dataSubPropertyForOptimizedValue = OWL.dataProperty(Model.legacy("hasAnswerValue"));  
+	public static OWLClass optimizedPredicateClassification = OWL.owlClass(Model.legacy("ServiceField"));
 	
 	private volatile Set<OWLNamedIndividual> optimizedPredicates;
 	

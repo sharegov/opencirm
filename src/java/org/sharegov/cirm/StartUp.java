@@ -199,7 +199,7 @@ public class StartUp extends ServerResource
 //	    trafficMonitor.setNext(jsonpFilter);
 	    requestScopeFilter = new RequestScopeFilter(); 
 	    requestScopeFilter.setNext(jsonpFilter);
-	    
+
 	    return requestScopeFilter;
 	}
 	
