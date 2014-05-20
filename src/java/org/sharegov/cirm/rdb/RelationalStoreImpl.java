@@ -130,8 +130,8 @@ import org.sharegov.cirm.utils.ThreadLocalStopwatch;
  */
 public class RelationalStoreImpl implements RelationalStore
 {
-//	public static boolean DBG = false;
-	public static boolean DBGX = false;
+	public static boolean DBG = false;
+	public static boolean DBGX = true;
 	public static boolean DBGLOCK = true;
 	public static boolean DBG_ALL_TRANSACTIONS_LOCK = false;
 	public static boolean DBG_PRE_RETRY_SLEEP = true;
@@ -3727,12 +3727,16 @@ public class RelationalStoreImpl implements RelationalStore
 			    reasoner().getObjectPropertyValues(joinColumnIRI,objectProperty(fullIri(Concepts.hasColumnType))).getFlattened().iterator().next();
 			OWLNamedIndividual foreignKeyColumnManyToMany = null;
 			OWLNamedIndividual foreignKeyColumnManyToManyType = null;
-			// Create delete statement first.
-			Statement delete = new Statement();
-			delete.setSql(DELETE_FROM(joinTableFragment).WHERE(joinColumnIRIFragment).EQUALS("?"));
-			delete.getParameters().add(identifiers.get(ind));
-			delete.getTypes().add(joinColumnIRIType);
-			statements.add(delete);
+			// Create delete statement first, but only if its an existing entity.
+			if (identifiers.get(ind).isExisting())
+			{
+				Statement delete = buildHasManyDelete(ind, identifiers,
+						objectPropertyValues, mappedProperty, manyToMany,
+						manyColumnIRI, joinTableFragment, joinColumnIRIFragment,
+						joinColumnIRIType);
+				statements.add(delete);
+			}
+			//end create delete statement
 			// Loop through all manyObjects merging one by one.
 			for (OWLIndividual propValue : objectPropertyValues.get(mappedProperty))
 			{
@@ -3775,7 +3779,6 @@ public class RelationalStoreImpl implements RelationalStore
 					}
 					done.put(ind, statements);
 					put = false;
-					// RECURSION
 					mergeMappedIndividual(
 							o,
 							manyObject,
@@ -3784,10 +3787,65 @@ public class RelationalStoreImpl implements RelationalStore
 									identifiers.get(ind)), done);
 				}
 			}
+			
 		}
 		if (put)
 			done.put(ind, statements);
 
+	}
+
+	private Statement buildHasManyDelete(
+			OWLNamedIndividual ind,
+			Map<OWLEntity, DbId> identifiers,
+			Map<OWLObjectPropertyExpression, Set<OWLIndividual>> objectPropertyValues,
+			OWLObjectProperty mappedProperty, boolean manyToMany,
+			Set<OWLNamedIndividual> manyColumnIRI, String joinTableFragment,
+			String joinColumnIRIFragment, OWLNamedIndividual joinColumnIRIType	)
+	{
+		Statement delete = new Statement();
+		Sql deleteSql = DELETE_FROM(joinTableFragment).WHERE(joinColumnIRIFragment).EQUALS("?");
+		delete.getParameters().add(identifiers.get(ind));
+		delete.getTypes().add(joinColumnIRIType);
+		if(manyToMany)
+		{
+			//on a many-to-many (junction table)
+			//its perfectly fine to delete all the relations
+			//because the underlying rows do not represent
+			//and entity, they represent a junction
+			// of two entities.
+			delete.setSql(deleteSql);
+			
+		}
+		else
+		{
+			//on a one-to-many we must know what entities 
+			//on the many side will remain valid and
+			//delete those that are (NOT IN)
+			//that list.
+			if(!objectPropertyValues.get(mappedProperty).isEmpty())
+			{
+				OWLNamedIndividual manyColumnInd = manyColumnIRI.iterator().next();
+				String manyColumn = manyColumnInd.getIRI().getFragment().replace(joinTableFragment + ".", "");
+				OWLNamedIndividual manyColumnIRIType = 
+					    reasoner().getObjectPropertyValues(manyColumnInd,objectProperty(fullIri(Concepts.hasColumnType))).getFlattened().iterator().next();
+				deleteSql.AND().WHERE(manyColumn);
+				List<String> values = new ArrayList<String>(objectPropertyValues.get(mappedProperty).size());
+				for (OWLIndividual propValue : objectPropertyValues.get(mappedProperty))
+				{
+					OWLNamedIndividual manyObject = propValue.asOWLNamedIndividual();
+					values.add("?");
+					delete.getParameters().add(identifiers.get(manyObject));
+					delete.getTypes().add(manyColumnIRIType);
+				}
+				deleteSql.NOT_IN(values.toArray(new String[values.size()]));
+			}
+		}
+		delete.setSql(deleteSql);
+		if(DBGX)
+		{
+			printStatement(delete);
+		}
+		return delete;
 	}
 
 	/**
