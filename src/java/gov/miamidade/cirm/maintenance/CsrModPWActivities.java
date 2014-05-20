@@ -39,7 +39,7 @@ public class CsrModPWActivities
 
 	public static final String PWSTATUS_QUAL_NAME = "legacy:PW_PWSTATUS";
 	
-	public static final String EXPORTED_IRI = Refs.LEGACY_PREFIX + "/exported";
+	public static final String EXPORTED_IRI = "http://www.miamidade.gov/cirm/legacy/exported";
 
 	public static String OUTPUT_FILE = "C:\\temp\\CsrModPWActivities.owl";
 

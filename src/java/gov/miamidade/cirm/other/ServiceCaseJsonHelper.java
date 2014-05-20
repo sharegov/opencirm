@@ -101,7 +101,7 @@ public class ServiceCaseJsonHelper
     	if (x.has("hasLegacyCode"))
 		{
         	String lcode = x.at("hasLegacyCode").asString();
-        	OWLOntology O = Refs.legacyOntology.resolve();
+        	OWLOntology O = Refs.defaultOntology.resolve();
         	if (O.isDeclared(OWL.individual("legacy:" + lcode)))
 				return x.set("iri", "legacy:" + lcode).delAt("hasLegacyCode");
         	else if (!ignorePrefixFor.contains(lcode))

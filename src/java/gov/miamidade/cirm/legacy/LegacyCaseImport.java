@@ -252,7 +252,7 @@ public class LegacyCaseImport
 		
 		
 		RelationalStoreImpl.TRANSACTION_ISOLATION_LEVEL = Connection.TRANSACTION_READ_COMMITTED;
-		RelationalStoreImpl.DBG = false;
+		GenUtils.dbg(false);
 		RelationalStoreImpl.DBGX = false;
 		//RelationalOWLPersister persister = RelationalOWLPersister.getInstance(fullIri("GICDWTestDatabase"));
 		Connection csrJdbcConn = null;
@@ -957,7 +957,7 @@ public class LegacyCaseImport
 	{
 		if(suffixes == null)
 		{
-			Set<OWLNamedIndividual> set = OWL.reasoner(OWL.ontology(Refs.MDC_PREFIX)). 
+			Set<OWLNamedIndividual> set = OWL.reasoner(Refs.topOntology.resolve()). 
 			getInstances(OWL.dataFactory().getOWLClass(fullIri("Street_Type")), false).getFlattened();
 			suffixes = Json.array();
 			for(OWLNamedIndividual suffix: set)
