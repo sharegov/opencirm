@@ -26,6 +26,7 @@ import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.Vector;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -78,33 +79,38 @@ public class StartUp extends ServerResource
 	public static boolean STRESS_TEST_CONFIG = false;
 
 	public static Json config = Json.object()
-		.set("workingDir", "C:/work/cirmservices")
-		.set("port", 8182)
-		.set("ignorePasswords", true)
-		.set("ssl-port", 8183)
-		.set("keystore", "cirm.jks")
-		.set("storePass", "password")
-		.set("keyPass", "password")
-		.set("mainApplication", "http://www.miamidade.gov/ontology#CIRMApplication")
-		.set("defaultOntologyIRI", "http://www.miamidade.gov/cirm/legacy")
-		//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#ProdConfigSet")
-		.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#TestConfigSet")
-		//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#LocalConfigSetXE")
-		//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#LocalConfigSet")
-		.set("customIRIMappingFile", "C:/work/cirmservices/customIRIMap.properties")
-		.set("metaDatabaseLocation", "c:/temp/testontodb")
-		.set("allClientsExempt", true)
-		.set("network", Json.object(				
-				"user", "bolerio-dev",
-				"password","password",
-				"serverUrl","s0141667",
-				"bff","cirmdevelopmentontology"))
-		.set("ontologyPrefixes", Json.object(
-				"legacy:", "http://www.miamidade.gov/cirm/legacy#",
-				"mdc:", "http://www.miamidade.gov/ontology#",
-				":", "http://www.miamidade.gov/cirm/legacy#"
-				))
-		.set("cachedReasonerPopulate", false);
+			.set("workingDir", "C:/work/opencirm")
+			.set("mainApplication", "http://www.miamidade.gov/ontology#CIRMApplication") 
+			.set("port", 8182)
+			.set("ignorePasswords", true)
+			.set("ssl-port", 8183)
+			.set("keystore", "cirm.jks")
+			.set("storePass", "password")
+			.set("keyPass", "password")
+			.set("defaultOntologyIRI", "http://www.miamidade.gov/cirm/legacy")
+			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#ProdConfigSet")
+			.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#TestConfigSet")
+			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#LocalConfigSetXE")
+			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#LocalConfigSet")
+			.set("nameBase", "http://www.miamidade.gov/ontology" )
+			.set("customIRIMappingFile", "C:/work/mdcirm/customIRIMap.properties")
+			.set("stopExpansionConditionIRI", Json.array(
+					"http://www.miamidade.gov/cirm/legacy#providedBy",
+					"http://www.miamidade.gov/cirm/legacy#hasChoiceValue"
+					))
+			.set("_metaDatabaseLocation", "c:/temp/testontodb")
+			.set("allClientsExempt", true)
+			.set("network", Json.object(				
+					"user", "bolerio-dev",
+					"password","password",
+					"serverUrl","s0141667",
+					"bff","cirmdevelopmentontology"))
+			.set("ontologyPrefixes", Json.object(
+					"legacy:", "http://www.miamidade.gov/cirm/legacy#",
+					"mdc:", "http://www.miamidade.gov/ontology#",
+					":", "http://www.miamidade.gov/cirm/legacy#"
+					))
+			.set("cachedReasonerPopulate", false);
 	
 	public static Component server = null;
 	public static PaddedJSONFilter jsonpFilter = null;
@@ -240,7 +246,13 @@ public class StartUp extends ServerResource
 		if( (args.length > 0) )
 			config = Json.read(GenUtils.readTextFile(new File(args[0])));
 		System.out.println("Using config " + config.toString());
-		ConfigSet.getInstance();
+		try
+		{
+			ConfigSet.getInstance();
+		}catch(Throwable t)
+		{
+			t.printStackTrace();
+		}
 		server = new Component();		
 	    server.getServers().add(Protocol.HTTP, config.at("port").asInteger())
 	    	// this is Jetty configuration parameter to allow for very long

@@ -373,6 +373,68 @@ public class Sql
 
 	static class Delete extends Sql
 	{
+		public Sql WHERE(String where)
+		{
+			super.WHERE(where);
+			this.in = this.where; 
+			return this;
+		}
+		
+		private Sql IN(boolean notIn, String... values)
+		{
+			if (in != null && !in.isEmpty())
+			{
+				StringBuilder s = new StringBuilder(in.get(in.size() - 1));
+				if(notIn)
+					s.append(" NOT ");
+				s.append(" IN ( ");
+				for(int i = 0; i < values.length; i++)
+				{
+					s.append(values[i]);
+					if(!(i == values.length-1))
+						s.append(",");
+				}
+				s.append(" ) ");
+				in.set(in.size() - 1, s.toString());
+			}
+			return this;
+		}
+		
+		private Sql IN(boolean notIn, Sql subquery)
+		{
+			if (subquery instanceof Select && in != null && !in.isEmpty())
+			{
+				StringBuilder s = new StringBuilder(in.get(in.size() - 1));
+				if(notIn)
+					s.append(" NOT ");
+				s.append(" IN ( ")
+				.append(subquery.SQL())
+				.append(" ) ");
+				in.set(in.size() - 1, s.toString());
+			}
+			return this;
+		}
+		
+		public Sql IN(String... values)
+		{
+			return IN(false, values);
+		}
+		
+		public Sql IN(Sql subquery)
+		{
+			return IN(false, subquery);
+		}
+		
+		public Sql NOT_IN(String... values)
+		{
+			return IN(true, values);
+		}
+		
+		public Sql NOT_IN(Sql subquery)
+		{
+			return IN(true, subquery);
+		}
+		
 		public String SQL()
 		{
 			StringBuilder builder = new StringBuilder();
@@ -563,6 +625,7 @@ public class Sql
 		operationsList = this.where;
 		return this;
 	}
+	
 
 	public Sql EQUALS(String right)
 	{
@@ -679,6 +742,17 @@ public class Sql
 	}
 	
 	public Sql IN(Sql subquery)
+	{
+		return this;
+	}
+	
+		
+	public Sql NOT_IN(String... values)
+	{
+		return this;
+	}
+	
+	public Sql NOT_IN(Sql subquery)
 	{
 		return this;
 	}

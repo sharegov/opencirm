@@ -123,12 +123,13 @@ import org.sharegov.cirm.utils.GenUtils;
  */
 public class OWL
 {	
-	public static boolean DBG_HGDB_ENTITY_CREATION = false;
-			
+	/** The order of this static var init is important(dependencies) so its defined before all others. **/
+	private static Pattern prefixedPattern = Pattern.compile("\\w+\\:[A-Za-z0-9\\%\\-\\._~]+");
+	
 	private static volatile OWLObjectPropertyCondition DEFAULT_STOP_EXPANSION_CONDITION; 
-	public static final IRI DEFAULT_STOP_EXPANSION_CONDITION_IRI = Model.legacy("providedBy"); 
-	public static final IRI DEFAULT_STOP_EXPANSION_CONDITION_IRI2 = Model.legacy("hasChoiceValue"); 
-
+	
+	public static boolean DBG_HGDB_ENTITY_CREATION = false;
+	
 	private static volatile OWLOntologyManager manager;
 	private static volatile OWLDataFactory factory;
 	private static volatile OntologyLoader loader;
@@ -195,11 +196,18 @@ public class OWL
 	
 	private static OWLObjectPropertyCondition getInitializedDefaultStopExpansionCondition(OWLDataFactory factory) 
 	{
+	
 		Set<OWLObjectProperty> stopExpansionProps = new HashSet<OWLObjectProperty>();
-		stopExpansionProps.add(factory.getOWLObjectProperty(DEFAULT_STOP_EXPANSION_CONDITION_IRI));
-		stopExpansionProps.add(factory.getOWLObjectProperty(DEFAULT_STOP_EXPANSION_CONDITION_IRI2));
+		if (StartUp.config.has("stopExpansionConditionIRI"))
+		{
+			for(Object iri : StartUp.config.at("stopExpansionConditionIRI").asList())
+			{
+				stopExpansionProps.add(factory.getOWLObjectProperty(IRI.create((String)iri)));
+			}
+		}	
 		return new OWLObjectPropertyCondition(stopExpansionProps);
 	}
+	
 	
 	public static OWLOntologyManager manager() { init(); return manager; }
 	public static OntologyLoader loader() { init(); return loader; }
@@ -299,8 +307,6 @@ public class OWL
 		init();
 		return factory;
 	}
-	
-	private static Pattern prefixedPattern = Pattern.compile("\\w+\\:[A-Za-z0-9\\%\\-\\._~]+");
 	
 	public static IRI fullIri(String s)
 	{
