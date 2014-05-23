@@ -19,12 +19,23 @@ import mjson.Json;
 
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.sharegov.cirm.event.EventTrigger;
+import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
 public class NewActivityEventHandler implements EventTrigger
 {
+	public final String DEPT = "department";
+	public final String ORIG = "originator";
+	
     @Override
     public void apply(OWLNamedIndividual entity, OWLNamedIndividual changeType, Json data)
-    {
-        new DepartmentIntegration().tryActivitySend(data.at("serviceCase"), data.at("activity"), -1);
+    {    	
+    	if (data.has(ORIG) && data.at(ORIG).isString() && DEPT.equalsIgnoreCase(data.at(ORIG).asString())) 
+    	{
+    		ThreadLocalStopwatch.now("NewActivityEventHandler activity originated from department, not sending act " + entity);
+    	} 
+    	else 
+        {
+    		new DepartmentIntegration().tryActivitySend(data.at("serviceCase"), data.at("activity"), -1);
+        }
     }    
 }

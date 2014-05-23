@@ -45,6 +45,8 @@ import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.legacy.MessageManager;
 import org.sharegov.cirm.utils.GenUtils;
+import org.sharegov.cirm.utils.ThreadLocalStopwatch;
+
 import com.ibm.mq.jms.JMSC;
 import com.ibm.mq.jms.MQDestination;
 import com.ibm.mq.jms.MQQueueConnectionFactory;
@@ -112,6 +114,7 @@ public class JMSClient
 	
 	public static void connectAndSend(Json msg) throws JMSException
 	{
+		ThreadLocalStopwatch.start("START JMS: connect and send ");
 		Refs.logger.resolve().info("Sending message to interface.");
 		try
 		{
@@ -131,6 +134,7 @@ public class JMSClient
 		}
 		catch (JMSException jmsex)
 		{
+			ThreadLocalStopwatch.error("Error JMS and scheduling TM retry");
 			Json queued = JMSClient.queueAtTimeServer(msg, 60);
 			if (!queued.is("ok", true))
 				throw new RuntimeException("While queueing JMS message at Time Server: " + queued.at("error"));
@@ -138,6 +142,7 @@ public class JMSClient
 		}
 		catch (Throwable t)
 		{
+			ThreadLocalStopwatch.fail("FAIL JMS: connect and send with email");
 			MessageManager.get().sendEmail("cirm-no-reply@miamidade.gov", "assia@miamidade.gov", 
 					"JMS Failed to send, CiRM", msg.toString());
 			Refs.logger.resolve().log(Level.SEVERE, "Error in send method", t);
@@ -248,7 +253,6 @@ public class JMSClient
 		}		
 	}
 
-	
 	public void send(LegacyMessageType type, long transactionId, Json data) throws JMSException
 	{
 		Json jmsg = makeMessage(type, transactionId, data);

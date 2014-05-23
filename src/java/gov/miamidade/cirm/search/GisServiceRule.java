@@ -120,15 +120,6 @@ public class GisServiceRule
 				return "CML".equals(x);
 			}
 		};
-		else if ("ENFZONEID>0".equals(valueExpression))
-			evaluator = new Mapping<Object, Boolean>() {
-			public Boolean eval(Object x)
-			{
-				if (x instanceof String)
-					x = Integer.parseInt(x.toString());
-				return x != null && ((Number)x).longValue() > 0;
-			}
-		};
 		else if ("ENFZONEID<>0 AND NOT NULL".equals(valueExpression))
 			evaluator = new Mapping<Object, Boolean>() {
 			public Boolean eval(Object x)

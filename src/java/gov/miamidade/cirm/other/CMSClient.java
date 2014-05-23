@@ -21,7 +21,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
+import java.util.List;
 import java.util.StringTokenizer;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -44,6 +47,7 @@ import org.sharegov.cirm.rest.LegacyEmulator;
 import org.sharegov.cirm.rest.RestService;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.Ref;
+import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
 @Path("other/cms")
 @Produces("application/json")
@@ -53,6 +57,11 @@ public class CMSClient extends RestService
 	final static String INPROCESS = "OK";
 	final static String SUCCESS = "OK CIRM";
 	final static String FAILURE = "REJECTED";
+	
+	final static AtomicInteger nrOfSuccessNewCase = new AtomicInteger();
+	final static AtomicInteger nrOfSuccessUpdateActivity = new AtomicInteger();
+	final static AtomicInteger nrOfSuccessUpdateCase = new AtomicInteger();
+	
 
 	static final String CMSDATEFORMAT = "yyyy-MM-dd hh:mm:ss";
 	
@@ -104,8 +113,13 @@ public class CMSClient extends RestService
 			cs.executeQuery();
 			rs = (ResultSet) cs.getObject(1); // <- casts
 			Json A = Json.array();
-			while (rs.next() && max-- > 0)
-				A.add(DBU.rowToJson(rs));
+			if (rs != null) 
+			{
+				while (rs.next() && max-- > 0)
+				{
+					A.add(DBU.rowToJson(rs));
+				}
+			}
 			return A;
 		}
 		catch (SQLException sqle)
@@ -150,9 +164,15 @@ public class CMSClient extends RestService
 			status = stmt.getString(3).toUpperCase();
 			error = stmt.getString(4);
 			if ("OK".equalsIgnoreCase(status))
+			{
+				ThreadLocalStopwatch.now("CMSClient mark processed ok: " + "eventId:" + eventid + " Case: " + caseNumber + " " + status);
 				return ok();
+			}
 			else
+			{
+				ThreadLocalStopwatch.error("FAIL: CMSClient mark processed ko: " + "eventId:" + eventid + " Case: " + caseNumber + " " + status + " error " + error);
 				return ko(error);
+			}
 		}
 		catch (Exception ex)
 		{
@@ -178,7 +198,7 @@ public class CMSClient extends RestService
 					caseNumber = result.at("data").at("hasCaseNumber").asString();
 			}
 			else
-			{
+			{   //
 				String srnum = event.at("SR_NUM").asString();
 				if (!srnum.contains("-"))
 				{
@@ -198,7 +218,9 @@ public class CMSClient extends RestService
 						 srnum = R.at("resultsArray").at(0).at("hasCaseNumber").asString();
 					 }
 					 else
+					 {	
 						 return ko("Could not find SR number by CMS case: " + srnum);
+					 }
 				}
 				Json sr = emulator.lookupByCaseNumber(srnum); 
 				if (sr.isNull())
@@ -299,11 +321,13 @@ public class CMSClient extends RestService
 		}		
 		ServiceCaseJsonHelper.assignIris(sr);		
 		OWL.resolveIris(sr.at("properties"), null);		
-		return emulator.updateServiceCaseTransaction(sr, 
+		Json result = emulator.updateServiceCaseTransaction(sr, 
 													 current, 
 													 new java.util.Date(), 
 													 null, 
 													 "department");
+		nrOfSuccessUpdateActivity.incrementAndGet();
+		return result;
 	}
 
 	void populateCaseFromEvent(Json sr, Json event)
@@ -418,11 +442,13 @@ public class CMSClient extends RestService
 		{
 			return ok();
 		}			
-		return emulator.updateServiceCaseTransaction(sr, 
+		Json result = emulator.updateServiceCaseTransaction(sr, 
 													 current, 
 													 updatedDate, 
 													 null, 
 													 "department");
+		nrOfSuccessUpdateCase.incrementAndGet();
+		return result;
 	}
 	 
 	public Json insertCase(Json event)
@@ -446,7 +472,9 @@ public class CMSClient extends RestService
 		{
 			return ok();
 		}		
-		return emulator.saveNewCaseTransaction(sr);
+		Json result =  emulator.saveNewCaseTransaction(sr);
+		nrOfSuccessNewCase.incrementAndGet();
+		return result;		
 	}
 	
 	@GET
@@ -472,10 +500,13 @@ public class CMSClient extends RestService
 	@Path("/event/processBatch/{count}")
 	public Json processAllEvents(@PathParam("count") int batchSize)
 	{
+		ThreadLocalStopwatch.startTop("START CMSClient /event/processBatch/ batchSize: " + batchSize);
 		forceClientExempt.set(true);
 		Json events = getReadyEvents(batchSize);
 		int successCount = 0;
-		for (Json event : events.asJsonList())
+		List<Json> eventList = events.asJsonList();
+		int totalCount = eventList.size();
+		for (Json event : eventList)
 		{
 			Json r = processEvent(event); 
 			for (int retryCount = 1; retryCount < 5 && r.is("ok", false) && r.is("retry", true); retryCount++)
@@ -483,13 +514,24 @@ public class CMSClient extends RestService
 				GenUtils.sleep(5000); // TODO: magic number
 				r = processEvent(event);
 			}
-			if (r.is("ok", false))
+			if (r.is("ok", false)) {
+				ThreadLocalStopwatch.fail("FAIL CMSClient processAllEvents total: " + totalCount + " success: " + successCount);
 				return ko("Error " + r.at("error") + 
 					" while processing event " + event).set("successCount", successCount);
+			}
 			else
+			{
 				successCount++;
+			}
 		}
+		printCounts();
+		ThreadLocalStopwatch.stop("END CMSClient processAllEvents total: " + totalCount + " success: " + successCount);
 		return ok().set("successCount", successCount);
+	}
+	
+	private void printCounts() 
+	{
+		ThreadLocalStopwatch.now("CMSClient stats Newcase: " + nrOfSuccessNewCase.get() + " UpdateCase: " + nrOfSuccessUpdateCase.get() + " UpdateActivity: " + nrOfSuccessUpdateActivity.get());
 	}
 	
 	public static void main(String argv[])

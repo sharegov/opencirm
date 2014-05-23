@@ -158,8 +158,11 @@ public class ServiceRequestReports
 				}
 				else if(contactNos.size() == 1)
 					contactNos.add(blankField);
-				for(int i=0; i<2; i++)
-					eachRow.put(blueCartColumnOrder.get(actor.getIRI().getFragment()+".Phone."+i), contactNos.get(i));
+				for(int i=0; i<2; i++) {
+					String contactNo = contactNos.get(i);
+					eachRow.put(blueCartColumnOrder.get(actor.getIRI().getFragment()+".Phone."+i), 
+							contactNo.startsWith("000") ? blankField : contactNo);
+				}
 				actorPhonesAdded = true;
 			}
 		}

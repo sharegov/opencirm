@@ -56,6 +56,8 @@ import org.sharegov.cirm.legacy.MessageManager;
 import org.sharegov.cirm.rest.LegacyEmulator;
 import org.sharegov.cirm.rest.RestService;
 import org.sharegov.cirm.utils.GenUtils;
+import org.sharegov.cirm.utils.ThreadLocalStopwatch;
+
 import gov.miamidade.cirm.other.JMSClient;
 import org.sharegov.cirm.utils.TraceUtils;
 
@@ -579,12 +581,16 @@ public class LegacyJMSListener extends Thread
 		{
 			case NewCase:
 			{
+				ThreadLocalStopwatch.now("LegacyJMSListener.process NewCase ");
 				Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
 				public Json call() throws JMSException
 				{							
 					Json R = newCaseTxn(emulator, jmsg);
-					if (R.is("ok", false))
+					if (R.is("ok", false)) 
+					{
+						ThreadLocalStopwatch.error("LegacyJMSListener.process NewCase txn failed");
 						System.err.println(R.at("error") + " for " + jmsg);
+					}
 					return R;
 				}});
 				break;
@@ -595,9 +601,11 @@ public class LegacyJMSListener extends Thread
 				Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
 				public Json call() throws JMSException
 				{							
+					ThreadLocalStopwatch.now("LegacyJMSListener.process lookup case for update or new activity");					
 					Json sr = emulator.lookupServiceCase(jmsg.at("data").at("boid"));
 					if (!sr.is("ok", true))
 					{					
+						ThreadLocalStopwatch.error("ERROR: LegacyJMSListener.process lookup for update or new activity: case not found, responding that");
 						Json jerror = Json.object("ok", false, 
 							"error", "Unable to load SR case " + jmsg.at("data").at("boid") + 
 									 ": " + sr.at("error"));
@@ -617,11 +625,25 @@ public class LegacyJMSListener extends Thread
 					sr.at("properties").delAt("extendedTypes");
 					sr.at("properties").delAt("gisAddressData");
 					trace("Existing: " + sr + "\n\n");
-					Json R = (type == LegacyMessageType.NewActivity) ? 
-								  newActivityTxn(emulator, sr, jmsg.at("data").at("hasServiceActivity").at(0)) :
-								  updateTxn(emulator, sr, jmsg.at("data").dup().delAt("boid"));
-					if (R.is("ok", false))
+					Json R;
+					if (type == LegacyMessageType.NewActivity) 
+					{
+						ThreadLocalStopwatch.now("LegacyJMSListener.process newActivityTxn ");					
+						R = newActivityTxn(emulator, sr, jmsg.at("data").at("hasServiceActivity").at(0));
+					}
+					else
+					{ //update service case
+						ThreadLocalStopwatch.now("LegacyJMSListener.process updateTxn ");					
+						R = updateTxn(emulator, sr, jmsg.at("data").dup().delAt("boid"));
+					}
+//					Json R = (type == LegacyMessageType.NewActivity) ? 
+//								  newActivityTxn(emulator, sr, jmsg.at("data").at("hasServiceActivity").at(0)) :
+//								  updateTxn(emulator, sr, jmsg.at("data").dup().delAt("boid"));
+					if (R.is("ok", false)) 
+					{
+						ThreadLocalStopwatch.error("ERROR: LegacyJMSListener.process newActivityTxn or updateTxn failed, responding");
 						System.err.println(R.at("error") + " for " + jmsg);
+					}
 					JMSClient.connectAndRespond(jmsg, R);								
 					return R;
 				}});
@@ -630,13 +652,17 @@ public class LegacyJMSListener extends Thread
 			case Response:		
 			{
 				//Issue #705 : X-Error Email Notification. Emails were not getting triggered while response was received from the interface.
+				ThreadLocalStopwatch.now("LegacyJMSListener.process responseTxn & sending emails if any");					
 				final ArrayList<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();				
 				Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
 				public Json call() throws JMSException
 				{							
 					Json R = responseTxn(emulator, jmsg, emailsToSend);
 					if (R.is("ok", false))
-						System.err.println(R.at("error") + " for " + jmsg);
+					{
+						ThreadLocalStopwatch.error("LegacyJMSListener.process responseTxn failed with ");					
+						System.err.println("LegacyJMSListener " + R.at("error") + " for " + jmsg);
+					}
 					return R;
 				}});
 				MessageManager.get().sendEmails(emailsToSend);								
@@ -648,14 +674,23 @@ public class LegacyJMSListener extends Thread
 	
 	public void run()
 	{
+		int loopCount = 0;
+		// successCount is increased after process() returns.
+		int successCount = 0;
+		ThreadLocalStopwatch.startTop("START LegacyJMSListener.run ");					
 		trace("In Legacy JMS run method");
-		if (!init())
+		if (!init()) 
+		{
+			ThreadLocalStopwatch.fail("FAIL LegacyJMSListener.run init()");					
 			return;
+		}
 		fatality = null;
 		try
 		{
 		for (quit = false; !quit; )
 		{
+			loopCount ++;
+			ThreadLocalStopwatch.startTop("START LegacyJMSListener loop execution loopCount " + loopCount + " successCount " + successCount);					
 			TextMessage msg = null;
 			String msgText = null;
 			try
@@ -663,10 +698,14 @@ public class LegacyJMSListener extends Thread
 				trace("Before read message.");
 				msg = (TextMessage)receiver.receive(config.at("timeout").asLong());
 				trace("After read message." + msg);
-				if (msg == null)
+				if (msg == null) 
+				{
+					ThreadLocalStopwatch.fail("LegacyJMSListener.run received msg was null loop " + loopCount);										
 					continue;
+				}
 				if (msg.getText() == null || msg.getText().equals(""))
 				{
+					ThreadLocalStopwatch.fail("LegacyJMSListener.run received msg, but txt was null or empty loop " + loopCount);										
 					error("Null or empty text in message.");
 					msg.acknowledge();
 					continue;
@@ -680,6 +719,7 @@ public class LegacyJMSListener extends Thread
 				{
 					RestService.forceClientExempt.set(true);					
 					process(jmsg);
+					successCount ++;
 					//System.exit(0);
 				}
 				catch (JMSException ex)
@@ -714,6 +754,7 @@ public class LegacyJMSListener extends Thread
 				cleanup();
 				do
 				{
+					ThreadLocalStopwatch.error("FAIL LegacyJMSListener.run re-initialize JMS connection after " + ex);														
 					trace("Attempting to re-initialize JMS connection after " + (double)
 							config.at("timeout").asLong()/1000.0 + " seconds.");
 					try { Thread.sleep(config.at("timeout").asLong()); } catch (InterruptedException ie) { }
@@ -721,6 +762,7 @@ public class LegacyJMSListener extends Thread
 			}
 			catch (Throwable t)
 			{
+				ThreadLocalStopwatch.fail("FAIL LegacyJMSListener.run with unexpected: " + t);									
 				fatality = t; // capture the exception for possible later examination...
 				// for now, we don't allow continuation of the main loop if any other exception occurs.
 				// if more tolerance is needed, it will have to be explicitely added on a case by case basis
@@ -728,12 +770,13 @@ public class LegacyJMSListener extends Thread
 				error("Legacy JMS Listener crashing due to an unacceptable exception." + config.at("jms"), t);				
 				throw new RuntimeException(t);
 			}
-		}
-		}
+		} // for
+		} 
 		finally
 		{
 			cleanup();
 		}
+		ThreadLocalStopwatch.stop("END LegacyJMSListener.run processing queue messages stopped");
 	}
 
 	/**
@@ -758,6 +801,7 @@ public class LegacyJMSListener extends Thread
 		
 	public void quit()
 	{
+		ThreadLocalStopwatch.now("LegacyJMSListener.quit() processing will stop (initiated by user)");
 		quit = true;
 	}
 	

@@ -21,6 +21,7 @@ import mjson.Json;
 
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.sharegov.cirm.event.EventTrigger;
+import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
 public class NewCaseEventHandler implements EventTrigger
 {
@@ -30,7 +31,8 @@ public class NewCaseEventHandler implements EventTrigger
     @Override
     public void apply(OWLNamedIndividual entity, OWLNamedIndividual changeType, Json data)
     {
-        DepartmentIntegration D = new DepartmentIntegration();
+        ThreadLocalStopwatch.getWatch().time("START NewCaseEventHandler entity: " + entity + " changetype: " + changeType);
+    	DepartmentIntegration D = new DepartmentIntegration();
         Json deptInterface = D.getDepartmentInterfaceCode(data.at("case").at("type").asString());
         if (!deptInterface.isNull())
            data.at("case").set("hasLegacyInterface", deptInterface);
@@ -49,12 +51,13 @@ public class NewCaseEventHandler implements EventTrigger
                 Json delay = D.delaySendToDepartment(data.at("case"), data.at("locationInfo"), -1); 
                 if (!delay.is("ok", true))
                 {
+                    ThreadLocalStopwatch.getWatch().time("IMMEDIATE DEPT SEND NewCaseEventHandler");
                     logger.warning("Unable to schedule send case to department: " + 
                                     delay + ", sending immediately...");
                     D.sendToDepartment(data.at("case"), data.at("locationInfo"));
                 }
             }
         }
-        
+        ThreadLocalStopwatch.getWatch().time("END NewCaseEventHandler");
     }
 }

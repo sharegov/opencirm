@@ -40,6 +40,7 @@ import org.sharegov.cirm.legacy.MessageManager;
 import org.sharegov.cirm.rest.LegacyEmulator;
 import org.sharegov.cirm.rest.RestService;
 import org.sharegov.cirm.utils.GenUtils;
+import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 import org.sharegov.cirm.utils.XMLU;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -66,7 +67,7 @@ import org.w3c.dom.NodeList;
 public class CityOfMiamiClient extends RestService
 {
 	Json serviceDescription = OWL.toJSON((OWLNamedIndividual)Refs.configSet.resolve().get("COMWebService"));	
-	LegacyEmulator em = new LegacyEmulator();
+	LegacyEmulator emulator = new LegacyEmulator();
 	
 	private String replace(String src, String oldPattern, String newPattern)   
 	{
@@ -85,6 +86,7 @@ public class CityOfMiamiClient extends RestService
 	
 	public Json saveCOMSubmitResult(Json serviceCase, String comNumber, String processMessage)
 	{
+		ThreadLocalStopwatch.start("START CityOfMiamiClient saveCOMSubmitResult");
 		// Update SR with passed back information
 		if (comNumber != null)
 			serviceCase.at("properties").at("hasServiceAnswer").add(
@@ -96,8 +98,9 @@ public class CityOfMiamiClient extends RestService
 			serviceCase.at("properties").at("hasStatus").set("iri", fullIri("legacy:X-ERROR").toString());
 			// TODO, remove hard emails from here...also, may be X-ERROR status should trigger emails
 			// for all SR types, not just COM, configurable somehow...
+			ThreadLocalStopwatch.error("CityOfMiamiClient [COM CASE REJECTED] department error email sent ");
 	    	MessageManager.get().sendEmail("cirm@miamidade.gov", 
-					"boris@miamidade.gov;ioliva@miamigov.com;VOchoa@miamigov.com;assia@aol.com;silval@miamidade.gov", 
+					"boris@miamidade.gov;ioliva@miamigov.com;VOchoa@miamigov.com;angel.martin@miamidade.gov;silval@miamidade.gov", 
 					"[COM CASE REJECTED] " + serviceCase.at("properties").at("hasCaseNumber"), processMessage);			
 		}
 		else
@@ -105,11 +108,14 @@ public class CityOfMiamiClient extends RestService
 			serviceCase.at("properties").delAt("hasDepartmentError");			
 			serviceCase.at("properties").at("hasStatus").set("iri", fullIri("legacy:O-LOCKED").toString());
 		}
-		return em.updateServiceCase(serviceCase);		
+		Json result = emulator.updateServiceCase(serviceCase);		
+		ThreadLocalStopwatch.stop("END CityOfMiamiClient saveCOMSubmitResult");
+		return result;
 	}
 	
 	public Json sendNewCase(Json serviceCase)
 	{
+		ThreadLocalStopwatch.start("START CityOfMiamiClient sendNewCase");
 		String SOAP_HEADER = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
                 + "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">"
                 + "<soap:Body>"
@@ -145,6 +151,7 @@ public class CityOfMiamiClient extends RestService
 //		String inspector = XMLU.content(rdoc, "Inspector");
 		String processMessage = XMLU.content(rdoc, "ProcessMessage");
 		Json upr = this.saveCOMSubmitResult(serviceCase, comNumber, processMessage);
+		ThreadLocalStopwatch.stop("END CityOfMiamiClient sendNewCase");
 		return ok().set("updateResult", upr);
 	}
 	
@@ -214,7 +221,7 @@ public class CityOfMiamiClient extends RestService
 		public Json call()
 		{								
 //			System.out.println("COM update:" + update);
-			Json existing = em.lookupServiceCase(Json.object("legacy:hasCaseNumber", update.at("CaseNumber"), "type", "legacy:ServiceCase"));
+			Json existing = emulator.lookupServiceCase(Json.object("legacy:hasCaseNumber", update.at("CaseNumber"), "type", "legacy:ServiceCase"));
 			if (existing.is("ok", false))
 				return existing;
 			existing = existing.at("bo");
@@ -237,7 +244,7 @@ public class CityOfMiamiClient extends RestService
 								 "hasDateCreated", GenUtils.formatDate(new java.util.Date()),
 								 "hasCompletedTimestamp", GenUtils.formatDate(new java.util.Date())));			       
 			existing.at("properties").at("hasServiceActivity", Json.array()).with(newActivities);
-			Json updateResult = em.updateServiceCase(OWL.resolveIris(OWL.prefix(existing), null));
+			Json updateResult = emulator.updateServiceCase(OWL.resolveIris(OWL.prefix(existing), null));
 			Json ackResult = Json.nil();
 			
 			// Doing the acknowledgment inside the transaction implies the following potential irregularities:
@@ -262,6 +269,7 @@ public class CityOfMiamiClient extends RestService
 	@Path("/retrieveUpdates")
 	public Json retrieveUpdates()
 	{		
+		ThreadLocalStopwatch.startTop("START CityOfMiamiClient /retrieveUpdates");
 		forceClientExempt.set(true);
 	    String uprequest = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
                 + "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">"
@@ -282,6 +290,7 @@ public class CityOfMiamiClient extends RestService
 			Document rdoc = XMLU.parse(topdoc.getElementsByTagName("strGetServiceRequestReadyResult").item(0).getTextContent());
 			NodeList updateNodes = rdoc.getElementsByTagName("tblCECases");
 			Json result = Json.array();
+			ThreadLocalStopwatch.now("CityOfMiamiClient /retrieveUpdates updateNodes.length() " + updateNodes.getLength());			
 			for (int i = 0; i < updateNodes.getLength(); i++)
 			{
 				Element n = (Element)updateNodes.item(i);
@@ -305,18 +314,23 @@ public class CityOfMiamiClient extends RestService
 					// TODO : if the update failed somehow, we need to log it somewhere for auditing purpose
 					// nowhere else for now, but stdout
 					if (upResult.is("ok", false))
-						System.out.println("COM UPDATED FAILED: " + update + "\nCOM UPDATED RESULT: " + upResult);
+					{
+						ThreadLocalStopwatch.error("COM UPDATE " + i + " FAILED: " + update + "\nCOM UPDATED RESULT: " + upResult);
+					}
 					result.add(upResult);	
 				}
 				catch (Throwable t)
 				{
+					ThreadLocalStopwatch.error("COM UPDATE " + i + " FAILED unexpectedly: " + update + "\n exception " + t);
 					result.add(ko(t));
 				}
 			}
+			ThreadLocalStopwatch.stop("END CityOfMiamiClient /retrieveUpdates returning ok, maybe with errors");
 			return ok().set("data", result);
 	    }
 	    catch (Throwable t)
 	    {
+			ThreadLocalStopwatch.fail("FAILED CityOfMiamiClient /retrieveUpdates with" + t);
 	    	return ko(t);
 	    }
 	}
@@ -427,22 +441,31 @@ public class CityOfMiamiClient extends RestService
 	@Path("/sendnew")
 	public Json sendCaseToCOM(Json data)
 	{
+		ThreadLocalStopwatch.start("START CityOfMiamiClient /sendnew");
 		forceClientExempt.set(true);
-		if (!data.has("caseNumber"))
+		if (!data.has("caseNumber")) {
+			ThreadLocalStopwatch.fail("FAIL CityOfMiamiClient /sendnew Case number property missing");
 			return ko("Case number property missing from JSON object.");
+		}
 		String casenumber = data.at("caseNumber").asString();
-		long boid = em.toServiceCaseId(casenumber);
+		long boid = emulator.toServiceCaseId(casenumber);
 		try
 		{
-			Json sr = em.lookupServiceCase(boid);
+			Json sr = emulator.lookupServiceCase(boid);
 			OWL.resolveIris(sr, null);
 			if (!sr.is("ok", true) || 
 				!sr.at("bo").at("properties").at("hasStatus").at("iri").asString().contains("O-OPEN"))
+			{
+				ThreadLocalStopwatch.fail("END CityOfMiamiClient /sendnew lookup sr not ok or not O-OPEN - not sending");
 				return sr;
-			return sendNewCase(sr.at("bo"));
+			}
+			Json sendResult = sendNewCase(sr.at("bo"));
+			ThreadLocalStopwatch.stop("END CityOfMiamiClient /sendnew case sent ");
+			return sendResult;
 		}
 		catch (Throwable ex)
 		{
+			ThreadLocalStopwatch.stop("FAIL CityOfMiamiClient /sendnew with " + ex);
 			if (!isWorthRetrying(ex))
 			{
 				GenUtils.reportFatal("While sending COM case " + data.at("caseNumber").asLong(), ex.toString(), ex);
@@ -466,6 +489,7 @@ public class CityOfMiamiClient extends RestService
 	
 	Json retry(Throwable ex, String path, int minutes, Json data)
 	{
+		ThreadLocalStopwatch.now("CityOfMiamiClient retry by time machine: /other/cityofmiami/sendnew in 30 mins");
 		long initiatedAt = data.at("initiatedAt", 0).asLong();		
 		if (initiatedAt + 24*60*60*1000 < System.currentTimeMillis())
 		{

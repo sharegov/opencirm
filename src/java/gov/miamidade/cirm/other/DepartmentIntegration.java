@@ -26,7 +26,6 @@ import static org.sharegov.cirm.utils.GenUtils.ko;
 import static org.sharegov.cirm.utils.GenUtils.ok;
 
 import java.util.Calendar;
-import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -38,7 +37,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 
 import mjson.Json;
 
@@ -58,8 +56,8 @@ import org.sharegov.cirm.rdb.DBIDFactory;
 import org.sharegov.cirm.rest.LegacyEmulator;
 import org.sharegov.cirm.rest.RestService;
 import org.sharegov.cirm.utils.GenUtils;
+import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
-import gov.miamidade.cirm.legacy.LegacyCaseImport;
 import gov.miamidade.cirm.other.JMSClient;
 import org.sharegov.cirm.utils.JsonUtil;
 
@@ -203,19 +201,23 @@ public class DepartmentIntegration extends RestService
     @Path("/sendMessage")
     public Json sendMessageToDepartment(Json msg)
     {
+    	ThreadLocalStopwatch.startTop("STARTTop /sendMessage to department ");
         try
         {
             JMSClient.connectAndSend(msg);
+        	ThreadLocalStopwatch.stop("END /sendMessage to department ");
             return ok();
         }
         catch (JMSException ex)
         {
             // We ignore because the connectAndSend method will already re-schedule another attempt
             // in case of a JMS error.
+        	ThreadLocalStopwatch.stop("END with time machine retry /sendMessage to department ");
             return ok();
         }
         catch (Throwable t)
         {
+        	ThreadLocalStopwatch.fail("END /sendMessage to department ");
             return ko(t);
         }
     }
@@ -226,9 +228,14 @@ public class DepartmentIntegration extends RestService
     @Consumes("application/json")
     public Json caseToDepartment(Json data)
     {
+		ThreadLocalStopwatch.getWatch().time("START DepartmentIntegration /sendnew ");
+		forceClientExempt.set(true);
         long initiatedAt = data.at("initiatedAt", 0).asLong();
-        if (!data.has("caseNumber"))
-            return ko("Case number property missing from JSON object.");
+        if (!data.has("caseNumber")) 
+        {
+        	ThreadLocalStopwatch.getWatch().time("FAIL DepartmentIntegration /sendnew case number missing ");
+    		return ko("Case number property missing from JSON object.");
+        }
         String casenumber = data.at("caseNumber").asString();
         long boid = emulator.toServiceCaseId(casenumber);
         try
@@ -237,6 +244,7 @@ public class DepartmentIntegration extends RestService
             if (bo == null)
                 bo = emulator.findServiceCaseOntology(boid);
             sendToDepartment(bo, null, null);
+        	ThreadLocalStopwatch.getWatch().time("SUCCEEDED DepartmentIntegration /sendnew  " + casenumber);
             return ok();
         }
         catch (GisException gisex)
@@ -249,6 +257,7 @@ public class DepartmentIntegration extends RestService
             }
             else
             {
+            	ThreadLocalStopwatch.getWatch().time("RETRY DepartmentIntegration /sendnew  by time machine in 30 mins " + casenumber);
                 Json j = GenUtils.timeTask(30, "/legacy/departments/sendnew", data);
                 if (j.is("ok", false))
                     GenUtils.reportFatal("While retrying new case task " + casenumber, j.toString(), gisex);
@@ -455,17 +464,30 @@ public class DepartmentIntegration extends RestService
     @Path("/sendnewactivity/{boid}/{timestamp}/{minutes}")
     public Json sendActivityService(@PathParam("boid") long boid, @PathParam("timestamp") long timestamp, @PathParam("minutes") int minutes)
     {
+		ThreadLocalStopwatch.startTop("START DepartmentIntegration /sendnewactivity/" + boid + "/activity timestamp: " + timestamp);
+    	forceClientExempt.set(true);
         Json sr = emulator.lookupServiceCase(boid);
         if (!sr.is("ok", true))
-            return sr;
+        {
+    		ThreadLocalStopwatch.fail("FAIL /sendnewactivity/ case not found ");
+        	return sr;
+        }
         else
+        {
             sr = sr.at("bo");
+        }
         Json activity = Json.nil();
         sr=OWL.prefix(sr);
-        if (!sr.has("properties"))
-            return ko("Bad JSON  - SR has no 'properties' property.");
+        if (!sr.has("properties")) 
+        {
+        	ThreadLocalStopwatch.fail("FAIL /sendnewactivity/ SR has no 'properties' property ");
+        	return ko("Bad JSON  - SR has no 'properties' property.");
+        }
         if (!sr.at("properties").has("legacy:hasServiceActivity"))
-            return ko("Activity with timestamp " + timestamp + " not found in " + sr.at("boid"));
+        {
+        	ThreadLocalStopwatch.fail("FAIL /sendnewactivity/ no activities in case");
+            return ko("No activities found in case " + sr.at("boid"));
+        }
         if (!sr.at("properties").at("legacy:hasServiceActivity").isArray())
              sr.at("properties").set("legacy:hasServiceActivity", Json.array(sr.at("properties").at("legacy:hasServiceActivity")));
         OWL.resolveIris(sr.at("properties").at("legacy:hasServiceActivity"), null); 
@@ -475,14 +497,20 @@ public class DepartmentIntegration extends RestService
                 activity = a;
                 break;
             }
-        if (activity.isNull())
+        if (activity.isNull()) 
+        {
+    		ThreadLocalStopwatch.fail("FAIL /sendnewactivity/ activity with timestamp " + timestamp + " not found ");
             return ko("Activity with timestamp " + timestamp + " not found in " + sr.at("boid"));
+        }
         try
         {
-            return tryActivitySend(sr, activity, minutes);
+            Json actSendResult =  tryActivitySend(sr, activity, minutes);
+    		ThreadLocalStopwatch.stop("END /sendnewactivity/ timestamp " + timestamp + "");
+    		return actSendResult;
         }
         catch (Throwable t)
         {
+    		ThreadLocalStopwatch.fail("FAIL /sendnewactivity/ unexpected with " + t);
             return ko(t);
         }
     }
@@ -628,13 +656,16 @@ public class DepartmentIntegration extends RestService
 	 * @param serviceCase
 	 * @return
 	 */
-	public boolean ensureCaseAlreadyAtDepartment(Json serviceCase)
+	public boolean ensureCaseAlreadyAtDepartment(Json serviceCase, Json departmentInterfaceCode)
 	{
 		
 		// the following should apply only to WCS SR types, and all WCS SR types
-		Json deptinterface = this.getDepartmentInterfaceCode(serviceCase.at("type").asString());
-		System.out.println("serviceCase: "+serviceCase);
-		String status = serviceCase.at("properties").at("legacy:hasStatus").at("iri").toString();
+		Json deptinterface = departmentInterfaceCode; 
+				//
+		//System.out.println("serviceCase: "+serviceCase);
+		Json statusJson = serviceCase.at("properties").at("legacy:hasStatus");
+		//2014.05.02 hilpold status failed if string
+		String status = statusJson.isObject()? statusJson.at("iri").asString() : statusJson.asString();
 		if (deptinterface != null && 
 			deptinterface.isObject() && 
 			((deptinterface.is("hasLegacyCode", "MD-WCS")||
@@ -688,6 +719,7 @@ public class DepartmentIntegration extends RestService
 		data.set("hasLegacyInterface", OWL.toJSON(interfaces.iterator().next()));
 		try
 		{
+			ThreadLocalStopwatch.now("DepartmentIntegration.sendNewActivity actually sending activity through JMS");
 			JMSClient.connectAndSend(LegacyMessageType.NewActivity, 
 					((DBIDFactory) Refs.idFactory.resolve()).generateSequenceNumber(), data);
 			return ok();
@@ -705,18 +737,20 @@ public class DepartmentIntegration extends RestService
 	{
 		Json type = OWL.toJSON(OWL.individual(serviceCase.at("type").asString()));
 		Json deptinterface = this.getDepartmentInterfaceCode(serviceCase.at("type").asString());
+		Json statusJson = serviceCase.at("properties").at("legacy:hasStatus");
+		String status = statusJson.isObject()? statusJson.at("iri").asString() : statusJson.asString();
 		// Activities are not sent separately, at least for PWS, until the case has made it 
 		// there already. This is because a "personal contact" activity can be added right
 		// after case creation and before the delay when it is sent to the PWS system.
 		// 
 		if (deptinterface != null && 
 			deptinterface.isObject() && 
-			(deptinterface.is("hasLegacyCode", "MD-PWS") &&
-			serviceCase.at("properties").at("legacy:hasStatus").at("iri").asString().contains("O-") ||
-			deptinterface.is("hasLegacyCode", "COM-CITY")))
+			(deptinterface.is("hasLegacyCode", "MD-PWS") &&	status.contains("O-") 
+					|| deptinterface.is("hasLegacyCode", "COM-CITY")))
 			return ok();
 		if (!type.has("hasAnswerUpdateTimeout"))
 			type = OWL.toJSON(OWL.individual("legacy:ServiceCase"));
+		//TODO hilpold ?? of ServiceCase individual???
 		if (!type.has("hasAnswerUpdateTimeout"))
 		{
 			this.sendNewActivity(serviceCase, activity);
@@ -737,11 +771,27 @@ public class DepartmentIntegration extends RestService
 	 */
 	public Json tryActivitySend(Json serviceCase, Json activity, int minutes)
 	{
-		
-		if (ensureCaseAlreadyAtDepartment(serviceCase))
-			return sendNewActivity(serviceCase, activity);
-		
-		String status = serviceCase.at("properties").at("legacy:hasStatus").at("iri").asString();
+		Json result;
+		String caseType = serviceCase.at("type").asString();
+		Json departmentInterfaceCode = getDepartmentInterfaceCode(caseType);
+		//hilpold check if case type is interface type
+		if (departmentInterfaceCode == null || departmentInterfaceCode.isNull()) 
+		{
+			ThreadLocalStopwatch.now("tryActivitySend returning ko: activity is not of an interface type: " + caseType + " act: " + activity);
+			return ko("activity is not of an interface type: " + caseType + " act: " + activity);			
+		}
+		ThreadLocalStopwatch.start("START tryActivitySend");
+		if (ensureCaseAlreadyAtDepartment(serviceCase, departmentInterfaceCode)) 
+		{
+			ThreadLocalStopwatch.now("case is at department -> sendNewActivity");
+			result = sendNewActivity(serviceCase, activity);
+			ThreadLocalStopwatch.stop("END tryActivitySend");
+			return result;
+		}
+		Json statusJson = serviceCase.at("properties").at("legacy:hasStatus");
+		//2014.05.02 hilpold status failed if string
+		String status = statusJson.isObject()? statusJson.at("iri").asString() : statusJson.asString();
+		//bad: String status = serviceCase.at("properties").at("legacy:hasStatus").at("iri").asString();
 		
 		// If the case should eventually make into the departmental system
 		if (status.endsWith("O-OPEN") ||
@@ -758,40 +808,18 @@ public class DepartmentIntegration extends RestService
 			else if (minutes>4320)
 			{
 				//eventually the retry is stopped after 3 unsuccessful attempts.
-				return ok();
-			}
-			return delaySendNewActivity(serviceCase, activity, minutes);
+				ThreadLocalStopwatch.fail("FAIL tryActivitySend retry is stopped after 3 unsuccessful attempts, returning ko");
+				return ko("tryActivitySend failed 3 times, giving up.");
+			}			
+			result = delaySendNewActivity(serviceCase, activity, minutes);
+			ThreadLocalStopwatch.stop("End tryActivitySend delaySendNewActivity callback requested in " + minutes);
+			return result;
 		}
 		else // case is not in department and will never make it there
 		{
 			// do nothing
+			ThreadLocalStopwatch.fail("FAIL tryActivitySend case is not at department and will never make it there, returning ok");
 		}
 		return ok();
 	}
-	
-
-	/**
-	 * Most likely, not needed anymore...
-	 * 
-	 * @param caseNumber
-	 * @return
-	 * @deprecated
-	 */
-	@GET
-	@Path("/import")
-	@Produces("application/json")
-	public Json importCaseFromCsr(@QueryParam("caseNumber") String caseNumber)
-	{
-		try
-		{
-			Properties props = LegacyCaseImport.getDefaultProperties();	
-			props.setProperty("case-number", caseNumber);
-			LegacyCaseImport.importServiceRequests(props);
-			return this.emulator.lookupServiceCase(Json.object().set("type","legacy:ServiceCase" ).set("legacy:hasCaseNumber", caseNumber));
-		} catch (Throwable t)
-		{
-			return ko(t);
-		}
-		
-	}	
 }
