@@ -42,6 +42,7 @@ import org.sharegov.cirm.utils.ObjectRef;
 import org.sharegov.cirm.utils.Ref;
 import org.sharegov.cirm.utils.RequestScopeRef;
 import org.sharegov.cirm.utils.SingletonRef;
+import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
 public class Refs
 {
@@ -170,4 +171,22 @@ public class Refs
 			return ((OWLLiteral)configSet.resolve().get("businessObjectIRIPrefix")).getLiteral();
 		}
 	}; 
+	
+	public static final Ref<String> serverName2 = new SingletonRef<String>(new Ref<String>() {
+		@Override
+		public String resolve()
+		{
+			String result;
+			try {
+				result = java.net.InetAddress.getLocalHost().getHostName();
+			 if (result.length() >= 2)
+				 result = result.substring(result.length() - 2);
+			} catch (Exception e) 
+			{
+				ThreadLocalStopwatch.error("Refs.serverName2 resolve failed with " + e);
+				result = "NA";
+			}
+			return result;
+		}		
+	});
 }

@@ -49,7 +49,7 @@ public class LDAPUserProvider implements UserProvider, AutoConfigurable
 	private String idAttribute = "uid";
 	private String iriBase;
 	private boolean binary;
-	private boolean allowSuperuser = false;
+	private boolean allowSuperuser = true;
 	private Json description = Json.object();
 	
 	private final Map<String, String> propertyNames = new HashMap<String, String>();

@@ -135,6 +135,7 @@ public class RelationalStoreImpl implements RelationalStore
 	public static boolean DBGLOCK = true;
 	public static boolean DBG_ALL_TRANSACTIONS_LOCK = false;
 	public static boolean DBG_PRE_RETRY_SLEEP = true;
+	public static boolean DBG_NO_CLASSIFICATION = true;
 	
 	/**
 	 * Causes the toplevel transaction to retry at least twice each time.
@@ -1012,6 +1013,7 @@ public class RelationalStoreImpl implements RelationalStore
 								+ " param 2 "
 								+ curEntity.getEntityType());
 				e.printStackTrace();
+				//hilpold check for NPE here:
 				e.getNextException().printStackTrace();
 			}
 			throw e;
@@ -1288,6 +1290,11 @@ public class RelationalStoreImpl implements RelationalStore
 		try
 		{
 			Long s = identifiers.get(subject.asOWLNamedIndividual()).getFirst();
+			if (s == null)
+			{
+				if (DBG_NO_CLASSIFICATION) ThreadLocalStopwatch.getWatch().time("RelationalStoreImpl::selectClass null identifier for " + subject + " empty set returned");
+				return Collections.emptySet();
+			}
 			conn = getConnection();
 			stmt = conn.prepareStatement(select.toString());
 			stmt.setLong(1, s);
@@ -1393,6 +1400,11 @@ public class RelationalStoreImpl implements RelationalStore
 		try
 		{
 			Long s = identifiers.get(subject.asOWLNamedIndividual()).getFirst();
+			if (s == null)
+			{
+				if (DBG_NO_CLASSIFICATION) ThreadLocalStopwatch.getWatch().time("RelationalStoreImpl::selectClassV null identifier for " + subject + " empty set returned");
+				return Collections.emptySet();
+			}
 			conn = getConnection();
 			stmt = conn.prepareStatement(select.toString());
 			stmt.setLong(1, s);

@@ -426,7 +426,7 @@ public class LegacyEmulator extends RestService
 				return ok().set("bo", result);
 			else
 			{
-				ThreadLocalStopwatch.getWatch().time("LE: lookupServiceCase Permission denied to " + caseid + " " + getUserInfo());
+				ThreadLocalStopwatch.error("LE: lookupServiceCase Permission denied to " + caseid + " " + getUserInfo());
 				return ko("Permission denied.");
 			}
 		}
@@ -503,10 +503,6 @@ public class LegacyEmulator extends RestService
 			{
 				e.printStackTrace();
 				return ko(e.getMessage());
-			}
-			finally 
-			{
-				ThreadLocalStopwatch.dispose();
 			}
 		}
 		return caseid == -1 ? notfound : lookupServiceCase(caseid);		
@@ -676,24 +672,15 @@ public class LegacyEmulator extends RestService
 		boids.add(Long.parseLong(boid));
 		try
 		{
-			if (DBG)
-			{
-				//Trace for 100% CPU issue.
-				System.out.println("boid passed into legacyEmulator.printServiceRequest : "+boid);
-				ThreadLocalStopwatch.getWatch().time("START printServiceRequest");
-			}
-			return makePDFCaseReports(boids);
+			ThreadLocalStopwatch.start("START LE.printServiceRequest " + boid);
+			Representation report = makePDFCaseReports(boids);
+			ThreadLocalStopwatch.stop("END LE.printServiceRequest");
+			return report;
 		}
 		catch (Exception e)
 		{
-			System.out.println("boid passed into legacyEmulator.printServiceRequest : "+boid);
+			ThreadLocalStopwatch.fail("FAIL LE.printServiceRequest " + boid);
 			throw new RuntimeException(e);
-		}
-		finally 
-		{
-			if (DBG)
-				ThreadLocalStopwatch.getWatch().time("END printServiceRequest");
-			ThreadLocalStopwatch.dispose();
 		}
 	}
 
@@ -1275,8 +1262,7 @@ public class LegacyEmulator extends RestService
 		//wrap the entire update in a transaction block.
 		try
 		{
-			if (DBG)
-				ThreadLocalStopwatch.getWatch().time("START updateServiceCase (str)");
+			ThreadLocalStopwatch.start("START updateServiceCase (str)");
 			final List<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();
 			Json result =  Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
 			public Json call()
@@ -1292,19 +1278,15 @@ public class LegacyEmulator extends RestService
 				Response.setCurrent(current);
 				return result;
 			}});			
+			ThreadLocalStopwatch.stop("END updateServiceCase (str)");
 			return result;	
 		}
 		catch (Throwable e)
 		{
+			ThreadLocalStopwatch.fail("FAIL updateServiceCase (str)");
 			System.out.println("formData passed into updateServiceCase: "+ serviceCaseParam.toString());
 			e.printStackTrace();
 			return ko(e);
-		}
-		finally
-		{
-			if (DBG)
-				ThreadLocalStopwatch.getWatch().time("END updateServiceCase (str)");
-			ThreadLocalStopwatch.dispose();
 		}
 	}
 	
@@ -1533,8 +1515,7 @@ public class LegacyEmulator extends RestService
 	{
 		try
 		{
-			if (DBG)
-				ThreadLocalStopwatch.getWatch().time("START createNewKOSR");
+			ThreadLocalStopwatch.start("START createNewKOSR");
 			final Json legacyForm = read(formData);
 			// System.out.println("new SR to save: " + legacyForm);
 			final Json actorEmails = legacyForm.at("properties").atDel("actorEmails");
@@ -1572,17 +1553,14 @@ public class LegacyEmulator extends RestService
 					//Saving the current context as we are losing when 
 					//using another get/post internally. 
 					Response current = Response.getCurrent();
-					if (DBG)
-						ThreadLocalStopwatch.getWatch().time("START createDefaultActivities");
+					ThreadLocalStopwatch.now("START createDefaultActivities");
 					ActivityManager am = new ActivityManager();
 					//TODO hilpold move this to where emails are created
 					emailsToSend.clear();
 					CirmTransaction.get().addTopLevelEventListener(new SendEmailOnTxSuccessListener(emailsToSend));
 					am.createDefaultActivities(owlClass(type), bontology, GenUtils.parseDate(legacyForm.at("properties").at("hasDateCreated").asString()), emailsToSend);
 					Response.setCurrent(current);
-					if (DBG)
-						ThreadLocalStopwatch.getWatch().time(
-								"END createDefaultActivities");
+					ThreadLocalStopwatch.now("END createDefaultActivities");
 					Json locationInfoTmp = populateGisData(legacyForm, bontology);
 					if (!locationInfoTmp.isNull())
 						locationInfo.with(locationInfoTmp);
@@ -1608,10 +1586,7 @@ public class LegacyEmulator extends RestService
 						}
 						catch (Throwable t)
 						{
-							Refs.logger.resolve().log(
-									Level.WARNING,
-									"Could not send (create sr) email for sr:"
-											+ bontology.getObjectId(), t);
+							ThreadLocalStopwatch.error("Error createNewKOSR - Failed to create email for " + bontology.getObjectId());
 						}
 					}
                     final Json result = bontology.toJSON();
@@ -1634,8 +1609,8 @@ public class LegacyEmulator extends RestService
 					    		}
 					    		catch (Exception ex)
 					    		{
-					    			GenUtils.reportFatal("Failed to send case " + bontology.getObjectId() + " to department", 
-					    						"", ex);
+					    			GenUtils.reportFatal("Failed to send case " + bontology.getObjectId() + " to department", "", ex);
+									ThreadLocalStopwatch.error("Error createNewKOSR - Failed to send to dept " + bontology.getObjectId());
 					    		}
 					    	}
 					    }
@@ -1654,22 +1629,21 @@ public class LegacyEmulator extends RestService
 				}
 			});
 			if (locationInfo.has("extendedInfo") && locationInfo.at("extendedInfo").has("error"))
+			{
 				GenUtils.reportPWGisProblem(result.at("bo").at("properties").at("hasCaseNumber").asString(),
 						locationInfo.at("extendedInfo").at("error"));
+				ThreadLocalStopwatch.error("Error createNewKOSR - Gis problem " + result.at("bo").at("properties").at("hasCaseNumber").asString());
+			}
 			//MessageManager.get().sendEmails(emailsToSend);
+			ThreadLocalStopwatch.stop("END createNewKOSR");
 			return result;					
 		}
 		catch (Throwable e)
 		{
+			ThreadLocalStopwatch.fail("FAIL createNewKOSR");
 			System.out.println("formData passed into createNewKOSR : "+formData);
 			e.printStackTrace();
 			return ko(e.getMessage());
-		}
-		finally
-		{
-			if (DBG)
-				ThreadLocalStopwatch.getWatch().time("END createNewKOSR");
-			ThreadLocalStopwatch.dispose();
 		}
 	}
 
@@ -1727,27 +1701,22 @@ public class LegacyEmulator extends RestService
 	 */
 	public Json saveNewServiceRequest(final String formData)
 	{
-		if (DBG)
-			ThreadLocalStopwatch.getWatch().time("START saveNewServiceRequest");
+		ThreadLocalStopwatch.start("START saveNewServiceRequest (referral?)");
 		try
 		{
 			return Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
 			public Json call()
-			{							
-				return saveNewCaseTransaction(Json.read(formData));
+			{				
+				Json result = saveNewCaseTransaction(Json.read(formData)); 
+				ThreadLocalStopwatch.stop("END saveNewServiceRequest (referral?)");
+				return result;
 			}});			
 		}
 		catch (Exception e)
 		{
+			ThreadLocalStopwatch.fail("FAIL saveNewServiceRequest (referral?) with " + e);
 			e.printStackTrace();
 			return ko(e);
-		}
-		finally
-		{
-			if (DBG)
-				ThreadLocalStopwatch.getWatch().time(
-						"END saveNewServiceRequest ");
-			ThreadLocalStopwatch.dispose();
 		}
 	}
 
@@ -1937,8 +1906,7 @@ public class LegacyEmulator extends RestService
 	{
 		try
 		{
-			if (DBG)
-				ThreadLocalStopwatch.getWatch().time("START createActivity " + boid);
+			ThreadLocalStopwatch.startTop("START /bo/{boid}/activities/create/{activityCode} " + boid + " " + activityCode);
 			OperationService op = new OperationService();
 			RelationalOWLPersister persister = getPersister();
 			BOntology bo = op.getBusinessObjectOntology(boid);
@@ -1948,7 +1916,10 @@ public class LegacyEmulator extends RestService
 						&& !Permissions.check(individual("BO_Update"),
 								individual(bo.getTypeIRI("legacy")),
 								getUserActors()))
+				{
+					ThreadLocalStopwatch.fail("Fail /bo/{boid}/activities/create/{activityCode} permission denied " + boid + " " + activityCode);
 					return ko("Permission denied.");
+				}
 				// OWLOntology o = bo.getOntology();
 				OWLNamedIndividual status = bo
 						.getObjectProperty("legacy:hasStatus");
@@ -1966,21 +1937,21 @@ public class LegacyEmulator extends RestService
 					m.addExplanation("LE.createActivity " + activityCode);
 				}
 				MessageManager.get().sendEmails(emailsToSend);
+				ThreadLocalStopwatch.stop("END /bo/{boid}/activities/create/{activityCode} success " + boid + " " + activityCode);
+				return ok();
+			} else 
+			{
+				//Case not found
+				ThreadLocalStopwatch.fail("FAIL /bo/{boid}/activities/create/{activityCode} case not found, but ok() returned " + boid + " " + activityCode);
 				return ok();
 			}
 		}
 		catch (Throwable e)
 		{
+			ThreadLocalStopwatch.fail("FAIL /bo/{boid}/activities/create/{activityCode} " + boid + " " + activityCode + " with " +  e);
 			e.printStackTrace();
 			return ko(e);
 		} 
-		finally
-		{
-			if (DBG)
-				ThreadLocalStopwatch.getWatch().time("END createActivity " + boid);
-			ThreadLocalStopwatch.dispose();
-		}
-		return ok();
 	}
 
 	@GET
@@ -2026,9 +1997,9 @@ public class LegacyEmulator extends RestService
     public Json createWhenOverdue(@PathParam("boid") Long boid,
                   @PathParam("activityFragment") String activityFragment,
                   @PathParam("activityCode") String overdueActivity)
-    {
-           if (DBG)
-                  ThreadLocalStopwatch.getWatch().time("START createWhenOverdue");
+    {	
+		   String callInfo = "/bo/{boid}/activity/{activityFragment}/overdue/create/{activityCode} " + boid + " " + activityFragment + " " + overdueActivity;
+           ThreadLocalStopwatch.startTop("START " + callInfo);
            try
            {
                   OperationService op = new OperationService();
@@ -2041,7 +2012,7 @@ public class LegacyEmulator extends RestService
                                                     individual(bo.getTypeIRI("legacy")),
                                                     getUserActors()))
                         {
-                        	ThreadLocalStopwatch.getWatch().time("LE: createWhenOverdue Permission denied " + getUserInfo());
+                            ThreadLocalStopwatch.fail("FAIL permission denied " + callInfo);
                         	return ko("Permission denied.");
                         }
                         OWLOntology o = bo.getOntology();
@@ -2072,22 +2043,20 @@ public class LegacyEmulator extends RestService
                                 	   MessageManager.get().sendEmails(emailsToSend);
                                     }
                                }
+                               ThreadLocalStopwatch.stop("END " + callInfo);
                                return ok();
                         }
+                        ThreadLocalStopwatch.fail("FAIL orig activity not found " + callInfo);
                         return ko("Could not create overdue activity, original activity not found.");
                   }
+                  ThreadLocalStopwatch.fail("FAIL bo not found " + callInfo);
                   return ko("No business object found with id " + boid);
            }
            catch (Throwable e)
            {
-                  e.printStackTrace();
-                  return ko(e);
-           }
-           finally
-           {
-                  if (DBG)
-                        ThreadLocalStopwatch.getWatch().time("END createWhenOverdue ");
-                  ThreadLocalStopwatch.dispose();
+               ThreadLocalStopwatch.fail("FAIL with " + e + " " + callInfo);
+               e.printStackTrace();
+               return ko(e);
            }
     }
 

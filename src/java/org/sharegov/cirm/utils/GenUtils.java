@@ -76,6 +76,8 @@ public class GenUtils
 	public static final String TIMETASK_NOTRANS_MARKER = "NOTRANS";
 	private static final ThreadLocal<SimpleDateFormat> ISO_DATE_FORMATS = new ThreadLocal<SimpleDateFormat>();
 	public static final String isoDatePattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+	public static final String SERVER_NAME_2 = Refs.serverName2.resolve();
+	
 
 	public static URL makeLocalURL(String relativePath)
 	{
@@ -190,7 +192,7 @@ public class GenUtils
 	
 	public static boolean dbg()
 	{
-	    return true || dbgLevelTracing;
+	    return dbgLevelTracing;
 	}
 	
 	public static void dbg(boolean newdbgLevelTracing)
@@ -200,7 +202,7 @@ public class GenUtils
 	
 	public static Json ok()
 	{
-		return Json.object("ok", true);
+		return Json.object("ok", true, "server", SERVER_NAME_2);
 	}
 
 	public static void pagination(Json paginationJson, Json paginationCriteria)
@@ -223,14 +225,15 @@ public class GenUtils
 
 	public static Json ko(String error)
 	{
-		return Json.object("ok", false, "error", error);
+		return Json.object("ok", false, "error", error, "server", SERVER_NAME_2);
 	}
 
 	public static Json ko(Throwable t)
 	{
 		return Json.object("ok", false, 
 						   "error", t.toString(), 
-						   "stackTrace", stackTrace(t));
+						   "stackTrace", stackTrace(t),
+						   "server", SERVER_NAME_2);
 	}
 
 	public static byte[] getBytesFromFile(File file) throws IOException
@@ -451,7 +454,7 @@ public class GenUtils
                   }
            } catch (Exception e)
            {
-                  System.out.println("Could not parse date " + value + " as ISO 8601");
+                  ThreadLocalStopwatch.getWatch().time("Error: Could not parse date " + value + " as ISO 8601");
                   throw new RuntimeException(e);
            }
            return result;
@@ -607,6 +610,7 @@ public class GenUtils
 
     public static void reportPWGisProblem(String caseNumber, Json error)
     {
+    	ThreadLocalStopwatch.getWatch().time("reportPWGisProblem email sent: " + caseNumber);
     	String body = "<p>Case " + caseNumber + " has invalid extra GIS info.</p>";
     	body += "<p>"  + error + "</p>";
     	MessageManager.get().sendEmail("cirm@miamidade.gov", 
@@ -616,6 +620,9 @@ public class GenUtils
     
     public static void reportFatal(String subject, String msg, Throwable t)
     {
+    	ThreadLocalStopwatch.getWatch().time("ReportFatal email sent: " + msg + " " + t);
+    	logStackTrace(t.getStackTrace(), 10);
+    	
     	OWLLiteral recipient = Refs.configSet.resolve().get("FatalErrorEmail");
     	if (recipient == null)
     		return;
@@ -656,7 +663,7 @@ public class GenUtils
     		transactionBeginTime = CirmTransaction.get().getBeginTimeMs();
     		taskId = transactionBeginTime + "_" + url + minutesFromNow;
     	} else {
-    		System.err.println("Genutils timetask with url/minsFromNow called outside of a transaction. Using now, a new RandomUUID for task a NOTRANS marker in taskid.");
+    		ThreadLocalStopwatch.getWatch().time("Genutils timetask with url/minsFromNow called outside of a transaction. Using now, a new RandomUUID for task a NOTRANS marker in taskid.");
     		cirmTransactionUUID = UUID.randomUUID();
     		transactionBeginTime = new Date().getTime();
     		taskId = transactionBeginTime + "_" + TIMETASK_NOTRANS_MARKER + "_" + url + minutesFromNow;
@@ -814,4 +821,29 @@ public class GenUtils
 		return str.toString();
 	}
 
+	/**
+	 * Prints maxElems of a stack trace using ThreadLocalStopWatch to see the thread.
+	 * 
+	 * use Thread.currentThread().getStackTrace() to get one.
+	 * 
+	 * Thread safe. 
+	 * 
+	 * @param trace null tolerated, will print an error trace
+	 * @param maxElems all values tolerated, if !>0 an error message will be logged.
+	 */
+	public static void logStackTrace(StackTraceElement[] trace, int maxLines)
+	{
+		if (trace != null && maxLines > 0) 
+		{
+			int i = 0;
+			while (i < trace.length && i < maxLines) 
+			{
+				ThreadLocalStopwatch.getWatch().time("" + trace[i].toString());
+				i++;
+			}
+		} else
+		{
+			ThreadLocalStopwatch.getWatch().time("Error: irgnored: GenUtils.logStackTrace() trace was " + trace + " maxLines was " + maxLines);
+		}
+	}
 }

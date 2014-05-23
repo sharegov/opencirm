@@ -39,6 +39,7 @@ import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.RequestScopeFilter;
 import org.sharegov.cirm.StartUp;
+import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.Ref;
 import org.sharegov.cirm.utils.RequestScopeRef;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
@@ -69,7 +70,7 @@ public class RestService
 
 	public static boolean DBG = true;
 	
-	public static RequestScopeRef<Boolean> forceClientExempt = new RequestScopeRef<Boolean>(new Ref<Boolean>()
+	public static volatile RequestScopeRef<Boolean> forceClientExempt = new RequestScopeRef<Boolean>(new Ref<Boolean>()
 	{
 		public Boolean resolve() { return false; }
 	});
@@ -88,7 +89,13 @@ public class RestService
 
 	public String getUserId()
 	{
-		if(httpHeaders == null) return "";
+		if(httpHeaders == null) 
+		{
+			ThreadLocalStopwatch.getWatch().time("ERROR: RestService.getUserId() httpHeaders were null. this indicates that this object: " + this + " was called without context. "
+					+ "\r\n Remove this after all such problems are found and fixed:");
+			GenUtils.logStackTrace(Thread.currentThread().getStackTrace(), 10);
+			return "";
+		}
 		Cookie cookie = httpHeaders.getCookies().get("username");
 		if (cookie != null && cookie.getValue() != null && cookie.getValue().length() > 0)
 			return cookie.getValue();
@@ -99,7 +106,16 @@ public class RestService
 	@SuppressWarnings("deprecation")
 	public String [] getUserGroups()
 	{
-		if(httpHeaders == null) return new String[0];
+		if(httpHeaders == null) 
+		{
+			if (DBG) 
+			{
+				ThreadLocalStopwatch.getWatch().time("ERROR: RestService.getUserGroups() httpHeaders were null. this indicates that this object: " + this + " was called without context. "
+						+ "\r\n Remove this after all such problems are found and fixed:");
+				GenUtils.logStackTrace(Thread.currentThread().getStackTrace(), 10);
+			}
+			return new String[0];
+		}
 		Cookie cookie = httpHeaders.getCookies().get("usergroups");
 		if (cookie != null && cookie.getValue() != null && cookie.getValue().length() > 0)
 		{
@@ -197,10 +213,17 @@ public class RestService
 
 	public boolean isClientExempt()
 	{
-		if (StartUp.config.is("allClientsExempt", true) ||
-			Boolean.TRUE.equals(Refs.configSet.resolve().get("areAllClientsExempt")) ||
-			forceClientExempt.resolve())
+		if (StartUp.config.is("allClientsExempt", true) || Boolean.TRUE.equals(Refs.configSet.resolve().get("areAllClientsExempt")))
 		{
+			return true;
+		}
+		else if (forceClientExempt.resolve())
+		{
+			if(httpHeaders == null) 
+			{
+				ThreadLocalStopwatch.getWatch().time("forceClientExempt fix active and used: RestServicehttpHeaders were null. this indicates that this object: " + this + " was called without context. Trace(4): ");
+				GenUtils.logStackTrace(Thread.currentThread().getStackTrace(), 4);
+			}
 			return true;
 		} 
 		else if (Arrays.asList(getUserGroups()).contains(UserService.CIRM_ADMIN))
