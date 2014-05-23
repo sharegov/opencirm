@@ -760,6 +760,8 @@ td:hover {
 	-moz-border-radius-topright:10px;
 }
 
+.no-close .ui-dialog-titlebar-close {display: none }
+
 .app_title {
 	font-size:48px;
 	text-transform:uppercase;

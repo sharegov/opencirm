@@ -1968,7 +1968,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
             jsondata.properties.isCreatedBy = cirm.user.username;
             var send = prefixMaker(jsondata);
             console.log("send", send);
-            $("#sh_save_progress").dialog({height: 140, modal: true});
+			$("#sh_save_progress").dialog({height: 140, modal: true, dialogClass: 'no-close'});
             cirm.top.async().post("/legacy/kosubmit", {data:JSON.stringify(send)}, function(result) {
                 console.log("result", ko.toJS(result));
                 if(result.ok == true) {
@@ -1997,9 +1997,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
           jsondata.properties.isModifiedBy = cirm.user.username;
           var send = prefixMaker(jsondata);
           console.log("send", send);
-          $("#sh_save_progress").dialog({height: 140, modal: true});
+		  $("#sh_save_progress").dialog({height: 140, modal: true, dialogClass: 'no-close'});
 
-          var upcontinuation = function(result) {
+		  var upcontinuation = function(result) {
                 console.log("result", ko.toJS(result));
                 if(result.ok == true) {
                     $(document).trigger(legacy.InteractionEvents.UserAction, 
