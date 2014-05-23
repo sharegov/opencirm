@@ -1,3 +1,5 @@
 
 syntax: regexp
 ^dist$
+syntax: glob
+classes/

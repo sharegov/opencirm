@@ -395,7 +395,7 @@ public class LegacyCaseImport
 				srImportedCount++;
 				ThreadLocalStopwatch.getWatch().time( srImportedCount + " ServiceCase(s) imported in this run thus far of " + srToImport + " total to import. Have ignored " +srNotImported + " ServiceCase(s) due to not being found in meta.");
 				ThreadLocalStopwatch.getWatch().time("importServiceRequests()"+ rs.getString("SERVICE_REQUEST_NUM") +" case finished.");
-				ThreadLocalStopwatch.getWatch().reset();
+				//ThreadLocalStopwatch.getWatch().reset();
 				//System.out.println( ((((srImportedCount + srNotImported)*100 )/srToImport)) + " % complete");
 			}
 			System.out.println("Import complete. Not imported:");
@@ -437,7 +437,7 @@ public class LegacyCaseImport
 		if(alreadyImported && !WRITE_RECORDS_TO_DISK)
 		{
 			String msg = "Sr:" + rs.getString("SERVICE_REQUEST_NUM") + " has already been imported";
-			ThreadLocalStopwatch.getWatch().reset();
+			//ThreadLocalStopwatch.getWatch().reset();
 			if(srNumber != null)
 				throw new RuntimeException(msg);
 			else
