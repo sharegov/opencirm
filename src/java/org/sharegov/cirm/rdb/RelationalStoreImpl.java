@@ -3745,7 +3745,7 @@ public class RelationalStoreImpl implements RelationalStore
 				Statement delete = null;
 				if(manyToMany)
 				{
-					delete = buildManyToManyDelete(ind, identifiers, manyColumnIRI, joinTableFragment, joinColumnIRIFragment, joinColumnIRIType);
+					delete = buildManyToManyDelete(ind, identifiers, joinTableFragment, joinColumnIRIFragment, joinColumnIRIType);
 				}
 				else
 				{
@@ -3820,6 +3820,16 @@ public class RelationalStoreImpl implements RelationalStore
 			Set<OWLNamedIndividual> manyColumnIRI, String joinTableFragment,
 			String joinColumnIRIFragment, OWLNamedIndividual joinColumnIRIType)
 	{
+        if (ind == null) throw new NullPointerException("ind param was null");
+        //next line expensive – maybe do check later in the code
+        if (identifiers.get(ind) == null) throw new IllegalStateException("no identifier found for ind " + ind);
+        if (objectPropertyValues == null) throw new NullPointerException("null objectPropertyValues for ind " + ind);
+        if (mappedProperty == null) throw new NullPointerException("null mappedProperty for ind " + ind);
+        if (manyColumnIRI == null) throw new NullPointerException("null manyColumnIRI for ind " + ind);
+        if (joinTableFragment == null) throw new NullPointerException("null joinTableFragment for ind " + ind);
+        if (joinColumnIRIFragment == null) throw new NullPointerException("null joinColumnIRIFragment for ind " + ind);
+        if (joinColumnIRIType == null) throw new NullPointerException("null joinColumnIRIType for ind " + ind);
+
 		Statement delete = new Statement();
 		Sql deleteSql = DELETE_FROM(joinTableFragment).WHERE(joinColumnIRIFragment).EQUALS("?");
 		delete.getParameters().add(identifiers.get(ind));
@@ -3852,9 +3862,16 @@ public class RelationalStoreImpl implements RelationalStore
 	private Statement buildManyToManyDelete(
 			OWLNamedIndividual ind,
 			Map<OWLEntity, DbId> identifiers,
-			Set<OWLNamedIndividual> manyColumnIRI, String joinTableFragment,
+			String joinTableFragment,
 			String joinColumnIRIFragment, OWLNamedIndividual joinColumnIRIType	)
 	{
+        if (ind == null) throw new NullPointerException("ind param was null");
+        //next line expensive – maybe do check later in the code
+        if (identifiers.get(ind) == null) throw new IllegalStateException("no identifier found for ind " + ind);
+        if (joinTableFragment == null) throw new NullPointerException("null joinTableFragment for ind " + ind);
+        if (joinColumnIRIFragment == null) throw new NullPointerException("null joinColumnIRIFragment for ind " + ind);
+        if (joinColumnIRIType == null) throw new NullPointerException("null joinColumnIRIType for ind " + ind);
+
 		Statement delete = new Statement();
 		Sql deleteSql = DELETE_FROM(joinTableFragment).WHERE(joinColumnIRIFragment).EQUALS("?");
 		delete.getParameters().add(identifiers.get(ind));
