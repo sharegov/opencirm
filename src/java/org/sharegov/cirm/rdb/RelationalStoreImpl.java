@@ -3742,10 +3742,16 @@ public class RelationalStoreImpl implements RelationalStore
 			// Create delete statement first, but only if its an existing entity.
 			if (identifiers.get(ind).isExisting())
 			{
-				Statement delete = buildHasManyDelete(ind, identifiers,
-						objectPropertyValues, mappedProperty, manyToMany,
-						manyColumnIRI, joinTableFragment, joinColumnIRIFragment,
-						joinColumnIRIType);
+				Statement delete = null;
+				if(manyToMany)
+				{
+					delete = buildManyToManyDelete(ind, identifiers, manyColumnIRI, joinTableFragment, joinColumnIRIFragment, joinColumnIRIType);
+				}
+				else
+				{
+					delete = buildOneToManyDelete(ind, identifiers, objectPropertyValues, mappedProperty, manyColumnIRI, 
+							joinTableFragment, joinColumnIRIFragment, joinColumnIRIType);
+				}
 				statements.add(delete);
 			}
 			//end create delete statement
@@ -3806,36 +3812,20 @@ public class RelationalStoreImpl implements RelationalStore
 
 	}
 
-	private Statement buildHasManyDelete(
+	private Statement buildOneToManyDelete(
 			OWLNamedIndividual ind,
 			Map<OWLEntity, DbId> identifiers,
 			Map<OWLObjectPropertyExpression, Set<OWLIndividual>> objectPropertyValues,
-			OWLObjectProperty mappedProperty, boolean manyToMany,
+			OWLObjectProperty mappedProperty,
 			Set<OWLNamedIndividual> manyColumnIRI, String joinTableFragment,
-			String joinColumnIRIFragment, OWLNamedIndividual joinColumnIRIType	)
+			String joinColumnIRIFragment, OWLNamedIndividual joinColumnIRIType)
 	{
 		Statement delete = new Statement();
 		Sql deleteSql = DELETE_FROM(joinTableFragment).WHERE(joinColumnIRIFragment).EQUALS("?");
 		delete.getParameters().add(identifiers.get(ind));
 		delete.getTypes().add(joinColumnIRIType);
-		if(manyToMany)
+		if(!objectPropertyValues.get(mappedProperty).isEmpty())
 		{
-			//on a many-to-many (junction table)
-			//its perfectly fine to delete all the relations
-			//because the underlying rows do not represent
-			//and entity, they represent a junction
-			// of two entities.
-			delete.setSql(deleteSql);
-			
-		}
-		else
-		{
-			//on a one-to-many we must know what entities 
-			//on the many side will remain valid and
-			//delete those that are (NOT IN)
-			//that list.
-			if(!objectPropertyValues.get(mappedProperty).isEmpty())
-			{
 				OWLNamedIndividual manyColumnInd = manyColumnIRI.iterator().next();
 				String manyColumn = manyColumnInd.getIRI().getFragment().replace(joinTableFragment + ".", "");
 				OWLNamedIndividual manyColumnIRIType = 
@@ -3850,8 +3840,25 @@ public class RelationalStoreImpl implements RelationalStore
 					delete.getTypes().add(manyColumnIRIType);
 				}
 				deleteSql.NOT_IN(values.toArray(new String[values.size()]));
-			}
 		}
+		delete.setSql(deleteSql);
+		if(DBGX)
+		{
+			printStatement(delete);
+		}
+		return delete;
+	}
+	
+	private Statement buildManyToManyDelete(
+			OWLNamedIndividual ind,
+			Map<OWLEntity, DbId> identifiers,
+			Set<OWLNamedIndividual> manyColumnIRI, String joinTableFragment,
+			String joinColumnIRIFragment, OWLNamedIndividual joinColumnIRIType	)
+	{
+		Statement delete = new Statement();
+		Sql deleteSql = DELETE_FROM(joinTableFragment).WHERE(joinColumnIRIFragment).EQUALS("?");
+		delete.getParameters().add(identifiers.get(ind));
+		delete.getTypes().add(joinColumnIRIType);
 		delete.setSql(deleteSql);
 		if(DBGX)
 		{
