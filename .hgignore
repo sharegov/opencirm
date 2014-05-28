@@ -3,3 +3,8 @@ syntax: regexp
 ^dist$
 syntax: glob
 classes/
+
+syntax: regexp
+^src/ontology/County_Working\.owl$
+syntax: regexp
+^src/ontology/legacy\.owl$
