@@ -35,4 +35,9 @@ public class DbId extends Pair<Long, OWLEntity>
     {
         return existing != null;
     }
+    
+    public String toString() 
+    {
+    	return "" + getFirst();    	
+    }
 }
