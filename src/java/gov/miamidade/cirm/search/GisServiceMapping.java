@@ -98,7 +98,7 @@ public class GisServiceMapping
 		if (instance == null)
 		{
 			instance  = new GisServiceMapping();
-			instance.load(new File(StartUp.config.at("workingDir").asString() + "/src/resources/srgeoinfo.csv"));
+			instance.load(new File(StartUp.config.at("workingDir").asString() + "/src/resources/mdcirm/srgeoinfo.csv"));
 		}
 		return instance;
 	}

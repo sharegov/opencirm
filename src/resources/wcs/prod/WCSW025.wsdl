@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<definitions name="WCSW025Service" targetNamespace="http://ibmprd.miamidade.gov:4003/CICS/TWBA/WCSW025W" xmlns:wsdlns="http://ibmprd.miamidade.gov:4003/CICS/TWBA/WCSW025W" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"><types><schema targetNamespace="http://ibmprd.miamidade.gov:4003/CICS/TWBA/WCSW025W" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" elementFormDefault="qualified"><element name="WCSW025Request" type="wsdlns:WCSW025Request_Type"/>
+			<complexType name="WCSW025Request_Type">
+				<sequence>
+					<element name="WCSW025In" type="wsdlns:WCSW025In_Type"/>
+				</sequence>
+			</complexType>
+			<element name="WCSW025Response" type="wsdlns:WCSW025Response_Type"/>
+			<complexType name="WCSW025Response_Type">
+				<sequence>
+					<element name="WCSW025Out" type="wsdlns:WCSW025Out_Type"/>
+				</sequence>
+			</complexType>
+			<complexType name="WCSW025In_Type">
+				<sequence>
+					<element name="WCSW025InHdr" type="wsdlns:WCSW025InHdr_Type"/>
+					<element name="FOLMUNI" type="xsd:string"/>
+					<element name="FOLNUMB" type="xsd:string"/>
+				</sequence>
+			</complexType>
+			<complexType name="WCSW025InHdr_Type">
+				<sequence>
+					<element name="StreamInputSessionId" type="xsd:string"/>
+				</sequence>
+			</complexType>
+			<complexType name="WCSW025Out_Type">
+				<sequence>
+					<element name="MAPNAME" type="xsd:string"/>
+					<element name="SCRMSG" type="xsd:string"/>
+					<element name="SCRNAME" type="xsd:string"/>
+					<element name="ACC1" type="xsd:string"/>
+					<element name="ACC2" type="xsd:string"/>
+					<element name="ACC3" type="xsd:string"/>
+					<element name="RETURNMSG" type="xsd:string"/>
+					<element name="RETURNCODE" type="xsd:unsignedShort"/>
+					<element name="XMLCONVRC" type="xsd:unsignedShort"/>
+					<element name="TAXUNIT" type="xsd:string"/>
+					<element name="WSTUNIT" type="xsd:string"/>
+					<element name="FEECODE" type="xsd:string"/>
+					<element name="FCDESC" type="xsd:string"/>
+					<element name="CRDATE" type="xsd:string"/>
+					<element name="FOLMUN" type="xsd:string"/>
+					<element name="FOLNUM" type="xsd:string"/>
+					<element name="ACCTYPE" type="xsd:string"/>
+					<element name="OUTSRV" type="xsd:string"/>
+					<element name="SRVSTART" type="xsd:string"/>
+					<element name="SRVDATE" type="xsd:string"/>
+					<element name="ACCST" type="xsd:string"/>
+					<element name="HANDICAP" type="xsd:string"/>
+					<element name="BILLST" type="xsd:string"/>
+					<element name="PENCODE" type="xsd:string"/>
+					<element name="ACCNAME" type="xsd:string"/>
+					<element name="BILLDATE" type="xsd:string"/>
+					<element name="ACCADDR" type="xsd:string"/>
+					<element name="PRAMT" type="xsd:string"/>
+					<element name="ACCAPT" type="xsd:string"/>
+					<element name="ACCZIP" type="xsd:string"/>
+					<element name="PHAREA" type="xsd:string"/>
+					<element name="PHNUM" type="xsd:string"/>
+					<element name="PRTAX" type="xsd:string"/>
+					<element name="LEGAL" type="xsd:string"/>
+					<element name="PRPENDATE" type="xsd:string"/>
+					<element name="PRPENAMT" type="xsd:string"/>
+					<element name="OWNAME" type="xsd:string"/>
+					<element name="MTHDELQ" type="xsd:string"/>
+					<element name="MAILCO" type="xsd:string"/>
+					<element name="PENDATE" type="xsd:string"/>
+					<element name="PENAMT" type="xsd:string"/>
+					<element name="MISCMAIL" type="xsd:string"/>
+					<element name="SRVTAXAMT" type="xsd:string"/>
+					<element name="MAILADDR" type="xsd:string"/>
+					<element name="MAILAPT" type="xsd:string"/>
+					<element name="CURFEEAMT" type="xsd:string"/>
+					<element name="MAILCITY" type="xsd:string"/>
+					<element name="MAILST" type="xsd:string"/>
+					<element name="MAILZIP" type="xsd:string"/>
+					<element name="BADCHKFEE" type="xsd:string"/>
+					<element name="OWNPHAREA" type="xsd:string"/>
+					<element name="OWNPHNUM" type="xsd:string"/>
+					<element name="CLUC" type="xsd:string"/>
+					<element name="PDAMT" type="xsd:string"/>
+					<element name="CANROLL" type="xsd:string"/>
+					<element name="ArrayOfUSIZE" type="wsdlns:ArrayOfUSIZE_Type"/>
+					<element name="ArrayOfUNITS" type="wsdlns:ArrayOfUNITS_Type"/>
+					<element name="OCLNO" type="xsd:string"/>
+					<element name="FEECR" type="xsd:string"/>
+					<element name="BOOK" type="xsd:string"/>
+					<element name="ROUTE" type="xsd:string"/>
+					<element name="DIST" type="xsd:string"/>
+					<element name="REG" type="xsd:string"/>
+					<element name="DELINQ" type="xsd:string"/>
+					<element name="TOTDUE" type="xsd:string"/>
+					<element name="JUDGAMT" type="xsd:string"/>
+					<element name="BLKAMT" type="xsd:string"/>
+					<element name="GRTOTDUE" type="xsd:string"/>
+					<element name="TRIPS" type="xsd:string"/>
+					<element name="PICKUP" type="xsd:string"/>
+					<element name="EXEMPT" type="xsd:string"/>
+					<element name="SRVTAX" type="xsd:string"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfUSIZE_Type">
+				<sequence>
+					<element name="USIZE" type="xsd:string" minOccurs="0" maxOccurs="4"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfUNITS_Type">
+				<sequence>
+					<element name="UNITS" type="xsd:string" minOccurs="0" maxOccurs="4"/>
+				</sequence>
+			</complexType></schema></types>
+	<message name="WCSW025RequestMsg">
+		<part name="body" element="wsdlns:WCSW025Request"/>
+	</message>
+	<message name="WCSW025ResponseMsg">
+		<part name="body" element="wsdlns:WCSW025Response"/>
+	</message>
+	<portType name="WCSW025ServicePort_Type">
+		<operation name="WCSW025">
+			<input message="wsdlns:WCSW025RequestMsg"/>
+			<output message="wsdlns:WCSW025ResponseMsg"/>
+		</operation>
+	</portType>
+	<binding name="WCSW025ServiceBinding" type="wsdlns:WCSW025ServicePort_Type">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+		<operation name="WCSW025">
+			<soap:operation soapAction="WCSW025" type="document" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+			<input>
+				<soap:body use="literal" namespace="http://ibmprd.miamidade.gov:4003/CICS/TWBA/WCSW025W" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+			</input>
+			<output>
+				<soap:body use="literal" namespace="http://ibmprd.miamidade.gov:4003/CICS/TWBA/WCSW025W" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+			</output>
+		</operation>
+	</binding>
+	<service name="WCSW025Service">
+		<port name="WCSW025ServicePort" binding="wsdlns:WCSW025ServiceBinding">
+			<soap:address location="http://ibmprd.miamidade.gov:4003/CICS/TWBA/CSIWKI2X/WCSW025W" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+		</port>
+	</service></definitions>

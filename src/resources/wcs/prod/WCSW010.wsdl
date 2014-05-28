@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<definitions name="WCSW010Service" targetNamespace="http://ibmprd.miamidade.gov:4003/CICS/TWBA/WCS0010W" xmlns:wsdlns="http://ibmprd.miamidade.gov:4003/CICS/TWBA/WCS0010W" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"><types><schema targetNamespace="http://ibmprd.miamidade.gov:4003/CICS/TWBA/WCS0010W" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" elementFormDefault="qualified"><element name="WCSW010Request" type="wsdlns:WCSW010Request_Type"/>
+			<complexType name="WCSW010Request_Type">
+				<sequence>
+					<element name="WCSW010In" type="wsdlns:WCSW010In_Type"/>
+				</sequence>
+			</complexType>
+			<element name="WCSW010Response" type="wsdlns:WCSW010Response_Type"/>
+			<complexType name="WCSW010Response_Type">
+				<sequence>
+					<element name="WCSW010Out" type="wsdlns:WCSW010Out_Type"/>
+				</sequence>
+			</complexType>
+			<complexType name="WCSW010In_Type">
+				<sequence>
+					<element name="WCSW010InHdr" type="wsdlns:WCSW010InHdr_Type"/>
+					<element name="ACCT1" type="xsd:string"/>
+					<element name="ACCT2" type="xsd:string"/>
+					<element name="ACCT3" type="xsd:string"/>
+					<element name="ADDRESS" type="xsd:string"/>
+					<element name="APT" type="xsd:string"/>
+				</sequence>
+			</complexType>
+			<complexType name="WCSW010InHdr_Type">
+				<sequence>
+					<element name="StreamInputSessionId" type="xsd:string"/>
+				</sequence>
+			</complexType>
+			<complexType name="WCSW010Out_Type">
+				<sequence>
+					<element name="MAPNAME" type="xsd:string"/>
+					<element name="SCRNAME" type="xsd:string"/>
+					<element name="ArrayOfADRADDR" type="wsdlns:ArrayOfADRADDR_Type"/>
+					<element name="ArrayOfADRAPT" type="wsdlns:ArrayOfADRAPT_Type"/>
+					<element name="ArrayOfADRFMUN" type="wsdlns:ArrayOfADRFMUN_Type"/>
+					<element name="ArrayOfADRFNUM" type="wsdlns:ArrayOfADRFNUM_Type"/>
+					<element name="ArrayOfADRACC1" type="wsdlns:ArrayOfADRACC1_Type"/>
+					<element name="ArrayOfADRACC2" type="wsdlns:ArrayOfADRACC2_Type"/>
+					<element name="ArrayOfADRACC3" type="wsdlns:ArrayOfADRACC3_Type"/>
+					<element name="ArrayOfADRCODE" type="wsdlns:ArrayOfADRCODE_Type"/>
+					<element name="ArrayOfADRST" type="wsdlns:ArrayOfADRST_Type"/>
+					<element name="ArrayOfADRNAME" type="wsdlns:ArrayOfADRNAME_Type"/>
+					<element name="SCRMSG" type="xsd:string"/>
+					<element name="ACC1" type="xsd:string"/>
+					<element name="ACC2" type="xsd:string"/>
+					<element name="ACC3" type="xsd:string"/>
+					<element name="TAXUNIT" type="xsd:string"/>
+					<element name="WSTUNIT" type="xsd:string"/>
+					<element name="FEECODE" type="xsd:string"/>
+					<element name="FCDESC" type="xsd:string"/>
+					<element name="CRDATE" type="xsd:string"/>
+					<element name="FOLMUN" type="xsd:string"/>
+					<element name="FOLNUM" type="xsd:string"/>
+					<element name="ACCTYPE" type="xsd:string"/>
+					<element name="OUTSRV" type="xsd:string"/>
+					<element name="SRVSTART" type="xsd:string"/>
+					<element name="SRVDATE" type="xsd:string"/>
+					<element name="ACCST" type="xsd:string"/>
+					<element name="HANDICAP" type="xsd:string"/>
+					<element name="BILLST" type="xsd:string"/>
+					<element name="PENCODE" type="xsd:string"/>
+					<element name="ACCNAME" type="xsd:string"/>
+					<element name="BILLDATE" type="xsd:string"/>
+					<element name="ACCADDR" type="xsd:string"/>
+					<element name="PRAMT" type="xsd:string"/>
+					<element name="ACCAPT" type="xsd:string"/>
+					<element name="ACCZIP" type="xsd:string"/>
+					<element name="PHAREA" type="xsd:string"/>
+					<element name="PHNUM" type="xsd:string"/>
+					<element name="PRTAX" type="xsd:string"/>
+					<element name="LEGAL" type="xsd:string"/>
+					<element name="PRPENDATE" type="xsd:string"/>
+					<element name="OWNAME" type="xsd:string"/>
+					<element name="MTHDELQ" type="xsd:string"/>
+					<element name="PRPENAMT" type="xsd:string"/>
+					<element name="MAILCO" type="xsd:string"/>
+					<element name="PENDATE" type="xsd:string"/>
+					<element name="PENAMT" type="xsd:string"/>
+					<element name="MISCMAIL" type="xsd:string"/>
+					<element name="SRVTAX" type="xsd:string"/>
+					<element name="SRVTAXAMT" type="xsd:string"/>
+					<element name="MAILADDR" type="xsd:string"/>
+					<element name="MAILAPT" type="xsd:string"/>
+					<element name="CURFEEAMT" type="xsd:string"/>
+					<element name="MAILCITY" type="xsd:string"/>
+					<element name="MAILST" type="xsd:string"/>
+					<element name="MAILZIP" type="xsd:string"/>
+					<element name="BADCHKFEE" type="xsd:string"/>
+					<element name="OWNPHAREA" type="xsd:string"/>
+					<element name="OWNPHNUM" type="xsd:string"/>
+					<element name="CLUC" type="xsd:string"/>
+					<element name="PDAMT" type="xsd:string"/>
+					<element name="CANROLL" type="xsd:string"/>
+					<element name="ArrayOfUSIZE" type="wsdlns:ArrayOfUSIZE_Type"/>
+					<element name="ArrayOfUNITS" type="wsdlns:ArrayOfUNITS_Type"/>
+					<element name="ArrayOfIDNO" type="wsdlns:ArrayOfIDNO_Type"/>
+					<element name="OCLNO" type="xsd:string"/>
+					<element name="FEECR" type="xsd:string"/>
+					<element name="BOOK" type="xsd:string"/>
+					<element name="ROUTE" type="xsd:string"/>
+					<element name="DIST" type="xsd:string"/>
+					<element name="REG" type="xsd:string"/>
+					<element name="DELINQ" type="xsd:string"/>
+					<element name="TOTDUE" type="xsd:string"/>
+					<element name="GRTOTDUE" type="xsd:string"/>
+					<element name="JUDGAMT" type="xsd:string"/>
+					<element name="TRIPS" type="xsd:string"/>
+					<element name="EXEMPT" type="xsd:string"/>
+					<element name="BLKAMT" type="xsd:string"/>
+					<element name="XMLCONVRC" type="xsd:unsignedShort"/>
+					<element name="RETURNCODE" type="xsd:unsignedShort"/>
+					<element name="RETURNMSG" type="xsd:string"/>
+					<element name="PICKUP" type="xsd:string"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfADRADDR_Type">
+				<sequence>
+					<element name="ADRADDR" type="xsd:string" minOccurs="0" maxOccurs="60"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfADRAPT_Type">
+				<sequence>
+					<element name="ADRAPT" type="xsd:string" minOccurs="0" maxOccurs="60"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfADRFMUN_Type">
+				<sequence>
+					<element name="ADRFMUN" type="xsd:string" minOccurs="0" maxOccurs="60"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfADRFNUM_Type">
+				<sequence>
+					<element name="ADRFNUM" type="xsd:string" minOccurs="0" maxOccurs="60"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfADRACC1_Type">
+				<sequence>
+					<element name="ADRACC1" type="xsd:string" minOccurs="0" maxOccurs="60"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfADRACC2_Type">
+				<sequence>
+					<element name="ADRACC2" type="xsd:string" minOccurs="0" maxOccurs="60"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfADRACC3_Type">
+				<sequence>
+					<element name="ADRACC3" type="xsd:string" minOccurs="0" maxOccurs="60"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfADRCODE_Type">
+				<sequence>
+					<element name="ADRCODE" type="xsd:string" minOccurs="0" maxOccurs="60"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfADRST_Type">
+				<sequence>
+					<element name="ADRST" type="xsd:string" minOccurs="0" maxOccurs="60"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfADRNAME_Type">
+				<sequence>
+					<element name="ADRNAME" type="xsd:string" minOccurs="0" maxOccurs="60"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfUSIZE_Type">
+				<sequence>
+					<element name="USIZE" type="xsd:string" minOccurs="0" maxOccurs="4"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfUNITS_Type">
+				<sequence>
+					<element name="UNITS" type="xsd:string" minOccurs="0" maxOccurs="4"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfIDNO_Type">
+				<sequence>
+					<element name="IDNO" type="xsd:string" minOccurs="0" maxOccurs="4"/>
+				</sequence>
+			</complexType></schema></types>
+	<message name="WCSW010RequestMsg">
+		<part name="body" element="wsdlns:WCSW010Request"/>
+	</message>
+	<message name="WCSW010ResponseMsg">
+		<part name="body" element="wsdlns:WCSW010Response"/>
+	</message>
+	<portType name="WCSW010ServicePort_Type">
+		<operation name="WCSW010">
+			<input message="wsdlns:WCSW010RequestMsg"/>
+			<output message="wsdlns:WCSW010ResponseMsg"/>
+		</operation>
+	</portType>
+	<binding name="WCSW010ServiceBinding" type="wsdlns:WCSW010ServicePort_Type">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+		<operation name="WCSW010">
+			<soap:operation soapAction="WCSW010" type="document" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+			<input>
+				<soap:body use="literal" namespace="http://ibmprd.miamidade.gov:4003/CICS/TWBA/WCS0010W" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+			</input>
+			<output>
+				<soap:body use="literal" namespace="http://ibmprd.miamidade.gov:4003/CICS/TWBA/WCS0010W" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+			</output>
+		</operation>
+	</binding>
+	<service name="WCSW010Service">
+		<port name="WCSW010ServicePort" binding="wsdlns:WCSW010ServiceBinding">
+			<soap:address location="http://ibmprd.miamidade.gov:4003/cics/TWBA/CSIWKI2X/WCSW010W" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+		</port>
+	</service></definitions>

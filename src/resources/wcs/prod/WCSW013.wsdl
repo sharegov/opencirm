@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<definitions name="WCSW013Service" targetNamespace="http://ibmprd.miamidade.gov:4003/CICS/TWBA/WCS0013W" xmlns:wsdlns="http://ibmprd.miamidade.gov:4003/CICS/TWBA/WCS0013W" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"><types><schema targetNamespace="http://ibmprd.miamidade.gov:4003/CICS/TWBA/WCS0013W" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" elementFormDefault="qualified"><element name="WCSW013Request" type="wsdlns:WCSW013Request_Type"/>
+			<complexType name="WCSW013Request_Type">
+				<sequence>
+					<element name="WCSW013In" type="wsdlns:WCSW013In_Type"/>
+				</sequence>
+			</complexType>
+			<element name="WCSW013Response" type="wsdlns:WCSW013Response_Type"/>
+			<complexType name="WCSW013Response_Type">
+				<sequence>
+					<element name="WCSW013Out" type="wsdlns:WCSW013Out_Type"/>
+				</sequence>
+			</complexType>
+			<complexType name="WCSW013In_Type">
+				<sequence>
+					<element name="WCSW013InHdr" type="wsdlns:WCSW013InHdr_Type"/>
+					<element name="COMPLID" type="xsd:string"/>
+					<element name="COMPLNUM" type="xsd:string"/>
+					<element name="ACCT1" type="xsd:string"/>
+					<element name="ACCT2" type="xsd:string"/>
+					<element name="ACCT3" type="xsd:string"/>
+				</sequence>
+			</complexType>
+			<complexType name="WCSW013InHdr_Type">
+				<sequence>
+					<element name="StreamInputSessionId" type="xsd:string"/>
+				</sequence>
+			</complexType>
+			<complexType name="WCSW013Out_Type">
+				<sequence>
+					<element name="MAPNAME" type="xsd:string"/>
+					<element name="ACCOUNT" type="xsd:string"/>
+					<element name="PROPADDR" type="xsd:string"/>
+					<element name="SCRMSG" type="xsd:string"/>
+					<element name="ArrayOfCOMPLDIG" type="wsdlns:ArrayOfCOMPLDIG_Type"/>
+					<element name="ArrayOfCOMPLNO" type="wsdlns:ArrayOfCOMPLNO_Type"/>
+					<element name="ArrayOfCOMPLDT" type="wsdlns:ArrayOfCOMPLDT_Type"/>
+					<element name="ArrayOfORDNUM" type="wsdlns:ArrayOfORDNUM_Type"/>
+					<element name="ArrayOfORDDIG" type="wsdlns:ArrayOfORDDIG_Type"/>
+					<element name="ArrayOfCOMPLDESC" type="wsdlns:ArrayOfCOMPLDESC_Type"/>
+					<element name="ArrayOfSTDESC" type="wsdlns:ArrayOfSTDESC_Type"/>
+					<element name="ArrayOfSTCODE" type="wsdlns:ArrayOfSTCODE_Type"/>
+					<element name="COMPDIG" type="xsd:string"/>
+					<element name="COMPNUM" type="xsd:string"/>
+					<element name="CROFFICER" type="xsd:string"/>
+					<element name="COMPST" type="xsd:string"/>
+					<element name="CSTDESC" type="xsd:string"/>
+					<element name="CACC1" type="xsd:string"/>
+					<element name="CACC2" type="xsd:string"/>
+					<element name="CACC3" type="xsd:string"/>
+					<element name="ONAME" type="xsd:string"/>
+					<element name="BLKNUM" type="xsd:string"/>
+					<element name="BLKDIG" type="xsd:string"/>
+					<element name="OADDR" type="xsd:string"/>
+					<element name="COMPDT" type="xsd:string"/>
+					<element name="OAPT" type="xsd:string"/>
+					<element name="OZIP" type="xsd:string"/>
+					<element name="OPHAREA" type="xsd:string"/>
+					<element name="OPHONE" type="xsd:string"/>
+					<element name="CLERK" type="xsd:string"/>
+					<element name="COMPNAME" type="xsd:string"/>
+					<element name="BOOK" type="xsd:string"/>
+					<element name="ROUTE" type="xsd:string"/>
+					<element name="COMPADDR" type="xsd:string"/>
+					<element name="COMPCITY" type="xsd:string"/>
+					<element name="COMPZIP" type="xsd:string"/>
+					<element name="COMPSTATE" type="xsd:string"/>
+					<element name="COMPPHAREA" type="xsd:string"/>
+					<element name="COMPPH" type="xsd:string"/>
+					<element name="COMPL1" type="xsd:string"/>
+					<element name="COMPL2" type="xsd:string"/>
+					<element name="COMPL3" type="xsd:string"/>
+					<element name="WARNINGDT" type="xsd:string"/>
+					<element name="ILLEGAL" type="xsd:string"/>
+					<element name="UNAUTH" type="xsd:string"/>
+					<element name="LITTER" type="xsd:string"/>
+					<element name="UNCONT" type="xsd:string"/>
+					<element name="OTHERT" type="xsd:string"/>
+					<element name="WHOINIT" type="xsd:string"/>
+					<element name="WHONAME" type="xsd:string"/>
+					<element name="CORRECTDT" type="xsd:string"/>
+					<element name="MD" type="xsd:string"/>
+					<element name="TICKETNUM" type="xsd:string"/>
+					<element name="TICKAMT" type="xsd:string"/>
+					<element name="TICKDT" type="xsd:string"/>
+					<element name="TWHOINIT" type="xsd:string"/>
+					<element name="TWHONAME" type="xsd:string"/>
+					<element name="TCORRDT" type="xsd:string"/>
+					<element name="LETTER" type="xsd:string"/>
+					<element name="RECEIVDT" type="xsd:string"/>
+					<element name="BYWHO" type="xsd:string"/>
+					<element name="COURTNO" type="xsd:string"/>
+					<element name="CRECEIVDT" type="xsd:string"/>
+					<element name="COURTDT" type="xsd:string"/>
+					<element name="RELTOPROP" type="xsd:string"/>
+					<element name="PHOTO" type="xsd:string"/>
+					<element name="MISC" type="xsd:string"/>
+					<element name="XMLCONVRC" type="xsd:unsignedShort"/>
+					<element name="RETURNCODE" type="xsd:unsignedShort"/>
+					<element name="RETURNMSG" type="xsd:string"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfCOMPLDIG_Type">
+				<sequence>
+					<element name="COMPLDIG" type="xsd:string" minOccurs="0" maxOccurs="150"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfCOMPLNO_Type">
+				<sequence>
+					<element name="COMPLNO" type="xsd:string" minOccurs="0" maxOccurs="150"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfCOMPLDT_Type">
+				<sequence>
+					<element name="COMPLDT" type="xsd:string" minOccurs="0" maxOccurs="150"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfORDNUM_Type">
+				<sequence>
+					<element name="ORDNUM" type="xsd:string" minOccurs="0" maxOccurs="150"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfORDDIG_Type">
+				<sequence>
+					<element name="ORDDIG" type="xsd:string" minOccurs="0" maxOccurs="150"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfCOMPLDESC_Type">
+				<sequence>
+					<element name="COMPLDESC" type="xsd:string" minOccurs="0" maxOccurs="150"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfSTDESC_Type">
+				<sequence>
+					<element name="STDESC" type="xsd:string" minOccurs="0" maxOccurs="150"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfSTCODE_Type">
+				<sequence>
+					<element name="STCODE" type="xsd:string" minOccurs="0" maxOccurs="150"/>
+				</sequence>
+			</complexType></schema></types>
+	<message name="WCSW013RequestMsg">
+		<part name="body" element="wsdlns:WCSW013Request"/>
+	</message>
+	<message name="WCSW013ResponseMsg">
+		<part name="body" element="wsdlns:WCSW013Response"/>
+	</message>
+	<portType name="WCSW013ServicePort_Type">
+		<operation name="WCSW013">
+			<input message="wsdlns:WCSW013RequestMsg"/>
+			<output message="wsdlns:WCSW013ResponseMsg"/>
+		</operation>
+	</portType>
+	<binding name="WCSW013ServiceBinding" type="wsdlns:WCSW013ServicePort_Type">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+		<operation name="WCSW013">
+			<soap:operation soapAction="WCSW013" type="document" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+			<input>
+				<soap:body use="literal" namespace="http://ibmprd.miamidade.gov:4003/CICS/TWBA/WCS0013W" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+			</input>
+			<output>
+				<soap:body use="literal" namespace="http://ibmprd.miamidade.gov:4003/CICS/TWBA/WCS0013W" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+			</output>
+		</operation>
+	</binding>
+	<service name="WCSW013Service">
+		<port name="WCSW013ServicePort" binding="wsdlns:WCSW013ServiceBinding">
+			<soap:address location="http://ibmprd.miamidade.gov:4003/cics/TWBA/CSIWKI2X/WCSW013W" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+		</port>
+	</service></definitions>

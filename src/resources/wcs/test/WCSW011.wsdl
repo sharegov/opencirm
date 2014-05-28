@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<definitions name="WCSW011Service" targetNamespace="http://ibmtst.metro-dade.com:4004/CICS/TWBA/WCS0011W" xmlns:wsdlns="http://ibmtst.metro-dade.com:4004/CICS/TWBA/WCS0011W" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"><types><schema targetNamespace="http://ibmtst.metro-dade.com:4004/CICS/TWBA/WCS0011W" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" elementFormDefault="qualified"><element name="WCSW011Request" type="wsdlns:WCSW011Request_Type"/>
+			<complexType name="WCSW011Request_Type">
+				<sequence>
+					<element name="WCSW011In" type="wsdlns:WCSW011In_Type"/>
+				</sequence>
+			</complexType>
+			<element name="WCSW011Response" type="wsdlns:WCSW011Response_Type"/>
+			<complexType name="WCSW011Response_Type">
+				<sequence>
+					<element name="WCSW011Out" type="wsdlns:WCSW011Out_Type"/>
+				</sequence>
+			</complexType>
+			<complexType name="WCSW011In_Type">
+				<sequence>
+					<element name="WCSW011InHdr" type="wsdlns:WCSW011InHdr_Type"/>
+					<element name="ACCT1" type="xsd:string"/>
+					<element name="ACCT2" type="xsd:string"/>
+					<element name="ACCT3" type="xsd:string"/>
+					<element name="WONUM" type="xsd:string"/>
+					<element name="WODIG" type="xsd:string"/>
+				</sequence>
+			</complexType>
+			<complexType name="WCSW011InHdr_Type">
+				<sequence>
+					<element name="StreamInputSessionId" type="xsd:string"/>
+				</sequence>
+			</complexType>
+			<complexType name="WCSW011Out_Type">
+				<sequence>
+					<element name="MAPNAME" type="xsd:string"/>
+					<element name="PAGENUM" type="xsd:string"/>
+					<element name="ACC1" type="xsd:string"/>
+					<element name="ACC2" type="xsd:string"/>
+					<element name="ACC3" type="xsd:string"/>
+					<element name="OWNAME" type="xsd:string"/>
+					<element name="PROPADDR" type="xsd:string"/>
+					<element name="PROPAPT" type="xsd:string"/>
+					<element name="ArrayOfORDNUM" type="wsdlns:ArrayOfORDNUM_Type"/>
+					<element name="ArrayOfORDDIG" type="wsdlns:ArrayOfORDDIG_Type"/>
+					<element name="ArrayOfREASCODE" type="wsdlns:ArrayOfREASCODE_Type"/>
+					<element name="ArrayOfORDDATE" type="wsdlns:ArrayOfORDDATE_Type"/>
+					<element name="ArrayOfSCHEACT" type="wsdlns:ArrayOfSCHEACT_Type"/>
+					<element name="ArrayOfORDST" type="wsdlns:ArrayOfORDST_Type"/>
+					<element name="ArrayOfBLKFEE" type="wsdlns:ArrayOfBLKFEE_Type"/>
+					<element name="ArrayOfBLKPAID" type="wsdlns:ArrayOfBLKPAID_Type"/>
+					<element name="ArrayOfTOTDUE" type="wsdlns:ArrayOfTOTDUE_Type"/>
+					<element name="ArrayOfESTACT" type="wsdlns:ArrayOfESTACT_Type"/>
+					<element name="SCRMSG" type="xsd:string"/>
+					<element name="SPLIT" type="xsd:string"/>
+					<element name="BACC1" type="xsd:string"/>
+					<element name="BACC2" type="xsd:string"/>
+					<element name="BACC3" type="xsd:string"/>
+					<element name="BLKST" type="xsd:string"/>
+					<element name="BLKSTDESC" type="xsd:string"/>
+					<element name="BORDNUM" type="xsd:string"/>
+					<element name="BORDDIG" type="xsd:string"/>
+					<element name="BNAME" type="xsd:string"/>
+					<element name="BORDDATE" type="xsd:string"/>
+					<element name="BADDRESS" type="xsd:string"/>
+					<element name="CLERK" type="xsd:string"/>
+					<element name="PHAREA" type="xsd:string"/>
+					<element name="PHNUM" type="xsd:string"/>
+					<element name="COMPLCODE" type="xsd:string"/>
+					<element name="COMPLNUM" type="xsd:string"/>
+					<element name="BLKLOC" type="xsd:string"/>
+					<element name="COMMENTS" type="xsd:string"/>
+					<element name="RFPICK" type="xsd:string"/>
+					<element name="OPERDESC" type="xsd:string"/>
+					<element name="PICKED" type="xsd:string"/>
+					<element name="TRIPS" type="xsd:string"/>
+					<element name="BOOKNO" type="xsd:string"/>
+					<element name="ALLTR" type="xsd:string"/>
+					<element name="CITICOMB" type="xsd:string"/>
+					<element name="YDSKEYD" type="xsd:string"/>
+					<element name="BGOBACK" type="xsd:string"/>
+					<element name="BYLEFT" type="xsd:string"/>
+					<element name="YDSPICK" type="xsd:string"/>
+					<element name="ESTY" type="xsd:string"/>
+					<element name="PICKYL" type="xsd:string"/>
+					<element name="YDSBILL" type="xsd:string"/>
+					<element name="BULKFEE" type="xsd:string"/>
+					<element name="SPFEE" type="xsd:string"/>
+					<element name="SMTREE" type="xsd:string"/>
+					<element name="SMAPL" type="xsd:string"/>
+					<element name="SMFURN" type="xsd:string"/>
+					<element name="SMOTH" type="xsd:string"/>
+					<element name="MEDTREE" type="xsd:string"/>
+					<element name="MEDAPL" type="xsd:string"/>
+					<element name="MEDFURN" type="xsd:string"/>
+					<element name="MEDOTH" type="xsd:string"/>
+					<element name="LRGTREE" type="xsd:string"/>
+					<element name="LRGAPL" type="xsd:string"/>
+					<element name="LRGFURN" type="xsd:string"/>
+					<element name="LRGOTH" type="xsd:string"/>
+					<element name="BADCHK" type="xsd:string"/>
+					<element name="BULKPD" type="xsd:string"/>
+					<element name="BULTOTDUE" type="xsd:string"/>
+					<element name="BLKCODE" type="xsd:string"/>
+					<element name="BLKDESC" type="xsd:string"/>
+					<element name="RETURNMSG" type="xsd:string"/>
+					<element name="RETURNCODE" type="xsd:unsignedShort"/>
+					<element name="XMLCONVRC" type="xsd:unsignedShort"/>
+					<element name="OPERID" type="xsd:string"/>
+					<element name="BULKYTIME" type="xsd:string"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfORDNUM_Type">
+				<sequence>
+					<element name="ORDNUM" type="xsd:string" minOccurs="0" maxOccurs="100"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfORDDIG_Type">
+				<sequence>
+					<element name="ORDDIG" type="xsd:string" minOccurs="0" maxOccurs="100"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfREASCODE_Type">
+				<sequence>
+					<element name="REASCODE" type="xsd:string" minOccurs="0" maxOccurs="100"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfORDDATE_Type">
+				<sequence>
+					<element name="ORDDATE" type="xsd:string" minOccurs="0" maxOccurs="100"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfSCHEACT_Type">
+				<sequence>
+					<element name="SCHEACT" type="xsd:string" minOccurs="0" maxOccurs="100"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfORDST_Type">
+				<sequence>
+					<element name="ORDST" type="xsd:string" minOccurs="0" maxOccurs="100"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfBLKFEE_Type">
+				<sequence>
+					<element name="BLKFEE" type="xsd:string" minOccurs="0" maxOccurs="100"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfBLKPAID_Type">
+				<sequence>
+					<element name="BLKPAID" type="xsd:string" minOccurs="0" maxOccurs="100"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfTOTDUE_Type">
+				<sequence>
+					<element name="TOTDUE" type="xsd:string" minOccurs="0" maxOccurs="100"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfESTACT_Type">
+				<sequence>
+					<element name="ESTACT" type="xsd:string" minOccurs="0" maxOccurs="100"/>
+				</sequence>
+			</complexType></schema></types>
+	<message name="WCSW011RequestMsg">
+		<part name="body" element="wsdlns:WCSW011Request"/>
+	</message>
+	<message name="WCSW011ResponseMsg">
+		<part name="body" element="wsdlns:WCSW011Response"/>
+	</message>
+	<portType name="WCSW011ServicePort_Type">
+		<operation name="WCSW011">
+			<input message="wsdlns:WCSW011RequestMsg"/>
+			<output message="wsdlns:WCSW011ResponseMsg"/>
+		</operation>
+	</portType>
+	<binding name="WCSW011ServiceBinding" type="wsdlns:WCSW011ServicePort_Type">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+		<operation name="WCSW011">
+			<soap:operation soapAction="WCSW011" type="document" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+			<input>
+				<soap:body use="literal" namespace="http://ibmtst.metro-dade.com:4004/CICS/TWBA/WCS0011W" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+			</input>
+			<output>
+				<soap:body use="literal" namespace="http://ibmtst.metro-dade.com:4004/CICS/TWBA/WCS0011W" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+			</output>
+		</operation>
+	</binding>
+	<service name="WCSW011Service">
+		<port name="WCSW011ServicePort" binding="wsdlns:WCSW011ServiceBinding">
+			<soap:address location="http://IBMTST.METRO-DADE.COM:4004/cics/TWBA/CSIWKI2X/WCSW011W" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+		</port>
+	</service></definitions>

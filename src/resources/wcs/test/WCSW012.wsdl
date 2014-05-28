@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<definitions name="WCSW012Service" targetNamespace="http://ibmtst.metro-dade.com:4004/CICS/TWBA/WCS0012W" xmlns:wsdlns="http://ibmtst.metro-dade.com:4004/CICS/TWBA/WCS0012W" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"><types><schema targetNamespace="http://ibmtst.metro-dade.com:4004/CICS/TWBA/WCS0012W" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" elementFormDefault="qualified"><element name="WCSW012Request" type="wsdlns:WCSW012Request_Type"/>
+			<complexType name="WCSW012Request_Type">
+				<sequence>
+					<element name="WCSW012In" type="wsdlns:WCSW012In_Type"/>
+				</sequence>
+			</complexType>
+			<element name="WCSW012Response" type="wsdlns:WCSW012Response_Type"/>
+			<complexType name="WCSW012Response_Type">
+				<sequence>
+					<element name="WCSW012Out" type="wsdlns:WCSW012Out_Type"/>
+				</sequence>
+			</complexType>
+			<complexType name="WCSW012In_Type">
+				<sequence>
+					<element name="WCSW012InHdr" type="wsdlns:WCSW012InHdr_Type"/>
+					<element name="ACCT1" type="xsd:string"/>
+					<element name="ACCT2" type="xsd:string"/>
+					<element name="ACCT3" type="xsd:string"/>
+					<element name="COMPLID" type="xsd:string"/>
+					<element name="COMPLNUM" type="xsd:string"/>
+				</sequence>
+			</complexType>
+			<complexType name="WCSW012InHdr_Type">
+				<sequence>
+					<element name="StreamInputSessionId" type="xsd:string"/>
+				</sequence>
+			</complexType>
+			<complexType name="WCSW012Out_Type">
+				<sequence>
+					<element name="SCRMSG" type="xsd:string"/>
+					<element name="MAPNAME" type="xsd:string"/>
+					<element name="ACC1" type="xsd:string"/>
+					<element name="ACC2" type="xsd:string"/>
+					<element name="ArrayOfCOMPLDIG" type="wsdlns:ArrayOfCOMPLDIG_Type"/>
+					<element name="ArrayOfCOMPLNO" type="wsdlns:ArrayOfCOMPLNO_Type"/>
+					<element name="ArrayOfCOMPLDT" type="wsdlns:ArrayOfCOMPLDT_Type"/>
+					<element name="ArrayOfCOMPLTIME" type="wsdlns:ArrayOfCOMPLTIME_Type"/>
+					<element name="ArrayOfCOMPLDESC" type="wsdlns:ArrayOfCOMPLDESC_Type"/>
+					<element name="ArrayOfCOMPLST" type="wsdlns:ArrayOfCOMPLST_Type"/>
+					<element name="ArrayOfCOMPLSTDESC" type="wsdlns:ArrayOfCOMPLSTDESC_Type"/>
+					<element name="ArrayOfCOMPLTYPE" type="wsdlns:ArrayOfCOMPLTYPE_Type"/>
+					<element name="ArrayOfCOMPLADDR" type="wsdlns:ArrayOfCOMPLADDR_Type"/>
+					<element name="PACC1" type="xsd:string"/>
+					<element name="PACC2" type="xsd:string"/>
+					<element name="PACC3" type="xsd:string"/>
+					<element name="PCOMPLDIG" type="xsd:string"/>
+					<element name="PCOMPLNO" type="xsd:string"/>
+					<element name="ONAME" type="xsd:string"/>
+					<element name="PDATE" type="xsd:string"/>
+					<element name="ADDR" type="xsd:string"/>
+					<element name="PTIME" type="xsd:string"/>
+					<element name="APT" type="xsd:string"/>
+					<element name="ZIP" type="xsd:string"/>
+					<element name="CLERK" type="xsd:string"/>
+					<element name="ROUTE" type="xsd:string"/>
+					<element name="COMPSTAT" type="xsd:string"/>
+					<element name="STDESC" type="xsd:string"/>
+					<element name="CNAME" type="xsd:string"/>
+					<element name="CADDRESS" type="xsd:string"/>
+					<element name="CAPT" type="xsd:string"/>
+					<element name="CCITY" type="xsd:string"/>
+					<element name="CSTATE" type="xsd:string"/>
+					<element name="CZIP" type="xsd:string"/>
+					<element name="PHAREA" type="xsd:string"/>
+					<element name="PHONE" type="xsd:string"/>
+					<element name="COMPTYPE" type="xsd:string"/>
+					<element name="OTHPHAREA" type="xsd:string"/>
+					<element name="OTHEXT" type="xsd:string"/>
+					<element name="COMPLCODE" type="xsd:string"/>
+					<element name="COMPDESC" type="xsd:string"/>
+					<element name="DISPTIME" type="xsd:string"/>
+					<element name="SUPVINIT" type="xsd:string"/>
+					<element name="SUPVNAME" type="xsd:string"/>
+					<element name="ACTDATE" type="xsd:string"/>
+					<element name="ACTTAKE" type="xsd:string"/>
+					<element name="REMARKS" type="xsd:string"/>
+					<element name="ACC3" type="xsd:string"/>
+					<element name="XMLCONVRC" type="xsd:unsignedShort"/>
+					<element name="RETURNMSG" type="xsd:string"/>
+					<element name="RETURNCODE" type="xsd:unsignedShort"/>
+					<element name="OTHPHONE" type="xsd:string"/>
+					<element name="OPHAREA" type="xsd:string"/>
+					<element name="OPHONE" type="xsd:string"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfCOMPLDIG_Type">
+				<sequence>
+					<element name="COMPLDIG" type="xsd:string" minOccurs="0" maxOccurs="75"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfCOMPLNO_Type">
+				<sequence>
+					<element name="COMPLNO" type="xsd:string" minOccurs="0" maxOccurs="75"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfCOMPLDT_Type">
+				<sequence>
+					<element name="COMPLDT" type="xsd:string" minOccurs="0" maxOccurs="75"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfCOMPLTIME_Type">
+				<sequence>
+					<element name="COMPLTIME" type="xsd:string" minOccurs="0" maxOccurs="75"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfCOMPLDESC_Type">
+				<sequence>
+					<element name="COMPLDESC" type="xsd:string" minOccurs="0" maxOccurs="75"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfCOMPLST_Type">
+				<sequence>
+					<element name="COMPLST" type="xsd:string" minOccurs="0" maxOccurs="75"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfCOMPLSTDESC_Type">
+				<sequence>
+					<element name="COMPLSTDESC" type="xsd:string" minOccurs="0" maxOccurs="75"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfCOMPLTYPE_Type">
+				<sequence>
+					<element name="COMPLTYPE" type="xsd:string" minOccurs="0" maxOccurs="75"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfCOMPLADDR_Type">
+				<sequence>
+					<element name="COMPLADDR" type="xsd:string" minOccurs="0" maxOccurs="75"/>
+				</sequence>
+			</complexType></schema></types>
+	<message name="WCSW012RequestMsg">
+		<part name="body" element="wsdlns:WCSW012Request"/>
+	</message>
+	<message name="WCSW012ResponseMsg">
+		<part name="body" element="wsdlns:WCSW012Response"/>
+	</message>
+	<portType name="WCSW012ServicePort_Type">
+		<operation name="WCSW012">
+			<input message="wsdlns:WCSW012RequestMsg"/>
+			<output message="wsdlns:WCSW012ResponseMsg"/>
+		</operation>
+	</portType>
+	<binding name="WCSW012ServiceBinding" type="wsdlns:WCSW012ServicePort_Type">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+		<operation name="WCSW012">
+			<soap:operation soapAction="WCSW012" type="document" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+			<input>
+				<soap:body use="literal" namespace="http://ibmtst.metro-dade.com:4004/CICS/TWBA/WCS0012W" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+			</input>
+			<output>
+				<soap:body use="literal" namespace="http://ibmtst.metro-dade.com:4004/CICS/TWBA/WCS0012W" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+			</output>
+		</operation>
+	</binding>
+	<service name="WCSW012Service">
+		<port name="WCSW012ServicePort" binding="wsdlns:WCSW012ServiceBinding">
+			<soap:address location="http://IBMTST.METRO-DADE.COM:4004/cics/TWBA/CSIWKI2X/WCSW012W" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+		</port>
+	</service></definitions>
