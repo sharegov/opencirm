@@ -290,7 +290,7 @@
             <arg value="stop"/>
             <arg value="cirmservices"/>
         </exec>
-        <sleep seconds="10"/>
+    <sleep seconds="25"/>
    </target>
    <target name="start" description="Start server specified with -Dserver=hostname parameter.">
      <echo message="Starting ${server}"/>
@@ -324,15 +324,23 @@
     <antcall target="restart-with-fresh-ontodb">
         <param name="server" value="s2030050"/>
     </antcall>
+   	<echo message="Sleeping 5 minutes to ensure sequential ontology download during server startup"/>   	
+   	<sleep seconds="300"/>
     <antcall target="restart-with-fresh-ontodb">
         <param name="server" value="s2030051"/>
     </antcall>
+   	<echo message="Sleeping 5 minutes to ensure sequential ontology download during server startup"/>   	
+   	<sleep seconds="300"/>
     <antcall target="restart-with-fresh-ontodb">
         <param name="server" value="s2030057"/>
     </antcall>
+   	<echo message="Sleeping 5 minutes to ensure sequential ontology download during server startup"/>   	
+   	<sleep seconds="300"/>
     <antcall target="restart-with-fresh-ontodb">
         <param name="server" value="s2030059"/>
     </antcall>
+   	<echo message="Sleeping 5 minutes to ensure sequential ontology download during server startup"/>   	
+   	<sleep seconds="300"/>
     <antcall target="restart-with-fresh-ontodb">
         <param name="server" value="s2030060"/>
     </antcall>
@@ -342,6 +350,8 @@
 	    <antcall target="restart-with-fresh-ontodb">
 	        <param name="server" value="s0020269"/>
 	    </antcall>
+	   	<echo message="Sleeping 5 minutes to ensure sequential ontology download during server startup"/>   	
+	   	<sleep seconds="300"/>
 	    <antcall target="restart-with-fresh-ontodb">
 	        <param name="server" value="s0020284"/>
 	    </antcall>
