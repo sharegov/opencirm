@@ -621,7 +621,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 	    }
 	    
 		self.getServerDateTime = function(time) {
-			var serverDateEstimate = new Date(new Date().getTime() - cirm.refs.serverTimeDelta.delta);
+			var serverDateEstimate = U.getCurrentDate();
 			if(time)
 				return serverDateEstimate.getTime();
 			else
@@ -949,7 +949,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		self.loadFromServer = function(lookup_boid) {
 			if(lookup_boid.indexOf('-') == -1)
 			{
-				var yr = self.getServerDateTime().getFullYear().toString();
+				var yr = U.getFullYearAsString();
 				lookup_boid = yr.substr(yr.length - 2) + '-1' + U.addLeadingZeroes(lookup_boid, 7);
 			}
 			//TODO : temp fix. We don't have to do below check once all SRs have hasCaseNumber
@@ -999,7 +999,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 			else if(lookup_boid.match(alphabetPattern)) {
 				var pre = lookup_boid.substr(0,2);
 				var srID = lookup_boid.substr(2,lookup_boid.length);
-				var friendlyFormat = pre + self.getServerDateTime().getFullYear() + "-" + U.addLeadingZeroes(srID, 8);
+				var friendlyFormat = pre + U.getFullYear() + "-" + U.addLeadingZeroes(srID, 8);
 				if(friendlyFormat.match(userFriendlyPattern) && friendlyFormat.indexOf("AC") != -1)
 				{
 					self.loadUserFriendlyFromServer(friendlyFormat);
@@ -1601,6 +1601,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		    	});
 		    jsondata.properties.hasServiceAnswer = U.ensureArray(tempServiceAnswers);
 		    
+		    var currentServerDate = self.getServerDateTime();
 			$.each(jsondata.properties.hasServiceActivity, function(i,v) {
 				//if the Outcome is not set, delete it.
 				//either delete or populate hasCompletedTimestamp based on hasOutcome.
@@ -1609,7 +1610,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 					delete v.hasOutcome;
 				}
 				else if(U.isEmptyString(v.hasCompletedTimestamp))
-					v.hasCompletedTimestamp = self.getServerDateTime().asISODateString();
+					v.hasCompletedTimestamp = currentServerDate.asISODateString();
 				//delete empty data properties from the Activity
 				$.each(v, function(prop, value) {
 					if(typeof prop != 'object' && U.isEmptyString(value))
@@ -3137,6 +3138,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
     }
     //apply view logic here hilpold?
     function setModel(bo, model, srType, type, sameTypeAsCurrent, isNew) {
+    	var currentDateTime = model.getServerDateTime();
     	var original = U.clone(bo);
         console.log('set model', original);
 
@@ -3255,7 +3257,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
        				v.atAddress = $.extend(new ServiceActorAddressBluePrint(), v.atAddress);
 				}
 				var actorIRI = (v.hasServiceActor.iri != undefined) ? v.hasServiceActor.iri : v.hasServiceActor;
-				var tempSA = $.extend(new ServiceActor(actorIRI, v.label, cirm.user.username, model.getServerDateTime().asISODateString(), isNew), v);
+				var tempSA = $.extend(new ServiceActor(actorIRI, v.label, cirm.user.username, currentDateTime.asISODateString(), isNew), v);
 				if(isCitizenActor(actorIRI) && !isNew && v.Name && v.Name.toUpperCase() === 'ANONYMOUS') {
 					tempSA.isAnonymous = true;
 				}
@@ -3535,7 +3537,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		if(bo.properties.hasServiceActivity.length > 0) {
 			bo.properties.hasServiceActivity = $.map(bo.properties.hasServiceActivity, function(v) {
 				v.isAccepted = v.isAccepted ? v.isAccepted == 'true' ? true : false : false;
-				return $.extend(new ServiceActivity(v.iri, v.label, cirm.user.username, model.getServerDateTime().asISODateString()), v);
+				return $.extend(new ServiceActivity(v.iri, v.label, cirm.user.username, currentDateTime.asISODateString()), v);
 			});
 			$.each(bo.properties.hasServiceActivity, function(i,v) {
 				$.each(srType.hasActivity, function(j,val) {

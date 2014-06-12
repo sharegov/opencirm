@@ -150,6 +150,37 @@ function getTimeInMillis(o) {
 	//return new Date(o).getTime();
 }
 
+function getCurrentDate() {
+	var nowClient = new Date().getTime();
+	//If clientTime is 120 minutes old, then recalculate it.
+	if(Math.abs((nowClient - cirm.refs.time.clientTime)/(1000 * 60 )) > 120) {
+		getServerDate();
+	}
+	return new Date(new Date().getTime() - cirm.refs.time.delta);
+}
+
+function getFullYear() {
+	return getCurrentDate().getFullYear();
+}
+
+function getFullYearAsString() {
+	return getFullYear().toString();
+}
+
+// Calls the server endpoint and refreshes cirm.refs.time properties 
+function getServerDate() {
+	var serverTime = cirm.top.get('/op/time');
+	if(serverTime.ok) {
+	    var clientTime = new Date().getTime();
+	    cirm.refs.time.serverTime = serverTime.time;
+	    cirm.refs.time.clientTime = clientTime;
+	    cirm.refs.time.delta = clientTime - serverTime.time;
+	}
+	else {
+    	console.log("Fetching Server Time failed");
+	}
+}
+
 /**
  * Takes a JSON object where property names contain the dot character "." and
  * transforms those properties into nested structures. For example an object that
@@ -754,6 +785,9 @@ var M = {
     isEmptyString:isEmptyString,
     isString:isString,
     getTimeInMillis:getTimeInMillis,
+    getCurrentDate:getCurrentDate,
+    getFullYear:getFullYear,
+    getFullYearAsString:getFullYearAsString,
     nestify:nestify,
     visit:objectRecurse,
     resolveIris:resolveIris,

@@ -1131,7 +1131,7 @@ public class LegacyEmulator extends RestService
 		Json uiActs = array();
 		Json newActivities = array();
 		if (updatedDate == null)
-			updatedDate = new java.util.Date();
+			updatedDate = getPersister().getStore().getStoreTime();
 		serviceCase.at("properties").set("hasDateLastModified", GenUtils.formatDate(updatedDate));
 		final Json actorEmails = serviceCase.at("properties").atDel("actorEmails");
 		Long boid = serviceCase.at("boid").asLong();

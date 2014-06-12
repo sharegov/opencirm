@@ -1139,11 +1139,10 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 		function isActivityUpdateWithinTimeout() {
 			if(U.isEmptyString(self.misc.tempRecord().ACT_CREATED_DATE()))
 				return true;
-			var serverDateEstimate = new Date(new Date().getTime() - cirm.refs.serverTimeDelta.delta);
 			var comparableTime = "";
 			var isUpdateAllowed = undefined;
 			var timeSinceCreatedMins = 
-				( serverDateEstimate.getTime() - U.getTimeInMillis(self.misc.tempRecord().ACT_CREATED_DATE()) )/60000.0;
+				( U.getCurrentDate().getTime() - U.getTimeInMillis(self.misc.tempRecord().ACT_CREATED_DATE()) )/60000.0;
 			if(cirm.refs.serviceCases[self.misc.tempRecord().SR_TYPE()].hasAnswerUpdateTimeout)
 				comparableTime = cirm.refs.serviceCases[self.misc.tempRecord().SR_TYPE()].hasAnswerUpdateTimeout.hasValue;
 			else
@@ -1293,15 +1292,6 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 			}
 		};
 */
-/*
-		self.getServerDateTime = function(time) {
-			var serverDate = new Date(new Date().getTime() - self.deltaTime());
-			if(time)
-				return serverDate.getTime();
-			else
-				return serverDate;
-		}
-*/		
 		self.counter = ko.observable("");
 		self.isTimerOn = ko.observable(false);
 		
@@ -1358,8 +1348,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 			var currentRecord = $.map(self.dispatchResult.records(), function(v) {
 				if(v.ACTIVITY_IRI() == self.misc.tempRecord().ACTIVITY_IRI())
 				{
-					var serverDateEstimate = new Date(new Date().getTime() - cirm.refs.serverTimeDelta.delta);
-					v.hasUpdatedDate = serverDateEstimate.asISODateString();
+					v.hasUpdatedDate = U.getCurrentDate().asISODateString();
 					v.DETAILS(self.misc.tempRecord().DETAILS());
 					v.isModifiedBy = cirm.user.username;
 					if(v.STATUS() != 'C-CLOSED')
@@ -2351,8 +2340,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 				return self.searchCriteria.srID();
 			var pre = self.searchCriteria.srID().substr(0,2);
 			var srID = self.searchCriteria.srID().substr(2,self.searchCriteria.srID().length);
-			var serverDateEstimate = new Date(new Date().getTime() - cirm.refs.serverTimeDelta.delta);
-			var friendlyFormat = pre + serverDateEstimate.getFullYear() + "-1" + U.addLeadingZeroes(srID, 7);
+			var friendlyFormat = pre + U.getFullYear() + "-1" + U.addLeadingZeroes(srID, 7);
 			if(friendlyFormat.match(userFriendlyPattern))
 				return friendlyFormat;
 			else
@@ -2425,7 +2413,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 				if(self.searchCriteria.srID().indexOf("-") != -1)
 					self.misc.query()["legacy:hasCaseNumber"] = self.searchCriteria.srID();
 				else {
-					var yr = new Date(new Date().getTime() - cirm.refs.serverTimeDelta.delta).getFullYear().toString();
+					var yr = U.getFullYearAsString();
 					self.misc.query()["legacy:hasCaseNumber"] = yr.substr(yr.length - 2) + "-1" + U.addLeadingZeroes(self.searchCriteria.srID(), 7);
 				}
 				self.misc.counter(self.misc.counter() + 1);

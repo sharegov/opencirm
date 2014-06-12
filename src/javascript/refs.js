@@ -32,12 +32,13 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
         var self = this;
         self.cached = {};
         self.all = [
-            {"hasName": "serverTimeDelta", "hasUrl":"/op/time", 
+            {"hasName": "time", "hasUrl":"/op/time", 
             	"map":function(A) {
             		if(A.ok)
             		{
-	            		var delta = new Date().getTime() - A.time;
-	            		var result = {"ok":A.ok, "serverTime":A.time, "delta":delta};
+	            		var clientTime = new Date().getTime();
+	            		var delta = clientTime - A.time;
+	            		var result = {"ok":A.ok, "serverTime":A.time, "clientTime":clientTime, "delta":delta};
 	            		return result;
             		}
             		else
