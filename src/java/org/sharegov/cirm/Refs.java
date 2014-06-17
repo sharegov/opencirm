@@ -33,6 +33,8 @@ import org.sharegov.cirm.rdb.OntologyTransformer;
 import org.sharegov.cirm.rdb.RelationalOWLPersister;
 import org.sharegov.cirm.rdb.RelationalStore;
 import org.sharegov.cirm.rdb.RelationalStoreExt;
+import org.sharegov.cirm.stats.CirmStatistics;
+import org.sharegov.cirm.stats.CirmStatisticsFactory;
 import org.sharegov.cirm.utils.CIRMIDFactory;
 import org.sharegov.cirm.utils.ClassRef;
 import org.sharegov.cirm.utils.ConfigRef;
@@ -189,4 +191,7 @@ public class Refs
 			return result;
 		}		
 	});
+	
+	public static final Ref<CirmStatistics> stats = new SingletonRef<CirmStatistics>(CirmStatisticsFactory.createStats());
+
 }

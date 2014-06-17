@@ -118,6 +118,10 @@ import org.sharegov.cirm.rdb.RelationalOWLPersister;
 import org.sharegov.cirm.rdb.RelationalStore;
 import org.sharegov.cirm.rdb.Sql;
 import org.sharegov.cirm.rdb.Statement;
+import org.sharegov.cirm.stats.CirmStatistics;
+import org.sharegov.cirm.stats.CirmStatisticsFactory;
+import org.sharegov.cirm.stats.CirmStatsDataReporter;
+import org.sharegov.cirm.stats.SRCirmStatsDataReporter;
 import org.sharegov.cirm.utils.ExcelExportUtil;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.JsonUtil;
@@ -138,6 +142,8 @@ public class LegacyEmulator extends RestService
 
 	private static Map<String, IRI> hasTypeMappingToXSD;
 
+	private final SRCirmStatsDataReporter srStatsReporter = CirmStatisticsFactory.createServiceRequestStatsReporter(Refs.stats.resolve(), "LegacyEmulator");
+	
 	public LegacyEmulator()
 	{
 	}
@@ -675,6 +681,7 @@ public class LegacyEmulator extends RestService
 			ThreadLocalStopwatch.start("START LE.printServiceRequest " + boid);
 			Representation report = makePDFCaseReports(boids);
 			ThreadLocalStopwatch.stop("END LE.printServiceRequest");
+			srStatsReporter.succeeded("printServiceRequest", CirmStatistics.UNKNOWN, boid);
 			return report;
 		}
 		catch (Exception e)
@@ -1060,7 +1067,18 @@ public class LegacyEmulator extends RestService
 						getUserActors()))
 			return ko("Permission denied.");
 		else
-			return updateServiceCase(form);
+		{
+			Json result = updateServiceCase(form, "cirmuser");
+			if (result.is("ok", true)) 
+			{
+				srStatsReporter.succeeded("updateServiceCase restcall", form);
+			}
+			else
+			{
+				srStatsReporter.failed("updateServiceCase restcall", form, result.at("error").toString(), result.at("stackTrace").toString());
+			}
+			return result;
+		}
 	}
 	
 	
@@ -1257,8 +1275,9 @@ public class LegacyEmulator extends RestService
 			return updateResult;
 	}
 	
-	public Json updateServiceCase(final Json serviceCaseParam)
+	public Json updateServiceCase(final Json serviceCaseParam, final String originator)
 	{
+		if (originator == null) throw new NullPointerException("originator");
 		//wrap the entire update in a transaction block.
 		try
 		{
@@ -1274,7 +1293,8 @@ public class LegacyEmulator extends RestService
 				Response current = Response.getCurrent();
 				Long boid = serviceCaseParam.at("boid").asLong();
 				Json bo = findServiceCaseOntology(boid).toJSON();
-				Json result = updateServiceCaseTransaction(serviceCaseParam, bo, null, emailsToSend, "cirmuser");
+				//TODO hilpold not always cirmuser, could be CityOfMIamiClient or DepartmentIntegration also!
+				Json result = updateServiceCaseTransaction(serviceCaseParam, bo, null, emailsToSend, originator); //"cirmuser"
 				Response.setCurrent(current);
 				return result;
 			}});			
@@ -1513,10 +1533,10 @@ public class LegacyEmulator extends RestService
 	@Produces("application/json")
 	public Json createNewKOSR(@FormParam("data") final String formData)
 	{
+		ThreadLocalStopwatch.start("START createNewKOSR");
+		final Json legacyForm = read(formData);		
 		try
 		{
-			ThreadLocalStopwatch.start("START createNewKOSR");
-			final Json legacyForm = read(formData);
 			// System.out.println("new SR to save: " + legacyForm);
 			final Json actorEmails = legacyForm.at("properties").atDel("actorEmails");
 			final String type = legacyForm.at("type").asString();
@@ -1624,7 +1644,7 @@ public class LegacyEmulator extends RestService
 								OWL.getEntityLabel(individual("legacy:"+result.at("type").asString()))
 						);
 					}
-					//END : Emails to customers
+					//END : Emails to customers					
 					return ok().set("bo", result);
 				}
 			});
@@ -1635,11 +1655,14 @@ public class LegacyEmulator extends RestService
 				ThreadLocalStopwatch.error("Error createNewKOSR - Gis problem " + result.at("bo").at("properties").at("hasCaseNumber").asString());
 			}
 			//MessageManager.get().sendEmails(emailsToSend);
+			srStatsReporter.succeeded("create", legacyForm);
 			ThreadLocalStopwatch.stop("END createNewKOSR");
 			return result;					
 		}
 		catch (Throwable e)
 		{
+			Throwable t = GenUtils.getRootCause(e);
+			srStatsReporter.failed("create", legacyForm, e.toString() + "Rootcause: " + t.toString(), e.getMessage() + "Root Msg: " + t.getMessage());
 			ThreadLocalStopwatch.fail("FAIL createNewKOSR");
 			System.out.println("formData passed into createNewKOSR : "+formData);
 			e.printStackTrace();
