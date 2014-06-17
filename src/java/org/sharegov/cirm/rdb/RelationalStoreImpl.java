@@ -130,7 +130,7 @@ import org.sharegov.cirm.utils.ThreadLocalStopwatch;
  */
 public class RelationalStoreImpl implements RelationalStore
 {
-	public static boolean DBG = false;
+	public static boolean DBG = true;
 	public static boolean DBGX = true;
 	public static boolean DBGLOCK = true;
 	public static boolean DBG_ALL_TRANSACTIONS_LOCK = false;
@@ -165,7 +165,6 @@ public class RelationalStoreImpl implements RelationalStore
 
 	// private static final int AVG_WAIT_BEFORE_RETRY_MS = 500;
 
-	private static final boolean USE_CONNECTION_POOL = true;
 	public static final int POOL_SIZE_INITIAL = 5;
 	public static final int POOL_SIZE_MAX = 50; //150 processes limit on server
 	public static final int POOL_CONNECTION_REUSE_COUNT_MAX = 1000;
@@ -2922,7 +2921,7 @@ public class RelationalStoreImpl implements RelationalStore
 				.entrySet())
 		{
 			// String columnSQLName = getColumnNameSQL();
-            System.out.println("Reading " + mappedProperty.getKey());
+            //System.out.println("Reading " + mappedProperty.getKey());
 			OWLNamedIndividual referenced = readOWLPropertyFromMappedColumn(
 					onto, mappedIndividual, mappedProperty.getKey(),
 					mappedProperty.getValue(), false, rsAtCurRow);
@@ -3821,7 +3820,7 @@ public class RelationalStoreImpl implements RelationalStore
 			String joinColumnIRIFragment, OWLNamedIndividual joinColumnIRIType)
 	{
         if (ind == null) throw new NullPointerException("ind param was null");
-        //next line expensive – maybe do check later in the code
+        //next line expensive - maybe do check later in the code
         if (identifiers.get(ind) == null) throw new IllegalStateException("no identifier found for ind " + ind);
         if (objectPropertyValues == null) throw new NullPointerException("null objectPropertyValues for ind " + ind);
         if (mappedProperty == null) throw new NullPointerException("null mappedProperty for ind " + ind);
@@ -3866,7 +3865,7 @@ public class RelationalStoreImpl implements RelationalStore
 			String joinColumnIRIFragment, OWLNamedIndividual joinColumnIRIType	)
 	{
         if (ind == null) throw new NullPointerException("ind param was null");
-        //next line expensive – maybe do check later in the code
+        //next line expensive - maybe do check later in the code
         if (identifiers.get(ind) == null) throw new IllegalStateException("no identifier found for ind " + ind);
         if (joinTableFragment == null) throw new NullPointerException("null joinTableFragment for ind " + ind);
         if (joinColumnIRIFragment == null) throw new NullPointerException("null joinColumnIRIFragment for ind " + ind);
