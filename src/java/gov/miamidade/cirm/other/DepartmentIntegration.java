@@ -542,7 +542,7 @@ public class DepartmentIntegration extends RestService
         return Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
         public Json call()
         {       
-            Json data = emulator.updateServiceCase(newcase);
+            Json data = emulator.updateServiceCase(newcase, "cirmuser");
             
             if (!data.is("ok", true))
                 return data;

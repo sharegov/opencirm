@@ -108,7 +108,7 @@ public class CityOfMiamiClient extends RestService
 			serviceCase.at("properties").delAt("hasDepartmentError");			
 			serviceCase.at("properties").at("hasStatus").set("iri", fullIri("legacy:O-LOCKED").toString());
 		}
-		Json result = emulator.updateServiceCase(serviceCase);		
+		Json result = emulator.updateServiceCase(serviceCase, "cirmuser");	
 		ThreadLocalStopwatch.stop("END CityOfMiamiClient saveCOMSubmitResult");
 		return result;
 	}
@@ -244,7 +244,7 @@ public class CityOfMiamiClient extends RestService
 								 "hasDateCreated", GenUtils.formatDate(new java.util.Date()),
 								 "hasCompletedTimestamp", GenUtils.formatDate(new java.util.Date())));			       
 			existing.at("properties").at("hasServiceActivity", Json.array()).with(newActivities);
-			Json updateResult = emulator.updateServiceCase(OWL.resolveIris(OWL.prefix(existing), null));
+			Json updateResult = emulator.updateServiceCase(OWL.resolveIris(OWL.prefix(existing), null), "department");
 			Json ackResult = Json.nil();
 			
 			// Doing the acknowledgment inside the transaction implies the following potential irregularities:

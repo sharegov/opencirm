@@ -8,3 +8,7 @@ syntax: regexp
 ^src/ontology/County_Working\.owl$
 syntax: regexp
 ^src/ontology/legacy\.owl$
+syntax: regexp
+^dist/src/ontology/csr\.owl$
+syntax: regexp
+^dist/src/ontology/csr\.owl$
