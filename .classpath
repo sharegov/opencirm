@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/java"/>
+	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="lib" path="lib/com.ibm.mq.jar"/>
 	<classpathentry kind="lib" path="lib/com.ibm.mqjms.jar"/>
 	<classpathentry kind="lib" path="lib/jms.jar"/>
@@ -62,5 +63,6 @@
 	<classpathentry kind="lib" path="/opencirm/lib/rdb/sqljdbc4.jar"/>
 	<classpathentry kind="lib" path="lib/wrapper.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/opencirm"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
