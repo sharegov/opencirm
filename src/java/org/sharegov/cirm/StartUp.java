@@ -26,7 +26,6 @@ import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.Vector;
 import java.util.logging.Level;
-import java.util.regex.Pattern;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
