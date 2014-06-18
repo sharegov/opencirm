@@ -100,7 +100,7 @@ import org.sharegov.cirm.utils.ThreadLocalStopwatch;
  *
  * The Recycling Complaints Z3 go to:
  * TO:
- * CS-MIAMIDADE-RECYCLI@WASTESERVICESINC.COM
+ * oscar.diaz@progressivewaste.com
  * CC: same
  * 
  * To email to cirmtest@miamidade.gov, set MessageManager Test mode or set EMAIL_TESTMODE = true;
@@ -112,7 +112,7 @@ public class ReportRecyclingComplaintsXls
 {
 	public static final boolean EMAIL_TEST_MODE = false; //true overrides a MessageManager.isTestMode()==false, false respects MM setting.
 	public static final String EMAIL_TO1 = "mdcrecycling@worldwasteservices.com";
-	public static final String EMAIL_TO2 = "CS-MIAMIDADE-RECYCLI@WASTESERVICESINC.COM;sbazbeg@wsii.us";
+	public static final String EMAIL_TO2 = "oscar.diaz@progressivewaste.com";
 	public static final String EMAIL_CC12 = "swmcsu@miamidade.gov;massaj@miamidade.gov";
 	public static final String EMAIL_BCC12 = "cirmtest@miamidade.gov;hilpold@miamidade.gov";
 	public static final String EMAIL_FROM12 = "cirm@miamidade.gov";

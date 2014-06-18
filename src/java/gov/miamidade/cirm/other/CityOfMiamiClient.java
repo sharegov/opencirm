@@ -19,6 +19,8 @@ import static org.sharegov.cirm.OWL.fullIri;
 
 import static org.sharegov.cirm.utils.GenUtils.ko;
 import static org.sharegov.cirm.utils.GenUtils.ok;
+import gov.miamidade.cirm.MDRefs;
+
 import java.text.SimpleDateFormat;
 
 import javax.ws.rs.Consumes;
@@ -39,6 +41,9 @@ import org.sharegov.cirm.gis.GisException;
 import org.sharegov.cirm.legacy.MessageManager;
 import org.sharegov.cirm.rest.LegacyEmulator;
 import org.sharegov.cirm.rest.RestService;
+import org.sharegov.cirm.stats.CirmStatistics;
+import org.sharegov.cirm.stats.CirmStatisticsFactory;
+import org.sharegov.cirm.stats.SRCirmStatsDataReporter;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 import org.sharegov.cirm.utils.XMLU;
@@ -51,7 +56,9 @@ import org.w3c.dom.NodeList;
  * <p>
  * City of Miami, a.k.a. COM, interface. All integration with COM is implemented in here:
  * </p>
- * 
+ * Supported Operations:
+ * 1. Retrieve Activities from COM and update CiRM SRs with them.
+ * 2. Send new cases to COM
  * <ol>
  * <li></li>
  * <li></li>
@@ -59,7 +66,7 @@ import org.w3c.dom.NodeList;
  * <li></li> 
  * </ol>
  * 
- * @author boris
+ * @author boris, Thomas Hilpold
  */
 @Path("/other/cityofmiami")
 @Produces("application/json")
@@ -68,6 +75,9 @@ public class CityOfMiamiClient extends RestService
 {
 	Json serviceDescription = OWL.toJSON((OWLNamedIndividual)Refs.configSet.resolve().get("COMWebService"));	
 	LegacyEmulator emulator = new LegacyEmulator();
+	
+	private SRCirmStatsDataReporter srStatsReporter = 
+			CirmStatisticsFactory.createServiceRequestStatsReporter(MDRefs.mdStats.resolve(), "CityOfMiamiClient"); 
 	
 	private String replace(String src, String oldPattern, String newPattern)   
 	{
@@ -84,6 +94,16 @@ public class CityOfMiamiClient extends RestService
 		return src;
 	}
 	
+	/**
+	 * Updates a CiRM SR in CiRM with COM response information after sending it as new case to COM.
+	 * Existence of a processMessage means COM rejected the SR. In this case, the SR status is X-ERROR and an email will be sent.
+	 * comNumber will be set as answer <SRYPE>_CASENUM in the CiRM SR, if exists.
+	 * 
+	 * @param serviceCase
+	 * @param comNumber from the COM response (null: no STYPE_CASENUM will be set)
+	 * @param processMessage null: COM received case -> O-LOCKED Not null: case rejected -> X-ERROR & email  
+	 * @return
+	 */
 	public Json saveCOMSubmitResult(Json serviceCase, String comNumber, String processMessage)
 	{
 		ThreadLocalStopwatch.start("START CityOfMiamiClient saveCOMSubmitResult");
@@ -100,7 +120,7 @@ public class CityOfMiamiClient extends RestService
 			// for all SR types, not just COM, configurable somehow...
 			ThreadLocalStopwatch.error("CityOfMiamiClient [COM CASE REJECTED] department error email sent ");
 	    	MessageManager.get().sendEmail("cirm@miamidade.gov", 
-					"boris@miamidade.gov;ioliva@miamigov.com;VOchoa@miamigov.com;angel.martin@miamidade.gov;silval@miamidade.gov", 
+					"hilpold@miamidade.gov;ioliva@miamigov.com;VOchoa@miamigov.com;angel.martin@miamidade.gov;silval@miamidade.gov", 
 					"[COM CASE REJECTED] " + serviceCase.at("properties").at("hasCaseNumber"), processMessage);			
 		}
 		else
@@ -113,6 +133,11 @@ public class CityOfMiamiClient extends RestService
 		return result;
 	}
 	
+	/**
+	 * Sends a CiRM existing SR to COM
+	 * @param serviceCase
+	 * @return
+	 */
 	public Json sendNewCase(Json serviceCase)
 	{
 		ThreadLocalStopwatch.start("START CityOfMiamiClient sendNewCase");
@@ -124,19 +149,24 @@ public class CityOfMiamiClient extends RestService
 		String SOAP_FOOTER = "</strCSR></strAddServiceRequest></soap:Body></soap:Envelope>";
 
 		Json locationInfo = null;
-		
 		if (serviceCase.at("properties").has("hasXCoordinate"))
+		{
 			locationInfo = Refs.gisClient.resolve().getLocationInfo(serviceCase.at("properties").at("hasXCoordinate").asDouble(), 
 														  serviceCase.at("properties").at("hasYCoordinate").asDouble(), 
 														  null);
-		
-		if (locationInfo != null)
-			serviceCase.at("properties").set("hasGeoAreaLayer", locationInfo);
+			if (locationInfo != null) 
+			{
+				serviceCase.at("properties").set("hasGeoAreaLayer", locationInfo);
+			}
+		}
 		GenUtils.ensureArray(serviceCase.at("properties"), "hasServiceCaseActor");
 		GenUtils.ensureArray(serviceCase.at("properties"), "hasServiceAnswer");
 		GenUtils.ensureArray(serviceCase.at("properties"), "hasServiceActivity");
 		String request = SOAP_HEADER + "<![CDATA[" + makeNewCaseBody(serviceCase) + "]]>" + SOAP_FOOTER;
 		serviceCase.at("properties").delAt("hasGeoAreaLayer");
+		//
+		// Post new case to COM endpoint and retrieve response.
+		//
 		String response = GenUtils.httpPost(serviceDescription.at("hasEndpoint").asString(), request, new String[] {
 		    "Content-type", "text/xml; charset=utf-8",
 		    "content-length", Integer.toString(request.length()),
@@ -147,14 +177,24 @@ public class CityOfMiamiClient extends RestService
 		Node item = topdoc.getElementsByTagName("strAddServiceRequestResult").item(0);
 		String responseContent = item.getFirstChild().getTextContent();
 		Document rdoc = XMLU.parse(responseContent);
+		// COM interface response contains a CaseNumber (comNumber) and a processMessage
 		String comNumber = XMLU.content(rdoc, "CaseNumber");
 //		String inspector = XMLU.content(rdoc, "Inspector");
 		String processMessage = XMLU.content(rdoc, "ProcessMessage");
+		//Update CiRM SR with this information
 		Json upr = this.saveCOMSubmitResult(serviceCase, comNumber, processMessage);
 		ThreadLocalStopwatch.stop("END CityOfMiamiClient sendNewCase");
 		return ok().set("updateResult", upr);
 	}
 	
+	/**
+	 * Responds to COM after an update from com was retrieved.
+	 * 
+	 * @param update
+	 * @param YN
+	 * @param msg
+	 * @return
+	 */
 	public Json acknowledgeUpdate(Json update, String YN, String msg)
 	{
 //		if (1 > 0)
@@ -215,53 +255,85 @@ public class CityOfMiamiClient extends RestService
 			return ko(processMessage);
 	}
 	
+	/**
+	 * Applies one update received by COM to an existing CiRM SR, by adding a maximum of 3 activities.
+	 * This method also responds to COM.
+	 * No 
+	 *  
+	 * @param update
+	 * @return
+	 */
 	public Json applyUpdate(final Json update)
 	{
 		return Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
 		public Json call()
 		{								
 //			System.out.println("COM update:" + update);
-			Json existing = emulator.lookupServiceCase(Json.object("legacy:hasCaseNumber", update.at("CaseNumber"), "type", "legacy:ServiceCase"));
-			if (existing.is("ok", false))
-				return existing;
-			existing = existing.at("bo");
-			String typeCode = existing.at("type").asString();
-			existing.at("properties").delAt("ServiceField21643565");
+			Json existingSR = emulator.lookupServiceCase(Json.object("legacy:hasCaseNumber", update.at("CaseNumber"), "type", "legacy:ServiceCase"));
+			if (existingSR.is("ok", false)) 
+			{
+				srStatsReporter.failed("CirmUpdateAfterComRXUpdate", CirmStatistics.UNKNOWN, 
+						"" + update.at("CaseNumber"), 
+						"Case to update was not found in CiRM", "" + update);
+				return existingSR;
+			}
+			existingSR = existingSR.at("bo");
+			String typeCode = existingSR.at("type").asString();
+			existingSR.at("properties").delAt("ServiceField21643565");
 			Json newActivities = Json.array();
 			if (update.at("code1", "").asString().length() > 0 && update.at("value1").asString().length() > 0)
+			{
 				newActivities.add(Json.object("hasActivity", Json.object("type", "Activity", "iri", "legacy:" + typeCode + "_" + update.at("code1").asString()),
 								 "hasOutcome", Json.object("type", "Outcome", "iri", "legacy:OUTCOME_" + update.at("value1", "").asString()),
 								 "hasDateCreated", GenUtils.formatDate(new java.util.Date()),
 								 "hasCompletedTimestamp", GenUtils.formatDate(new java.util.Date())));
+			}
 			if (update.at("code2", "").asString().length() > 0 && update.at("value2", "").asString().length() > 0)
+			{
 				newActivities.add(Json.object("hasActivity", Json.object("type", "Activity", "iri", "legacy:" + typeCode + "_" + update.at("code2").asString()),
 								 "hasOutcome", Json.object("type", "Outcome", "iri", "legacy:OUTCOME_" + update.at("value2", "").asString()),
 								 "hasDateCreated", GenUtils.formatDate(new java.util.Date()),
 								 "hasCompletedTimestamp", GenUtils.formatDate(new java.util.Date())));
+			}
 			if (update.at("code3", "").asString().length() > 0 && update.at("value3", "").asString().length() > 0)
+			{
 				newActivities.add(Json.object("hasActivity", Json.object("type", "Activity", "iri", "legacy:" + typeCode + "_" + update.at("code3").asString()),
 								 "hasOutcome", Json.object("type", "Outcome", "iri", "legacy:OUTCOME_" + update.at("value3", "").asString()),
 								 "hasDateCreated", GenUtils.formatDate(new java.util.Date()),
-								 "hasCompletedTimestamp", GenUtils.formatDate(new java.util.Date())));			       
-			existing.at("properties").at("hasServiceActivity", Json.array()).with(newActivities);
-			Json updateResult = emulator.updateServiceCase(OWL.resolveIris(OWL.prefix(existing), null), "department");
+								 "hasCompletedTimestamp", GenUtils.formatDate(new java.util.Date())));
+			}
+			existingSR.at("properties").at("hasServiceActivity", Json.array()).with(newActivities);
+			Json updateResult = emulator.updateServiceCase(OWL.resolveIris(OWL.prefix(existingSR), null), "department");
 			Json ackResult = Json.nil();
 			
 			// Doing the acknowledgment inside the transaction implies the following potential irregularities:
 			// (a) the transaction can be retried several times until it succeeds, so the acknowledgment will be sent several times
 			// (b) the transaction may fail permanently in which case the acknoweledgment will be wrong. However, such a failure
 			// during the commit would mean a bug that needs to be addressed. So we only need to make sure the error is propagated
-			if (!updateResult.is("ok", true))
+			if (!updateResult.is("ok", true)) 
+			{
+				srStatsReporter.failed("CirmUpdateAfterComRXUpdate", existingSR, 
+						"Update sr with " + newActivities.asJsonList().size() + "new activities received by COM failed ", 
+						updateResult.at("error").asString());
 				ackResult = acknowledgeUpdate(update, "N", encode(updateResult.at("error").asString()));
+			}
 			else
+			{
+				srStatsReporter.succeeded("CirmUpdateAfterComRXUpdate", existingSR);
 				ackResult = acknowledgeUpdate(update, "Y", "");
+			}
 			return ackResult;
 		}});
 	}
 	
 	/**
 	 * <p>
-	 * Get the latest updates from COM and apply them locally.
+	 * Get the multiple updates from COM to apply them to existing SRs in CiRM.
+	 * COM updates lead to up to 3 NEW ACTIVITIES for an SR in CiRM and s
+	 * 
+	 * Possible failures:
+	 * An update node does not contain a case number
+	 * 
 	 * </p>
 	 *   
 	 */
@@ -437,6 +509,11 @@ public class CityOfMiamiClient extends RestService
 		return desc.toString();
 	}	
 	
+	/**
+	 * Sends a ServiceCase to COM 
+	 * @param data
+	 * @return
+	 */
 	@POST
 	@Path("/sendnew")
 	public Json sendCaseToCOM(Json data)
@@ -460,19 +537,30 @@ public class CityOfMiamiClient extends RestService
 				return sr;
 			}
 			Json sendResult = sendNewCase(sr.at("bo"));
+			if (sendResult.is("ok", true)) 
+			{
+				srStatsReporter.succeeded("sendCaseToCOM rest /sendnew", sr.at("bo"));
+			}
+			else
+			{
+				srStatsReporter.failed("sendCaseToCOM rest /sendnew", sr.at("bo"), "Send new case failed", sendResult.at("updateResult").toString());
+			}
 			ThreadLocalStopwatch.stop("END CityOfMiamiClient /sendnew case sent ");
 			return sendResult;
 		}
 		catch (Throwable ex)
 		{
+			srStatsReporter.failed("sendCaseToCOM rest /sendnew", data, "" + GenUtils.getRootCause(ex), "" + GenUtils.getRootCause(ex).getMessage());
 			ThreadLocalStopwatch.stop("FAIL CityOfMiamiClient /sendnew with " + ex);
 			if (!isWorthRetrying(ex))
 			{
 				GenUtils.reportFatal("While sending COM case " + data.at("caseNumber").asLong(), ex.toString(), ex);
 				return ko(ex);
 			}
-			else
-				return retry(ex, "/other/cityofmiami/sendnew", 30, data);
+			else 
+			{
+				return scheduleSendNewRetry(ex, "/other/cityofmiami/sendnew", 30, data);
+			}
 		}		
 	}
 	
@@ -487,12 +575,21 @@ public class CityOfMiamiClient extends RestService
 		return ok().set("client-exempt", isClientExempt()).set("clientIp", clientIp).set("exemptHost", exemptHostName);
 	}
 	
-	Json retry(Throwable ex, String path, int minutes, Json data)
+	/**
+	 * Submits a time machine task to retry 
+	 * @param ex
+	 * @param path callback path
+	 * @param minutes 
+	 * @param data
+	 * @return
+	 */
+	Json scheduleSendNewRetry(Throwable ex, String path, int minutes, Json data)
 	{
 		ThreadLocalStopwatch.now("CityOfMiamiClient retry by time machine: /other/cityofmiami/sendnew in 30 mins");
 		long initiatedAt = data.at("initiatedAt", 0).asLong();		
 		if (initiatedAt + 24*60*60*1000 < System.currentTimeMillis())
 		{
+			srStatsReporter.failed("scheduleretry", data, "Giving up after 24 hours", "" + ex);
 			GenUtils.reportFatal("While sending (after 24 hour long attempts: " + initiatedAt + " - " + System.currentTimeMillis() +  
 					") " + data.at("caseNumber").asString(), ex.toString(), ex);
 			return ko(ex);
@@ -513,6 +610,9 @@ public class CityOfMiamiClient extends RestService
 		}										
 	}
 	
+	/**
+	 * @return true if cause is a Socket or GisException.
+	 */
 	boolean isWorthRetrying(Throwable t)
 	{
 		Throwable root = GenUtils.getRootCause(t);

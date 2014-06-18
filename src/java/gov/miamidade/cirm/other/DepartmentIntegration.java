@@ -49,15 +49,20 @@ import org.sharegov.cirm.BOntology;
 import org.sharegov.cirm.CirmTransaction;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
+import org.sharegov.cirm.StartUp.CirmServerResource;
 import org.sharegov.cirm.gis.GisException;
 import org.sharegov.cirm.legacy.MessageManager;
 import org.sharegov.cirm.legacy.Permissions;
 import org.sharegov.cirm.rdb.DBIDFactory;
 import org.sharegov.cirm.rest.LegacyEmulator;
 import org.sharegov.cirm.rest.RestService;
+import org.sharegov.cirm.stats.CirmStatistics;
+import org.sharegov.cirm.stats.CirmStatisticsFactory;
+import org.sharegov.cirm.stats.SRCirmStatsDataReporter;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
+import gov.miamidade.cirm.MDRefs;
 import gov.miamidade.cirm.other.JMSClient;
 import org.sharegov.cirm.utils.JsonUtil;
 
@@ -76,6 +81,9 @@ public class DepartmentIntegration extends RestService
 {
     private LegacyEmulator emulator = new LegacyEmulator();
     
+	private SRCirmStatsDataReporter srStatsReporter = 
+			CirmStatisticsFactory.createServiceRequestStatsReporter(MDRefs.mdStats.resolve(), "DepartmentIntegration"); 
+
     // The following is to support start/stop of the JMS queue listener for departmental events
     // it should only be started on one machine.
     @GET
@@ -141,7 +149,7 @@ public class DepartmentIntegration extends RestService
         Json R =  this.getOpenCasesReport(new LegacyEmulator(), numberOfDays);
         if (R.is("ok", true))
         {
-            MessageManager.get().emailAsAttachment("boris@miamidade.gov", "boris@miamidade.gov;assia@miamidade.gov",
+            MessageManager.get().emailAsAttachment("cirm@miamidade.gov", "hilpold@miamidade.gov;sabbas@miamidade.gov;jorgefi@miamidade.gov",
                     "CIRM Open Cases Report " + R.at("from").asString() + " to " +
                     R.at("to").asString(), JsonUtil.csvTable(R.at("results"), 
                             "hasCaseNumber,type,hasStatus,hasDateCreated,hasLegacyInterface", 
@@ -205,7 +213,7 @@ public class DepartmentIntegration extends RestService
         try
         {
             JMSClient.connectAndSend(msg);
-        	ThreadLocalStopwatch.stop("END /sendMessage to department ");
+        	ThreadLocalStopwatch.stop("END /sendMessage to department ");        	
             return ok();
         }
         catch (JMSException ex)
@@ -335,6 +343,15 @@ public class DepartmentIntegration extends RestService
         return ok();
     }
     
+    /**
+     * Schedules a time machine task to send a case to a department respecting hasAnswerUpdateTimeout.
+     * TM task name will be: sendCase_" + serviceCase.at("boid") + "_ToDepartment.
+     * 
+     * @param serviceCase
+     * @param locationInfo
+     * @param minutes
+     * @return
+     */
     public Json delaySendToDepartment(Json serviceCase, Json locationInfo, int minutes)
     {
         String relativePath = "/legacy/departments/sendnew";
@@ -349,6 +366,7 @@ public class DepartmentIntegration extends RestService
         if (!type.has("hasAnswerUpdateTimeout"))
         {
             this.sendToDepartment(serviceCase, locationInfo);
+            srStatsReporter.succeeded("delaySendToDepartment", serviceCase);
             return ok();
         }       
         Json timeMachine = OWL.toJSON((OWLIndividual)Refs.configSet.resolve().get("TimeMachineConfig"));
@@ -408,6 +426,12 @@ public class DepartmentIntegration extends RestService
         return data;
     }
     
+    /**
+     * Formats case & locationinfo for a department and uSes JMSClient to send it there.
+     *  
+     * @param caseData
+     * @param locationInfo
+     */
     public void sendToDepartment(Json caseData, Json locationInfo)
     {
         Json data = formatNewCaseForDepartments(caseData, locationInfo);
@@ -418,11 +442,11 @@ public class DepartmentIntegration extends RestService
         }
         catch (JMSException ex)
         {
-            // We do need to report the error, but we also have to retry at a later time.
+            srStatsReporter.failed("sendToDepartment", caseData, "" + ex, "JMSCLIENT failed" + ex.getMessage());
+        	// We do need to report the error, but we also have to retry at a later time.
             Refs.logger.resolve().log(Level.SEVERE, "While sending case " + data.at("hasServiceCase") + " to departments.", ex);
 //              this.delaySendToDepartment(bontology, deptInterface, 60);
-        }
-        
+        }        
     }
     
     
@@ -458,6 +482,7 @@ public class DepartmentIntegration extends RestService
         if (locationInfo == null)
             locationInfo = emulator.populateGisData(Json.object("properties", data), bontology);
         sendToDepartment(data.set("hasLegacyInterface", deptInterface), locationInfo);
+        srStatsReporter.succeeded("sendToDepartment-BO", data);
     }
     
     @GET
@@ -469,6 +494,8 @@ public class DepartmentIntegration extends RestService
         Json sr = emulator.lookupServiceCase(boid);
         if (!sr.is("ok", true))
         {
+        	srStatsReporter.failed("/sendnewactivity/{boid}/{timestamp}/{minutes}", 
+        			CirmStatistics.UNKNOWN, "" + boid, "lookup for boid failed, not found", "");
     		ThreadLocalStopwatch.fail("FAIL /sendnewactivity/ case not found ");
         	return sr;
         }
@@ -480,11 +507,13 @@ public class DepartmentIntegration extends RestService
         sr=OWL.prefix(sr);
         if (!sr.has("properties")) 
         {
+        	srStatsReporter.failed("/sendnewactivity/{boid}/{timestamp}/{minutes}", sr, "no properties in sr json", "");
         	ThreadLocalStopwatch.fail("FAIL /sendnewactivity/ SR has no 'properties' property ");
         	return ko("Bad JSON  - SR has no 'properties' property.");
         }
         if (!sr.at("properties").has("legacy:hasServiceActivity"))
         {
+        	srStatsReporter.failed("/sendnewactivity/{boid}/{timestamp}/{minutes}", sr, "no legacy:hasServiceActivity in sr json", "");
         	ThreadLocalStopwatch.fail("FAIL /sendnewactivity/ no activities in case");
             return ko("No activities found in case " + sr.at("boid"));
         }
@@ -499,18 +528,21 @@ public class DepartmentIntegration extends RestService
             }
         if (activity.isNull()) 
         {
-    		ThreadLocalStopwatch.fail("FAIL /sendnewactivity/ activity with timestamp " + timestamp + " not found ");
+        	srStatsReporter.failed("/sendnewactivity/{boid}/{timestamp}/{minutes}", sr, "serviceActivity not found by createdDate", "");
+        	ThreadLocalStopwatch.fail("FAIL /sendnewactivity/ activity with timestamp " + timestamp + " not found ");
             return ko("Activity with timestamp " + timestamp + " not found in " + sr.at("boid"));
         }
         try
         {
             Json actSendResult =  tryActivitySend(sr, activity, minutes);
     		ThreadLocalStopwatch.stop("END /sendnewactivity/ timestamp " + timestamp + "");
+    		srStatsReporter.succeeded("/sendnewactivity/{boid}/{timestamp}/{minutes}", sr);
     		return actSendResult;
         }
         catch (Throwable t)
         {
-    		ThreadLocalStopwatch.fail("FAIL /sendnewactivity/ unexpected with " + t);
+        	srStatsReporter.failed("/sendnewactivity/{boid}/{timestamp}/{minutes}", sr, "" + t, t.getMessage());
+        	ThreadLocalStopwatch.fail("FAIL /sendnewactivity/ unexpected with " + t);
             return ko(t);
         }
     }
@@ -543,9 +575,10 @@ public class DepartmentIntegration extends RestService
         public Json call()
         {       
             Json data = emulator.updateServiceCase(newcase, "cirmuser");
-            
-            if (!data.is("ok", true))
+            if (!data.is("ok", true)) 
+            {
                 return data;
+            }
             data = data.at("bo");
             String type = "legacy:" + data.at("type").asString();
             Json deptInterface = getDepartmentInterfaceCode(type);
@@ -573,11 +606,13 @@ public class DepartmentIntegration extends RestService
                     return ko("GIS extended validation failed: " + locationInfo.at("extendedInfo").at("error"));
                 }
                 sendToDepartment(bo, deptInterface, null);
+                srStatsReporter.succeeded("resendNewCase", data);
                 return ok().set("bo", bo.toJSON()); 
             }
             catch (Throwable t)
             {
-                // this will print out the "can't serialize exeption", which we don't want 'cause it's normal
+                srStatsReporter.failed("resendNewCase", data, t.toString(), t.getMessage());
+            	// this will print out the "can't serialize exeption", which we don't want 'cause it's normal
 //              t.printStackTrace(System.err);
                 return ko(t); 
             }
@@ -692,7 +727,7 @@ public class DepartmentIntegration extends RestService
 		return status.endsWith("O-LOCKED");	
 	}
 	
-	public Json  sendNewActivity(Json serviceCase, Json activity)
+	public Json sendNewActivity(Json serviceCase, Json activity)
 	{
 		Json caseNumber = serviceCase.at("properties").has("hasCaseNumber") ?
 				serviceCase.at("properties").at("hasCaseNumber") :
@@ -715,17 +750,22 @@ public class DepartmentIntegration extends RestService
 						has(objectProperty("legacy:isLegacyInterface"),
 								individual(type))), false).getFlattened();
 		if (interfaces.isEmpty())
+		{
+			srStatsReporter.failed("sendNewActivity", serviceCase, "No interface found for type", "not sending, responding ok().");
 			return ok();
+		}
 		data.set("hasLegacyInterface", OWL.toJSON(interfaces.iterator().next()));
 		try
 		{
 			ThreadLocalStopwatch.now("DepartmentIntegration.sendNewActivity actually sending activity through JMS");
 			JMSClient.connectAndSend(LegacyMessageType.NewActivity, 
 					((DBIDFactory) Refs.idFactory.resolve()).generateSequenceNumber(), data);
+			srStatsReporter.succeeded("sendNewActivity", serviceCase);
 			return ok();
 		}
 		catch (JMSException ex)
 		{
+			srStatsReporter.failed("sendNewActivity", serviceCase, ex.toString(), ex.getMessage());
 			Refs.logger.resolve().log(Level.SEVERE, "While sending activity for case " + 
 					serviceCase.at("properties").at("hasServiceCase") + " to departments.", ex);
 			return ko(ex.toString());
@@ -733,6 +773,13 @@ public class DepartmentIntegration extends RestService
 		}
 	}
 	
+	/**
+	 * Schedules a time machine task to send an activity to an interface later.
+	 * @param serviceCase
+	 * @param activity
+	 * @param minutes
+	 * @return
+	 */
 	public Json delaySendNewActivity(Json serviceCase, Json activity, int minutes)
 	{
 		Json type = OWL.toJSON(OWL.individual(serviceCase.at("type").asString()));
@@ -765,7 +812,8 @@ public class DepartmentIntegration extends RestService
 	
 	
 	/**
-	 * Checks if a resend of a particular SR should be tried or not. 
+	 * Sends a new activity, created in cirm to a department.
+	 * If the case is not there yet, delaySendNewActivity will schedule a time machine callback.
 	 * @param serviceCase
 	 * @return
 	 */
@@ -785,6 +833,12 @@ public class DepartmentIntegration extends RestService
 		{
 			ThreadLocalStopwatch.now("case is at department -> sendNewActivity");
 			result = sendNewActivity(serviceCase, activity);
+			if(result.is("ok", true)) {
+				srStatsReporter.succeeded("tryActivitySend-case at department", serviceCase);
+			} else
+			{
+				srStatsReporter.failed("tryActivitySend-case at department", serviceCase, "" + result.at("error"), "sendNewActivity failed");
+			}
 			ThreadLocalStopwatch.stop("END tryActivitySend");
 			return result;
 		}
@@ -808,6 +862,7 @@ public class DepartmentIntegration extends RestService
 			else if (minutes>4320)
 			{
 				//eventually the retry is stopped after 3 unsuccessful attempts.
+				srStatsReporter.failed("tryActivitySend-case", serviceCase, "Giving up retry after ", "sendNewActivity failed");
 				ThreadLocalStopwatch.fail("FAIL tryActivitySend retry is stopped after 3 unsuccessful attempts, returning ko");
 				return ko("tryActivitySend failed 3 times, giving up.");
 			}			
@@ -817,6 +872,7 @@ public class DepartmentIntegration extends RestService
 		}
 		else // case is not in department and will never make it there
 		{
+			srStatsReporter.failed("tryActivitySend-case", serviceCase, "Will never make it to department", "no delaySendNewActivity called");
 			// do nothing
 			ThreadLocalStopwatch.fail("FAIL tryActivitySend case is not at department and will never make it there, returning ok");
 		}

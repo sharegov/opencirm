@@ -15,6 +15,8 @@
  ******************************************************************************/
 package gov.miamidade.cirm.other;
 
+import gov.miamidade.cirm.MDRefs;
+
 import java.sql.CallableStatement;
 
 import java.sql.Connection;
@@ -45,10 +47,19 @@ import org.sharegov.cirm.rdb.DBU;
 import org.sharegov.cirm.rdb.DataSourceRef;
 import org.sharegov.cirm.rest.LegacyEmulator;
 import org.sharegov.cirm.rest.RestService;
+import org.sharegov.cirm.stats.CirmStatisticsFactory;
+import org.sharegov.cirm.stats.SRCirmStatsDataReporter;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.Ref;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
+/**
+ * Interface client for CMS/RER
+ * Supported actions:
+ * 1. 
+ * @author boris, Thomas Hilpold
+ *
+ */
 @Path("other/cms")
 @Produces("application/json")
 @Consumes("application/json")
@@ -62,7 +73,9 @@ public class CMSClient extends RestService
 	final static AtomicInteger nrOfSuccessUpdateActivity = new AtomicInteger();
 	final static AtomicInteger nrOfSuccessUpdateCase = new AtomicInteger();
 	
-
+	private SRCirmStatsDataReporter srStatsReporter = 
+			CirmStatisticsFactory.createServiceRequestStatsReporter(MDRefs.mdStats.resolve(), "CMSClient"); 
+	
 	static final String CMSDATEFORMAT = "yyyy-MM-dd hh:mm:ss";
 	
 	boolean dryrun = false;	
@@ -81,23 +94,32 @@ public class CMSClient extends RestService
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
+		Json result; 
 		try
 		{
 			conn = cms.resolve().resolve().getConnection();
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery("select * from tmmt_csrout where cms_event_eid=" + eventid);
-			if (rs.next())
-				return DBU.rowToJson(rs);
+			if (rs.next()) {
+				result = DBU.rowToJson(rs);
+				srStatsReporter.succeeded("getEventRecord", "CMS-EVENT", "" + eventid);
+			}
+			else 
+			{
+				srStatsReporter.failed("getEventRecord", "CMS-EVENT", "" + eventid, "not found in CMS db", "");
+				result = Json.nil();
+			}
 		}
 		catch (Exception ex)
 		{
+			srStatsReporter.failed("getEventRecord from CMS", "CMS-EVENT", "" + eventid, "" + ex, ex.getMessage());
 			throw new RuntimeException(ex);
 		}
 		finally
 		{
 			DBU.close(conn, stmt, rs);
 		}
-		return Json.nil();
+		return result;
 	}
 	
 	Json getReadyEvents(int max)
@@ -139,6 +161,14 @@ public class CMSClient extends RestService
 		}
 	}
 
+	/**
+	 * Marks an event as processer in CMS.
+	 * @param eventid
+	 * @param caseNumber
+	 * @param status
+	 * @param error
+	 * @return
+	 */
 	Json markProcessed(int eventid, String caseNumber, String status, String error)
 	{
 		if (dryrun)
@@ -183,7 +213,12 @@ public class CMSClient extends RestService
 			DBU.close(conn, stmt, null);
 		}
 	}
-
+	
+	/**
+	 * Applies event to CiRM, persisting a new SR, adding one new activity or updating SR data
+	 * @param event
+	 * @return
+	 */
 	Json processInCiRM(final Json event)
 	{
 		return Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
@@ -327,6 +362,14 @@ public class CMSClient extends RestService
 													 null, 
 													 "department");
 		nrOfSuccessUpdateActivity.incrementAndGet();
+		if (result.is("ok", true)) 
+		{
+			srStatsReporter.succeeded("updateActivity", sr);
+		}
+		else
+		{
+			srStatsReporter.failed("updateActivity", sr, "updateServiceCaseTransaction failed", "");
+		}
 		return result;
 	}
 
@@ -441,16 +484,29 @@ public class CMSClient extends RestService
 		if (dryrun)
 		{
 			return ok();
-		}			
+		}
 		Json result = emulator.updateServiceCaseTransaction(sr, 
 													 current, 
 													 updatedDate, 
 													 null, 
 													 "department");
 		nrOfSuccessUpdateCase.incrementAndGet();
+		if (result.is("ok", true)) 
+		{
+			srStatsReporter.succeeded("updateData", sr);
+		}
+		else
+		{
+			srStatsReporter.failed("updateData", sr, "updateSR failed", "");
+		}
 		return result;
 	}
-	 
+	
+	/**
+	 * Inserts a new case retrieved by CMS into CiRM. 
+	 * @param event
+	 * @return
+	 */
 	public Json insertCase(Json event)
 	{
 		final Json sr = Json.object("type", event.at("SR_TYPE").asString(), "properties", Json.object());
@@ -474,6 +530,14 @@ public class CMSClient extends RestService
 		}		
 		Json result =  emulator.saveNewCaseTransaction(sr);
 		nrOfSuccessNewCase.incrementAndGet();
+		if (result.is("ok", true)) 
+		{
+			srStatsReporter.succeeded("insertCase", sr);
+		}
+		else
+		{
+			srStatsReporter.failed("insertCase", sr, "updateSR failed", "" + sr);
+		}
 		return result;		
 	}
 	
@@ -515,6 +579,7 @@ public class CMSClient extends RestService
 				r = processEvent(event);
 			}
 			if (r.is("ok", false)) {
+				srStatsReporter.failed("/event/processBatch/", "CMS-EVENT", "" + event, "processEvent", "" + r.at("error"));
 				ThreadLocalStopwatch.fail("FAIL CMSClient processAllEvents total: " + totalCount + " success: " + successCount);
 				return ko("Error " + r.at("error") + 
 					" while processing event " + event).set("successCount", successCount);
@@ -522,6 +587,7 @@ public class CMSClient extends RestService
 			else
 			{
 				successCount++;
+				srStatsReporter.succeeded("/event/processBatch/", "CMS-EVENT", "" + event);
 			}
 		}
 		printCounts();
