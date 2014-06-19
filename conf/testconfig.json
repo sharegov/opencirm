@@ -3,8 +3,9 @@
     "port":80,
     "ignorePasswords" : true,
     "allClientsExempt":true,    
-    "defaultOntologyIRI":"http://www.miamidade.gov/ontology#",
+	"defaultOntologyIRI":"http://www.miamidade.gov/cirm/legacy",
     "metaDatabaseLocation", "c:/cirmservices/db/",
+	"customIRIMappingFile" : "C:/cirmservices/customIRIMap.properties",
     "mainApplication" : "http://www.miamidade.gov/ontology#CIRMApplication",
     "ontologyConfigSet":"http://www.miamidade.gov/ontology#TestConfigSet",    
 	"network" : { "user", "bolerio-dev",
@@ -13,8 +14,8 @@
 				"bff","cirmdevelopmentontology"},
     "ontologyPrefixes": {
     	"legacy:" : "http://www.miamidade.gov/cirm/legacy#",
-	"mdc:" : "http://www.miamidade.gov/ontology#",
-	":" : "http://www.miamidade.gov/cirm/legacy#" 
+		"mdc:" : "http://www.miamidade.gov/ontology#",
+		":" : "http://www.miamidade.gov/ontology#" 
      },
      "cachedReasonerPopulate": true,
      "ftpServer":"devnet.miamidade.gov",
@@ -22,6 +23,11 @@
      "ftpUsername":"miamidade\\alvarga",
      "ftpPassword":"Allen2010",
      "ftpLocation":"test\\phani",
-     "changeset":"7ee7017a4431",
-     "version":"v0.0.120b"     
+     "changeset":"dc242f682cee",
+     "version":"1.0",
+	 "nameBase" : "http://www.miamidade.gov/ontology",
+ 	 "stopExpansionConditionIRI" : [
+					"http://www.miamidade.gov/cirm/legacy#providedBy",
+					"http://www.miamidade.gov/cirm/legacy#hasChoiceValue"
+					]
 }
