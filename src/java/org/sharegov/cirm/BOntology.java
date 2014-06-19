@@ -410,7 +410,13 @@ public class BOntology implements JsonSerializable
 					indIri = fullIri(type + Refs.idFactory.resolve().newId(null));
 				}
 				if (indIri == null)
-					indIri = getTempIRI();
+				{
+					do
+					{
+						indIri = getTempIRI();
+					}
+					while(O.containsIndividualInSignature(indIri));
+				}
 				object = setPropertiesFor(df.getOWLNamedIndividual(indIri), value);
 			}
 		}
