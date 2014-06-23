@@ -26,6 +26,7 @@ import static org.sharegov.cirm.OWL.reasoner;
 
 import gov.miamidade.cirm.AddressSearchService;
 import gov.miamidade.cirm.GisClient;
+import gov.miamidade.cirm.MDRefs;
 
 import java.io.File;
 import java.io.PrintStream;
@@ -55,6 +56,8 @@ import org.sharegov.cirm.legacy.CirmMessage;
 import org.sharegov.cirm.legacy.MessageManager;
 import org.sharegov.cirm.rest.LegacyEmulator;
 import org.sharegov.cirm.rest.RestService;
+import org.sharegov.cirm.stats.CirmStatisticsFactory;
+import org.sharegov.cirm.stats.SRCirmStatsDataReporter;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
@@ -78,6 +81,9 @@ import org.sharegov.cirm.utils.TraceUtils;
  */
 public class LegacyJMSListener extends Thread
 {	
+	private SRCirmStatsDataReporter srStatsReporter = 
+			CirmStatisticsFactory.createServiceRequestStatsReporter(MDRefs.mdStats.resolve(), "LegacyJMSListener"); 
+
 	private Json config = null;
 	
 //	private volatile boolean trace;
@@ -240,6 +246,12 @@ public class LegacyJMSListener extends Thread
 			addr.set("hasStreetType", Json.object("USPS_Suffix", parsed.at("SufType").asString()));		
 	}
 	
+	/**
+	 * Uses GisClient to find an address from XY and sets it to the scase.
+	 * @param scase
+	 * @param xcoord number
+	 * @param ycoord number
+	 */
 	public void updateAddressFromXY(Json scase, Json xcoord, Json ycoord)
 	{
 		Json gis = Json.object();
@@ -250,17 +262,22 @@ public class LegacyJMSListener extends Thread
 		catch (RuntimeException ex)
 		{
 			error("During GIS XY lookup for " + xcoord + ", " + ycoord, ex);
+			srStatsReporter.failed("updateAddressFromXY", scase,"" + GenUtils.getRootCause(ex), "" + GenUtils.getRootCause(ex).getMessage());
 		}
 		if (gis.isArray())
 			gis = gis.at(0);
 		else if (gis.isNull() || gis.asJsonMap().isEmpty())
+		{
+			srStatsReporter.failed("updateAddressFromXY", scase,"GisClient returned null", "");
 			return;
+		}
 		Json addr =  scase.at("atAddress", Json.object());
 		gisToAtAddress(gis, addr);
 		scase.set("hasXCoordinate", xcoord);
 		scase.set("hasYCoordinate", ycoord);
 //		scase.set("hasGisDataId", GisClient.getGisDBId(scase.at("hasXCoordinate").asDouble(), 
 //				   scase.at("hasYCoordinate").asDouble()));		
+		srStatsReporter.succeeded("updateAddressFromXY", scase);
 	}		
 	
 	/**
@@ -404,16 +421,27 @@ public class LegacyJMSListener extends Thread
 			{
 				OWLNamedIndividual LI = interfaces.iterator().next();					
 				result.at("data").set("hasLegacyInterface", Json.object("hasLegacyCode", 
-											OWL.dataProperty(LI, "legacy:hasLegacyCode").getLiteral()));
-				
+											OWL.dataProperty(LI, "legacy:hasLegacyCode").getLiteral()));				
 			}
+			srStatsReporter.succeeded("newCaseTxn", result);
+		} else
+		{
+			srStatsReporter.failed("newCaseTxn", result, "saveNewCaseTransaction ko", "" + result.at("error"));
 		}
 		JMSClient.connectAndRespond(jmsg, result);	
 		return result;
 	}
-	
+	/**
+	 * A new activity was received by Cirm from an interface, is added to the existing sr and updated in the db.
+	 * @param emulator
+	 * @param sr
+	 * @param activity
+	 * @return
+	 * @throws JMSException
+	 */
 	private Json newActivityTxn(LegacyEmulator emulator, Json sr, Json activity) throws JMSException
 	{
+		Json result;
 		Json original = sr.dup();
 		ServiceCaseJsonHelper.insertIriFromCode(activity.at("hasActivity"), sr.at("type").asString() + "_");
 		ServiceCaseJsonHelper.insertIriFromCode(activity.at("hasOutcome"), "OUTCOME_");		
@@ -422,11 +450,28 @@ public class LegacyJMSListener extends Thread
 		ServiceCaseJsonHelper.assignIris(sr);
 		System.out.println(sr);
 		OWL.resolveIris(sr.at("properties"), null);			
-		return emulator.updateServiceCaseTransaction(sr, original, null, new ArrayList<CirmMessage>(), "department");
+		result = emulator.updateServiceCaseTransaction(sr, original, null, new ArrayList<CirmMessage>(), "department");
+		if (result.has("ok") && result.is("ok", true)) 
+		{
+			srStatsReporter.succeeded("newActivityTxn", result);
+		} else
+		{
+			srStatsReporter.failed("newActivityTxn", result, "updateServiceCaseTransaction ko", "" + result.at("error"));
+		}
+		return result;
 	}
 	
+	/**
+	 * 
+	 * @param emulator
+	 * @param existing
+	 * @param newdata
+	 * @return
+	 * @throws JMSException
+	 */
 	private Json updateTxn(LegacyEmulator emulator, Json existing, Json newdata) throws JMSException
 	{
+		Json result;
 		Json existingSave = existing.dup();		
 		Json props = existing.at("properties");
 		Json updateDate = newdata.atDel("updateDate");
@@ -490,14 +535,32 @@ public class LegacyJMSListener extends Thread
 		// Shouldn't be needed anymore as BOntology is not returning them...
 //		for (Json x : existing.at("properties").at("legacy:hasServiceAnswer").asJsonList())
 //			x.delAt("iri");
-		return emulator.updateServiceCaseTransaction(existing, 
+		result = emulator.updateServiceCaseTransaction(existing, 
 													 existingSave,
 													 updateDate == null ? null : GenUtils.parseDate(updateDate.asString()),
 													 new ArrayList<CirmMessage>(),
 													 "department");
-		
+		if (result.has("ok") && result.is("ok", true)) 
+		{
+			srStatsReporter.succeeded("updateCaseTxn", result);
+		} else
+		{
+			srStatsReporter.failed("updateCaseTxn", result, "updateServiceCaseTransaction ko", "" + result.at("error"));
+		}
+		return result;
 	}
 
+	/**
+	 * A response was received from an interface - Only if was due to a newCase Cirm sent, we set the case to O-LOCKED or X-ERROR.
+	 * TODO hilpold What if it's closed? Are we sending closed cases as newCase sometimes? Shouldn't it remain closed?
+	 * If the response is not due to a newCase, no case update whatsoever is performed and ok() is returned.
+	 * 
+	 * @param emulator
+	 * @param jmsg
+	 * @param emailsToSend
+	 * @return
+	 * @throws JMSException
+	 */
 	private Json responseTxn(LegacyEmulator emulator, Json jmsg, ArrayList<CirmMessage> emailsToSend) throws JMSException
 	{
 		Json orig = jmsg.at("originalMessage");
@@ -507,10 +570,14 @@ public class LegacyJMSListener extends Thread
 		// Add if-logic if there are other types of responses that need processing
 		// (activities?)
 		if (!orig.is("messageType", "NewCase"))
+		{
+			srStatsReporter.succeeded("responseTxn-nonNewCase", jmsg);
 			return GenUtils.ok();
+		}
 		Json scase = emulator.lookupServiceCase(orig.at("data").at("boid"));
 		if (!scase.is("ok", true))
 		{
+			srStatsReporter.failed("responseTxn", jmsg, "Could not find case to update after a newCase response from an interface", "");
 			String errmsg = "While processing departmental response, cannot load service case " + 
 					orig.at("data").at("boid") + " :" + scase.at("error");
 			TraceUtils.error(new Exception(errmsg));
@@ -522,10 +589,10 @@ public class LegacyJMSListener extends Thread
 		OWL.resolveIris(scase, null);		
 		ServiceCaseJsonHelper.cleanUpProperties(scase);
 		ServiceCaseJsonHelper.assignIris(scase);
-		System.out.println("*******************************");
-		System.out.println("Before Status Change:");
-		System.out.println(scase);
-		System.out.println("*******************************");
+//		System.out.println("*******************************");
+//		System.out.println("Before Status Change:");
+//		System.out.println(scase);
+//		System.out.println("*******************************");
 		if (jmsg.at("response").is("ok", true))
 		{
 			if (orig.is("messageType", "NewCase"))
@@ -562,11 +629,16 @@ public class LegacyJMSListener extends Thread
 														    "department");
 		if (!result.is("ok", true))
 		{
+			srStatsReporter.succeeded("responseTxn", result);
 			// If we fail to save, this is bug, it must be reported, but we shouldn't be generating
 			// a response, and we should still consume the message.
 			Exception ex = new Exception("Failed to save case with error '" + result.at("error") + 
 					"\n\n from legacy message response:\n\n" + jmsg);
 			TraceUtils.severe(ex);
+		} 
+		else
+		{
+			srStatsReporter.failed("responseTxn", result, "emu.updateServiceCaseTransaction failed", "" + result.at("error"));			
 		}
 		return result;
 	}
@@ -591,6 +663,7 @@ public class LegacyJMSListener extends Thread
 						ThreadLocalStopwatch.error("LegacyJMSListener.process NewCase txn failed");
 						System.err.println(R.at("error") + " for " + jmsg);
 					}
+					srStatsReporter.succeeded("process-NewCase", R);
 					return R;
 				}});
 				break;
@@ -605,6 +678,7 @@ public class LegacyJMSListener extends Thread
 					Json sr = emulator.lookupServiceCase(jmsg.at("data").at("boid"));
 					if (!sr.is("ok", true))
 					{					
+						srStatsReporter.failed("process-NewActivityOrCaseUpdate", jmsg, "emulator.lookupServiceCase(boid) failed", "" + sr.at("error") + " "+ jmsg);
 						ThreadLocalStopwatch.error("ERROR: LegacyJMSListener.process lookup for update or new activity: case not found, responding that");
 						Json jerror = Json.object("ok", false, 
 							"error", "Unable to load SR case " + jmsg.at("data").at("boid") + 
@@ -668,6 +742,10 @@ public class LegacyJMSListener extends Thread
 				MessageManager.get().sendEmails(emailsToSend);								
 				break;
 			}
+			default:
+			{
+				srStatsReporter.failed("process", jmsg, "Message type unknown", "" + jmsg);
+			}
 		}
 		//throw new RuntimeException();		
 	}
@@ -710,42 +788,44 @@ public class LegacyJMSListener extends Thread
 					msg.acknowledge();
 					continue;
 				}
-				else
+				else 
+				{
 					msgText = msg.getText();
-				msgText=msgText.replace("TMOUPD", "COMPLETE");
-				Json jmsg = Json.read(msgText);
-				
-				try
-				{
-					RestService.forceClientExempt.set(true);					
-					process(jmsg);
-					successCount ++;
-					//System.exit(0);
-				}
-				catch (JMSException ex)
-				{
-					// Failed to send response, we have to exit the thread to avoid
-					// multiple such failures until the problem was fixed. The
-					// response itself should have been rescheduled through the 
-					// time server.
-					throw new Exception("Wrap JMS exception -exiting JMS Listener thread", ex);
-				}
-				catch (Throwable t)
-				{
-					error("While processing " + msg, t);
-					JMSClient.connectAndRespond(jmsg, Json.object("ok", false, "error", t.toString()));
-//					throw t;
-				}
-				finally
-				{			
-					// This is to clear the temp ontology manager that caching
-					// BO ontologies, and potentially other thread-bound 
-					// structures that were intended to be used within a single
-					// request transaction.
-					RequestScopeFilter.clear();
-					out.flush();
-				}
-				msg.acknowledge();
+					msgText=msgText.replace("TMOUPD", "COMPLETE");
+					Json jmsg = Json.read(msgText);
+					try
+					{
+						RestService.forceClientExempt.set(true);					
+						process(jmsg);					
+						successCount ++;
+					}
+					catch (JMSException ex)
+					{
+						// Failed to send response, we have to exit the thread to avoid
+						// multiple such failures until the problem was fixed. The
+						// response itself should have been rescheduled through the 
+						// time server.
+						srStatsReporter.failed("run", "Message", "", "" + ex, "exiting JMS Listener thread > STOPPED!!");
+						throw new Exception("Wrap JMS exception -exiting JMS Listener thread", ex);
+					}
+					catch (Throwable t)
+					{
+						srStatsReporter.failed("run", "Message", "", "" + t, t.getMessage());					
+						error("While processing " + msg, t);
+						JMSClient.connectAndRespond(jmsg, Json.object("ok", false, "error", t.toString()));
+						// throw t;
+					}
+					finally
+					{			
+						// This is to clear the temp ontology manager that caching
+						// BO ontologies, and potentially other thread-bound 
+						// structures that were intended to be used within a single
+						// request transaction.
+						RequestScopeFilter.clear();
+						out.flush();
+					}
+					msg.acknowledge();
+				} //else
 			}
 			catch (JMSException ex)
 			{
