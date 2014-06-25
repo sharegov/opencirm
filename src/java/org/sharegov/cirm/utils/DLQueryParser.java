@@ -39,7 +39,7 @@ import org.semanticweb.owlapi.util.ShortFormProvider;
 import org.semanticweb.owlapi.util.SimpleShortFormProvider;
 import org.sharegov.cirm.OWL;
 
-
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -57,7 +57,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Author: Matthew Horridge<br>
  * The University of Manchester<br>
  * Bio-Health Informatics Group<br>,
- * Borislav Iordanov, Miami-Dade County
+ * Borislav Iordanov, Thomas Hilpold Miami-Dade County
  * Date: 13-May-2010
  */
 public class DLQueryParser
@@ -119,6 +119,7 @@ public class DLQueryParser
 
 	private ShortFormProvider shortFormProviderOnCreation;
 
+	private String[] swapDefaultPrefixNameSpecification;
 
 	private DLQueryParser(OWLOntology rootOntology)
 	{
@@ -152,7 +153,7 @@ public class DLQueryParser
 			bsfa.add(OWL.dataFactory().getOWLNothing());
 			bsfa.add(OWL.dataFactory().getOWLThing());
 			bidiShortFormProvider = bsfa;
-			
+			swapDefaultPrefixNameSpecification = getPrefixNameToSwapForDoubleDefault(shortFormProviderOnCreation);
 		}
 	}
 
@@ -182,55 +183,7 @@ public class DLQueryParser
 		// Specify an entity checker that wil be used to check a class
 		// expression contains the correct names.
 		final OWLEntityChecker ec = new ShortFormEntityChecker(bidiShortFormProvider);
-		OWLEntityChecker entityChecker = 
-			//new ShortFormEntityChecker(bidiShortFormProvider);
-		new OWLEntityChecker() {
-			public OWLAnnotationProperty getOWLAnnotationProperty(String name)
-			{
-				return ec.getOWLAnnotationProperty(name);
-			}
-
-			public OWLClass getOWLClass(String name)
-			{				
-				if (name.equals("Nothing")) 
-					return OWL.dataFactory().getOWLNothing();
-				return ec.getOWLClass(checkPrefixMDC(name));
-			}
-
-			@Override
-			public OWLDataProperty getOWLDataProperty(String name)
-			{
-				return ec.getOWLDataProperty(checkPrefixMDC(name));
-			}
-
-			@Override
-			public OWLDatatype getOWLDatatype(String name)
-			{
-				return ec.getOWLDatatype(name);
-			}
-
-			@Override
-			public OWLNamedIndividual getOWLIndividual(String name)
-			{
-				return ec.getOWLIndividual(checkPrefixMDC(name));
-			}
-
-			@Override
-			public OWLObjectProperty getOWLObjectProperty(String name)
-			{
-				return ec.getOWLObjectProperty(checkPrefixMDC(name));
-			}			
-			
-			public String checkPrefixMDC(String name)
-			{
-				if (name.contains(":") || name.contains("/")) 
-					return name;
-				else if (shortFormProviderOnCreation instanceof PrefixManager)
-					return "mdc:" + name;
-				else 
-					return name;
-			}
-		};
+		OWLEntityChecker entityChecker = new DoubleDefaultPrefixEntityCheckerAdapter(ec);
 		parser.setOWLEntityChecker(entityChecker);
 //		parser.setOWLEntityChecker(ec);
 		// Do the actual parsing
@@ -239,6 +192,46 @@ public class DLQueryParser
 			// used by the parser in another thread.
 			return parser.parseClassExpression();
 		}
+	}
+	
+	/**
+	 * In case one iris can be mapped to a default as well as a custom prefix, 
+	 * determines which prefix the bidiShortFormProvider (accidentally) uses and returns
+	 * which prefix therefore needs to be replaced for which other.
+	 * e.g. bidi uses : for (default and mdc:) -> [0]=mdc:, [1]=:
+	 *  bidi uses mdc: for (default and mdc:) -> [0]=:, [1]=mdc:
+	 * @return a String[2] [0]=fromPrefix [1]=toPrefix
+	 */
+	private String[] getPrefixNameToSwapForDoubleDefault(ShortFormProvider shortFormProvider) 
+	{
+		String[] result = new String[] { ":", ":" };
+		if (shortFormProvider instanceof PrefixManager)
+		{
+			PrefixManager pfm = (PrefixManager)shortFormProviderOnCreation;
+			if (pfm.containsPrefixMapping(":")) {
+				String defaultPrefix = pfm.getDefaultPrefix(); //e.g. http://www.miamidade.gov/ontology#
+				String alternativeDefaultPrefixName = null;
+				for (Map.Entry<String, String> nameToPrefix : pfm.getPrefixName2PrefixMap().entrySet())
+				{
+					if (!nameToPrefix.getKey().equals(":")
+							&& nameToPrefix.getValue().equals(defaultPrefix))
+					{
+							//another prefix name (e.g. mdc:) that maps to the same prefix as default was found.
+							alternativeDefaultPrefixName = nameToPrefix.getKey();
+					}
+				}
+				OWLNamedIndividual testShortFormIndividual = OWL.individual(defaultPrefix + "TEST");
+				String testShortForm = shortFormProviderOnCreation.getShortForm(testShortFormIndividual); 
+				if (testShortForm.indexOf(':') > 0)  { //after first char
+					//using alterNativeDefaultPrefixName for Bidicache
+					result = new String[] { ":", alternativeDefaultPrefixName };
+				} else {
+					//using default prefix for Bidicache
+					result = new String[] { alternativeDefaultPrefixName, ":" };
+				}
+			}
+		}
+		return result;
 	}
 
 	/**
@@ -258,8 +251,9 @@ public class DLQueryParser
 		parser.setDefaultOntology(rootOntology);
 		// Specify an entity checker that wil be used to check a class
 		// expression contains the correct names.
-		OWLEntityChecker entityChecker = new ShortFormEntityChecker(
+		OWLEntityChecker delegateEc = new ShortFormEntityChecker(
 				bidiShortFormProvider);
+		OWLEntityChecker entityChecker = new DoubleDefaultPrefixEntityCheckerAdapter(delegateEc);
 		parser.setOWLEntityChecker(entityChecker);
 		// Do the actual parsing
 		synchronized(manager) {
@@ -280,5 +274,87 @@ public class DLQueryParser
 			// during disposal in another thread.
 			bidiShortFormProvider.dispose();
 		}
+	}
+	
+	private class DoubleDefaultPrefixEntityCheckerAdapter implements OWLEntityChecker {
+
+		OWLEntityChecker ec;
+		
+		public DoubleDefaultPrefixEntityCheckerAdapter(OWLEntityChecker ec)
+		{
+			this.ec = ec;
+		}
+		
+		public OWLAnnotationProperty getOWLAnnotationProperty(String name)
+			{
+				return ec.getOWLAnnotationProperty(name);
+			}
+
+			public OWLClass getOWLClass(String name)
+			{				
+				if (name.equals("Nothing")) 
+					return OWL.dataFactory().getOWLNothing();
+				return ec.getOWLClass(fixDefaultPrefixNameFor(name));
+			}
+
+			@Override
+			public OWLDataProperty getOWLDataProperty(String name)
+			{
+				return ec.getOWLDataProperty(fixDefaultPrefixNameFor(name));
+			}
+
+			@Override
+			public OWLDatatype getOWLDatatype(String name)
+			{
+				return ec.getOWLDatatype(name);
+			}
+
+			@Override
+			public OWLNamedIndividual getOWLIndividual(String name)
+			{
+				return ec.getOWLIndividual(fixDefaultPrefixNameFor(name));
+			}
+
+			@Override
+			public OWLObjectProperty getOWLObjectProperty(String name)
+			{
+				return ec.getOWLObjectProperty(fixDefaultPrefixNameFor(name));
+			}			
+			
+			/**
+			 * If there are two equal prefixes and one is mapped to the defaultPrefixName ":",
+			 * all names have to be checked to use the same prefixName as bidicache does (either ":" or "mdc:").
+			 * @param name
+			 * @return
+			 */
+			public String fixDefaultPrefixNameFor(final String name)
+			{
+				String result = name;
+				int colonIndex = name.indexOf(":");
+				
+				if (colonIndex <= 0)
+				{	//() and or State
+					//not found or first char
+					boolean isColonFirstChar = colonIndex == 0;
+					if (swapDefaultPrefixNameSpecification[0].equals(":")) 
+					{
+						result = swapDefaultPrefixNameSpecification[1] + (isColonFirstChar? name.substring(1) : name);	
+					} else 
+					{
+						if (!isColonFirstChar)
+						{
+							result = ":" + name;
+						}
+					}
+				} else
+				{
+					String prefixName = name.substring(0, colonIndex + 1);
+					if (swapDefaultPrefixNameSpecification[0].equals(prefixName)) 
+					{
+						result = swapDefaultPrefixNameSpecification[1] + name.substring(colonIndex + 1);	
+					} 
+				}
+				return result;
+			}
 	}
 }
