@@ -67,6 +67,7 @@ import org.sharegov.cirm.CirmTransaction;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.StartUp;
+import org.sharegov.cirm.SysRefs;
 import org.sharegov.cirm.legacy.MessageManager;
 import org.sharegov.cirm.rest.RestServiceAdmin;
 import org.w3c.dom.Document;
@@ -76,7 +77,7 @@ public class GenUtils
 	public static final String TIMETASK_NOTRANS_MARKER = "NOTRANS";
 	private static final ThreadLocal<SimpleDateFormat> ISO_DATE_FORMATS = new ThreadLocal<SimpleDateFormat>();
 	public static final String isoDatePattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
-	public static final String SERVER_NAME_2 = Refs.serverName2.resolve();
+	public static final String SERVER_NAME_2 = SysRefs.serverName2.resolve();
 	
 
 	public static URL makeLocalURL(String relativePath)
