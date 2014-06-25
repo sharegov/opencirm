@@ -8,7 +8,7 @@
     "keyPass", "password",
 	"defaultOntologyIRI":"http://www.miamidade.gov/cirm/legacy",
     "metaDatabaseLocation", "c:/cirmservices/db/",
-	"customIRIMappingFile" : "C:/cirmservices/customIRIMap.properties",
+	"_____customIRIMappingFile" : "C:/cirmservices/customIRIMap.properties",
     "mainApplication" : "http://www.miamidade.gov/ontology#CIRMApplication",    
     "ontologyConfigSet":"http://www.miamidade.gov/ontology#ProdConfigSet",    
 	"network" : { "user": "bolerio-dev",
