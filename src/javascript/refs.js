@@ -96,8 +96,10 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
                 "map": function(A) {
                     var x = [];
                     $.each(A, function (i,v) {
-                        var tempLabel = v.label+' - '+v.hasJurisdictionCode;
-                        x.push({"label":tempLabel, "value":tempLabel});
+                    	if(v.isDisabled != 'true') {
+                          var tempLabel = v.label+' - '+v.hasJurisdictionCode;
+                          x.push({"label":tempLabel, "value":tempLabel});
+                        }
                    });                    
                     x.sort( function(a,b) {  
                          if(a.label && b.label) return a.label.localeCompare(b.label); else return -1; });                    
