@@ -571,7 +571,7 @@ public class LegacyJMSListener extends Thread
 		// (activities?)
 		if (!orig.is("messageType", "NewCase"))
 		{
-			srStatsReporter.succeeded("responseTxn-nonNewCase", jmsg);
+			srStatsReporter.succeeded("responseTxn-nonNewCase-do nothing", jmsg);
 			return GenUtils.ok();
 		}
 		Json scase = emulator.lookupServiceCase(orig.at("data").at("boid"));
@@ -629,7 +629,7 @@ public class LegacyJMSListener extends Thread
 														    "department");
 		if (!result.is("ok", true))
 		{
-			srStatsReporter.succeeded("responseTxn", result);
+			srStatsReporter.failed("responseTxn", result, "emu.updateServiceCaseTransaction failed", "" + result.at("error"));
 			// If we fail to save, this is bug, it must be reported, but we shouldn't be generating
 			// a response, and we should still consume the message.
 			Exception ex = new Exception("Failed to save case with error '" + result.at("error") + 
@@ -638,7 +638,7 @@ public class LegacyJMSListener extends Thread
 		} 
 		else
 		{
-			srStatsReporter.failed("responseTxn", result, "emu.updateServiceCaseTransaction failed", "" + result.at("error"));			
+			srStatsReporter.succeeded("responseTxn", result);
 		}
 		return result;
 	}
@@ -658,7 +658,7 @@ public class LegacyJMSListener extends Thread
 				public Json call() throws JMSException
 				{							
 					Json R = newCaseTxn(emulator, jmsg);
-					if (R.is("ok", false)) 
+					if (!R.is("ok", true)) 
 					{
 						ThreadLocalStopwatch.error("LegacyJMSListener.process NewCase txn failed");
 						System.err.println(R.at("error") + " for " + jmsg);
