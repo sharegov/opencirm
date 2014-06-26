@@ -98,7 +98,6 @@ import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.semanticweb.owlapi.util.OWLEntityRemover;
 import org.semanticweb.owlapi.util.ShortFormProvider;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
-import org.sharegov.cirm.owl.Model;
 import org.sharegov.cirm.owl.OWLObjectPropertyCondition;
 import org.sharegov.cirm.owl.OwlRepo;
 import org.sharegov.cirm.owl.SynchronizedOWLManager;
@@ -1191,7 +1190,16 @@ public class OWL
 			manager.applyChanges(changes);
 		}
 	}
-	
+	/**
+	 * Tries to put Json objects where only string iris were before..
+	 * Example: a servicecase contains 4 activities with outcome C-CLOSED.
+	 * Only the first serialized one will be an object, all others are iri-strings.
+	 * This method will find that one full object and set it to the other 3 locations, replacing the iri-strings were.
+	 * 
+	 * @param x
+	 * @param jsonMap may be and mostly should be null; used for recursion.
+	 * @return
+	 */
 	public static Json resolveIris(Json x, Map<String, Json> jsonMap)
 	{
 		if(jsonMap == null)
@@ -1202,8 +1210,10 @@ public class OWL
 			{
 				if(entry.getValue().isString() && 
 					!entry.getKey().equals("iri")
-					&& entry.getValue().asString().startsWith(Refs.nameBase.resolve()) && 
-					entry.getValue() != null )
+					&& (entry.getValue().asString().startsWith(Refs.nameBase.resolve())
+							|| entry.getValue().asString().startsWith(Refs.defaultOntologyIRI.resolve())
+					   )
+					&& entry.getValue() != null)
 				{
 					try
 					{
@@ -1211,7 +1221,9 @@ public class OWL
 					}
 					catch (Throwable t)
 					{
-						System.out.println("here");
+						System.out.println("OWL.resolveIris here");
+						System.err.println("OWL.resolveIris" + t);
+						GenUtils.logStackTrace(t.getStackTrace(), 10);
 					}
 				}
 				else if(entry.getValue().isArray() || entry.getValue().isObject())
@@ -1223,9 +1235,9 @@ public class OWL
 			{
 				Json el = x.at(i);
 				if (el.isString() && 
-					(el.asString().contains(Refs.nameBase.resolve())||
-						el.asString().contains(Refs.defaultOntologyIRI.toString())) &&
-						jsonMap.containsKey(el.asString()))
+					(el.asString().contains(Refs.nameBase.resolve())
+							|| el.asString().contains(Refs.defaultOntologyIRI.resolve())
+					) && jsonMap.containsKey(el.asString()))
 					x.asJsonList().set(i, jsonMap.get(el.asString()));
 				else
 					resolveIris(el, jsonMap);
@@ -1234,7 +1246,13 @@ public class OWL
 		return x;
 	}
 	
-	
+	/**
+	 * Finds all objects containing an iri property and createa a map from String iri to object recursively.
+	 * If two objects with the same iri exist, the latter visited wins! No error is printed.
+	 * @param x
+	 * @param jsonMap
+	 * @return
+	 */
 	public static Map<String, Json> gatherIris(Json x, Map<String,Json> jsonMap)
 	{
 		if(jsonMap == null)

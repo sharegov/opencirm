@@ -82,7 +82,12 @@ public class SRCirmStatsDataReporter extends CirmStatsDataReporter
 		try
 		{
 			caseRoot = findCaseRoot(serviceCaseJson);
-			return caseRoot.at("properties").at("legacy:hasCaseNumber").asString();
+			if (caseRoot.at("properties").has("legacy:hasCaseNumber")) {
+				return caseRoot.at("properties").at("legacy:hasCaseNumber").asString();
+			} else 
+			{
+				return caseRoot.at("properties").at("hasCaseNumber").asString();
+			}
 		} catch (Exception e)
 		{
 			System.err.println("SRCirmStatsDataReporter was unable to determine " 
