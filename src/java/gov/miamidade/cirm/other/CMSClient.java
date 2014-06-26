@@ -307,7 +307,7 @@ public class CMSClient extends RestService
 	{
 		try
 		{
-			Json result = processInCiRM(event);
+			Json result = processInCiRM(event); //if this returns ko, we still report it as success in stats; response REJECTED			
 			return markProcessed(event, result);			
 		}
 		catch (Exception ex)
@@ -418,6 +418,7 @@ public class CMSClient extends RestService
 				String att = attributes.nextToken();
 				String code = att.substring(0, att.indexOf("="));
 				if (code.length() == 0) continue; 
+				code = code.trim();
 				String fieldIri = OWL.fullIri("legacy:" + sr.at("type").asString() + "_" + code).toString();
 				String value = att.substring(att.indexOf("=") + 1);
 				if ("NA".equals(value))
@@ -431,7 +432,7 @@ public class CMSClient extends RestService
 							.set("legacy:hasServiceField", Json.object("iri", fieldIri))
 							.set("legacy:hasAnswerValue", value);
 					int existing = ServiceCaseJsonHelper.findAnswerByField(answers, fieldIri);
-					if (existing > 0)
+					if (existing > -1)
 						answers.delAt(existing);
 					answers.add(ans);					
 				}

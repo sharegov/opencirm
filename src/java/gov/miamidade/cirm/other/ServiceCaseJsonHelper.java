@@ -71,15 +71,28 @@ public class ServiceCaseJsonHelper
     
     public static int findAnswerByField(Json answers, String fieldIri)
     {
+    	if (fieldIri == null) return -1;
     	for (int i = 0; i < answers.asJsonList().size(); i++)
     	{
     		Json field = answers.at(i).at("legacy:hasServiceField");
     		if (field == null)
     			field = answers.at(i).at("hasServiceField");    		
-    		if (field == null)
-    			continue;
-    		else if (field.is("iri", fieldIri))
-    			return i;
+    		//TODO hilpold don't trust field.is, seems to fail! else if (field.is("iri", fieldIri))
+    		if (field != null && field.isObject()) 
+    		{
+    			String existingFieldIri;
+    			if (field.isObject() && field.at("iri").isString())
+    			{
+    				existingFieldIri = field.at("iri").asString();
+    			} else
+    			{
+    				existingFieldIri = field.asString();
+    			}
+    			if (existingFieldIri.equals(fieldIri))
+    			{
+    	   			return i;
+    			}
+    		}
     	}
     	return -1;
     }
@@ -249,7 +262,7 @@ public class ServiceCaseJsonHelper
 	{
 		if (fields == null)
 			return;		
-		HashSet<Integer> toremove = new HashSet<Integer>();
+		//HashSet<Integer> toremove = new HashSet<Integer>();
 		for (int i = 0; i < fields.asJsonList().size(); i++)
 		{
 			Json ans = fields.at(i);
@@ -269,12 +282,28 @@ public class ServiceCaseJsonHelper
 				continue;
 			for (Json choice : field.at("hasChoiceValueList").at("hasChoiceValue").asJsonList())
 			{
-				OWLNamedIndividual ansIndividual = OWL.individual(choice.at("iri").asString());
+				OWLNamedIndividual ansIndividual;
+				//hilpold all choices were falsely assumed to be json objects here before:
+				if (choice.isObject())
+				{
+					ansIndividual = OWL.individual(choice.at("iri").asString());
+				} 
+				else
+				{
+					ansIndividual = OWL.individual(choice.asString());
+				}
 				String label = OWL.getEntityLabel(ansIndividual);
 				if  (label != null && label.equalsIgnoreCase(ansValue))
 				{
-					ans.set("legacy:hasAnswerObject", choice.dup());
+					ans.set("legacy:hasAnswerObject", choice.dup()); //TODO hilpold don't use full serialized obj; object with only "iri" string sufficient
 					ans.delAt("legacy:hasAnswerValue");
+					//hilpold ... to be sure..
+					if (ans.has("hasAnswerObject"))
+					{						
+						System.err.println("ServiceCaseJsonHelper Error, but solved: non prefixed hasAnswerObject " + ans.at("hasAnswerObject") + " deleted.");
+						ans.delAt("hasAnswerObject");
+						//TODO think about multiple selections here; do we only allow a single select?
+					}
 					break;
 				}
 			}
