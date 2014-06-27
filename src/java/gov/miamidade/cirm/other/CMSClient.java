@@ -65,9 +65,9 @@ import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 @Consumes("application/json")
 public class CMSClient extends RestService
 {
-	final static String INPROCESS = "OK";
-	final static String SUCCESS = "OK CIRM";
-	final static String FAILURE = "REJECTED";
+	final static String INPROGRESS_OK = "OK";
+	final static String OK_CIRM = "OK CIRM";
+	final static String FAILURE_REJECTED = "REJECTED";
 	
 	final static AtomicInteger nrOfSuccessNewCase = new AtomicInteger();
 	final static AtomicInteger nrOfSuccessUpdateActivity = new AtomicInteger();
@@ -176,8 +176,8 @@ public class CMSClient extends RestService
 			System.out.println("MARK PROCESSED: " +eventid + "," + status + ", " + error);
 			return ok();
 		}
-		if (!"OK".equals(status))
-			markProcessed(eventid, caseNumber, "OK", "");
+		if (!INPROGRESS_OK.equals(status))
+			markProcessed(eventid, caseNumber, INPROGRESS_OK, "");
 		Connection conn = null;
 		CallableStatement stmt = null;
 		try
@@ -287,21 +287,27 @@ public class CMSClient extends RestService
 	
 	Json markProcessed(Json event, Json result)
 	{
-		if (result.is("ok", false))
+		if (result.is("ok", false)) 
+		{
+//			return markProcessed(event.at("CMS_EVENT_EID").asInteger(), 
+//					result.at("caseNumber").asString(), "FAILED", result.at("error").asString());
 			return markProcessed(event.at("CMS_EVENT_EID").asInteger(), 
-					result.at("caseNumber").asString(), "FAILED", result.at("error").asString());
+					result.at("caseNumber").asString(), FAILURE_REJECTED, result.at("error").asString());
+		}
 		else
+		{
 			return markProcessed(event.at("CMS_EVENT_EID").asInteger(), 
 					result.at("caseNumber").asString(), 
-								 "OK CIRM", 
-								 "");			
+								 OK_CIRM, 
+								 "");
+		}
 	}
 	
 	Json processEvent(final Json event)
 	{
 		try
 		{
-			Json result = processInCiRM(event);
+			Json result = processInCiRM(event); //if this returns ko, we still report it as success in stats; response REJECTED			
 			return markProcessed(event, result);			
 		}
 		catch (Exception ex)
@@ -316,9 +322,13 @@ public class CMSClient extends RestService
 			else 
 			{
 				ex.printStackTrace(System.err);
+//				return markProcessed(event.at("CMS_EVENT_EID").asInteger(), 
+//						"", 
+//						 "ERROR", 
+//						 ex.toString());
 				return markProcessed(event.at("CMS_EVENT_EID").asInteger(), 
 						"", 
-						 "ERROR", 
+						 FAILURE_REJECTED, 
 						 ex.toString());
 			}
 		}
@@ -408,6 +418,7 @@ public class CMSClient extends RestService
 				String att = attributes.nextToken();
 				String code = att.substring(0, att.indexOf("="));
 				if (code.length() == 0) continue; 
+				code = code.trim();
 				String fieldIri = OWL.fullIri("legacy:" + sr.at("type").asString() + "_" + code).toString();
 				String value = att.substring(att.indexOf("=") + 1);
 				if ("NA".equals(value))
@@ -421,7 +432,7 @@ public class CMSClient extends RestService
 							.set("legacy:hasServiceField", Json.object("iri", fieldIri))
 							.set("legacy:hasAnswerValue", value);
 					int existing = ServiceCaseJsonHelper.findAnswerByField(answers, fieldIri);
-					if (existing > 0)
+					if (existing > -1)
 						answers.delAt(existing);
 					answers.add(ans);					
 				}
