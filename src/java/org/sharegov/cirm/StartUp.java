@@ -107,7 +107,7 @@ public class StartUp extends ServerResource
 			.set("ontologyPrefixes", Json.object(
 					"legacy:", "http://www.miamidade.gov/cirm/legacy#",
 					"mdc:", "http://www.miamidade.gov/ontology#",
-					":", "http://www.miamidade.gov/cirm/ontology#"
+					":", "http://www.miamidade.gov/ontology#"
 					))
 			.set("cachedReasonerPopulate", false);
 	
