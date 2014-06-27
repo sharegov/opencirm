@@ -62,7 +62,7 @@
 	<classpathentry kind="lib" path="/opencirm/lib/rdb/ucp.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/rdb/sqljdbc4.jar"/>
 	<classpathentry kind="lib" path="lib/wrapper.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/opencirm"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/opencirm"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
