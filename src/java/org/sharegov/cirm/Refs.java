@@ -175,23 +175,7 @@ public class Refs
 		}
 	}; 
 	
-	public static final Ref<String> serverName2 = new SingletonRef<String>(new Ref<String>() {
-		@Override
-		public String resolve()
-		{
-			String result;
-			try {
-				result = java.net.InetAddress.getLocalHost().getHostName();
-			 if (result.length() >= 2)
-				 result = result.substring(result.length() - 2);
-			} catch (Exception e) 
-			{
-				ThreadLocalStopwatch.error("Refs.serverName2 resolve failed with " + e);
-				result = "NA";
-			}
-			return result;
-		}		
-	});
+
 	
 	public static final Ref<CirmStatistics> stats = new SingletonRef<CirmStatistics>(CirmStatisticsFactory.createStats());
 

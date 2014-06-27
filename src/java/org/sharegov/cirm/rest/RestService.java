@@ -94,6 +94,7 @@ public class RestService
 			ThreadLocalStopwatch.getWatch().time("ERROR: RestService.getUserId() httpHeaders were null. this indicates that this object: " + this + " was called without context. "
 					+ "\r\n Remove this after all such problems are found and fixed:");
 			GenUtils.logStackTrace(Thread.currentThread().getStackTrace(), 10);
+			
 			return "";
 		}
 		Cookie cookie = httpHeaders.getCookies().get("username");
@@ -219,11 +220,11 @@ public class RestService
 		}
 		else if (forceClientExempt.resolve())
 		{
-			if(httpHeaders == null) 
-			{
-				ThreadLocalStopwatch.getWatch().time("forceClientExempt fix active and used: RestServicehttpHeaders were null. this indicates that this object: " + this + " was called without context. Trace(4): ");
-				GenUtils.logStackTrace(Thread.currentThread().getStackTrace(), 4);
-			}
+//TODO temporarily disabled			if(httpHeaders == null) 
+//			{
+//				ThreadLocalStopwatch.getWatch().time("forceClientExempt fix active and used: RestServicehttpHeaders were null. this indicates that this object: " + this + " was called without context. Trace(4): ");
+//				GenUtils.logStackTrace(Thread.currentThread().getStackTrace(), 4);
+//			}
 			return true;
 		} 
 		else if (Arrays.asList(getUserGroups()).contains(UserService.CIRM_ADMIN))

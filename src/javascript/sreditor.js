@@ -746,17 +746,29 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 			var type = cirm.refs.serviceCaseList[srTypeID];
 			if(!U.isEmptyString(self.data().type()))
 			{
-				if(!U.isEmptyString(type))
-					self.clearSR(type);
+				if(!U.isEmptyString(type)){
+					if(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + type].isDisabled == 'true')
+						alertDialog("Cannot create a disabled Service Request Type");
+					else
+						self.clearSR(type);
+				}
 				else
 					alertDialog("Please select a valid Service Request Type");
 			}
 			else
 			{
-				if(!U.isEmptyString(type))
-					self.startNewServiceRequest(type);
-				else if(!U.isEmptyString(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + srTypeID]))
-					self.startNewServiceRequest(srTypeID);
+				if(!U.isEmptyString(type)){
+					if(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + type].isDisabled == 'true')
+						alertDialog("Cannot create a disabled Service Request Type");
+					else
+						self.startNewServiceRequest(type);
+				}
+				else if(!U.isEmptyString(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + srTypeID])){
+					if(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + srTypeID].isDisabled == 'true')
+						alertDialog("Cannot create a disabled Service Request Type");
+					else
+						self.startNewServiceRequest(srTypeID);
+				}
 				else
 					alertDialog("Please select a valid Service Request Type");
 			}

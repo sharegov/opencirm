@@ -77,7 +77,7 @@ public class StartUp extends ServerResource
 { 
 	public static boolean STRESS_TEST_CONFIG = false;
 
-	public static Json config = Json.object()
+	public volatile static Json config = Json.object()
 			.set("workingDir", "C:/work/opencirm")
 			.set("mainApplication", "http://www.miamidade.gov/ontology#CIRMApplication") 
 			.set("port", 8182)
@@ -250,7 +250,7 @@ public class StartUp extends ServerResource
 			ConfigSet.getInstance();
 		}catch(Throwable t)
 		{
-			t.printStackTrace();
+			throw new RuntimeException(t);
 		}
 		server = new Component();		
 	    server.getServers().add(Protocol.HTTP, config.at("port").asInteger())

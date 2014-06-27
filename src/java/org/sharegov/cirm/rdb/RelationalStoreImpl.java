@@ -131,7 +131,7 @@ import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 public class RelationalStoreImpl implements RelationalStore
 {
 	public static boolean DBG = true;
-	public static boolean DBGX = true;
+	public static boolean DBGX = false;
 	public static boolean DBGLOCK = true;
 	public static boolean DBG_ALL_TRANSACTIONS_LOCK = false;
 	public static boolean DBG_PRE_RETRY_SLEEP = true;
@@ -3789,10 +3789,10 @@ public class RelationalStoreImpl implements RelationalStore
 					// ONE TO MANY
 					if (done.containsKey(manyObject))
 					{
-						logger.info("removing and re-merging many-to-one: "
-								+ manyObject.getIRI());
+						//logger.info("removing and re-merging many-to-one: "
+						//		+ manyObject.getIRI());
 						done.remove(manyObject);
-						logger.info("join Object" + ind.getIRI().toString());
+						//logger.info("join Object" + ind.getIRI().toString());
 					}
 					done.put(ind, statements);
 					put = false;

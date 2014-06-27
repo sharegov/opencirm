@@ -16,8 +16,6 @@
 package org.sharegov.cirm.rest;
 
 import static mjson.Json.array;
-
-
 import static mjson.Json.object;
 import static mjson.Json.read;
 import static org.sharegov.cirm.OWL.dataProperty;
@@ -120,7 +118,6 @@ import org.sharegov.cirm.rdb.Sql;
 import org.sharegov.cirm.rdb.Statement;
 import org.sharegov.cirm.stats.CirmStatistics;
 import org.sharegov.cirm.stats.CirmStatisticsFactory;
-import org.sharegov.cirm.stats.CirmStatsDataReporter;
 import org.sharegov.cirm.stats.SRCirmStatsDataReporter;
 import org.sharegov.cirm.utils.ExcelExportUtil;
 import org.sharegov.cirm.utils.GenUtils;
@@ -1192,6 +1189,7 @@ public class LegacyEmulator extends RestService
 			updateExistingActivities(uiActs, dbActs, mngr, bontology, boid, emailsToSend);
 
 		
+		
 		//06-20-2013 syed - set the createdBy to the SR modifier.
 		for (final Json eachActivity : newActivities.asJsonList())
 		{
@@ -1410,13 +1408,35 @@ public class LegacyEmulator extends RestService
 			for(Json uiAct : uiActivities.asJsonList())
 			{
 				String uiActIRI = uiAct.at("iri").asString();
-				String activityType = uiAct.at("legacy:hasActivity").at("iri").asString();
+				String activityType;
+				if (uiAct.at("legacy:hasActivity").isObject())
+				{
+					activityType = uiAct.at("legacy:hasActivity").at("iri").asString(); 
+				}
+				else 
+				{
+					activityType = uiAct.at("legacy:hasActivity").asString(); 
+				}
 				String modifiedBy = uiAct.has("isModifiedBy") ? 
 									uiAct.at("isModifiedBy").asString() : null;
 				if(dbActIRI.equals(uiActIRI))
 				{
-					String uiOutcomeIRI = uiAct.has("legacy:hasOutcome") ?
-						uiAct.at("legacy:hasOutcome").at("iri").asString() : null;
+					String uiOutcomeIRI;
+					if (uiAct.has("legacy:hasOutcome"))
+					{
+						if (uiAct.at("legacy:hasOutcome").isObject()) 
+						{
+							uiOutcomeIRI = uiAct.at("legacy:hasOutcome").at("iri").asString();
+						}
+						else 
+						{
+							uiOutcomeIRI = uiAct.at("legacy:hasOutcome").asString();
+						}
+					}
+					else
+					{
+						uiOutcomeIRI = null;
+					}
 					String details = uiAct.has("legacy:hasDetails") ?
 						uiAct.at("legacy:hasDetails").asString() : null;
 					String assignedTo = uiAct.has("legacy:isAssignedTo") ?
