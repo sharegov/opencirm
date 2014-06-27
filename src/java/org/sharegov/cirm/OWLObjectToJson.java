@@ -195,11 +195,12 @@ public class OWLObjectToJson implements OWLObjectMapper<Json>
 		{
 			OWLNamedIndividual ind = (OWLNamedIndividual)object;
 			// 1) Check for a custom mapper to use for the individual
-			for (OWLClassAssertionAxiom ax : ontology.getClassAssertionAxioms(ind)) // ind.getClassesInSignature()) //reasoner.getTypes(ind, false).getFlattened())
+			Set<OWLClassExpression> classes = ind.getTypes(ontology.getImportsClosure());
+			for (OWLClassExpression expr : classes)
 			{
-				if (! (ax.getClassExpression() instanceof OWLClass))
+				if (! (expr instanceof OWLClass))
 					continue;
-				OWLClass type = (OWLClass)ax.getClassExpression();
+				OWLClass type = (OWLClass)expr;
 				OWLObjectMapper<Json> jsonMapper = findObjectMapper(shortFormProvider, ontology(), type, Refs.hasJsonMapper);
 				if (jsonMapper != null)
 					return jsonMapper.map(ontology, object, shortFormProvider);
@@ -208,7 +209,7 @@ public class OWLObjectToJson implements OWLObjectMapper<Json>
 			
 			// 2) Find All Classes of the individual the type property will have the first one.
 			boolean isProtectedIndividual = false;
-			Set<OWLClassExpression> classes = ind.getTypes(ontology.getImportsClosure()); //reasoner.getTypes(ind, true).getFlattened();
+			 //reasoner.getTypes(ind, true).getFlattened();
 			if (!classes.isEmpty()) 
 			{
 				OWLProtectedClassCache protectedCache = Refs.protectedClassCache.resolve();

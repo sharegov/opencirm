@@ -59,6 +59,7 @@ public class Refs
 	public static final String OWLProperty = Model.upper("OWLProperty").toString();
 	public static final String OWLDataProperty = Model.upper("OWLDataProperty").toString();
 	public static final String OWLObjectProperty = Model.upper("OWLObjectProperty").toString();
+	public static final String hasQueryExpression = Model.upper("hasQueryExpression").toString();
 	
 	public static final Ref<String> nameBase = new Ref<String>() {
 		public String resolve() { return StartUp.config.at("nameBase").asString(); }
