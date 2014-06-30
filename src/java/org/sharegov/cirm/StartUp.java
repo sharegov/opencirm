@@ -97,7 +97,7 @@ public class StartUp extends ServerResource
 					"http://www.miamidade.gov/cirm/legacy#providedBy",
 					"http://www.miamidade.gov/cirm/legacy#hasChoiceValue"
 					))
-			.set("____metaDatabaseLocation", "c:/temp/testontodb")
+			.set("_metaDatabaseLocation", "c:/temp/testontodb")
 			.set("allClientsExempt", false)
 			.set("network", Json.object(				
 					"user", "bolerio-dev",
@@ -107,7 +107,7 @@ public class StartUp extends ServerResource
 			.set("ontologyPrefixes", Json.object(
 					"legacy:", "http://www.miamidade.gov/cirm/legacy#",
 					"mdc:", "http://www.miamidade.gov/ontology#",
-					":", "http://www.miamidade.gov/cirm/ontology#"
+					":", "http://www.miamidade.gov/ontology#"
 					))
 			.set("cachedReasonerPopulate", false);
 	
