@@ -74,7 +74,7 @@ public class DataSourceRef implements Ref<DataSource>
 				if (value == null || description.resolve() != desc)
 				{
 					desc = description.resolve();
-		            if (desc.is("usesPool", true))
+		            if (desc.is("usesPool", true) || desc.is("usesPool", "true"))
 		                value = getHook().createPooledDataSource(desc);
 		            else
 		                value = getHook().createDataSource(desc);
