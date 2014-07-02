@@ -59,6 +59,11 @@ public class SolrSearchEngine
 		String agencyLabel = null;
 		for (Json o : doc.at("ontology").asJsonList())
 		{
+			// Syed Ticket #1002 - URIs are negated with a tilde in KB
+			// for now filter them because they cause and invalid URI syntax
+			// exception. This is short term fix.
+			if(o.asString().startsWith("~"))
+				continue;
 			if (o.asString().endsWith("City_of_Miami") || o.asString().contains("COM_"))
 			{
 				agencyLabel = "COM";
