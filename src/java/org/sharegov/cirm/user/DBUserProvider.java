@@ -40,7 +40,7 @@ import oracle.ucp.jdbc.PoolDataSourceFactory;
  * Access users from a database table.
  * </p>
  * 
- * @author boris
+ * @author boris, thomas hilpold
  *
  */
 public class DBUserProvider implements UserProvider, AutoConfigurable
@@ -62,7 +62,7 @@ public class DBUserProvider implements UserProvider, AutoConfigurable
 	private String dsName;
 	private String idColumn; // = "UserId";
 	private String table; //  = "UserList";	
-	private DataSource datasource;
+	private volatile DataSource datasource; //needs to be volatile for double checked locking to work
 	private Json config = Json.object();
 	
 	public void autoConfigure(Json C)
