@@ -843,7 +843,15 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "text!../html/answe
 		}
 		
 		self.ontologyClick = function(data) {
-		    $(document).trigger(legacy.InteractionEvents.ServiceRequestTypeClick, [data]);
+		    if(cirm.refs.serviceCases[data].isDisabled != 'true')
+		    	$(document).trigger(legacy.InteractionEvents.ServiceRequestTypeClick, [data]);
+		    else {
+			    $("#sh_dialog_alert")[0].innerText = "Cannot create a disabled Service Request Type";
+				$("#sh_dialog_alert").dialog({ height: 300, width: 500, modal: true, buttons: {
+					"Close" : function() { $("#sh_dialog_alert").dialog('close'); }
+				 } 
+				});
+		    }
 		}
 		
 		self.trackTopicClick = function(data) {
