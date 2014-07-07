@@ -53,6 +53,7 @@ import org.restlet.Server;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
+import org.restlet.engine.application.Encoder;
 import org.restlet.engine.local.DirectoryServerResource;
 import org.restlet.ext.jaxrs.JaxRsApplication;
 import org.restlet.representation.Representation;
@@ -87,8 +88,8 @@ public class StartUp extends ServerResource
 			.set("storePass", "password")
 			.set("keyPass", "password")
 			.set("defaultOntologyIRI", "http://www.miamidade.gov/cirm/legacy")
-			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#ProdConfigSet")
-			.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#TestConfigSet")
+			.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#ProdConfigSet")
+			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#TestConfigSet")
 			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#LocalConfigSetXE")
 			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#LocalConfigSet")
 			.set("nameBase", "http://www.miamidade.gov/ontology" )
@@ -98,7 +99,7 @@ public class StartUp extends ServerResource
 					"http://www.miamidade.gov/cirm/legacy#hasChoiceValue"
 					))
 			.set("_metaDatabaseLocation", "c:/temp/testontodb")
-			.set("allClientsExempt", false)
+			.set("allClientsExempt", true)
 			.set("network", Json.object(				
 					"user", "bolerio-dev",
 					"password","password",
@@ -113,6 +114,7 @@ public class StartUp extends ServerResource
 	
 	public static Component server = null;
 	public static PaddedJSONFilter jsonpFilter = null;
+	public static Encoder encoder = null;
 	/**
 	 * Just for registration
 	 */
@@ -171,7 +173,7 @@ public class StartUp extends ServerResource
 	    final JaxRsApplication app = new JaxRsApplication(server.getContext().createChildContext());	    
 	    EncoderService encoderService = new EncoderService();
 	    encoderService.setEnabled(true);
-	    app.setEncoderService(encoderService);
+	    //app.setEncoderService(encoderService);
 	    app.getLogger().setLevel(Level.WARNING);
 	    
 	    try
@@ -205,8 +207,13 @@ public class StartUp extends ServerResource
 //	    trafficMonitor.setNext(jsonpFilter);
 	    requestScopeFilter = new RequestScopeFilter(); 
 	    requestScopeFilter.setNext(jsonpFilter);
-
-	    return requestScopeFilter;
+	    //set the encoder as the last filter in the chain.
+	    encoder = new Encoder(app.getContext(), 
+	    		true,
+	    		true,
+	    		encoderService);
+	    encoder.setNext(requestScopeFilter);
+	    return encoder;
 	}
 	
 	static URL selfUrl()
