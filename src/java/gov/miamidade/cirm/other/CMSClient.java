@@ -421,10 +421,11 @@ public class CMSClient extends RestService
 				code = code.trim();
 				String fieldIri = OWL.fullIri("legacy:" + sr.at("type").asString() + "_" + code).toString();
 				String value = att.substring(att.indexOf("=") + 1);
-				if ("NA".equals(value))
-					value = "";
-				if ("$ET2NULL".equals(value))
+				if (value.isEmpty() || "NA".equals(value) || "$ET2NULL".equals(value)) 
+				{
+					//2014.07.08 Issue 1010  CMS cannot collapse problem onto transformer fix
 					ServiceCaseJsonHelper.removeAnswerFieldByIri(answers, fieldIri);
+				}
 				else 
 				{
 					Json ans = Json.object()
@@ -565,7 +566,7 @@ public class CMSClient extends RestService
 	public Json processUpdate(@PathParam("eventid") int eventid)
 	{
 		forceClientExempt.set(true);
-		Json event = getEventRecord(eventid);
+		Json event = getEventRecord(eventid); //TODO VALIDATE INPUT FROM CMS
 		if (event.isNull())
 			return ko("Event not found");
 		return processEvent(event);
