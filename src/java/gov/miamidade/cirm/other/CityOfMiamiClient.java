@@ -599,7 +599,7 @@ public class CityOfMiamiClient extends RestService
 			if (initiatedAt + 60*60*1000 > System.currentTimeMillis() && GenUtils.getRootCause(ex) instanceof java.net.SocketException)
 				// TODO : remove hardcoded email
 		    	MessageManager.get().sendEmail("cirm@miamidade.gov", 
-						"ioliva@miamigov.com", 
+						"ioliva@miamigov.com;hilpold@miamidade.gov;rajiv@miamidade.gov", 
 						"CityView web service seems down", "We've trying to contact web service at  " + serviceDescription.at("hasEndPoint") + 
 						" for an hour and connection fails repeatedly.");			
 				
