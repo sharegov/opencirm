@@ -101,7 +101,7 @@ public class ScriptHasOldDataFix
 									"OR " + 
 									"INSTR(COALESCE(VALUE_VARCHAR, " + 
 									"	VALUE_VARCHAR_LONG " + 
-									"),'hasServiceAnswer') > 0) order by SUBJECT_ID asc");
+									"),'hasServiceAnswer') > 0) and SUBJECT_ID > 8200000 order by SUBJECT_ID asc");
 							List<Long> srIds = null;
 							while(rs.next())
 							{

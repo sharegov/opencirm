@@ -142,7 +142,7 @@ public class LegacyCaseImport
 		try
 		{
 			InputStream is = LegacyCaseImport.class.getClassLoader().
-			getResourceAsStream("org/sharegov/cirm/legacy/import.properties");
+			getResourceAsStream("gov/miamidade/cirm/legacy/import.properties");
 			props.load(is);
 		}
 		catch (Exception ex)
@@ -445,7 +445,9 @@ public class LegacyCaseImport
 			String msg = "Sr:" + rs.getString("SERVICE_REQUEST_NUM") + " has already been imported";
 			ThreadLocalStopwatch.getWatch().startTop(msg);
 			if(srNumber != null)
-				throw new RuntimeException(msg);
+			{	
+				//throw new RuntimeException(msg);
+			}
 			else
 				System.out.println(msg);
 			return;

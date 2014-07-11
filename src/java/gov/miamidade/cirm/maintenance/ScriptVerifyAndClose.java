@@ -1,19 +1,21 @@
 package gov.miamidade.cirm.maintenance;
 
 import static org.sharegov.cirm.rest.OperationService.getPersister;
-import gov.miamidade.cirm.legacy.LegacyCaseImport;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -21,238 +23,245 @@ import java.util.concurrent.Executors;
 
 import mjson.Json;
 
-import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.sharegov.cirm.BOntology;
-import org.sharegov.cirm.CirmTransaction;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.StartUp;
-import org.sharegov.cirm.rdb.RelationalOWLPersister;
-import org.sharegov.cirm.rdb.RelationalStoreExt;
+import org.sharegov.cirm.rest.LegacyEmulator;
+
+import com.sleepycat.je.rep.elections.Protocol.Result;
 
 /**
- * Give a tab separated spreadsheet containing a 
+ * Given a tab separated spreadsheet containing a 
  * current status of closed and an SR number
  * lookup up the case in CiRM and verify if the status
- * is closed (matches), if not closed then set the sr 
- * status to closed.
+ * is matches and the dates match, if not closed then
+ * set the sr status to closed.
  * 
  * @author SABBAS
  *
  */
 public class ScriptVerifyAndClose
 {
+	public static final Object lock = new Object();
 	public static boolean WRITE_BEFORE_AND_AFTER_TO_FILE = false;
 	public static boolean SAVE_TO_DB = true;
 	public static boolean READ_AFTER_SAVE = false;
 	public static long SLEEP_AFTER_FIX = 5000;
+	
+	private String caseDateFormat = "MM/dd/yyyy";
+	private String spreadsheetFile = "C:/Work/cirmservices_fixes/cms_closed_date/CMS_CIRM_Cases.txt";
+	private String outputFile = "C:/Work/cirmservices_fixes/cms_closed_date/cms_processed.txt";
+	private int caseNumberIdx = 2;
+	private int closedDateIdx = 1;
+	private int statusIdx = 0;
+	private int deptIdIdx = 3;
+	private int rowsToSkip = 1;
+	private int threadCount = 10;
+	private int recordsPerThread = 5;
+	
+	private Map<String,String> statusMap = new HashMap<String, String>();
+	
+
+	public static final ScriptVerifyAndClose CMS_SCRIPT = new ScriptVerifyAndClose()
+	{
+			{
+				this.setSpreadsheetFile("C:/Work/cirmservices_fixes/cms_closed_date/CMS_CIRM_Cases.txt");
+				this.setOutputFile("C:/Work/cirmservices_fixes/cms_closed_date/cms_processed.txt");
+				this.setCaseNumberIdx(2);
+				this.setClosedDateIdx(1);
+				this.setRowsToSkip(1);
+				this.setStatusIdx(0);
+				this.setDeptIdIdx(3);
+				this.getStatusMap().put("CLOSED", "C-CLOSED");
+				this.getStatusMap().put("OPEN", "O-OPEN");
+				this.getStatusMap().put("CLOSED-LIEN", "C-LIEN");
+			}
 		
+	};
+	
+	public static final ScriptVerifyAndClose PWS_SCRIPT = new ScriptVerifyAndClose()
+	{
+			{
+				this.setSpreadsheetFile("C:/Work/cirmservices_fixes/pws_closed_date/ALL PW 311 SRS 2013 - PRESENT.txt");
+				this.setOutputFile("C:/Work/cirmservices_fixes/pws_closed_date/pws_processed.txt");
+				this.setCaseNumberIdx(1);
+				this.setClosedDateIdx(6);
+				this.setRowsToSkip(4);
+				this.setCaseDateFormat("dd-MMM-yy hh'.'mm");
+				this.setStatusIdx(2);
+				this.setDeptIdIdx(0);
+				this.getStatusMap().put("C", "C-CLOSED");
+				this.getStatusMap().put("O", "O-OPEN");
+				this.getStatusMap().put("V", "C-VOID");
+			}
+		
+	};
+	
 	public static void main(String[] args)
 	{
 		//StartUp.config.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#ProdConfigSet");
-		ScriptVerifyAndClose script = new ScriptVerifyAndClose();
-		//script.readFromFileAndSave(StartUp.config.at("workingDir").asString() + "/" + 24557709 + "-before.json");
-		//script.run();
-		//script.runForOne(1311l);
-		//script.runForOne(24557709l);
-		script.runInParallel(10, 30);
-		
-		//BOntology bo = new BOntology(getPersister().getBusinessObjectOntology(19479l));
-		//System.out.println(bo.toJSON());
+		//CMS_SCRIPT.run();
+		PWS_SCRIPT.run();
 	}
 	
 	public void run()
 	{
-		readSpreadsheetVerifyAndClose(null, 10);
+		readSpreadsheetVerifyAndClose();
 	}
 	
-	public void runForOne(Long srId)
+	public void readSpreadsheetVerifyAndClose()
 	{
-		verifyAndClose(srId);
-	}
-	
-	public void runInParallel(int threadCount, int recordsPerThread)
-	{
-		ExecutorService service = Executors.newFixedThreadPool(threadCount);
-		readSpreadsheetVerifyAndClose(service, recordsPerThread);
-		//service.submit(task);
-	}
-
-	public void readSpreadsheetVerifyAndClose(final ExecutorService service, final int recordPerThread)
-	{
-		getPersister().getStoreExt().txn( new CirmTransaction<List<Long>>()
-				{
-					@Override
-					public List<Long> call() throws Exception
-					{
-						RelationalStoreExt store = getPersister().getStoreExt();
-						Connection conn = store.getConnection();
-						ResultSet rs = null;
-						Statement stmt = null;
-						try
-						{
-							stmt = conn.createStatement();
-							//rs = stmt.executeQuery("select SUBJECT from CIRM_OWL_DATA_PROPERTY where PREDICATE = 107 and TO_DATE IS NULL and rownum <= 10 order by SUBJECT desc");
-							rs = stmt.executeQuery("select SUBJECT_ID as SUBJECT from CIRM_DATA_PROPERTY_VIEW  where PREDICATE_ID = 107 and TO_DATE IS NULL and " + 
-									"(dbms_lob.instr(VALUE_CLOB, 'hasServiceAnswer') > 0 " + 
-									"OR " + 
-									"INSTR(COALESCE(VALUE_VARCHAR, " + 
-									"	VALUE_VARCHAR_LONG " + 
-									"),'hasServiceAnswer') > 0) order by SUBJECT_ID asc");
-							List<Long> srIds = null;
-							while(rs.next())
-							{
-								if(srIds == null)
-									srIds = new ArrayList<Long>(recordPerThread);
-								srIds.add(rs.getLong("SUBJECT"));
-								if(srIds.size() == recordPerThread)
-								{
-									final List<Long> forFixing = new ArrayList<Long>(srIds);
-									if(service != null)
-									{
-										service.submit(new Callable<List<Long>>()
-										{ 
-											@Override
-											public List<Long> call() throws Exception
-											{
-												verifyAndClose(forFixing);
-												Thread.sleep(SLEEP_AFTER_FIX);
-												return forFixing;
-											}
-										});
-									}
-									else
-									{
-											//single thread
-											verifyAndClose(forFixing);
-											Thread.sleep(SLEEP_AFTER_FIX);
-									}
-									srIds.clear();
-								}else
-								{
-									continue;
-								}
-							}
-							if(service != null)
-							{
-								service.shutdown();
-								//service.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-								//System.exit(0);
-							}
-							
-						}
-						catch(SQLException e)
-						{
-							throw e;
-						}finally
-						{
-							conn.commit();
-							if(rs != null)
-								rs.close();
-							if(stmt != null)
-								stmt.close();
-							if(conn != null)
-								conn.close();
-						}
-						return null;
-					}
-				});
-	}
-	
-	public void verifyAndClose(List<Long> srIds)
-	{
-		for(Long srId: srIds)
+		try
 		{
-			verifyAndClose(srId);
+			
+			FileReader in = new FileReader(spreadsheetFile);
+			BufferedReader bin = new BufferedReader(in);
+			String[] columnNames = {"CASE_NUMBER",
+					 "CIRM_STATUS",
+					 "DEPT_STATUS",
+					 "CIRM_CLOSED_DATE",
+					 "DEPT_CLOSED_DATE",
+					 "CIRM_LAST_UPDATE_DATE",
+					 "DEPT_ID"};
+			writeOutput(columnNames, false);
+			int row = 0;		
+			Map<String,String[]> caseNumbers = null;
+			ExecutorService service = Executors.newFixedThreadPool(threadCount);
+			for (String line = bin.readLine(); line != null; line = bin.readLine(),row++)
+			{
+						
+						if(row < rowsToSkip)
+						{
+							continue;
+						}
+						String [] fields = line.split("\t");
+						String caseNumber = fields[caseNumberIdx];
+						if(caseNumber == null || caseNumber.isEmpty())
+						{
+							continue;
+						}
+						if(caseNumbers == null)
+							caseNumbers = new HashMap<String,String[]>(recordsPerThread);
+						caseNumbers.put(caseNumber, fields);
+						if(caseNumbers.size() == recordsPerThread)
+						{
+							final Map<String,String[]> toVerifyAndClose = new HashMap<String,String[]>(caseNumbers);
+							Callable<Object> readVerifyAndClose = new Callable<Object>()
+							{
+							
+								@Override
+								public Object call() throws Exception
+								{
+									
+									for(Map.Entry<String,String[]> entry: toVerifyAndClose.entrySet())
+									{
+										String caseNum = entry.getKey();
+										String[] fieldsForCase = entry.getValue(); 
+										LegacyEmulator e = new LegacyEmulator();
+										Json sr = e.lookupByCaseNumber(caseNum);
+										if (!sr.isNull() && sr.is("ok", true))
+								        {
+								            sr = sr.at("bo");
+								        }
+								        else 
+								        {
+								            System.out.println("for case " + caseNum + " -- " + sr.at("error") );
+								        
+								        }
+										verifyAndClose(sr, fieldsForCase);
+										
+									}
+									return toVerifyAndClose;
+								}
+							};
+							service.submit(readVerifyAndClose);
+							caseNumbers.clear();
+						} else {
+							continue;
+						}
+						
+						
+			}
+			in.close();
+			bin.close();
+			if(service != null)
+			{
+				service.shutdown();
+			}
+		} catch (Exception e)
+		{
+			throw new RuntimeException(e);
 		}
 	}
 	
-	public void verifyAndClose(Long srId)
+	public void verifyAndClose(Json sr, String[] givenFields)
 	{
-//		RelationalOWLPersister persister = getPersister();
-//		BOntology bo = new BOntology(persister.getBusinessObjectOntology(srId));
-//		OWLOntologyManager m = bo.getOntology().getOWLOntologyManager();
-//		try
-//		{
-//			
-//			if(bo.getDataProperty("legacy:hasOldData") != null)
-//			{
-//				if(WRITE_BEFORE_AND_AFTER_TO_FILE)
-//				{
-//					writeToFile(StartUp.config.at("workingDir").asString() + "/" + srId + "-before.json", bo);
-//				}
-//				Json olddata = Json.read(bo.getDataProperty("legacy:hasOldData")
-//						.getLiteral());
-//				if(olddata.has("hasServiceAnswer"))
-//				{
-//					List<Json> serviceAnswersOld = olddata.at("hasServiceAnswer").asJsonList();
-//					List<Json> serviceAnswersNew = new ArrayList<Json>(); 
-//					boolean isSomethingFixed = false;
-//					for (Json serviceAnswer : serviceAnswersOld)
-//					{
-//						String dataType = serviceAnswer.at("hasServiceField")
-//								.at("hasDataType").at("literal").asString();
-//						if (isObjectDatatype(dataType))
-//						{
-//							OWLNamedIndividual serviceField = OWL.individual(serviceAnswer
-//									.at("hasServiceField").at("iri").asString());
-//							if(dataType.equals("CHARMULT"))
-//							{
-//								isSomethingFixed = fixCharMultAnswers(bo, serviceAnswersNew,
-//										serviceAnswer, serviceField);
-//							}else
-//							{
-//								String answer = serviceAnswer.at("hasAnswerValue").at("literal").asString();
-//								OWLNamedIndividual answerObject = LegacyCaseImport.getAnswerObjectIndividual(serviceField, answer);
-//								if(answerObject != null)
-//								{
-//									if(!isSomethingFixed)
-//										isSomethingFixed = true;
-//										
-//									addAnswerToOnto(bo,serviceField,answerObject);
-//								}
-//								else
-//								{
-//									serviceAnswersNew.add(serviceAnswer);
-//								}
-//							}
-//						}
-//					}
-//					if(isSomethingFixed)
-//					{
-//						replaceFixedAnswersFromOldData(olddata,serviceAnswersNew);
-//						removeOrReplaceOldDataProperty(bo,olddata);
-//						saveChanges(bo);
-//						serviceAnswersOld.clear();
-//						serviceAnswersNew.clear();
-//					}
-//					if(WRITE_BEFORE_AND_AFTER_TO_FILE)
-//					{
-//						writeToFile(StartUp.config.at("workingDir").asString() + "/" + srId + "-after.json", bo);
-//					}
-//					if(isSomethingFixed)
-//					{
-//						m.removeOntology(bo.getOntology());
-//						bo.getOntology().getAxioms().clear();
-//						bo = null;
-//					}
-//				}
-//				if(olddata.isArray())
-//					olddata.asJsonList().clear();
-//				else if(olddata.isObject())
-//					olddata.asJsonMap().clear();
-//				
-//			}
-//		}catch(Throwable t)
-//		{
-//			writeToFile(StartUp.config.at("workingDir").asString() + "/" + srId + "-error.json", bo, t);
-//		}finally
-//		{
-//			
-//		}
+		String givenCaseNumber = givenFields[caseNumberIdx];
+		String givenStatus = statusMap.get(givenFields[statusIdx]);
+		Date givenClosedDate = parseDate(givenFields[closedDateIdx]);
+		OWLNamedIndividual currentStatus = OWL.individual(sr.at("properties"),"hasStatus");
+		String closedDate = getEarliestActivityClosedDate(sr);
+		String[] row = {givenCaseNumber, 
+				currentStatus.getIRI().getFragment(),
+				(givenStatus==null)?"":givenStatus,
+				(closedDate==null)?"":closedDate,
+				OWL.dateLiteral(givenClosedDate).getLiteral(),
+				sr.at("properties").at("hasDateLastModified").asString(),
+				givenFields[deptIdIdx]};
+		writeOutput(row, true);
 	}
 
+	private String getEarliestActivityClosedDate(Json sr)
+	{
+		String closedDate = null;
+		if( OWL.individual(sr.at("properties"),"hasStatus").getIRI().getFragment().contains("C-"))
+		{
+			List<String> orderedStatusChangeDates = new ArrayList<String>();
+			if(sr.at("properties").has("hasServiceActivity"))
+			{
+				for(Json serviceActivity: sr.at("properties").at("hasServiceActivity").asJsonList())
+				{
+					OWLNamedIndividual activity = OWL.individual(serviceActivity,"hasActivity");
+					OWLNamedIndividual outcome = OWL.individual(serviceActivity, "hasOutcome");
+					if(activity.getIRI().getFragment().contains("StatusChangeActivity")
+							&& outcome.getIRI().getFragment().contains("C-"))
+					{
+						orderedStatusChangeDates.add(serviceActivity.at("hasCompletedTimestamp").asString());
+					}
+				}
+				if(!orderedStatusChangeDates.isEmpty())
+				{
+					Collections.sort(orderedStatusChangeDates);
+					closedDate = orderedStatusChangeDates.get(0);
+				}
+			}
+		
+		}
+		return closedDate;
+	}
+
+	private Date parseDate(String date)
+	{
+		Date result = null;
+		try
+		{
+			if (date.equals(""))
+	        {
+	        	  System.out.println("empty date given" );
+	              return result;
+	        }
+	        else
+	        {
+	        	SimpleDateFormat sdf = new SimpleDateFormat(caseDateFormat);
+	        	result =sdf.parse(date);	
+	        }
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return result;
+	}
 
 	private void saveChanges(BOntology bo)
 	{
@@ -314,6 +323,38 @@ public class ScriptVerifyAndClose
 		}
 	}
 	
+	private void writeOutput(String[] row, boolean append)
+	{
+		synchronized (lock)
+		{
+			FileOutputStream fos = null;
+			try
+			{
+				fos = new FileOutputStream(outputFile, append);
+				for(int i = 0; i < row.length; i++)
+				{
+					fos.write(row[i].getBytes());
+					if(i != row.length - 1)
+						fos.write("\t".getBytes());
+				}
+				fos.write("\n".getBytes());
+				fos.flush();
+				fos.close();
+			} catch(IOException e)
+			{
+				throw new RuntimeException(e);
+			}finally
+			{
+				try {
+					if (fos != null) {
+						fos.close();
+					}
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+	}
 	
 	
 	public void readFromFileAndSave(String file)
@@ -330,8 +371,96 @@ public class ScriptVerifyAndClose
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
+	}
+	
+	public String getSpreadsheetFile()
+	{
+		return spreadsheetFile;
 	}
 
+	public void setSpreadsheetFile(String spreadsheetFile)
+	{
+		this.spreadsheetFile = spreadsheetFile;
+	}
+
+	public int getCaseNumberIdx()
+	{
+		return caseNumberIdx;
+	}
+
+	public void setCaseNumberIdx(int caseNumberIdx)
+	{
+		this.caseNumberIdx = caseNumberIdx;
+	}
+
+	public int getClosedDateIdx()
+	{
+		return closedDateIdx;
+	}
+
+	public void setClosedDateIdx(int closedDateIdx)
+	{
+		this.closedDateIdx = closedDateIdx;
+	}
+
+	public int getRowsToSkip()
+	{
+		return rowsToSkip;
+	}
+
+	public void setRowsToSkip(int rowsToSkip)
+	{
+		this.rowsToSkip = rowsToSkip;
+	}
+
+	
+	public Map<String, String> getStatusMap()
+	{
+		return statusMap;
+	}
+
+	public void setStatusMap(Map<String, String> statusMap)
+	{
+		this.statusMap = statusMap;
+	}
+	
+	public int getStatusIdx()
+	{
+		return statusIdx;
+	}
+
+	public void setStatusIdx(int statusIdx)
+	{
+		this.statusIdx = statusIdx;
+	}
+	
+	public String getOutputFile()
+	{
+		return outputFile;
+	}
+
+	public void setOutputFile(String outputFile)
+	{
+		this.outputFile = outputFile;
+	}
+	
+	public int getDeptIdIdx()
+	{
+		return deptIdIdx;
+	}
+
+	public void setDeptIdIdx(int deptIdIdx)
+	{
+		this.deptIdIdx = deptIdIdx;
+	}
+	
+	public String getCaseDateFormat()
+	{
+		return caseDateFormat;
+	}
+
+	public void setCaseDateFormat(String caseDateFormat)
+	{
+		this.caseDateFormat = caseDateFormat;
+	}
 }
