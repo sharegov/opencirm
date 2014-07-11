@@ -88,8 +88,8 @@ public class StartUp extends ServerResource
 			.set("storePass", "password")
 			.set("keyPass", "password")
 			.set("defaultOntologyIRI", "http://www.miamidade.gov/cirm/legacy")
-			.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#ProdConfigSet")
-			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#TestConfigSet")
+			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#ProdConfigSet")
+			.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#TestConfigSet")
 			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#LocalConfigSetXE")
 			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#LocalConfigSet")
 			.set("nameBase", "http://www.miamidade.gov/ontology" )
@@ -99,7 +99,7 @@ public class StartUp extends ServerResource
 					"http://www.miamidade.gov/cirm/legacy#hasChoiceValue"
 					))
 			.set("_metaDatabaseLocation", "c:/temp/testontodb")
-			.set("allClientsExempt", true)
+			.set("allClientsExempt", false)
 			.set("network", Json.object(				
 					"user", "bolerio-dev",
 					"password","password",
