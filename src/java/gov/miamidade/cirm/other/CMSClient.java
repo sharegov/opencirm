@@ -26,6 +26,7 @@ import java.sql.ResultSet;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -56,7 +57,11 @@ import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 /**
  * Interface client for CMS/RER
  * Supported actions:
- * 1. 
+ * 1. Receive new case
+ * 2. Receive new activity
+ * 3. Receive data update
+ * 4. Respond to receive
+ * 
  * @author boris, Thomas Hilpold
  *
  */
@@ -65,13 +70,15 @@ import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 @Consumes("application/json")
 public class CMSClient extends RestService
 {
-	final static String INPROGRESS_OK = "OK";
-	final static String OK_CIRM = "OK CIRM";
-	final static String FAILURE_REJECTED = "REJECTED";
+	final static String RESPONSE_INPROGRESS_OK = "OK"; //always first response before OK CIRM or REJECTED
+	final static String RESPONSE_OK_CIRM = "OK CIRM";
+	final static String RESPONSE_REJECTED = "REJECTED";
 	
 	final static AtomicInteger nrOfSuccessNewCase = new AtomicInteger();
 	final static AtomicInteger nrOfSuccessUpdateActivity = new AtomicInteger();
 	final static AtomicInteger nrOfSuccessUpdateCase = new AtomicInteger();
+	
+	final static ReentrantLock STATIC_LOCK = new ReentrantLock();
 	
 	private SRCirmStatsDataReporter srStatsReporter = 
 			CirmStatisticsFactory.createServiceRequestStatsReporter(MDRefs.mdStats.resolve(), "CMSClient"); 
@@ -162,7 +169,7 @@ public class CMSClient extends RestService
 	}
 
 	/**
-	 * Marks an event as processer in CMS.
+	 * Marks an event as processed in CMS.
 	 * @param eventid
 	 * @param caseNumber
 	 * @param status
@@ -176,8 +183,8 @@ public class CMSClient extends RestService
 			System.out.println("MARK PROCESSED: " +eventid + "," + status + ", " + error);
 			return ok();
 		}
-		if (!INPROGRESS_OK.equals(status))
-			markProcessed(eventid, caseNumber, INPROGRESS_OK, "");
+		if (!RESPONSE_INPROGRESS_OK.equals(status))
+			markProcessed(eventid, caseNumber, RESPONSE_INPROGRESS_OK, "");
 		Connection conn = null;
 		CallableStatement stmt = null;
 		try
@@ -228,7 +235,7 @@ public class CMSClient extends RestService
 			Json result = ok();			
 			if (event.is("CSR_ACTION", "XNEWSR"))
 			{
-				result = insertCase(event);
+				result = cirmHandleXNewSrCMSEvent(event);
 				if (result.is("ok", true))
 					caseNumber = result.at("data").at("hasCaseNumber").asString();
 			}
@@ -267,9 +274,9 @@ public class CMSClient extends RestService
 					sr = sr.at("bo");
 					caseNumber = sr.at("properties").at("hasCaseNumber").asString();
 					if (event.is("CSR_ACTION", "ACTIVITY"))
-						result = updateActivity(sr, event);			
+						result = cirmHandleActivityCMSEvent(sr, event);			
 					else if (event.is("CSR_ACTION", "UPDATE"))
-						result = updateData(sr, event);					
+						result = cirmHandleUpdateCMSEvent(sr, event);					
 				}
 			}
 			// So we have an issue here, even though we can repeat the markProcessed
@@ -292,13 +299,13 @@ public class CMSClient extends RestService
 //			return markProcessed(event.at("CMS_EVENT_EID").asInteger(), 
 //					result.at("caseNumber").asString(), "FAILED", result.at("error").asString());
 			return markProcessed(event.at("CMS_EVENT_EID").asInteger(), 
-					result.at("caseNumber").asString(), FAILURE_REJECTED, result.at("error").asString());
+					result.at("caseNumber").asString(), RESPONSE_REJECTED, result.at("error").asString());
 		}
 		else
 		{
 			return markProcessed(event.at("CMS_EVENT_EID").asInteger(), 
 					result.at("caseNumber").asString(), 
-								 OK_CIRM, 
+								 RESPONSE_OK_CIRM, 
 								 "");
 		}
 	}
@@ -328,13 +335,13 @@ public class CMSClient extends RestService
 //						 ex.toString());
 				return markProcessed(event.at("CMS_EVENT_EID").asInteger(), 
 						"", 
-						 FAILURE_REJECTED, 
+						 RESPONSE_REJECTED, 
 						 ex.toString());
 			}
 		}
 	}
 	
-	public Json updateActivity(Json sr, Json event)
+	public Json cirmHandleActivityCMSEvent(Json sr, Json event)
 	{
 		Json current = sr.dup();		
 		Json a = Json.object("type", "ServiceActivity");
@@ -483,7 +490,7 @@ public class CMSClient extends RestService
 		}		
 	}
 	
-	public Json updateData(Json sr, Json event)
+	public Json cirmHandleUpdateCMSEvent(Json sr, Json event)
 	{
 		Json current = sr.dup();
 		populateCaseFromEvent(sr, event);
@@ -519,7 +526,7 @@ public class CMSClient extends RestService
 	 * @param event
 	 * @return
 	 */
-	public Json insertCase(Json event)
+	public Json cirmHandleXNewSrCMSEvent(Json event)
 	{
 		final Json sr = Json.object("type", event.at("SR_TYPE").asString(), "properties", Json.object());
 		Json props = sr.at("properties");
@@ -563,7 +570,7 @@ public class CMSClient extends RestService
 	
 	@POST
 	@Path("/event/process/{eventid}")
-	public Json processUpdate(@PathParam("eventid") int eventid)
+	public Json process(@PathParam("eventid") int eventid)
 	{
 		forceClientExempt.set(true);
 		Json event = getEventRecord(eventid); //TODO VALIDATE INPUT FROM CMS
@@ -574,9 +581,31 @@ public class CMSClient extends RestService
 	
 	@POST
 	@Path("/event/processBatch/{count}")
-	public Json processAllEvents(@PathParam("count") int batchSize)
+	public synchronized Json processBatchSynced(@PathParam("count") int batchSize) 
+	{
+		boolean noOtherThreadExecuting = STATIC_LOCK.tryLock();
+		if (noOtherThreadExecuting) {
+			//I'm the only thread processingBatch in any CMSClient object in this vm right now.
+			try {
+				return processBatch(batchSize);
+			}
+			finally
+			{
+				STATIC_LOCK.unlock();
+			}
+		} else
+		{
+			ThreadLocalStopwatch.fail("CMSClient: processBatchSynced problem: another thread is still executing.");
+			return ko("Another thread was still batch processing.");
+		}
+	}
+	
+	//@POST
+	//@Path("/event/processBatch/{count}")
+	public synchronized Json processBatch(@PathParam("count") int batchSize)
 	{
 		ThreadLocalStopwatch.startTop("START CMSClient /event/processBatch/ batchSize: " + batchSize);
+		long startMs = System.currentTimeMillis();
 		forceClientExempt.set(true);
 		Json events = getReadyEvents(batchSize);
 		int successCount = 0;
@@ -602,9 +631,10 @@ public class CMSClient extends RestService
 				srStatsReporter.succeeded("/event/processBatch/", "CMS-EVENT", "" + event);
 			}
 		}
+		double durationSecs = (((System.currentTimeMillis() - startMs) / 100) / 10.0); //10th of sec precision
 		printCounts();
 		ThreadLocalStopwatch.stop("END CMSClient processAllEvents total: " + totalCount + " success: " + successCount);
-		return ok().set("successCount", successCount);
+		return ok().set("successCount", successCount).set("durationSecs", durationSecs);
 	}
 	
 	private void printCounts() 
