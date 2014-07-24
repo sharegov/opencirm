@@ -73,6 +73,20 @@ import org.sharegov.cirm.rdb.QueryTranslator;
 import org.sharegov.cirm.rdb.RelationalStore;
 import org.sharegov.cirm.rest.LegacyEmulator;
 
+/**
+ * Creates a report that contains all Blue Cart Issues requests (legacy:SWMRESVC) that were 
+ * created (&status open), 
+ * updated(&status open), 
+ * closed 
+ * or voided after either yesterday 8:30PM or the previous time machine fire time. 
+ * The report file will be saved to an FTP location.
+ * An email will be sent on success or failure to CIAO-CIRMTT@miamidade.gov after each report generation.
+ * 
+ * Previous fire time will be determined from the json data passed into POST /reports/bluecartReport.
+ * 
+ * @author Phani Upadrasta
+ *
+ */
 @Path("reports")
 public class ServiceRequestReports
 {
@@ -82,7 +96,7 @@ public class ServiceRequestReports
 	private static boolean ftp = true;
 	private static boolean saveLocally = true;
 	private static boolean email = true;
-	private static String emailFrom ="phani@miamidade.gov";
+	private static String emailFrom ="cirm@miamidade.gov";
 	private static String emailTo = "CIAO-CIRMTT@miamidade.gov";
 	private static String recyclingCartsFileName = "RecyclingCarts.txt";
 	
