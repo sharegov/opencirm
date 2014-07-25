@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "text!../html/answerhubTemplates.ht"], 
-   function($, U, rest, ui, cirm, legacy, answerhubHtml)   {
+define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!../html/answerhubTemplates.ht"], 
+    function($, U, rest, ui, cirm, legacy, cirmgis, answerhubHtml)   {
 	
 	var metadata = {};
 	
@@ -602,7 +602,8 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "text!../html/answe
 			if(!self.gis) {
 				initGis();
 			}
-		    $(document).trigger(legacy.InteractionEvents.UserAction, ['Search Folio', self.address.folio()]);		    			
+		    $(document).trigger(legacy.InteractionEvents.UserAction, 
+                                ['Search Folio', self.address.folio()]);
 			self.gis.getAddressByFolio (self.address.folio(), function(candidate){
 				self.hideProgress("#ah_dialog_address_search");
 				if(candidate === undefined) {
@@ -670,8 +671,8 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "text!../html/answe
 			var fullUrl = config.GisConfig.hasUrl;
 			var url = fullUrl.substring(0,fullUrl.lastIndexOf("/"));
 			var path = fullUrl.substring(fullUrl.lastIndexOf("/"));
-			MDCJSLIB.modules.gis.initConnection(url, path);
-			self.gis = MDCJSLIB.modules.gis;
+			cirmgis.initConnection(url, path);
+			self.gis = cirmgis;
 		}
 		
 		return self;

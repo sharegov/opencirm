@@ -363,6 +363,7 @@ public class StartUp extends ServerResource
                 	request.getResourceRef().getPath().startsWith("/images") ||
                 	request.getResourceRef().getPath().equals("/healthcheck.htm") ||
                 	request.getResourceRef().getPath().startsWith("/go") ||
+                	request.getResourceRef().getPath().startsWith("/favicon.ico") ||
                 	request.getResourceRef().getPath().startsWith("/html") ||
                 	request.getResourceRef().getPath().startsWith("/test") ||
                 	request.getResourceRef().getPath().startsWith("/javascript") ||

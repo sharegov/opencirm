@@ -54,8 +54,9 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
             {"hasName": "directions", "hasQueryExpression" : "Direction"},
             {"hasName": "streetTypes", "hasQueryExpression" : "Street_Type"},
             {"hasName": "GeoLayerAttributes", "hasQueryExpression" : "GeoLayerAttribute"},
-            {"hasName": "serviceCases", "hasQueryExpression" : "legacy:ServiceCase",
+            {"hasName": "serviceCases", "hasQueryExpression" : "legacy:ServiceCase",            
                 "map":function(A) {
+                    //A = [A];  
                     var m = {};
                     $.each(A, function(i,v) {
                         v.hasServiceField = U.ensureArray(v.hasServiceField);
