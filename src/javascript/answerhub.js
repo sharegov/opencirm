@@ -15,48 +15,7 @@
  ******************************************************************************/
 define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!../html/answerhubTemplates.ht"], 
     function($, U, rest, ui, cirm, legacy, cirmgis, answerhubHtml)   {
-	
-	var metadata = {};
-	
-	var citiesToAgency = {
-    	"AVENTURA":"http://www.miamidade.gov/ontology#City_of_Aventura",
-    	"BAL HARBOUR":"http://www.miamidade.gov/ontology#Bal_Harbour_Village",
-    	"BAY HARBOR ISLANDS":"http://www.miamidade.gov/ontology#Town_of_Bay_Harbor_Islands",
-    	"BISCAYNE PARK":"http://www.miamidade.gov/ontology#Village_of_Biscayne_Park",
-    	"CORAL GABLES":"http://www.miamidade.gov/ontology#City_of_Coral_Gables",
-    	"CUTLER BAY":"http://www.miamidade.gov/ontology#Town_of_Cutler_Bay",
-    	"DORAL":"http://www.miamidade.gov/ontology#City_of_Doral",
-    	"EL PORTAL":"http://www.miamidade.gov/ontology#Village_of_El_Portal",
-    	"FLORIDA CITY":"http://www.miamidade.gov/ontology#City_of_Florida_City",
-    	"GOLDEN BEACH":"http://www.miamidade.gov/ontology#Town_of_Golden_Beach",
-    	"HIALEAH":"http://www.miamidade.gov/ontology#City_of_Hialeah",
-    	"HIALEAH GARDENS":"http://www.miamidade.gov/ontology#City_of_Hialeah_Gardens",
-    	"HOMESTEAD":"http://www.miamidade.gov/ontology#City_of_Homestead",
-    	"INDIAN CREEK VILLAGE":"http://www.miamidade.gov/ontology#Indian_Creek_Village",
-    	"ISLANDIA":"http://www.miamidade.gov/ontology#City_of_Islandia",
-    	"KEY BISCAYNE":"http://www.miamidade.gov/ontology#Village_of_Key_Biscayne",
-    	"MEDLEY":"http://www.miamidade.gov/ontology#Town_of_Medley",
-    	"MIAMI":"http://www.miamidade.gov/ontology#City_of_Miami",
-    	"MIAMI BEACH":"http://www.miamidade.gov/ontology#City_of_Miami_Beach",
-    	"MIAMI GARDENS":"http://www.miamidade.gov/ontology#City_of_Miami_Gardens",
-    	"MIAMI LAKES":"http://www.miamidade.gov/ontology#City_of_Miami_Lakes",
-    	"MIAMI SHORES":"http://www.miamidade.gov/ontology#City_of_Miami_Shores",
-    	"MIAMI SPRINGS":"http://www.miamidade.gov/ontology#City_of_Miami_Springs",
-    	"NORTH BAY VILLAGE":"http://www.miamidade.gov/ontology#North_Bay_Village",
-    	"NORTH MIAMI":"http://www.miamidade.gov/ontology#City_of_North_Miami",
-    	"NORTH MIAMI BEACH":"http://www.miamidade.gov/ontology#City_of_North_Miami_Beach",
-    	"OPA-LOCKA":"http://www.miamidade.gov/ontology#City_of_Opa-Locka",
-    	"PALMETTO BAY":"http://www.miamidade.gov/ontology#City_of_Palmetto_Bay",
-    	"PINECREST":"http://www.miamidade.gov/ontology#City_of_Pinecrest",
-    	"SOUTH MIAMI":"http://www.miamidade.gov/ontology#City_of_South_Miami",
-    	"SUNNY ISLES BEACH":"http://www.miamidade.gov/ontology#City_of_Sunny_Isles_Beach",
-    	"SURFSIDE":"http://www.miamidade.gov/ontology#City_of_Surfside",
-    	"SWEETWATER":"http://www.miamidade.gov/ontology#City_of_Sweetwater",
-    	"UNINCORPORATED MIAMI-DADE":"http://www.miamidade.gov/ontology#Miami-Dade_County",
-    	"VIRGINIA GARDENS":"http://www.miamidade.gov/ontology#Village_of_Virginia_Gardens",
-    	"WEST MIAMI":"http://www.miamidade.gov/ontology#City_of_West_Miami"
-    };
-		
+			
 	function AddressModel() {
 		var self = this;
 		self.fullAddress = ko.observable("");
@@ -68,9 +27,6 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 		self.coordinates = ko.observable({});
 		self.commonLocation = {name:ko.observable(""), layer: ko.observable(""), id:ko.observable("")};
 		self.addressData = ko.observable(null);
-        //self.cities = cirm.refs.cities;
-        //self.directions = metadata.directions;
-        //self.streetTypes = metadata.streetTypes;			
 		self.setData = function ( data ) {
 			if(data.address != null)
 				self.fullAddress ( data.address.split(",")[0]);
@@ -696,14 +652,15 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 		self.agencies.unshift(defAgency);
 		self.selectedAgency = ko.observable(defAgency);
         $(document).bind(legacy.InteractionEvents.AddressValidated, function(event, data, behindTheScenes) {
-                //console.log('set municipality', data.propertyInfo());
-                var m  = data.municipality();
-                $.each(self.agencies, function(i, x) {
-                        if (x.name.toUpperCase() == m)
-                            self.selectedAgency(x);
-                        else if (m == "UNINCORPORATED MIAMI-DADE" && x.name == "Miami-Dade County")
-                            self.selectedAgency(x);
-                });
+          //console.log('set municipality', data.propertyInfo());
+          var name  = data.municipality();
+          var municipality = cirm.refs.citiesByName[name];
+          self.selectedAgency(defAgency);
+          if (municipality) 
+            $.each(self.agencies, function(i, x) {
+              if (x.value == municipality.iri)
+                self.selectedAgency(x);
+            }); 
         });
 		
 		var defDepartment = {name:'Department/Agency', value:''};
@@ -781,7 +738,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
     		    }
     		}
     		else if (self.addressModel.municipality())
-    		    params.agency = citiesToAgency[self.addressModel.municipality()];
+    		    params.agency = cirm.refs.citiesByName[self.addressModel.municipality()].iri;
     		cirm.search.postObject("/kb", params, 
 						function(r) {
 							self.hideProgress("#ah_dialog_keywords_search");

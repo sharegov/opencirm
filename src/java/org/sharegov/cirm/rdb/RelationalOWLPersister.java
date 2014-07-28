@@ -166,8 +166,7 @@ public class RelationalOWLPersister
 	 * @param ind
 	 *            the named indiviual to read.
 	 */
-	public void readIndividualData(final OWLOntology on,
-			final OWLNamedIndividual ind)
+	public void readIndividualData(final OWLOntology on, final OWLNamedIndividual ind)
 	{
 		ThreadLocalStopwatch stopwatch = ThreadLocalStopwatch.getWatch();
 		if (DBG)

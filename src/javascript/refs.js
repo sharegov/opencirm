@@ -54,6 +54,24 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
             {"hasName": "directions", "hasQueryExpression" : "Direction"},
             {"hasName": "streetTypes", "hasQueryExpression" : "Street_Type"},
             {"hasName": "GeoLayerAttributes", "hasQueryExpression" : "GeoLayerAttribute"},
+            {"hasName": "citiesByName", "dependsOn":["cities"], 
+             "map": function(A) { 
+                 var x = {};
+                 var mapBy = function(key, value) {
+                   if (!value[key]) 
+                       return;
+                   else if (typeof value[key] == "string") 
+                       x[value[key].replace(/_/g, ' ')] = value;
+                   else if (U.isArray(value[key])) 
+                       $.each(value[key], function(i,el) {
+                         x[el.replace(/_/g, ' ')] = value;
+                       });
+                 };
+                 $.each(A, function (i,city) {
+                    $.each(["label", "Name", "Alias"],function(i,p){mapBy(p, city);});
+                 });
+                 return x;
+            }},
             {"hasName": "serviceCases", "hasQueryExpression" : "legacy:ServiceCase",            
                 "map":function(A) {
                     //A = [A];  
