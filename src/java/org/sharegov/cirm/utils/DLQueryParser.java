@@ -208,7 +208,8 @@ public class DLQueryParser
 		if (shortFormProvider instanceof PrefixManager)
 		{
 			PrefixManager pfm = (PrefixManager)shortFormProviderOnCreation;
-			if (pfm.containsPrefixMapping(":")) {
+			if (pfm.containsPrefixMapping(":")) 
+			{
 				String defaultPrefix = pfm.getDefaultPrefix(); //e.g. http://www.miamidade.gov/ontology#
 				String alternativeDefaultPrefixName = null;
 				for (Map.Entry<String, String> nameToPrefix : pfm.getPrefixName2PrefixMap().entrySet())
@@ -220,14 +221,17 @@ public class DLQueryParser
 							alternativeDefaultPrefixName = nameToPrefix.getKey();
 					}
 				}
-				OWLNamedIndividual testShortFormIndividual = OWL.individual(defaultPrefix + "TEST");
-				String testShortForm = shortFormProviderOnCreation.getShortForm(testShortFormIndividual); 
-				if (testShortForm.indexOf(':') > 0)  { //after first char
-					//using alterNativeDefaultPrefixName for Bidicache
-					result = new String[] { ":", alternativeDefaultPrefixName };
-				} else {
-					//using default prefix for Bidicache
-					result = new String[] { alternativeDefaultPrefixName, ":" };
+				if (alternativeDefaultPrefixName != null) 
+				{
+					OWLNamedIndividual testShortFormIndividual = OWL.individual(defaultPrefix + "TEST");
+					String testShortForm = shortFormProviderOnCreation.getShortForm(testShortFormIndividual); 
+					if (testShortForm.indexOf(':') > 0)  { //after first char
+						//using alterNativeDefaultPrefixName for Bidicache
+						result = new String[] { ":", alternativeDefaultPrefixName };
+					} else {
+						//using default prefix for Bidicache
+						result = new String[] { alternativeDefaultPrefixName, ":" };
+					}
 				}
 			}
 		}

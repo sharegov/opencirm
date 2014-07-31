@@ -4811,7 +4811,7 @@ public class RelationalStoreImpl implements RelationalStore
 					Map<String, String> clobValueMap = (Map<String, String>) value;
 					Map.Entry<String, String> clobValueMapEntry = clobValueMap
 							.entrySet().iterator().next();
-					String hashValue = clobValueMapEntry.getKey();
+					String hashValue = clobValueMapEntry.getKey(); //TODO check if hash exists!!! and how hash is calculated -> has collision is normal.					
 					String longStringValue = clobValueMapEntry.getValue();
 					stmt.setString(1, hashValue);
 					if (longStringValue.length() > MAX_VARCHAR_SIZE)
@@ -4821,12 +4821,12 @@ public class RelationalStoreImpl implements RelationalStore
 						stmt.setClob(3, new StringReader(longStringValue));
 					} else
 					{
-						stmt.setString(2, longStringValue);
+						stmt.setString(2, longStringValue);//TODO check if select method is correct for string
 						stmt.setNull(3, Types.CLOB);
 					}
 				} else if (table.equals(TABLE_DATA_VALUE_STRING))
 				{
-					stmt.setString(1, (String) value);
+					stmt.setString(1, (String) value); //TODO check if select method is correct for string
 				} else if (table.equals(TABLE_DATA_VALUE_DATE))
 				{
 					stmt.setTimestamp(1, (Timestamp) value);
@@ -4847,7 +4847,9 @@ public class RelationalStoreImpl implements RelationalStore
 			conn.commit();
 		} catch (Exception e)
 		{
-			rollback(conn);
+			rollback(conn); //TODO print values!
+			System.err.println("Error: RelationalStoreImpl::insertLiteralValues table was " + table + " values: ");
+			print(values);
 			throw new RuntimeException(e);
 		} finally
 		{
@@ -4857,6 +4859,27 @@ public class RelationalStoreImpl implements RelationalStore
 
 	}
 
+	private void print(Set<Object> objects) 
+	{
+		if (objects == null) 
+		{
+			System.err.println("objects set was null");
+			return;
+		}
+		int i = 0;
+		for (Object o : objects) 
+		{
+			System.err.print("" + i + " : ");
+			if (o == null) 
+			{
+				System.err.println("null");
+			} else 
+			{
+				System.err.println("Class: " + o.getClass().getSimpleName() + " Object: " + "'" + o.toString() + "'");
+			}
+			i++;
+		}
+	}
 	/**
 	 * Deletes objects from CIRM_IRI table including full history. Make sure, no
 	 * other foreign keys refer to it before calling this method.

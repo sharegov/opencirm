@@ -22,7 +22,6 @@ import static org.sharegov.cirm.utils.GenUtils.dbg;
 import static org.sharegov.cirm.utils.GenUtils.ko;
 import static org.sharegov.cirm.utils.GenUtils.ok;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,8 +47,6 @@ import mjson.Json;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.reasoner.InconsistentOntologyException;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.sharegov.cirm.AutoConfigurable;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
@@ -57,11 +54,7 @@ import org.sharegov.cirm.StartUp;
 import org.sharegov.cirm.owl.Model;
 import org.sharegov.cirm.owl.OWLObjectPropertyCondition;
 import org.sharegov.cirm.user.UserProvider;
-import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
-
-import com.clarkparsia.owlapi.explanation.PelletExplanation;
-import com.clarkparsia.pellet.owlapiv3.Reasoner;
 
 /**
  * 
@@ -98,7 +91,7 @@ public class UserService extends RestService implements AutoConfigurable
 	}
 
 	private Json desc = Json.object();
-	private static Map<String, UserProvider> providerMap = new HashMap<String, UserProvider>();
+	private static volatile Map<String, UserProvider> providerMap = new HashMap<String, UserProvider>();
 		
 	private List<String> orderedProviders()
 	{
@@ -121,7 +114,6 @@ public class UserService extends RestService implements AutoConfigurable
 
 	private UserProvider provider(String name)
 	{
-//	    Refs.withName(name).at(providers).resolve();
 	    synchronized (providerMap)
 	    {
 	        UserProvider provider = providerMap.get(name);
@@ -133,8 +125,13 @@ public class UserService extends RestService implements AutoConfigurable
 	        try 
 	        {
 	            provider = (UserProvider)Class.forName(classname).newInstance();
-	            if (provider instanceof AutoConfigurable)
-	            	((AutoConfigurable)provider).autoConfigure(desc.at("hasUserBase").at(name));
+	            //Autoconfigure is not part of the object initialisation
+	            //without synchronization, variables set during autoconfigure might not be readable by other threads.
+	            synchronized(provider)
+	            {
+		            if (provider instanceof AutoConfigurable)
+		            	((AutoConfigurable)provider).autoConfigure(desc.at("hasUserBase").at(name));
+	            }
 	            providerMap.put(name, provider);
 	            return provider;
 	        }
@@ -439,28 +436,4 @@ public class UserService extends RestService implements AutoConfigurable
         autoConfigure(Refs.owlJsonCache.resolve().individual(OWL.fullIri("UserService")).resolve());
     }
     
-	public static void main(String []args)
-	{
-//	    StartUp.config = Json.read(GenUtils.readTextFile(new File(
-//	            "/home/borislav/sharegov/cirmservices/conf/devconfig.json"
-//	            )));	    
-//	    System.out.println(OWL.toJSON(OWL.individual("UserService")));
-		StartUp.config.delAt("metaDatabaseLocation");
-        if( (args.length > 0) )
-            StartUp.config = Json.read(GenUtils.readTextFile(new File(args[0])));
-		PelletExplanation.setup();
-//		System.out.println(us.getUserById("e305286"));
-		OWLReasoner r = null;
-		try 
-		{
-		    r = OWL.reasoner(Refs.topOntology.resolve());
-		}		
-		catch (Throwable t)
-		{
-		    InconsistentOntologyException ex = (InconsistentOntologyException)t.getCause();
-		    PelletExplanation expl = new PelletExplanation(Refs.topOntology.resolve());
-		    System.out.println(expl.getInconsistencyExplanation());
-		    System.out.println(ex.getMessage());
-		}
-	}
 }
