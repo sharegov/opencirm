@@ -43,7 +43,7 @@ MDCJSLIB.modules.gis = (function() {
 
 	};
 	
-        var commonLocationCandidates = function(name, callback, error) {
+    var commonLocationCandidates = function(name, callback, error) {
 		var path = _path  + "/commonlocationcandidates";
 	    restClient.get(path,{name:name},function(data) {
 			var candidates = [];
@@ -171,7 +171,7 @@ MDCJSLIB.modules.gis = (function() {
 	    getAddressCandidates : addressCandidates,
 	    getCommonLocationCandidates: commonLocationCandidates,
 	    getCommonLocation : commonLocation,
-            getAddressByFolio: addressByFolio,
+      getAddressByFolio: addressByFolio,
 	    getCondoAddress: condoAddress,
 	    getStandardizedStreet: standardizeStreet,
 	    initConnection : initConnection,

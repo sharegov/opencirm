@@ -79,7 +79,7 @@ public class RelationalOWLMapper
 	
 	private static InfModel jenaInfModel;
 
-	public static boolean USE_JENA = true;
+	public static boolean USE_JENA = false;
 	
 	public static final boolean COMPARE_OWL_JENA = false;
 	

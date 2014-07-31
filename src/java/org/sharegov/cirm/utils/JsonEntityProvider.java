@@ -23,7 +23,6 @@ import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.nio.CharBuffer;
-import java.util.Collections;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;

@@ -210,8 +210,8 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
         cirm.op.async().get('/individual/AnswerHubMarqueeList', {}, function (config) {
             if (!config.ok) {
                 console.log('Unable to read AnswerHubMarqueeList', config.error);
-                return;
-            }                
+                return messages;
+            }
             config = config.data;
             if (config.hasMember === undefined)
                 return messages;
@@ -3014,7 +3014,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
         cirm.op.async().get('/individual/PopularSearchesList', {}, function (config) {
             if (!config.ok) {
                 console.log('Unable to read PopularSearchList', config.error);
-                return;
+                return terms;
             }
             config = config.data;
             if (config.hasMember === undefined)
