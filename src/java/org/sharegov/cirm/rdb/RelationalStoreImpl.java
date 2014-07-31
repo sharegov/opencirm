@@ -5938,34 +5938,46 @@ public class RelationalStoreImpl implements RelationalStore
 	 * @see org.sharegov.cirm.rdb.RelationalStore#executeStatement(org.sharegov.cirm.rdb.Statement)
 	 */
 	//@Override
-	public int executeStatement(Statement statement) throws Exception // ,TODO:Create decorator/or
+	public int executeStatement(final Statement statement) throws Exception // ,TODO:Create decorator/or
 												// renderer argument//)
 	{
-		PreparedStatement stmt = null;
-		Connection conn = null;
-		ResultSet rs = null;
-		Set<OWLEntity> entities = new HashSet<OWLEntity>();
-		try
+		
+		final Set<OWLEntity> entities = new HashSet<OWLEntity>();
+		for (Object parameter : statement.getParameters())
 		{
-			for (Object parameter : statement.getParameters())
-			{
-				if (parameter instanceof OWLEntity)
-					entities.add((OWLEntity) parameter);
-			}
-			conn = getConnection();
-			stmt = prepareStatement(conn, statement,
-					selectInsertIDsAndEntitiesByIRIs(entities, true));
-			conn.commit();
-			return stmt.executeUpdate();
-		} catch (SQLException e)
-		{
-			rollback(conn);
-			throw e;
-		} finally
-		{
-			close(rs, stmt, conn);
+			if (parameter instanceof OWLEntity)
+				entities.add((OWLEntity) parameter);
 		}
+		return txn(new CirmTransaction<Integer>() {
+	            public Integer call() throws Exception
+	            {
+	            	PreparedStatement stmt = null;
+            		Connection conn = null;
+            		ResultSet rs = null;
+	            	try
+	        		{
+	            		
+	        					conn = getConnection();
+								stmt = prepareStatement(conn, statement,
+										selectInsertIDsAndEntitiesByIRIs(entities, true));
+								//int i = 0;
+								int i = stmt.executeUpdate();
+								conn.commit();
+								return i;
+				            } catch (SQLException e)
+				    		{
+				    			rollback(conn);
+				    			throw e;
+				    		} finally
+				    		{
+				    			close(rs, stmt, conn);
+				    		}
+				}
+	            
+	        });
+			
 	}
+		
 
 	/* (non-Javadoc)
 	 * @see org.sharegov.cirm.rdb.RelationalStore#txn(org.sharegov.cirm.CirmTransaction)

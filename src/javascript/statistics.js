@@ -13,24 +13,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-define(["jquery", "U", "rest", "cirm", "legacy"], 
-   function($, U, rest, cirm, legacy)   {
+define(["jquery"], 
+   function($)   {
 	/**
 	 * StatisticsModel is a view model that represents the cirm
 	 * stats endpoint and its associated data fields.
 	 */
-	function StatisticsModel(){
-		var self = this.self;
-		self.key = {component:ko.observable("ALL"), action: ko.observable("ALL"), type:ko.observable("ALL")};
-		self.servers = ko.observable(["s2030050"]);
-		self.currentServer = ko.observable(self.server()[0]);
-		self.currentStats = ko.observable({});
+	function StatisticsModel() {
+		var self = this;
+		self.key = {component:"ALL", action: "ALL", type:"ALL"};
+		//"s2030050"
+		self.servers = ["s2030051","s2030057","s2030059","s2030060"];
+		self.stats = {};
+		self.errorChart = {};
 		
-		self.getAllStats() {
-			return cirm.top.get("")
+		self.getAllStats = function () {
+			for(var i = 0; i < self.servers.length; i++)
+			{
+				self.getStats(self.servers[i]);
+			}
+		};
+		
+		self.getStats = function (server) {
+			$.ajax({
+		        url: "https://" + server + ".miamidade.gov"+"/statistics/query",
+		        data: self.key,
+		        dataType: "jsonp",
+		        jsonpCallback: server + 'statsCallback',
+		        success: function(data) {
+		        	self.stats[server] = data;
+		        }
+		    });
 		};
 		
 		
 	}
+	
+	var statistics = new StatisticsModel();
+	
+	 if (modulesInGlobalNamespace)
+	        window.statistics = statistics;
+	    
+	 return statistics;
+	
 	
 });
