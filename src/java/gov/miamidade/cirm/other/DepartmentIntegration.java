@@ -79,12 +79,6 @@ import org.sharegov.cirm.utils.JsonUtil;
 @Consumes("application/json")
 public class DepartmentIntegration extends RestService
 {
-	public static final int RETRY_INTERVAL_SHORT_MINS = 60;
-	public static final int RETRY_INTERVAL_LONG_MINS = 12 * 60;
-	
-	public static final int MAX_RETRY_SHORT = 2; //twice every hour
-	public static final int MAX_RETRY_LONG = 21 * 2; // 21days every 12 hours
-	
     private LegacyEmulator emulator = new LegacyEmulator();
     
 	private SRCirmStatsDataReporter srStatsReporter = 
@@ -819,12 +813,7 @@ public class DepartmentIntegration extends RestService
 	
 	/**
 	 * Sends a new activity, created in cirm to a department.
-	 * If the case is not there yet, delaySendNewActivity will schedule a time machine callback as follows:
-	 * 1. 2 retries every 1 hour (60, 61, 62) minutes ((6)1 = first retry, (6)2 = second retry
-	 * nrOfRetries = curMin - 60; 
-	 * 2. 42 retries every 12 hours covering 21 days (3 weeks time to resolve X-Error issue)
-	 * (720, 721, ..., 761 (=41st), 762 (=42nd))
-	 * nrOfRetries = curMin - 720
+	 * If the case is not there yet, delaySendNewActivity will schedule a time machine callback.
 	 * @param serviceCase
 	 * @return
 	 */
@@ -863,7 +852,23 @@ public class DepartmentIntegration extends RestService
 			status.endsWith("X-ERROR")||
 			status.endsWith("O-LOCKED"))		
 		{
-			return scheduleNextSendNewActivityRetry(serviceCase, activity, minutes);
+			// then delay send of activity
+			if (minutes > -1 && minutes < 60)
+				minutes = 60;
+			else if (minutes >= 60 && minutes < 180)
+				minutes = 3*60;
+			else if (minutes >= 180 && minutes <4320)
+				minutes = 72*60;
+			else if (minutes>4320)
+			{
+				//eventually the retry is stopped after 3 unsuccessful attempts.
+				srStatsReporter.failed("tryActivitySend-case", serviceCase, "Giving up retry after ", "sendNewActivity failed");
+				ThreadLocalStopwatch.fail("FAIL tryActivitySend retry is stopped after 3 unsuccessful attempts, returning ko");
+				return ko("tryActivitySend failed 3 times, giving up.");
+			}			
+			result = delaySendNewActivity(serviceCase, activity, minutes);
+			ThreadLocalStopwatch.stop("End tryActivitySend delaySendNewActivity callback requested in " + minutes);
+			return result;
 		}
 		else // case is not in department and will never make it there
 		{
@@ -873,49 +878,4 @@ public class DepartmentIntegration extends RestService
 		}
 		return ok();
 	}
-	
-	public Json scheduleNextSendNewActivityRetry(Json serviceCase, Json activity, int curMinutes) {
-		// then delay send of activity
-		Json result;
-		int nextMinutes;
-		if (curMinutes >= -1 && curMinutes < 60)
-			nextMinutes = 60;
-		else if (curMinutes >= 60 && curMinutes < 180)
-			nextMinutes = 3*60;
-		else if (curMinutes >= 180 && curMinutes <4320)
-			nextMinutes = 72*60;
-		else // (curMinutes>4320)
-		{
-			//TODO hilpold retry more often e.g. every 12 hours for 21 days- X-ERROR might need more time for fixing 
-			//eventually the retry is stopped after 3 unsuccessful attempts.
-			srStatsReporter.failed("tryActivitySend-case", serviceCase, "Giving up retry after ", "sendNewActivity failed");
-			ThreadLocalStopwatch.fail("FAIL tryActivitySend retry is stopped after 3 unsuccessful attempts, returning ko");
-			return ko("tryActivitySend failed 3 times, giving up.");
-		}			
-		result = delaySendNewActivity(serviceCase, activity, nextMinutes);
-		ThreadLocalStopwatch.stop("End tryActivitySend delaySendNewActivity callback requested in " + nextMinutes);
-		return result;
-	}
-	
-//	public boolean areShortIntervalRetriesExhausted(int minutes) {
-//		
-//	}
-//
-//	public boolean areLongIntervalRetriesExhausted(int minutes) {
-//		
-//	}
-//
-//	/**
-//	 * Calculates the total number of retries encoded in the minutes value.
-//	 *
-//	 * 0..for any minute value <= RETRY_INTERVAL_SHORT
-//	 * 0..for any minute value == RETRY_INTERVAL_LONG
-//	 * N..(minutes >= RETRY_INTERVAL_LONG)? minutes - RETRY_INTERVAL_LONG
-//	 *  
-//	 * @param minutes
-//	 * @return
-//	 */
-//	public int decodeNrOfRetries(int minutes) {
-//		
-//	}
 }
