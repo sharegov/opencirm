@@ -1223,7 +1223,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 					});
 					var boidList = [];
 					var filteredDetails = $.map(result.details, function(v,i) { 
-						if((v.hasStatus == 'O-OPEN' || v.hasStatus == 'O-LOCKED') && $.inArray(v.boid, boidList) == -1)
+						if((v.hasStatus == 'O-OPEN' || v.hasStatus == 'O-LOCKED' || v.hasStatus == 'O-WIP') && $.inArray(v.boid, boidList) == -1)
 						{
 							boidList.push(v.boid);
 							return v; 
