@@ -1,5 +1,6 @@
 package gov.miamidade.cirm.maintenance;
 
+import static org.sharegov.cirm.OWL.individual;
 import static org.sharegov.cirm.rest.OperationService.getPersister;
 
 import java.io.BufferedReader;
@@ -9,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,10 +28,15 @@ import mjson.Json;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.sharegov.cirm.BOntology;
 import org.sharegov.cirm.OWL;
-import org.sharegov.cirm.StartUp;
+import org.sharegov.cirm.rdb.Concepts;
+import org.sharegov.cirm.rdb.RelationalOWLPersister;
+import org.sharegov.cirm.rdb.RelationalStoreExt;
+import org.sharegov.cirm.rdb.Sql;
+import org.sharegov.cirm.rdb.Statement;
 import org.sharegov.cirm.rest.LegacyEmulator;
-
-import com.sleepycat.je.rep.elections.Protocol.Result;
+import org.sharegov.cirm.rest.OperationService;
+import org.sharegov.cirm.utils.GenUtils;
+import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
 /**
  * Given a tab separated spreadsheet containing a 
@@ -52,13 +59,18 @@ public class ScriptVerifyAndClose
 	private String caseDateFormat = "MM/dd/yyyy";
 	private String spreadsheetFile = "C:/Work/cirmservices_fixes/cms_closed_date/CMS_CIRM_Cases.txt";
 	private String outputFile = "C:/Work/cirmservices_fixes/cms_closed_date/cms_processed.txt";
+	private String logFile = "C:/Work/cirmservices_fixes/cms_closed_date/cms_log.txt";
 	private int caseNumberIdx = 2;
 	private int closedDateIdx = 1;
 	private int statusIdx = 0;
 	private int deptIdIdx = 3;
 	private int rowsToSkip = 1;
-	private int threadCount = 10;
-	private int recordsPerThread = 5;
+	private int threadCount = 5;
+	private int recordsPerThread = 15;
+	private File log;
+	private File output;
+	
+	
 	
 	private Map<String,String> statusMap = new HashMap<String, String>();
 	
@@ -68,6 +80,7 @@ public class ScriptVerifyAndClose
 			{
 				this.setSpreadsheetFile("C:/Work/cirmservices_fixes/cms_closed_date/CMS_CIRM_Cases.txt");
 				this.setOutputFile("C:/Work/cirmservices_fixes/cms_closed_date/cms_processed.txt");
+				this.setLogFile("C:/Work/cirmservices_fixes/cms_closed_date/cms_log.txt");
 				this.setCaseNumberIdx(2);
 				this.setClosedDateIdx(1);
 				this.setRowsToSkip(1);
@@ -85,6 +98,7 @@ public class ScriptVerifyAndClose
 			{
 				this.setSpreadsheetFile("C:/Work/cirmservices_fixes/pws_closed_date/ALL PW 311 SRS 2013 - PRESENT.txt");
 				this.setOutputFile("C:/Work/cirmservices_fixes/pws_closed_date/pws_processed.txt");
+				this.setLogFile("C:/Work/cirmservices_fixes/pws_closed_date/pws_log.txt");
 				this.setCaseNumberIdx(1);
 				this.setClosedDateIdx(6);
 				this.setRowsToSkip(4);
@@ -108,6 +122,12 @@ public class ScriptVerifyAndClose
 	public void run()
 	{
 		readSpreadsheetVerifyAndClose();
+		cleanUp();
+	}
+	
+	public void cleanUp()
+	{
+	
 	}
 	
 	public void readSpreadsheetVerifyAndClose()
@@ -117,14 +137,18 @@ public class ScriptVerifyAndClose
 			
 			FileReader in = new FileReader(spreadsheetFile);
 			BufferedReader bin = new BufferedReader(in);
-			String[] columnNames = {"CASE_NUMBER",
+			String[] columnNames = {"CASE_NUMBER","BO_ID",
 					 "CIRM_STATUS",
 					 "DEPT_STATUS",
 					 "CIRM_CLOSED_DATE",
 					 "DEPT_CLOSED_DATE",
 					 "CIRM_LAST_UPDATE_DATE",
 					 "DEPT_ID"};
-			writeOutput(columnNames, false);
+			writeOutput(columnNames);
+			String[] logColumnNames = {"CASE_NUMBER","BO_ID",
+					 "ACTIVITY_ID",
+					 "RULE_APPLIED"};
+			writeLog(logColumnNames);
 			int row = 0;		
 			Map<String,String[]> caseNumbers = null;
 			ExecutorService service = Executors.newFixedThreadPool(threadCount);
@@ -201,23 +225,75 @@ public class ScriptVerifyAndClose
 		String givenStatus = statusMap.get(givenFields[statusIdx]);
 		Date givenClosedDate = parseDate(givenFields[closedDateIdx]);
 		OWLNamedIndividual currentStatus = OWL.individual(sr.at("properties"),"hasStatus");
-		String closedDate = getEarliestActivityClosedDate(sr);
+		Map<String,String> earliestClosingActivity = getEarliestActivityClosedDate(sr);
+		String closedDate = (earliestClosingActivity!=null)?earliestClosingActivity.keySet().iterator().next():null;
+		if (givenStatus==null)
+			givenStatus = "";
+		
 		String[] row = {givenCaseNumber, 
+				sr.at("boid").asLong() + "",
 				currentStatus.getIRI().getFragment(),
-				(givenStatus==null)?"":givenStatus,
+				givenStatus,
 				(closedDate==null)?"":closedDate,
 				OWL.dateLiteral(givenClosedDate).getLiteral(),
 				sr.at("properties").at("hasDateLastModified").asString(),
 				givenFields[deptIdIdx]};
-		writeOutput(row, true);
+		//--Decision table
+		VerifyAndCloseDecisionTable table = new VerifyAndCloseDecisionTable(sr,givenFields, givenStatus,currentStatus,closedDate,givenClosedDate,earliestClosingActivity);
+		for(Rule rule : table.getRules())
+		{
+			rule.ifthen();
+		}
+		writeOutput(row);
 	}
 
-	private String getEarliestActivityClosedDate(Json sr)
+	public Statement createChangeSRStatusStatement(Long boid,
+			String givenStatus)
 	{
-		String closedDate = null;
+		Statement stmt = new Statement();
+		Sql insert = Sql.UPDATE("CIRM_SR_REQUESTS")
+				.SET("SR_STATUS", "?")
+				.WHERE("SR_REQUEST_ID").EQUALS("?");
+		List<OWLNamedIndividual> types = new ArrayList<OWLNamedIndividual>();
+		types.add(individual(Concepts.VARCHAR));
+		types.add(individual(Concepts.INTEGER));
+		List<Object> parameters = new ArrayList<Object>();
+		parameters.add(givenStatus);
+		parameters.add(boid);
+		stmt.setSql(insert);
+		stmt.setTypes(types);
+		stmt.setParameters(parameters);
+		return stmt;	
+	}
+
+	public List<Statement> createStatusChangeActivityStatements(Json sr,
+			String[] givenFields, String givenStatus, Date givenClosedDate,
+			OWLNamedIndividual currentStatus, Long boid, Date now,
+			Long newActivityId)
+	{
+		List<Statement> activityStatements = new ArrayList<Statement>();
+		Statement iriInsert  = createServiceActivityIriStatement(newActivityId);
+		Statement classification = createServiceActivityClassificationStatement(newActivityId, new Timestamp(now.getTime()));
+		Statement statusChangeActivity = createStatusChangeActivityStatement(newActivityId, 
+				boid,
+				givenStatus,
+				new Timestamp(givenClosedDate.getTime()),
+				new Timestamp(givenClosedDate.getTime()),
+				sr, 
+				givenFields);
+		activityStatements.add(iriInsert);
+		activityStatements.add(classification);
+		activityStatements.add(statusChangeActivity);
+		return activityStatements;
+	}
+
+	private Map<String,String> getEarliestActivityClosedDate(Json sr)
+	{
+		Map<String,String> earliestActivityClose = null;
 		if( OWL.individual(sr.at("properties"),"hasStatus").getIRI().getFragment().contains("C-"))
 		{
 			List<String> orderedStatusChangeDates = new ArrayList<String>();
+			Map<String,String> activityIris = new HashMap<String, String>(); 
 			if(sr.at("properties").has("hasServiceActivity"))
 			{
 				for(Json serviceActivity: sr.at("properties").at("hasServiceActivity").asJsonList())
@@ -227,18 +303,20 @@ public class ScriptVerifyAndClose
 					if(activity.getIRI().getFragment().contains("StatusChangeActivity")
 							&& outcome.getIRI().getFragment().contains("C-"))
 					{
-						orderedStatusChangeDates.add(serviceActivity.at("hasCompletedTimestamp").asString());
+						String date = serviceActivity.at("hasCompletedTimestamp").asString();
+						orderedStatusChangeDates.add(date);
+						activityIris.put(date, serviceActivity.at("iri").toString());
 					}
 				}
 				if(!orderedStatusChangeDates.isEmpty())
 				{
 					Collections.sort(orderedStatusChangeDates);
-					closedDate = orderedStatusChangeDates.get(0);
+					earliestActivityClose = Collections.singletonMap(orderedStatusChangeDates.get(0), activityIris.get(orderedStatusChangeDates.get(0)));
 				}
 			}
 		
 		}
-		return closedDate;
+		return earliestActivityClose;
 	}
 
 	private Date parseDate(String date)
@@ -323,31 +401,220 @@ public class ScriptVerifyAndClose
 		}
 	}
 	
-	private void writeOutput(String[] row, boolean append)
+	public Statement createStatusChangeActivityStatement(Long activityId, Long srId, String status, Timestamp createdDate, Timestamp completeDate,  Json sr, String[] givenFields)
+	{
+		Statement stmt = new Statement();
+		Sql insert = Sql.INSERT_INTO("CIRM_SR_ACTIVITY")
+				.VALUES("ACTIVITY_ID", "?")
+				.VALUES("SR_REQUEST_ID", "?")
+				.VALUES("ACTIVITY_CODE", "'StatusChangeActivity'")
+				.VALUES("OUTCOME_CODE", "?")
+				.VALUES("CREATED_BY", "'script'")
+				.VALUES("CREATED_DATE", "?")
+				.VALUES("COMPLETE_DATE", "?"  );
+		List<OWLNamedIndividual> types = new ArrayList<OWLNamedIndividual>();
+		types.add(individual(Concepts.INTEGER));
+		types.add(individual(Concepts.INTEGER));
+		types.add(individual(Concepts.VARCHAR));
+		types.add(individual(Concepts.TIMESTAMP));
+		types.add(individual(Concepts.TIMESTAMP));
+		List<Object> parameters = new ArrayList<Object>();
+		parameters.add(activityId);
+		parameters.add(srId);
+		parameters.add(status);
+		parameters.add(createdDate);
+		parameters.add(completeDate);
+		stmt.setSql(insert);
+		stmt.setTypes(types);
+		stmt.setParameters(parameters);
+		return stmt;	
+	}
+	
+	public Statement createServiceActivityIriStatement(Long activityId){
+		
+		Statement stmt = new Statement();
+		Sql insert = Sql.INSERT_INTO("CIRM_IRI")
+				.VALUES("ID", "?")
+				.VALUES("IRI", "?")
+				.VALUES("IRI_TYPE_ID", "?");
+		List<OWLNamedIndividual> types = new ArrayList<OWLNamedIndividual>();
+		types.add(individual(Concepts.INTEGER));
+		types.add(individual(Concepts.VARCHAR));
+		types.add(individual(Concepts.INTEGER));
+		List<Object> parameters = new ArrayList<Object>();
+		parameters.add(activityId);
+		parameters.add("http://www.miamidade.gov/ontology#ServiceActivity" + activityId); //90 is the Iri id of the ServiceActivity OWLClass
+		parameters.add(new Long(4));
+		stmt.setSql(insert);
+		stmt.setTypes(types);
+		stmt.setParameters(parameters);
+		return stmt;	
+	}
+	
+	public Statement createServiceActivityClassificationStatement(Long activityId, Timestamp fromDate){
+		
+		Statement stmt = new Statement();
+		Sql insert = Sql.INSERT_INTO("CIRM_CLASSIFICATION")
+				.VALUES("SUBJECT", "?")
+				.VALUES("OWLCLASS", "?")
+				.VALUES("FROM_DATE", "?");
+		List<OWLNamedIndividual> types = new ArrayList<OWLNamedIndividual>();
+		types.add(individual(Concepts.INTEGER));
+		types.add(individual(Concepts.INTEGER));
+		types.add(individual(Concepts.TIMESTAMP));
+		List<Object> parameters = new ArrayList<Object>();
+		parameters.add(activityId);
+		parameters.add(new Long(90)); //90 is the Iri id of the ServiceActivity OWLClass
+		parameters.add(fromDate);
+		stmt.setSql(insert);
+		stmt.setTypes(types);
+		stmt.setParameters(parameters);
+		return stmt;	
+		
+	}
+	
+	public Statement createStatusChangeStatement(Long srId, String newStatus){
+		
+		Statement stmt = new Statement();
+		Sql update = Sql.UPDATE("CIRM_SR_REQUESTS")
+				.SET("SR_STATUS", "?")
+				.WHERE("SR_REQUEST_ID").EQUALS("?");
+		List<OWLNamedIndividual> types = new ArrayList<OWLNamedIndividual>();
+		types.add(individual(Concepts.VARCHAR));
+		types.add(individual(Concepts.INTEGER));
+		List<Object> parameters = new ArrayList<Object>();
+		parameters.add(newStatus);
+		parameters.add(srId);
+		stmt.setSql(update);
+		stmt.setTypes(types);
+		stmt.setParameters(parameters);
+		return stmt;	
+		
+	}
+	
+	public Statement createCommentBlockStatement(Long boid, Long activityId, String currentStatus, String givenStatus, Date now){
+		
+		Statement stmt = new Statement();
+		Sql update = Sql.UPDATE("CIRM_SR_ACTIVITY")
+				.SET("DETAILS", "?")
+				.WHERE("ACTIVITY_ID").EQUALS("?");
+		List<OWLNamedIndividual> types = new ArrayList<OWLNamedIndividual>();
+		types.add(individual(Concepts.VARCHAR));
+		types.add(individual(Concepts.INTEGER));
+		List<Object> parameters = new ArrayList<Object>();
+		parameters.add("Changing sr:" + boid +" from status " + currentStatus + " to " + givenStatus +  " on " + now.toString());
+		parameters.add(activityId);
+		stmt.setSql(update);
+		stmt.setTypes(types);
+		stmt.setParameters(parameters);
+		return stmt;	
+	}
+	
+	
+	public Statement createEditActivityStatement(String activityIri, Date fromDate, Date toDate, Date now){
+		
+		Statement stmt = new Statement();
+		Sql update = Sql.UPDATE("CIRM_SR_ACTIVITY")
+				.SET("DETAILS", "?")
+				.VALUES("UPDATED_BY", "'script'"  )
+				.VALUES("COMPLETE_DATE", "?"  )
+				.VALUES("UPDATED_DATE", "?"  )
+				.WHERE("ACTIVITY_ID").EQUALS("(select ID from CIRM_IRI where IRI = ?)");
+		List<OWLNamedIndividual> types = new ArrayList<OWLNamedIndividual>();
+		types.add(individual(Concepts.VARCHAR));
+		types.add(individual(Concepts.TIMESTAMP));
+		types.add(individual(Concepts.TIMESTAMP));
+		types.add(individual(Concepts.VARCHAR));
+		List<Object> parameters = new ArrayList<Object>();
+		parameters.add("Changing activity complete date from :" + OWL.dateLiteral(fromDate).getLiteral() +" to " +  OWL.dateLiteral(fromDate).getLiteral());
+		parameters.add(new Timestamp(fromDate.getTime()));
+		parameters.add(new Timestamp(now.getTime()));
+		parameters.add(activityIri);
+		stmt.setSql(update);
+		stmt.setTypes(types);
+		stmt.setParameters(parameters);
+		return stmt;	
+	}
+	
+	private void writeOutput(String[] row)
 	{
 		synchronized (lock)
 		{
-			FileOutputStream fos = null;
+			FileOutputStream stream = null;
 			try
 			{
-				fos = new FileOutputStream(outputFile, append);
+				
+				if(output == null)
+				{
+					output = new File(outputFile);
+					if(output.exists())
+					{
+						output.delete();
+					}
+					
+				}
+				stream = new FileOutputStream(output, true);
 				for(int i = 0; i < row.length; i++)
 				{
-					fos.write(row[i].getBytes());
+					stream.write(row[i].getBytes());
 					if(i != row.length - 1)
-						fos.write("\t".getBytes());
+						stream.write("\t".getBytes());
 				}
-				fos.write("\n".getBytes());
-				fos.flush();
-				fos.close();
+				stream.write("\n".getBytes());
+				stream.flush();
+				stream.close();
 			} catch(IOException e)
 			{
+				e.printStackTrace();
 				throw new RuntimeException(e);
 			}finally
 			{
 				try {
-					if (fos != null) {
-						fos.close();
+					if (stream != null) {
+						stream.close();
+					}
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+	}
+	
+	private void writeLog(String[] row)
+	{
+		synchronized (lock)
+		{
+			FileOutputStream stream = null;
+			try
+			{
+				
+				if(log == null)
+				{
+					log = new File(logFile);
+					if(log.exists())
+					{
+						log.delete();
+					}
+				}
+				stream = new FileOutputStream(log, true); 
+				for(int i = 0; i < row.length; i++)
+				{
+					stream.write(row[i].getBytes());
+					if(i != row.length - 1)
+						stream.write("\t".getBytes());
+				}
+				stream.write("\n".getBytes());
+				stream.flush();
+//				log.close();
+			} catch(IOException e)
+			{
+				e.printStackTrace();
+				throw new RuntimeException(e);
+			}finally
+			{
+				try {
+					if (stream != null) {
+						stream.close();
 					}
 				} catch (IOException e) {
 					throw new RuntimeException(e);
@@ -373,6 +640,16 @@ public class ScriptVerifyAndClose
 		}
 	}
 	
+	public String getLogFile()
+	{
+		return logFile;
+	}
+
+	public void setLogFile(String logFile)
+	{
+		this.logFile = logFile;
+	}
+
 	public String getSpreadsheetFile()
 	{
 		return spreadsheetFile;
@@ -463,4 +740,359 @@ public class ScriptVerifyAndClose
 	{
 		this.caseDateFormat = caseDateFormat;
 	}
+	
+	class InsertStatusChangeActivity implements Action{
+
+		private Long activityId;
+		private List<Statement> fixStatements;
+		
+		public InsertStatusChangeActivity(Long aId, Json sr,
+				String[] givenFields, String givenStatus, Date givenClosedDate,
+				OWLNamedIndividual currentStatus, Long boid, Date now)
+		{
+			
+			this.activityId = aId;
+			this.fixStatements = createStatusChangeActivityStatements(sr, givenFields, givenStatus,
+					givenClosedDate, currentStatus, boid, now, this.activityId);
+		
+		}
+		
+		@Override
+		public void execute()
+		{
+			ThreadLocalStopwatch.getWatch().time("InsertStatusChangeActivity.execute()");
+			for(Statement stmt : fixStatements)
+			{
+				try
+				{
+					
+					OperationService.getPersister().getStoreExt().executeStatement(stmt);
+				}catch(Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+			
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+	
+	class ChangeSRStatus implements Action{
+		
+		private Long srId;
+		private Long activityId;
+		private String status;
+		private String givenStatus;
+		private Statement fixStatement;
+		
+		public ChangeSRStatus(Long srId, Long activityId, String status,String givenStatus, Date now)
+		{
+				this.srId = srId;
+				this.status = status;
+				this.activityId = activityId;
+				this.fixStatement = createChangeSRStatusStatement(srId,givenStatus);
+		}
+		
+		@Override
+		public void execute()
+		{
+			try
+			{
+					
+					OperationService.getPersister().getStoreExt().executeStatement(fixStatement);
+			}catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+			
+		}
+		
+	}
+	
+	class AddCommentBlock implements Action{
+		
+		private Long srId;
+		private Long activityId;
+		private String status;
+		private String givenStatus;
+		private Statement fixStatement;
+		
+		public AddCommentBlock(Long srId, Long activityId, String status,String givenStatus, Date now)
+		{
+				this.srId = srId;
+				this.status = status;
+				this.activityId = activityId;
+				this.fixStatement = createCommentBlockStatement(srId, activityId, status, givenStatus, now);
+		}
+		
+		@Override
+		public void execute()
+		{
+			try
+			{
+					
+					OperationService.getPersister().getStoreExt().executeStatement(fixStatement);
+			}catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+			
+		}
+		
+	}
+	
+	
+	class EditEarliestClosedDate implements Action{
+		
+		private Map<String,String> earliestClosingActivity;
+		private Date givenClosedDate;
+		private Statement fixStatement;
+		private Date now;
+		
+		public EditEarliestClosedDate(Map<String,String> earliestClosingActivity, Date givenClosedDate, Date now)
+		{
+				this.earliestClosingActivity = earliestClosingActivity;
+				this.givenClosedDate = givenClosedDate;
+				this.now= now;
+				this.fixStatement = createEditActivityStatement(earliestClosingActivity.values().iterator().next(),GenUtils.parseDate(earliestClosingActivity.keySet().iterator().next()), givenClosedDate, now);
+		}
+		
+		@Override
+		public void execute()
+		{
+			try
+			{
+					
+					OperationService.getPersister().getStoreExt().executeStatement(fixStatement);
+			}catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+			
+		}
+		
+	}
+	
+	class VerifyAndCloseDecisionTable
+	{
+		String[] givenFields;
+		String givenStatus;
+		OWLNamedIndividual currentStatus;
+		String closedDate;
+		Date givenClosedDate;
+		boolean deptStatusEqualClosed;
+		boolean cirmStatusNotEqualDeptStatus;
+		boolean cirmClosedDateNotEqualDeptClosedDate;
+		boolean cirmClosedDateLessThanDeptClosedDate;
+		RelationalOWLPersister persister = OperationService.getPersister();
+		RelationalStoreExt store = persister.getStoreExt();
+		Long boid;
+		Date now;
+		Long newActivityId;
+		Json sr;
+		List<Rule> rules;
+		Map<String,String> earliestClosingActivity;
+		public VerifyAndCloseDecisionTable(Json sr, String[] givenFields, String givenStatus, OWLNamedIndividual currentStatus, String closedDate, Date givenClosedDate, Map<String,String> earliestClosingActivity)
+		{
+            this.newActivityId = store.nextSequenceNumber();
+            this.sr = sr;
+            this.boid  =  sr.at("boid").asLong();
+            this.now = store.getStoreTime();
+            this.givenStatus = givenStatus;
+            this.closedDate = closedDate;
+            if(this.closedDate == null)
+            	this.closedDate = sr.at("properties").at("hasDateLastModified").asString();
+            this.givenClosedDate = givenClosedDate;
+            this.currentStatus = currentStatus;
+            this.givenFields = givenFields;
+            this.earliestClosingActivity = earliestClosingActivity;
+            this.deptStatusEqualClosed = (givenStatus==null)?false:givenStatus.startsWith("C");
+			this.cirmStatusNotEqualDeptStatus = givenStatus == null || givenStatus.equals("") || !currentStatus.getIRI().getFragment().startsWith(givenStatus.substring(0,1));
+			this.cirmClosedDateNotEqualDeptClosedDate = (!(this.closedDate==null) && !GenUtils.parseDate(this.closedDate).equals(givenClosedDate));
+			this.cirmClosedDateLessThanDeptClosedDate = (!(this.closedDate==null) && GenUtils.parseDate(this.closedDate).before(givenClosedDate));
+		}
+		
+		public List<Rule> getRules()
+		{
+
+			if(rules != null && !rules.isEmpty())
+			{
+				return rules;
+			}else
+			{
+				Rule rule1 = new Rule( 
+					new Condition(){
+						
+						public boolean eval(){
+							 return deptStatusEqualClosed && cirmStatusNotEqualDeptStatus && cirmClosedDateNotEqualDeptClosedDate && cirmClosedDateLessThanDeptClosedDate;
+						}
+						
+						public String toString()
+						{
+							return "deptStatusEqualClosed && cirmStatusNotEqualDeptStatus && cirmClosedDateNotEqualDeptClosedDate && cirmClosedDateLessThanDeptClosedDate";
+						}
+						
+					}, 
+					new Action(){
+						public void execute(){
+							String[] row = {sr.at("properties").at("hasCaseNumber").asString(), boid+"",
+									newActivityId+ "",
+							 "rule1"};
+							ScriptVerifyAndClose.this.writeLog(row);
+							new InsertStatusChangeActivity(newActivityId, sr, givenFields, givenStatus, givenClosedDate, currentStatus, boid, now).execute();
+							new ChangeSRStatus(boid, newActivityId, currentStatus.getIRI().getFragment(), givenStatus, now).execute();
+							new AddCommentBlock(boid, newActivityId, currentStatus.getIRI().getFragment(), givenStatus, now).execute();
+							if(earliestClosingActivity != null && earliestClosingActivity.size() > 0)
+							{
+								new EditEarliestClosedDate(earliestClosingActivity, givenClosedDate, now).execute();
+							}
+						}
+
+					});
+				Rule rule2 = new Rule( 
+						new Condition(){
+							
+							public boolean eval(){
+								 return deptStatusEqualClosed && cirmStatusNotEqualDeptStatus && cirmClosedDateNotEqualDeptClosedDate && (cirmClosedDateLessThanDeptClosedDate==false);
+							}
+							
+							public String toString()
+							{
+								return "deptStatusEqualClosed && cirmStatusNotEqualDeptStatus && cirmClosedDateNotEqualDeptClosedDate && (cirmClosedDateLessThanDeptClosedDate==false)";
+							}
+							
+						}, 
+						new Action(){
+							public void execute(){
+								String[] row = {sr.at("properties").at("hasCaseNumber").asString(), boid+"",
+										newActivityId+ "",
+								 "rule2"};
+								ScriptVerifyAndClose.this.writeLog(row);
+								new InsertStatusChangeActivity(newActivityId, sr, givenFields, givenStatus, givenClosedDate, currentStatus, boid, now).execute();
+								new ChangeSRStatus(boid, newActivityId, currentStatus.getIRI().getFragment(), givenStatus, now).execute();
+								new AddCommentBlock(boid, newActivityId, currentStatus.getIRI().getFragment(), givenStatus, now).execute();
+							}
+						});
+				Rule rule3 = new Rule( 
+						new Condition(){
+							
+							public boolean eval(){
+								 return deptStatusEqualClosed && cirmStatusNotEqualDeptStatus && (cirmClosedDateNotEqualDeptClosedDate==false) && (cirmClosedDateLessThanDeptClosedDate==false);
+							}
+							
+							public String toString()
+							{
+								return "deptStatusEqualClosed && cirmStatusNotEqualDeptStatus && cirmClosedDateNotEqualDeptClosedDate && (cirmClosedDateLessThanDeptClosedDate==false)";
+							}
+							
+						}, 
+						new Action(){
+							public void execute(){
+								String[] row = {sr.at("properties").at("hasCaseNumber").asString(), boid+"",
+										newActivityId+ "",
+								 "rule3"};
+								ScriptVerifyAndClose.this.writeLog(row);
+								new InsertStatusChangeActivity(newActivityId, sr, givenFields, givenStatus, givenClosedDate, currentStatus, boid, now).execute();
+								new ChangeSRStatus(boid, newActivityId, currentStatus.getIRI().getFragment(), givenStatus, now).execute();
+							}
+						});
+				Rule rule6 = new Rule( 
+						new Condition(){
+							
+							public boolean eval(){
+								 return (deptStatusEqualClosed==false) && cirmStatusNotEqualDeptStatus && (cirmClosedDateNotEqualDeptClosedDate==false) && (cirmClosedDateLessThanDeptClosedDate==false);
+							}
+							
+							public String toString()
+							{
+								return "(deptStatusEqualClosed==false) && cirmStatusNotEqualDeptStatus && (cirmClosedDateNotEqualDeptClosedDate==false) && (cirmClosedDateLessThanDeptClosedDate==false)";
+							}
+							
+							
+						}, 
+						new Action(){
+							public void execute(){
+								String[] row = { sr.at("properties").at("hasCaseNumber").asString(), boid+"",
+										newActivityId+ "",
+								 "rule6"};
+								ScriptVerifyAndClose.this.writeLog(row);
+								new InsertStatusChangeActivity(newActivityId, sr, givenFields, givenStatus, givenClosedDate, currentStatus, boid, now).execute();
+								new ChangeSRStatus(boid, newActivityId, currentStatus.getIRI().getFragment(), givenStatus, now).execute();
+								new AddCommentBlock(boid, newActivityId, currentStatus.getIRI().getFragment(), givenStatus, now).execute();
+							}
+						});
+				Rule rule8 = new Rule( 
+						new Condition(){
+							
+							public boolean eval(){
+								 return (deptStatusEqualClosed) && cirmStatusNotEqualDeptStatus==false && (cirmClosedDateNotEqualDeptClosedDate) && (cirmClosedDateLessThanDeptClosedDate);
+							}
+							
+							public String toString()
+							{
+								return "(deptStatusEqualClosed) && cirmStatusNotEqualDeptStatus==false && (cirmClosedDateNotEqualDeptClosedDate) && (cirmClosedDateLessThanDeptClosedDate)";
+							}
+							
+							
+						}, 
+						new Action(){
+							public void execute(){
+								String[] row = {sr.at("properties").at("hasCaseNumber").asString(), boid+"",
+										newActivityId+ "",
+								 "rule8" + ((earliestClosingActivity.size() > 0)?"(edit)":"(insert)")};
+								ScriptVerifyAndClose.this.writeLog(row);
+								if(earliestClosingActivity != null && earliestClosingActivity.size() > 0)
+								{
+									new EditEarliestClosedDate(earliestClosingActivity, givenClosedDate, now).execute();
+								}else
+								{
+									new InsertStatusChangeActivity(newActivityId, sr, givenFields, givenStatus, givenClosedDate, currentStatus, boid, now).execute();
+								}
+							}
+						});
+				
+				Rule rule9 = new Rule( 
+						new Condition(){
+							
+							public boolean eval(){
+								 return (deptStatusEqualClosed) && cirmStatusNotEqualDeptStatus==false && (cirmClosedDateNotEqualDeptClosedDate) && (cirmClosedDateLessThanDeptClosedDate==false);
+							}
+							
+							public String toString()
+							{
+								return "(deptStatusEqualClosed) && cirmStatusNotEqualDeptStatus==false && (cirmClosedDateNotEqualDeptClosedDate) && (cirmClosedDateLessThanDeptClosedDate)";
+							}
+							
+							
+						}, 
+						new Action(){
+							public void execute(){
+								String[] row = {sr.at("properties").at("hasCaseNumber").asString(), boid+"",
+										newActivityId+ "",
+								 "rule9"};
+								ScriptVerifyAndClose.this.writeLog(row);
+								new InsertStatusChangeActivity(newActivityId, sr, givenFields, givenStatus, givenClosedDate, currentStatus, boid, now).execute();
+							}
+						});
+			rule1.setName("rule1");
+			rule2.setName("rule2");
+			rule3.setName("rule3");
+			rule6.setName("rule6");
+			rule8.setName("rule8");
+			rule9.setName("rule9");
+			rules = new ArrayList<Rule>();
+			rules.add(rule1);
+			rules.add(rule2);
+			rules.add(rule3);
+			rules.add(rule6);
+			rules.add(rule8);
+			rules.add(rule9);
+			return rules;
+			}
+		}
+		
+		
+	} 
 }

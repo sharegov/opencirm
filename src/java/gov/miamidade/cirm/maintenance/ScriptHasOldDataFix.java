@@ -96,12 +96,19 @@ public class ScriptHasOldDataFix
 						{
 							stmt = conn.createStatement();
 							//rs = stmt.executeQuery("select SUBJECT from CIRM_OWL_DATA_PROPERTY where PREDICATE = 107 and TO_DATE IS NULL and rownum <= 10 order by SUBJECT desc");
+//							rs = stmt.executeQuery("select SUBJECT_ID as SUBJECT from CIRM_DATA_PROPERTY_VIEW  where PREDICATE_ID = 107 and TO_DATE IS NULL and " + 
+//									"(dbms_lob.instr(VALUE_CLOB, 'hasServiceAnswer') > 0 " + 
+//									"OR " + 
+//									"INSTR(COALESCE(VALUE_VARCHAR, " + 
+//									"	VALUE_VARCHAR_LONG " + 
+//									"),'hasServiceAnswer') > 0) and SUBJECT_ID > 8200000 order by SUBJECT_ID asc");
 							rs = stmt.executeQuery("select SUBJECT_ID as SUBJECT from CIRM_DATA_PROPERTY_VIEW  where PREDICATE_ID = 107 and TO_DATE IS NULL and " + 
-									"(dbms_lob.instr(VALUE_CLOB, 'hasServiceAnswer') > 0 " + 
+									"(dbms_lob.instr(VALUE_CLOB, 'COMD4C_TYPEOFA1') > 0 " + 
 									"OR " + 
 									"INSTR(COALESCE(VALUE_VARCHAR, " + 
 									"	VALUE_VARCHAR_LONG " + 
-									"),'hasServiceAnswer') > 0) and SUBJECT_ID > 8200000 order by SUBJECT_ID asc");
+									"),'COMD4C_TYPEOFA1') > 0) order by SUBJECT_ID asc");
+							
 							List<Long> srIds = null;
 							while(rs.next())
 							{
