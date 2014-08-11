@@ -853,7 +853,7 @@ public class DepartmentIntegration extends RestService
 			status.endsWith("O-LOCKED"))		
 		{
 			// then delay send of activity
-			if (minutes >= -1 && minutes < 60)
+			if (minutes > -1 && minutes < 60)
 				minutes = 60;
 			else if (minutes >= 60 && minutes < 180)
 				minutes = 3*60;

@@ -554,7 +554,7 @@ public class CityOfMiamiClient extends RestService
 			ThreadLocalStopwatch.stop("FAIL CityOfMiamiClient /sendnew with " + ex);
 			if (!isWorthRetrying(ex))
 			{
-				GenUtils.reportFatal("While sending COM case " + data.at("caseNumber").asLong(), ex.toString(), ex);
+				GenUtils.reportFatal("While sending COM case, caseNumber was " + data.at("caseNumber"), ex.toString(), ex);
 				return ko(ex);
 			}
 			else 
