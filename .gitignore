@@ -2,3 +2,5 @@ classes
 src/uploaded/
 /map
 src/java/org/sharegov/cirm/StartUp.java.orig
+.idea/
+

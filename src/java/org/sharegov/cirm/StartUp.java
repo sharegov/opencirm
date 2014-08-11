@@ -99,7 +99,7 @@ public class StartUp extends ServerResource
 					"http://www.miamidade.gov/cirm/legacy#hasChoiceValue"
 					))
 			.set("_metaDatabaseLocation", "c:/temp/testontodb")
-			.set("allClientsExempt", false)
+			.set("allClientsExempt", true)
 			.set("network", Json.object(				
 					"user", "bolerio-dev",
 					"password","password",

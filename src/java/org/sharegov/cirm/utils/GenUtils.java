@@ -77,6 +77,8 @@ public class GenUtils
 	public static final String TIMETASK_NOTRANS_MARKER = "NOTRANS";
 	private static final ThreadLocal<SimpleDateFormat> ISO_DATE_FORMATS = new ThreadLocal<SimpleDateFormat>();
 	public static final String isoDatePattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+	public static final String SERVER_NAME_2 = SysRefs.serverName2.resolve();
+	
 
 	public static URL makeLocalURL(String relativePath)
 	{
@@ -201,7 +203,7 @@ public class GenUtils
 	
 	public static Json ok()
 	{
-		return Json.object("ok", true);//, "server", SERVER_NAME_2); // this has no business here, should be "ok" property and nothing else (Boris)
+		return Json.object("ok", true, "server", SERVER_NAME_2);
 	}
 
 	public static void pagination(Json paginationJson, Json paginationCriteria)
@@ -224,14 +226,15 @@ public class GenUtils
 
 	public static Json ko(String error)
 	{
-		return Json.object("ok", false, "error", error, "server");
+		return Json.object("ok", false, "error", error, "server", SERVER_NAME_2);
 	}
 
 	public static Json ko(Throwable t)
 	{
 		return Json.object("ok", false, 
 						   "error", t.toString(), 
-						   "stackTrace", stackTrace(t));
+						   "stackTrace", stackTrace(t),
+						   "server", SERVER_NAME_2);
 	}
 
 	public static byte[] getBytesFromFile(File file) throws IOException
