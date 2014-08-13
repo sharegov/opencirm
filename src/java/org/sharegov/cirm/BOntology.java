@@ -607,19 +607,18 @@ public class BOntology implements JsonSerializable
 		{
 			//see:
 			//http://download.oracle.com/javase/6/docs/api/javax/xml/datatype/XMLGregorianCalendar.html#getXMLSchemaType()
-			Calendar c = Calendar.getInstance();
+			GregorianCalendar c = new GregorianCalendar();
 			c.setTime(date);
 			XMLGregorianCalendar x = DatatypeFactory.newInstance().newXMLGregorianCalendar();
-			if(c instanceof GregorianCalendar)
-				if(DatatypeConstants.DATE.getNamespaceURI().equals(d.getIRI().toString()))
-				{
-					x.setYear(c.get(Calendar.YEAR));
-					x.setMonth(c.get(Calendar.MONTH));
-					x.setDay(c.get(Calendar.DAY_OF_MONTH));
-					result = factory.getOWLLiteral(x.toXMLFormat(),d);
-				}
-				else
-				   result = factory.getOWLLiteral(DatatypeFactory.newInstance().newXMLGregorianCalendar((GregorianCalendar)c).toXMLFormat(), d);
+			if(DatatypeConstants.DATE.getNamespaceURI().equals(d.getIRI().toString()))
+			{
+				x.setYear(c.get(Calendar.YEAR));
+				x.setMonth(c.get(Calendar.MONTH));
+				x.setDay(c.get(Calendar.DAY_OF_MONTH));
+				result = factory.getOWLLiteral(x.toXMLFormat(),d);
+			}
+			else
+			   result = factory.getOWLLiteral(DatatypeFactory.newInstance().newXMLGregorianCalendar((GregorianCalendar)c).toXMLFormat(), d);
 				
 		}
 		catch(Exception e)
