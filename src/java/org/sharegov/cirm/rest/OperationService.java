@@ -671,8 +671,10 @@ public class OperationService
 		{
 			OWLOntology O = Refs.tempOntoManager.resolve().createOntology();
 			OWLNamedIndividual individual = individual(iri);
-			getPersister().readIndividualData(O, individual);
-			return ok().set("data", OWL.toJSON(O, individual));
+			getPersister().readIndividualData(O, individual);			
+			return O.getAxioms().size() > 0 ? 
+			        ok().set("data", OWL.toJSON(O, individual)) :
+			        ko("non-found");
 		}
 		catch (Throwable ex)
 		{

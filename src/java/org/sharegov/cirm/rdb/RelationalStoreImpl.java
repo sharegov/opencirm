@@ -2512,21 +2512,20 @@ public class RelationalStoreImpl implements RelationalStore
 		Set<OWLNamedIndividual> referencedIndividuals = Collections.emptySet();
 		// TRANSACTION START
 		ThreadLocalConnection conn = getConnection();
-		Set<OWLNamedIndividual> entities = Collections.singleton(ind);
 		try
 		{
-			Map<OWLEntity, DbId> identifiers = selectIDsAndEntitiesByIRIs(entities);
-
-			Map<OWLObjectPropertyExpression, Set<OWLIndividual>> objProps = selectObjectProperties(
-					ind, identifiers, df);
-			for (Map.Entry<OWLObjectPropertyExpression, Set<OWLIndividual>> e : objProps
-					.entrySet())
+			Map<OWLEntity, DbId> identifiers = selectIDsAndEntitiesByIRIs(Collections.singleton(ind));
+			if (identifiers.isEmpty())
+			    return referencedIndividuals;
+			Map<OWLObjectPropertyExpression, Set<OWLIndividual>> objProps = 
+			        selectObjectProperties(ind, identifiers, df);
+			for (Map.Entry<OWLObjectPropertyExpression, Set<OWLIndividual>> e : objProps.entrySet())
 			{
 				for (OWLIndividual propValue : e.getValue())
 				{
-					changes.add(new AddAxiom(on, manager.getOWLDataFactory()
-							.getOWLObjectPropertyAssertionAxiom(e.getKey(),
-									ind, propValue)));
+					changes.add(new AddAxiom(on, 
+				        manager.getOWLDataFactory()
+				               .getOWLObjectPropertyAssertionAxiom(e.getKey(), ind, propValue)));
 					if (referencedIndividuals.isEmpty())
 					{
 						referencedIndividuals = new HashSet<OWLNamedIndividual>();
@@ -2535,8 +2534,8 @@ public class RelationalStoreImpl implements RelationalStore
 				}
 			}
 
-			Map<OWLDataPropertyExpression, Set<OWLLiteral>> dataProps = selectDataProperties(
-					ind, identifiers, df);
+			Map<OWLDataPropertyExpression, Set<OWLLiteral>> dataProps = 
+			        selectDataProperties(ind, identifiers, df);
 			for (Map.Entry<OWLDataPropertyExpression, Set<OWLLiteral>> e : dataProps
 					.entrySet())
 			{
@@ -2549,8 +2548,8 @@ public class RelationalStoreImpl implements RelationalStore
 			Set<OWLClass> classes = selectClass(ind, identifiers, df);
 			for (OWLClass c : classes)
 			{
-				changes.add(new AddAxiom(on, manager.getOWLDataFactory()
-						.getOWLClassAssertionAxiom(c, ind)));
+				changes.add(new AddAxiom(on, 
+				    manager.getOWLDataFactory().getOWLClassAssertionAxiom(c, ind)));
 			}
 			manager.applyChanges(changes);
 			conn.commit();
@@ -5961,34 +5960,46 @@ public class RelationalStoreImpl implements RelationalStore
 	 * @see org.sharegov.cirm.rdb.RelationalStore#executeStatement(org.sharegov.cirm.rdb.Statement)
 	 */
 	//@Override
-	public int executeStatement(Statement statement) throws Exception // ,TODO:Create decorator/or
+	public int executeStatement(final Statement statement) throws Exception // ,TODO:Create decorator/or
 												// renderer argument//)
 	{
-		PreparedStatement stmt = null;
-		Connection conn = null;
-		ResultSet rs = null;
-		Set<OWLEntity> entities = new HashSet<OWLEntity>();
-		try
+		
+		final Set<OWLEntity> entities = new HashSet<OWLEntity>();
+		for (Object parameter : statement.getParameters())
 		{
-			for (Object parameter : statement.getParameters())
-			{
-				if (parameter instanceof OWLEntity)
-					entities.add((OWLEntity) parameter);
-			}
-			conn = getConnection();
-			stmt = prepareStatement(conn, statement,
-					selectInsertIDsAndEntitiesByIRIs(entities, true));
-			conn.commit();
-			return stmt.executeUpdate();
-		} catch (SQLException e)
-		{
-			rollback(conn);
-			throw e;
-		} finally
-		{
-			close(rs, stmt, conn);
+			if (parameter instanceof OWLEntity)
+				entities.add((OWLEntity) parameter);
 		}
+		return txn(new CirmTransaction<Integer>() {
+	            public Integer call() throws Exception
+	            {
+	            	PreparedStatement stmt = null;
+            		Connection conn = null;
+            		ResultSet rs = null;
+	            	try
+	        		{
+	            		
+	        					conn = getConnection();
+								stmt = prepareStatement(conn, statement,
+										selectInsertIDsAndEntitiesByIRIs(entities, true));
+								//int i = 0;
+								int i = stmt.executeUpdate();
+								conn.commit();
+								return i;
+				            } catch (SQLException e)
+				    		{
+				    			rollback(conn);
+				    			throw e;
+				    		} finally
+				    		{
+				    			close(rs, stmt, conn);
+				    		}
+				}
+	            
+	        });
+			
 	}
+		
 
 	/* (non-Javadoc)
 	 * @see org.sharegov.cirm.rdb.RelationalStore#txn(org.sharegov.cirm.CirmTransaction)

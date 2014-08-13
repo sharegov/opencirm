@@ -99,7 +99,7 @@ public class StartUp extends ServerResource
 					"http://www.miamidade.gov/cirm/legacy#hasChoiceValue"
 					))
 			.set("_metaDatabaseLocation", "c:/temp/testontodb")
-			.set("allClientsExempt", false)
+			.set("allClientsExempt", true)
 			.set("network", Json.object(				
 					"user", "bolerio-dev",
 					"password","password",
@@ -370,6 +370,7 @@ public class StartUp extends ServerResource
                 	request.getResourceRef().getPath().startsWith("/images") ||
                 	request.getResourceRef().getPath().equals("/healthcheck.htm") ||
                 	request.getResourceRef().getPath().startsWith("/go") ||
+                	request.getResourceRef().getPath().startsWith("/favicon.ico") ||
                 	request.getResourceRef().getPath().startsWith("/html") ||
                 	request.getResourceRef().getPath().startsWith("/test") ||
                 	request.getResourceRef().getPath().startsWith("/javascript") ||
