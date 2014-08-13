@@ -98,6 +98,7 @@ import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.semanticweb.owlapi.util.OWLEntityRemover;
 import org.semanticweb.owlapi.util.ShortFormProvider;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
+import org.sharegov.cirm.owl.JsonToOWL;
 import org.sharegov.cirm.owl.OWLObjectPropertyCondition;
 import org.sharegov.cirm.owl.OwlRepo;
 import org.sharegov.cirm.owl.SynchronizedOWLManager;
@@ -616,6 +617,27 @@ public class OWL
 		return dataFactory().getOWLNamedIndividual(fullIri(id));
 	}
 	
+	public static OWLLiteral literal(Date date) 
+	{
+		if (date == null) 
+			return dataFactory().getOWLLiteral("", OWL2Datatype.XSD_DATE_TIME_STAMP);
+		try
+		{
+			//see:
+			//http://download.oracle.com/javase/6/docs/api/javax/xml/datatype/XMLGregorianCalendar.html#getXMLSchemaType()
+			GregorianCalendar c = new GregorianCalendar();
+			c.setTime(date);
+			XMLGregorianCalendar x = DatatypeFactory.newInstance().newXMLGregorianCalendar();
+			return dataFactory().getOWLLiteral(
+				DatatypeFactory.newInstance().newXMLGregorianCalendar(c).toXMLFormat(), 
+				OWL2Datatype.XSD_DATE_TIME_STAMP);				
+		}
+		catch(Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
 	public static OWLLiteral literal(String literal) 
 	{
 		return dataFactory().getOWLLiteral(literal);
@@ -1514,6 +1536,12 @@ public class OWL
 		HashSet<T> S = new HashSet<T>();
 		for (T x : args) S.add(x);
 		return S;
+	}
+	
+	
+	public static Set<OWLAxiom> toOWL(Json object)
+	{
+		return new JsonToOWL(ontology()).toOWLAxioms(object);
 	}
 	
 	public static Json toJSON(OWLObject object)
