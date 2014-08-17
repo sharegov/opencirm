@@ -1056,10 +1056,9 @@ public class OWL
 		{
 			//see:
 			//http://download.oracle.com/javase/6/docs/api/javax/xml/datatype/XMLGregorianCalendar.html#getXMLSchemaType()
-			Calendar c = Calendar.getInstance();
+			GregorianCalendar c = new GregorianCalendar();
 			c.setTime(date);
 			XMLGregorianCalendar x = DatatypeFactory.newInstance().newXMLGregorianCalendar();
-			if(c instanceof GregorianCalendar)
 				if(DatatypeConstants.DATE.getNamespaceURI().equals(d.getIRI().toString()))
 				{
 					x.setYear(c.get(Calendar.YEAR));
