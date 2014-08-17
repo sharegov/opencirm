@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,8 +44,7 @@ import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.rdb.DbId;
 
 /**
- * This class exports ontology and operations data to a 
- * reporting database.
+ * This class exports ontology data to a set of CSV in an exportDirectory
  * 
  * @author Syed Abbas
  *
@@ -109,28 +109,46 @@ public class ReportingMetadataExport
 	private void dumpMetaIndividuals()
 	{
 		List<List<String>> metaTable =  new ArrayList<List<String>>();
-		Set<OWLNamedIndividual> set = Refs.topOntology.resolve().getIndividualsInSignature(true);
-		for(OWLNamedIndividual ind : set)
+		Set<OWLEntity> set = new HashSet<OWLEntity>();
+		set.addAll(Refs.defaultOntology.resolve().getIndividualsInSignature(true));
+		set.addAll(Refs.defaultOntology.resolve().getClassesInSignature(true));
+		Map<OWLEntity, DbId> identifiers = Refs.defaultRelationalStoreExt.resolve().selectIDsAndEntitiesByIRIs(set);
+		for(OWLEntity entity : set)
 		{
 			List<String> l = new ArrayList<String>();
-			l.add(ind.getIRI().getFragment());
-			l.add(OWL.getEntityLabel(ind).replace("\"", "\"\""));
-			Set<OWLClassExpression> types =  ind.getTypes(Refs.topOntology.resolve());
-			OWLClass type = OWL.owlClass("Thing");
-			if(!types.isEmpty())
+			Long id = null;
+			if(identifiers.containsKey(entity))
 			{
-				OWLClassExpression exp = types.iterator().next();
-				if(!exp.isAnonymous())
-					type = exp.asOWLClass();
+				id = identifiers.get(entity).getFirst();
 			}
-			l.add(type.getIRI().getFragment());
-			OWLLiteral nameOrAlias = OWL.dataProperty(ind,"Name");
-			if(nameOrAlias == null)
-				nameOrAlias = OWL.dataProperty(ind,"Alias");
-			l.add(ind.getIRI().getFragment());
-			l.add(nameOrAlias != null? nameOrAlias.getLiteral():"");
+			l.add(id==null?"":id+"");
+			l.add(entity.getIRI().getFragment());
+			l.add(OWL.getEntityLabel(entity).replace("\"", "\"\""));
+			if(entity.isOWLNamedIndividual())
+			{
+				OWLNamedIndividual ind = entity.asOWLNamedIndividual();
+				Set<OWLClassExpression> types =  ind.getTypes(Refs.defaultOntology.resolve());
+				OWLClass type = OWL.owlClass("Thing");
+				if(!types.isEmpty())
+				{
+					OWLClassExpression exp = types.iterator().next();
+					if(!exp.isAnonymous())
+						type = exp.asOWLClass();
+				}
+				l.add(type.getIRI().getFragment());
+				OWLLiteral nameOrAlias = OWL.dataProperty(ind,"Name");
+				if(nameOrAlias == null)
+					nameOrAlias = OWL.dataProperty(ind,"Alias");
+				l.add(ind.getIRI().getFragment());
+				l.add(nameOrAlias != null? nameOrAlias.getLiteral():"");
+			}
+			else
+			{
+				l.add("");
+				l.add("");
+				l.add("");
+			}
 			metaTable.add(l);
-			
 		}
 		toCSV(metaTable, new File(getExportDirectory() + "meta_individuals_metadata.csv"));
 	}
@@ -298,7 +316,11 @@ public class ReportingMetadataExport
 				List<String> choiceValueRow = new ArrayList<String>();
 				choiceValueRow.add(questionFragment);
 				choiceValueRow.add(choiceValue.getIRI().toString());
-				Long id = choiceValueIDs.get(choiceValue).getFirst();
+				Long id = null;
+				if(choiceValueIDs.containsKey(choiceValue))
+				{
+					id = choiceValueIDs.get(choiceValue).getFirst();
+				}
 				choiceValueRow.add(id==null?"":id+"");
 				choiceValueRow.add(OWL.getEntityLabel(choiceValue));
 				srTypeQuestions.add(choiceValueRow);
