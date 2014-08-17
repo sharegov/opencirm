@@ -12,7 +12,6 @@ package org.sharegov.cirm.search.solr;
 
 
 import static mjson.Json.array;
-
 import static mjson.Json.object;
 import static org.sharegov.cirm.search.solr.SearchQuery.not;
 import static org.sharegov.cirm.search.solr.SearchQuery.and;
@@ -36,9 +35,10 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.owl.Model;
+import org.sharegov.cirm.search.SearchEngine;
 import org.sharegov.cirm.utils.Mapping;
 
-public class SolrSearchEngine
+public class SolrSearchEngine implements SearchEngine
 {
 	static final String noJurisdiction = Model.upper("NO_JURISDICTION").toString();
 	static final String fedGov = Model.upper("Federal_Government").toString();

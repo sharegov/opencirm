@@ -17,12 +17,17 @@ package org.sharegov.cirm.rest;
 
 import static mjson.Json.object;
 import static org.sharegov.cirm.utils.GenUtils.ko;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+
 import mjson.Json;
+
 import org.sharegov.cirm.Refs;
+import org.sharegov.cirm.search.GoogleSearchEngine;
+import org.sharegov.cirm.search.SearchEngine;
 import org.sharegov.cirm.search.solr.SolrSearchEngine;
 import org.sharegov.cirm.utils.Mapping;
 
@@ -93,9 +98,17 @@ public class SearchService extends RestService
 							!ainfo.at("coordinates").asJsonMap().isEmpty() ? 
 					Refs.gisClient.resolve().makeGisFilter(ainfo, true, null) :
 						null;
-			return new SolrSearchEngine().find(params.atDel("query").asString(), 
-													  params,
-													  gisFilter);
+			SearchEngine searchEngine = null;
+			try 
+			{ 
+				searchEngine = Refs.searchEgnine.resolve(); 
+			}
+			catch (UnsupportedOperationException ex) 
+			{ 
+				// happens if not configured, use SOLR as default
+				searchEngine = new SolrSearchEngine();
+			}
+			return searchEngine.find(params.atDel("query").asString(), params, gisFilter);
 		}
 		catch (Throwable t)
 		{

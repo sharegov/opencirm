@@ -85,9 +85,6 @@ function (rest, U, cirm, legacy, sreditor, answerhub, store) {
         
         legacy.marquee().embed($('#marqueeContainer'));
 
-//		var electionsComponent = legacy.elections();
-//		electionsComponent.embed($('#electionsDiv'));
-
         $('#birthDate').datepicker();
 
         // Emptying and filling the mainContent div doesn't work because everything time it is emptied,
@@ -105,12 +102,6 @@ function (rest, U, cirm, legacy, sreditor, answerhub, store) {
         editor.embed($('#editorDiv'));
 		caseEditor = editor;
 		
-		var wcsComponent = legacy.wcs(answerHubModel.addressSearch.address);
-		wcsComponent.embed($('#wcsDiv'));
-		
-		var asdComponent = legacy.asd();
-		asdComponent.embed($('#asdDiv'));
-		
 		var advSearchComponent = legacy.advancedSearch(new answerhub.AddressModel() ); //answerHubModel.addressSearch.address);
 		advSearchComponent.embed($('#advancedSearchDiv'));
 
@@ -121,30 +112,12 @@ function (rest, U, cirm, legacy, sreditor, answerhub, store) {
         // Top menu handling functions
         var menuHandlers = {
             answerHub: function () {
-//                $('#mainContent').empty();
-//                answerhubComponent.embed($('#mainContent'));
- //               $('input:button').not('.button_icon').addClass('button blue');
                    currentDiv.hide();
                    currentDiv = $('#answerHubDiv').show();
             },
             serviceHub: function() {
-//                $('#mainContent').empty();
-//                editor.embed($('#mainContent'));
-//               $('input:button').not('.button_icon').addClass('button blue');
                    currentDiv.hide();
                    currentDiv = $('#editorDiv').show();                
-            },
-//            elections: function() {
-//                   currentDiv.hide();
-//                   currentDiv = $('#electionsDiv').show();
-//            },
-            wcs: function() {
-                   currentDiv.hide();
-                   currentDiv = $('#wcsDiv').show();
-            },
-            asd: function() {
-                   currentDiv.hide();
-                   currentDiv = $('#asdDiv').show();
             },
             advancedSearch: function() {
                    currentDiv.hide();
@@ -197,7 +170,6 @@ function (rest, U, cirm, legacy, sreditor, answerhub, store) {
         $(document).bind(legacy.InteractionEvents.AddressClear, function(event) {
 			answerHubModel.addressSearch.address.clear();
 			editor.model.clearAddress();
-			$(document).trigger(legacy.InteractionEvents.WCSClear, []);
 			$(document).trigger(legacy.InteractionEvents.AdvSrchAddrClear, []);
 		});
 		
@@ -208,9 +180,6 @@ function (rest, U, cirm, legacy, sreditor, answerhub, store) {
 					answerHubModel.topicSearch.clear();
 					answerHubModel.addressSearch.address.clear();
 					$(document).trigger(legacy.InteractionEvents.SHClear, []);
-					$(document).trigger(legacy.InteractionEvents.ElectionsClear, []);
-					$(document).trigger(legacy.InteractionEvents.WCSClear, []);
-					$(document).trigger(legacy.InteractionEvents.ASDClear, []);
 					$(document).trigger(legacy.InteractionEvents.AdvSrchClear, []);
 					$(document).trigger(legacy.InteractionEvents.AdvSrchAddrClear, []);
 					$(document).trigger(legacy.InteractionEvents.resetServiceHubToSRMain, []);
@@ -285,23 +254,6 @@ function (rest, U, cirm, legacy, sreditor, answerhub, store) {
 		});
 
         $('[menuHandler=answerHub]').click();
-        // TMP - dev, go to an SR right away
-//        $('[menuHandler=serviceHub]').click();
- //       $('[name="SR Lookup"]', $(editor.markup)).val("32043");
-  //      editor.model.srLookup();
-        // END TMP      
-	    //
-	    // Disable not allowed tabs
-	    // 
-//	    if (!cirm.user.isViewAllowed("ElectionsTab")) {
-//	    	$('#electionsTabLi').remove();
-//	    }
-	    if (!cirm.user.isViewAllowed("WCSTab")) {
-	    	$('#wcsTabLi').remove();
-	    }
-	    if (!cirm.user.isViewAllowed("ASDTab")) {
-	    	$('#asdTabLi').remove();
-	    }
         
         cirm.events.startPolling();
     });
@@ -400,11 +352,6 @@ function patchPlaceholdersforIE() {
         <ul>
             <li><a href="#" menuHandler="answerHub" class="bn_on">Answer Hub</a></li>
             <li><a href="#" menuHandler="serviceHub">Service Hub</a></li>
-            <!--
-            <li id="electionsTabLi"><a href="#" menuHandler="elections">Elections</a></li>
-            -->
-            <li id="wcsTabLi"><a href="#" menuHandler="wcs">WCS</a></li>
-            <li id=asdTabLi><a href="#" menuHandler="asd">ASD</a></li>
             <li><a href="#" menuHandler="advancedSearch">Basic Search</a></li>
             <li><a href="http://feedback.miamidade.gov/Community/se.ashx?s=57F31458562A495B" target="_blank" menuHandler="help">Feedback</a></li>
         </ul>    
@@ -420,13 +367,6 @@ function patchPlaceholdersforIE() {
 <div id='answerHubDiv' style="display:none"></div>
 
 <div id='editorDiv' style="display:none"></div>
-
-<!--
-<div id='electionsDiv' style="display:none"></div>
--->
-<div id='wcsDiv' style="display:none"></div>
-
-<div id='asdDiv' style="display:none"></div>
 
 <div id='advancedSearchDiv' style="display:none"></div>
 

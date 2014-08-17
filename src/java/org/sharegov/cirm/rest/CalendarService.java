@@ -413,6 +413,4 @@ public class CalendarService extends RestService implements AutoConfigurable
 		}
 		return result;
 	}
-
-
 }

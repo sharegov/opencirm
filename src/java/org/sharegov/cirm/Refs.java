@@ -33,6 +33,7 @@ import org.sharegov.cirm.rdb.OntologyTransformer;
 import org.sharegov.cirm.rdb.RelationalOWLPersister;
 import org.sharegov.cirm.rdb.RelationalStore;
 import org.sharegov.cirm.rdb.RelationalStoreExt;
+import org.sharegov.cirm.search.SearchEngine;
 import org.sharegov.cirm.stats.CirmStatistics;
 import org.sharegov.cirm.stats.CirmStatisticsFactory;
 import org.sharegov.cirm.utils.CIRMIDFactory;
@@ -167,6 +168,9 @@ public class Refs
 	
 	public static final Ref<GisInterface> gisClient = 
 	        new SingletonRef<GisInterface>(new DescribedRef<GisInterface>(GisInterface.class.getName()));
+
+	public static final Ref<SearchEngine> searchEgnine = 
+			new SingletonRef<SearchEngine>(new DescribedRef<SearchEngine>(SearchEngine.class.getName()));
 	
 	public static final Ref<String> boIriPrefix = new Ref<String>() {
 		public String resolve() 
