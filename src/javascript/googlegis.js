@@ -1,18 +1,39 @@
-define('cirmgis', ['rest'], function (rest) {
+/**
+ * Google GIS geocoder implementation of cirmgis
+ * It requires an API Key
+ * the google maps module is loaded async using advice here:
+ * http://blog.millermedeiros.com/requirejs-2-0-delayed-module-evaluation-and-google-maps
+ *
+ * Geocoding Guide:
+ * https://developers.google.com/maps/documentation/javascript/geocoding
+ * 'The Google Maps API provides a geocoder class for geocoding and reverse geocoding dynamically from user input.'
+ *
+ * Google Gecoder usage limits:
+ * https://developers.google.com/maps/documentation/geocoding/#Limits
+ *
+ *
+ */
+define('cirmgis', ['rest','async!http://maps.google.com/maps/api/js?v=3&key=AIzaSyDLBHRYMc9HhASrudIdmPs5pWoKtj42-Lw&sensor=false'], function (rest) {
 
-    var url = null;
+    var key =
+    var url = "https://maps.googleapis.com/maps/api/geocode/json?address=';
     var path = null;
     var restClient = null;
-
-    function initConnection(_url, _path) {
-        url = _url;
-        path = _path;
-        console.log('gis rest', rest);
-        restClient = new rest.Client("/", {jsonp: true, async: true});
+    var key = 'AIzaSyDLBHRYMc9HhASrudIdmPs5pWoKtj42-Lw';
+    var geocoder = null;
+    //https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=visualization&&sensor=false&.js
+    function initConnection() {
+        geocoder = new google.maps.Geocoder();
+        console.log('googlegis geocoder', geocoder);
+        var latlng = new google.maps.LatLng(-34.397, 150.644);
+        var mapOptions = {
+            zoom: 8,
+            center: latlng
+        }
     }
 
     function ensureInit() {
-        if (restClient == null)
+        if (geocoder == null)
             throw "Please initialize the googlegis module with the initConnection method.";
     }
 
