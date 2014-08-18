@@ -64,6 +64,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 			ASDClear:"ASDClear",
 			AllTABSClear:"AllTABSClear",
 			SHClear:"SHClear",
+			SrTypeSelection: "SrTypeSelection", // param "BULKYTRA"
             populateSH:"populateSH",
             //populateWCSAccountOwnerActor:"populateWCSAccountOwnerActor",
             populateActor:"populateActor",
@@ -318,6 +319,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 
 		self.validateResult = ko.observable({ "AccountInfo":{Accounts:[], "ReturnMsg": ""} });
 		U.visit(self.validateResult(), U.makeObservableTrimmed);
+		self.enableValidationForBULKYTRA = false;
 
 		function alertDialogWCS(msg) {
 	    	$("#wcs_dialog_alert")[0].innerText = msg;
@@ -488,8 +490,88 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 						"ownerName":self.result().record.AccountInfo.Accounts[0].Account.OwnerName,
 						"hasAddress":false};
 			$(document).trigger(InteractionEvents.populateActor, [actorDetails]);
-			$(document).trigger(InteractionEvents.showServiceHub, []);
+			$(document).trigger(InteractionEvents.showServiceHub, []);			
 		};
+		/**
+		 * Handles the SR type change when the sr type is cleared and a new sr type is added.
+		 */
+		
+		self.handleSrTypeChange = function(srTypeFragment) 
+		{
+			self.setValidationForBULKYTRA(srTypeFragment == "BULKYTRA");
+		}
+		/**
+		 * Sets validation as true if sr type is BULKYTRA
+		 */
+		self.setValidationForBULKYTRA = function (enabled) 
+		{
+			self.enableValidationForBULKYTRA = enabled;
+		};
+		/**
+		 * Disables the Send to SR button if sr type is BULKYTRA and if validateForBULKYTRA returns false. 
+		 */
+		self.isButtonDisable = function () {
+			//Only validate if srEditor enabled bulkytra validation
+			if (!self.enableValidationForBULKYTRA) 
+			{ 
+				return false;
+			} else 
+			{
+				//Don't disable button if validation is ok.
+				return !validateForBULKYTRA();
+			}
+		};
+		
+		/**
+		 * Validates the wcs service results for a BULKYTRA sr.
+		 * returns true, if WCS results allow for a new BULKYTRA SR for the given account.
+		 */
+		self.validateForBULKYTRA = function() {
+			var validationResult;
+			var accNO = self.result().record.AccountInfo.Accounts[0].Account.AccountNumber;
+			var noOfTripsLeft = cirm.top.get('/legacy/ws/WCSAccountQueryByAccount?arg='+accNO).result.WCS.Accounts.Account.Trips;
+			var accStatus = cirm.top.get('/legacy/ws/WCSAccountQueryByAccount?arg='+accNO).result.WCS.Accounts.Account.AccountStatus;
+			var workOrders = cirm.top.get('/legacy/ws/WCSBulkyQueryByAccount?arg='+accNO).result.WCS.WorkOrders;
+			var isPendingWorkOrder = false;
+			var pendingWorkOrderStatus = null;
+			workOrders = U.ensureArray(workOrders);
+			for (var i = 0; i < workOrders.length; i++) 
+			{ 
+				if (workOrders[i].WorkOrder.OrderStatus == "PP"  || workOrders[i].WorkOrder.OrderStatus == "SC")
+				{
+					isPendingWorkOrder = true;
+					pendingWorkOrderStatus = workOrders[i].WorkOrder.OrderStatus;
+				}
+			}
+			validationResult = (noOfTripsLeft > 0 && accStatus == null && !isPendingWorkOrder);
+			if (!validationResult) 
+			{
+				alertDialogWCS(self.getWCSErrorMessage(noOfTripsLeft, accStatus, isPendingWorkOrder, pendingWorkOrderStatus));
+			}
+			return validationResult;
+		}
+		/**
+		 * Builds the error message to be displayed on the screen when the validation fails.
+		 */
+		
+		self.getWCSErrorMessage = function (noOfTripsLeft, accStatus,isPendingWorkOrder, pendingWorkOrderStatus) {
+			var WCSErrorMessage = "The Send to SR functinality is not available for this address and SR Type combination. " +
+					"It is because of the following reason(s): \n";
+			if(noOfTripsLeft < 1)
+			{
+					WCSErrorMessage += "There are no Bulky Free trips available for this address. \n Number of Trips:" + noOfTripsLeft;	
+			}
+			if(accStatus != null)
+			{
+				WCSErrorMessage += "\nThe account status is not Active for this address. \n Account Status:" + accStatus;	
+			}
+			if(isPendingWorkOrder)
+			{
+				WCSErrorMessage += "\nThere is a pending work order for this address. \n Pending Work Order Status:" + pendingWorkOrderStatus;	
+			}			
+			return WCSErrorMessage;
+		};
+		
 		
 		self.clear = function() {
 			self.result({"record":null});
@@ -499,9 +581,13 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 		$(document).bind(InteractionEvents.WCSClear, function(event) {
 			self.clear();
 		});
-				
+
+		$(document).bind(InteractionEvents.SrTypeSelection, function(event, srTypeFragment) {
+			self.handleSrTypeChange(srTypeFragment);
+		});
+
 	 	return self;
-	}
+	} // End getWCSModel ----------------------------------------------------------------------------------------------
     
     function wcs(addressModel) {
     	var self = {};

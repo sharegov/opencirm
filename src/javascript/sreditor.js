@@ -707,8 +707,20 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 			console.log('created blueprint', blue);
     	    return blue;
 	    };
+	    /**
+	     * Sets the validation flag = true if sr type is BULKYTRA.
+	     */
+	    
+	    self.enableValidationForSrType = function (srType)
+	    {
+	    	if (legacy.wcsModel != null) 
+	    	{
+	    		legacy.wcsModel.setValidationForBULKYTRA(srType == "BULKYTRA");
+	    	}
+	    };
 	    
 	    self.startNewServiceRequest = function(type) {
+	    	self.enableValidationForSrType(type);
 			var callback = function cb()
 			{
 			    var blueprint = self.makeCaseBlueprint(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + type]);
@@ -744,6 +756,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 			$("#sh_dialog_address_search").dialog('close');
 			var srTypeID = $('#srTypeID').val().trim();
 			var type = cirm.refs.serviceCaseList[srTypeID];
+			//TODO Trigger type change event
+			$(document).trigger(legacy.InteractionEvents.SrTypeSelection, [type]);
 			if(!U.isEmptyString(self.data().type()))
 			{
 				if(!U.isEmptyString(type)){
@@ -2837,6 +2851,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 			$("#sh_dialog_clear")[0].innerText = "Are you sure you want to clear the current SR ?"
     		$("#sh_dialog_clear").dialog({ height: 150, width: 350, modal: true, buttons: {
 				"Yes" : function() {
+	   				$(document).trigger(legacy.InteractionEvents.SrTypeSelection, []);
        				$('#srTypeID').val("");
 					$('[name="SR Lookup"]').val("");
 					var tempAddr = self.data().properties().atAddress();
