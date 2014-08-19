@@ -1,7 +1,6 @@
 /**
  * Google GIS geocoder implementation of cirmgis
- * It requires an API Key
- * the google maps module is loaded async using advice here:
+ * The google maps module is loaded async using advice here:
  * http://blog.millermedeiros.com/requirejs-2-0-delayed-module-evaluation-and-google-maps
  *
  * Geocoding Guide:
@@ -13,15 +12,10 @@
  *
  *
  */
-define('cirmgis', ['rest','async!http://maps.google.com/maps/api/js?v=3&key=AIzaSyDLBHRYMc9HhASrudIdmPs5pWoKtj42-Lw&sensor=false'], function (rest) {
+define('cirmgis', ['async', 'async!http://maps.google.com/maps/api/js?v=3&sensor=false'], function () {
 
-    var key =
-    var url = "https://maps.googleapis.com/maps/api/geocode/json?address=';
-    var path = null;
-    var restClient = null;
-    var key = 'AIzaSyDLBHRYMc9HhASrudIdmPs5pWoKtj42-Lw';
     var geocoder = null;
-    //https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=visualization&&sensor=false&.js
+
     function initConnection() {
         geocoder = new google.maps.Geocoder();
         console.log('googlegis geocoder', geocoder);
