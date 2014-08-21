@@ -323,7 +323,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 
 		function alertDialogWCS(msg) {
 	    	$("#wcs_dialog_alert")[0].innerText = msg;
-			$("#wcs_dialog_alert").dialog({ height: 150, width: 500, modal: true, buttons: {
+			$("#wcs_dialog_alert").dialog({ height: 230, width: 500, modal: true, buttons: {
 				"Close" : function() { $("#wcs_dialog_alert").dialog('close'); }
 			 } 
 			});
