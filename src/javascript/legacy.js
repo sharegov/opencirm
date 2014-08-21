@@ -555,8 +555,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 		 */
 		
 		self.getWCSErrorMessage = function (noOfTripsLeft, accStatus,isPendingWorkOrder, pendingWorkOrderStatus) {
-			var WCSErrorMessage = "The Send to SR functinality is not available for this address and SR Type combination. " +
-					"It is because of the following reason(s): \n";
+			var WCSErrorMessage = "The SR cannot be opened for this address because: \n";
 			if(noOfTripsLeft < 1)
 			{
 					WCSErrorMessage += "There are no Bulky Free trips available for this address. \n Number of Trips:" + noOfTripsLeft;	
