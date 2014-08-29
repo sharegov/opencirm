@@ -30,6 +30,7 @@ import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowseRepository
 import org.hypergraphdb.app.owl.versioning.distributed.activity.PullActivity;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowseRepositoryActivity.BrowseEntry;
 import org.hypergraphdb.peer.HGPeerIdentity;
+import org.hypergraphdb.peer.workflow.ActivityResult;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntologyID;
 import org.sharegov.cirm.StartUp;
@@ -44,7 +45,7 @@ import org.sharegov.cirm.StartUp;
 public class OwlRepo
 {
 	private static final OwlRepo instance = new OwlRepo();
-	
+	public static final int REMOTE_ONTO_TIMEOUT_MINS = 15;
 	/**
 	 * Prefer Refs.owlRepo.resolve() as the correct method to get a reference to the repo.
 	 */
@@ -67,7 +68,7 @@ public class OwlRepo
 		}
 	}
 	
-	private void ensureRepository() {
+	private synchronized void ensureRepository() {
 		if (repo == null) {
 			repo = VDHGDBOntologyRepository.getInstance();
 			if (repo.getOntologyManager() == null) {
@@ -163,7 +164,8 @@ public class OwlRepo
 				BrowseRepositoryActivity browseAct = repo.browseRemote(bff);
 				try
 				{
-					browseAct.getFuture().get(60, TimeUnit.SECONDS);
+					ActivityResult browseResult = browseAct.getFuture().get(REMOTE_ONTO_TIMEOUT_MINS, TimeUnit.MINUTES);
+					if (browseResult.getException() != null) throw browseResult.getException(); 
 					List<BrowseEntry> remoteEntries = findRemoteEntriesFor(ontologyIRIs, browseAct.getRepositoryBrowseEntries());
 					for(BrowseEntry remoteEntry : remoteEntries) {
 						if (repo.getHyperGraph().get(remoteEntry.getUuid()) != null) {
@@ -173,11 +175,12 @@ public class OwlRepo
 					for(BrowseEntry remoteEntry : remoteEntries) {
 						System.out.println("Pulling new ontology from remote: " + remoteEntry.getOwlOntologyIRI() + " (" + remoteEntry.getUuid() + ")" + " Mode: " + remoteEntry.getDistributionMode());
 						PullActivity a = repo.pullNew(remoteEntry.getUuid(), bff);
-						a.getFuture().get(160, TimeUnit.SECONDS);
+						ActivityResult pullResult = a.getFuture().get(REMOTE_ONTO_TIMEOUT_MINS, TimeUnit.MINUTES);
+						if (pullResult.getException() != null) throw pullResult.getException(); 
 						System.out.println("Pulling new completed: " + a.getCompletedMessage());
 					}					
 				}
-				catch (Exception e)
+				catch (Throwable e)
 				{
 					throw new RuntimeException(e);
 				}
