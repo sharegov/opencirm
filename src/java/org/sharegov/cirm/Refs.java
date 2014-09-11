@@ -16,7 +16,6 @@
 package org.sharegov.cirm;
 
 import java.util.logging.Logger;
-
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLNamedObject;
@@ -24,8 +23,10 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.sharegov.cirm.event.ClientPushQueue;
 import org.sharegov.cirm.gis.GisInterface;
+import org.sharegov.cirm.owl.DeclarationReferenceContext;
 import org.sharegov.cirm.owl.Model;
 import org.sharegov.cirm.owl.OWLProtectedClassCache;
+import org.sharegov.cirm.owl.OWLReferenceContext;
 import org.sharegov.cirm.owl.OWLSerialEntityCache;
 import org.sharegov.cirm.owl.OwlRepo;
 import org.sharegov.cirm.owl.SynchronizedOWLManager;
@@ -45,7 +46,6 @@ import org.sharegov.cirm.utils.ObjectRef;
 import org.sharegov.cirm.utils.Ref;
 import org.sharegov.cirm.utils.RequestScopeRef;
 import org.sharegov.cirm.utils.SingletonRef;
-import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
 public class Refs
 {
@@ -93,6 +93,14 @@ public class Refs
 			return OWL.ontology(defaultOntologyIRI.resolve());
 		}
 	};
+	
+	public static final Ref<OWLReferenceContext> owlNaming = new SingletonRef<OWLReferenceContext>(
+	new Ref<OWLReferenceContext>() {
+		public OWLReferenceContext resolve()
+		{
+			return DeclarationReferenceContext.make(defaultOntology.resolve());
+		}
+	});
 	
 	public static final Ref<Logger> logger =  
 			new SingletonRef<Logger>(Logger.getLogger("org.sharegov.cirm"));
@@ -179,8 +187,5 @@ public class Refs
 		}
 	}; 
 	
-
-	
 	public static final Ref<CirmStatistics> stats = new SingletonRef<CirmStatistics>(CirmStatisticsFactory.createStats());
-
 }

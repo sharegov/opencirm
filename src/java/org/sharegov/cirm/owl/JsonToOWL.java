@@ -6,8 +6,10 @@ import java.util.Set;
 
 import mjson.Json;
 
-import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.EntityType;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLLiteral;
@@ -31,18 +33,13 @@ public class JsonToOWL
 {
 	private OWLOntology O;
 	private OWLDataFactory factory;
+	private OWLReferenceContext referenceContext; 
 	
 	public JsonToOWL(OWLOntology ontology)
 	{
 		this.O = ontology;
 		this.factory = OWL.dataFactory();
-	}
-	
-	private boolean looksPrimitive(Json x)
-	{
-		return x.isPrimitive() || 
-			   (x.isObject() && x.asJsonMap().keySet().equals(GenUtils.set("type", "value"))) ||
-			   (x.isArray() && x.asJsonList().size() > 0 && looksPrimitive(x.at(0)));
+		referenceContext = DeclarationReferenceContext.make(O);
 	}
 	
 	private void addDataPropertyAxioms(OWLNamedIndividual ind, Json value, OWLDataProperty prop, Set<OWLAxiom> axioms)
@@ -81,40 +78,91 @@ public class JsonToOWL
 				addObjectPropertyAxioms(ind, x, prop, axioms);
 			return;
 		}
-		OWLNamedIndividual object = OWL.individual(value.at("iri").asString());
+		OWLNamedIndividual object = referenceContext.entity(value.at("iri").asString(), EntityType.NAMED_INDIVIDUAL);
+		if (object == null)
+		{
+			object = com.clarkparsia.owlapiv3.OWL.Individual(referenceContext.fullIri(value.at("iri").asString()));
+			axioms.add(factory.getOWLDeclarationAxiom(object));
+		}
+			
 		axioms.add(factory.getOWLObjectPropertyAssertionAxiom(prop, ind, object));
 		toOWL(value, axioms);
+	}
+
+	private void addAnnotationPropertyAxioms(OWLNamedIndividual ind, Json value, OWLAnnotationProperty prop, Set<OWLAxiom> axioms)
+	{
+		if (value.isArray())
+		{
+			for (Json x : value.asJsonList())
+				addAnnotationPropertyAxioms(ind, x, prop, axioms);
+			return;
+		}
+		axioms.add(factory.getOWLAnnotationAssertionAxiom(prop, ind.getIRI(), OWL.literal(value.getValue().toString())));
 	}
 	
 	public Set<OWLAxiom> toOWL(Json object, Set<OWLAxiom> axioms)
 	{
+		if (!object.isObject())
+			throw new IllegalArgumentException("JSON is not an object " + object);
 		if (!object.has("iri"))
 			throw new IllegalArgumentException("Missing IRI for object " + object);
-		OWLNamedIndividual ind = OWL.individual(object.at("iri").asString());
+		OWLNamedIndividual ind = referenceContext.entity(object.at("iri").asString(), EntityType.NAMED_INDIVIDUAL);
+		if (ind == null)
+		{
+			ind = com.clarkparsia.owlapiv3.OWL.Individual(referenceContext.fullIri(object.at("iri").asString()));
+			axioms.add(factory.getOWLDeclarationAxiom(ind));
+		}
 		if (object.has("type"))
-			axioms.add(factory.getOWLClassAssertionAxiom(
-					OWL.owlClass(object.at("type").asString()), ind));
+		{
+			OWLClass typeClass = referenceContext.entity(object.at("type").asString(), EntityType.CLASS);
+			if (typeClass == null)
+				throw new IllegalArgumentException("Type not found : " + object.at("type").asString());
+			axioms.add(factory.getOWLClassAssertionAxiom(typeClass, ind));
+		}
+		// TODO: what about extendedTypes?
 		for (Map.Entry<String, Json> p : object.asJsonMap().entrySet())
 		{
-			if ("type".equals(p.getKey()) || "iri".equals(p.getKey()))
-				continue;
-			IRI piri = OWL.fullIri(p.getKey()); 
-			boolean isDeclaredData = OWL.isDataProperty(piri);
-			boolean isDeclaredObject = OWL.isObjectProperty(piri);
-			if (isDeclaredObject)
-			{
-				if (isDeclaredData && looksPrimitive(p.getValue()))
-					addDataPropertyAxioms(ind, p.getValue(), OWL.dataProperty(piri), axioms);
-				else if (p.getValue().isPrimitive())
-					throw new IllegalArgumentException("Property " + 
-								piri + " is an object, but value " + p.getValue() + " of " + p.getKey() + " is not.");
+			if ("type".equals(p.getKey()) || "iri".equals(p.getKey()) || p.getKey().startsWith("transient$"))
+				continue; 
+			// "representative" value (in case of array) to figure what type of property
+			// we are dealing with
+			Json rep = p.getValue(); 
+			if (p.getValue().isArray())
+				if (p.getValue().asJsonList().isEmpty())
+					continue;
 				else
-					addObjectPropertyAxioms(ind, p.getValue(), OWL.objectProperty(piri), axioms);
+					rep = p.getValue().at(0);
+			if (rep.isArray())
+				throw new IllegalArgumentException("Invalid property value: array within array.");
+			if (rep.isObject() && rep.has("iri"))
+			{
+				OWLObjectProperty oprop = referenceContext.entity(p.getKey(), EntityType.OBJECT_PROPERTY);
+				if (oprop == null)
+					throw new IllegalArgumentException("No object property with name " + p.getKey());
+				addObjectPropertyAxioms(ind, p.getValue(), oprop, axioms);
 			}
-			else if (isDeclaredData)
-				addDataPropertyAxioms(ind, p.getValue(), OWL.dataProperty(piri), axioms);
-			else
-				throw new IllegalArgumentException("Unknown property " + piri + " with value " + p.getValue());					
+			else if (rep.isPrimitive() || rep.asJsonMap().keySet().equals(GenUtils.set("type", "value")))
+			{
+				OWLDataProperty dprop = referenceContext.entity(p.getKey(), EntityType.DATA_PROPERTY);
+				if (dprop == null)
+				{
+					if (!rep.isPrimitive())
+						throw new IllegalArgumentException("No data property with name " + p.getKey());					
+					OWLAnnotationProperty aprop = null;
+					if ("label".equals(p.getKey()))
+						aprop = OWL.annotationProperty("rdfs:label");  
+					else if ("comment".equals(p.getKey()))
+						aprop = OWL.annotationProperty("rdfs:comment");
+					else
+						aprop = referenceContext.entity(p.getKey(), EntityType.ANNOTATION_PROPERTY);
+					if (aprop == null)
+						throw new IllegalArgumentException("No data or annotation property with name " + p.getKey());
+					else
+						addAnnotationPropertyAxioms(ind, p.getValue(), aprop, axioms);
+				}
+				else
+					addDataPropertyAxioms(ind, p.getValue(), dprop, axioms);
+			}
 		}
 		return axioms;
 	}

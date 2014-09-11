@@ -21,12 +21,13 @@ import static org.sharegov.cirm.OWL.individual;
 import static org.sharegov.cirm.OWL.ontology;
 import static org.sharegov.cirm.OWL.owlClass;
 import static org.sharegov.cirm.OWL.reasoner;
-import static org.sharegov.cirm.utils.GenUtils.ko;
+import static org.sharegov.cirm.utils.GenUtils.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -34,6 +35,7 @@ import javax.ws.rs.QueryParam;
 
 import mjson.Json;
 
+import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -165,6 +167,22 @@ public class OWLIndividuals extends RestService
 			return Json.object();
 		}		
 	}	
+
+	@PUT
+	@Path("/{individual}")
+	@Produces("application/json")
+	public Json putOWLIndividual(@PathParam("individual") String individualName, Json data) throws OWLException
+	{
+		Json result = ok();
+		System.out.println("Saving metadata individual:");
+		System.out.println(data.toString());
+		Set<OWLAxiom> axioms = OWL.toOWL(data);
+		for (OWLAxiom ax : axioms)
+		{
+			System.out.println(ax);
+		}
+		return result;
+	}
 	
 	/**
 	 * <p>
