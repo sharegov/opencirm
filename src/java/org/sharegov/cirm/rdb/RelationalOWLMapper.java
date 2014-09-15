@@ -79,8 +79,6 @@ public class RelationalOWLMapper
 	
 	private static InfModel jenaInfModel;
 
-	public static boolean USE_JENA = true;
-	
 	public static final boolean COMPARE_OWL_JENA = false;
 	
 	private String SPARQL_HAS_COLUMN_MAPPING_DATA_PROPERTY;
@@ -182,7 +180,7 @@ public class RelationalOWLMapper
 	 * This matches as of May 11 2012: CIRM_SERVICE_ACTION.SERVICE_CALL_ID, CIRM_SERVICE_ACTION.AT_TIME
 	 */
 	private Map<OWLNamedIndividual,Set<OWLNamedIndividual>> tableColumns;
-	
+		
 	private RelationalOWLMapper() 
 	{
 		SPARQL_HAS_COLUMN_MAPPING_DATA_PROPERTY = StartUp.config.at("workingDir").asString() + "/src/resources/" + "rdb/hasColumnMappingDP.sparql";
@@ -273,7 +271,7 @@ public class RelationalOWLMapper
 			} 
 			else 
 			{
-				if (USE_JENA) 
+				if (!StartUp.config.is("cacheNotUsingJena", true))
 				{
 					initJenaModel();
 					cacheRelationalMappingsJena();

@@ -20,6 +20,7 @@ import static org.sharegov.cirm.OWL.allProperties;
 import static org.sharegov.cirm.OWL.annotate;
 import static org.sharegov.cirm.OWL.individual;
 import static org.sharegov.cirm.OWL.ontology;
+import static org.sharegov.cirm.utils.GenUtils.dbg;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -31,10 +32,9 @@ import java.util.Set;
 import mjson.Json;
 
 import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLNamedObject;
@@ -48,7 +48,6 @@ import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.sharegov.cirm.owl.OWLObjectPropertyCondition;
 import org.sharegov.cirm.owl.OWLProtectedClassCache;
 import org.sharegov.cirm.utils.GenUtils;
-import static org.sharegov.cirm.utils.GenUtils.*;
 
 /**
  * Converts OWL to JSON recursively.
@@ -60,11 +59,26 @@ import static org.sharegov.cirm.utils.GenUtils.*;
 public class OWLObjectToJson implements OWLObjectMapper<Json>
 {	
 	public final static boolean STRICT_TYPES = false;
-	private boolean  includeTypeInfo = false;
+	private boolean  includeTypeInfo = false;	
 	private OWLObjectPropertyCondition stopExpansionCondition; //Must be thread safe
 	
-	private Set<String> includeTypeFor = new HashSet<String>();
+	// Whether individuals that appears elsewhere in the JSON representation should be
+	// serialized as {"properyName" : { "iri":<iri> } } (true) or the default and
+	// current behavior as { "propertyNane" : <iri> } (false).
+	private boolean individualsAreAlwaysObject = false;  
 	
+	private Set<String> includeTypeFor = new HashSet<String>();	
+	
+	public boolean isIndividualsAreAlwaysObject()
+	{
+		return individualsAreAlwaysObject;
+	}
+
+	public void setIndividualsAreAlwaysObject(boolean individualsAreAlwaysObject)
+	{
+		this.individualsAreAlwaysObject = individualsAreAlwaysObject;
+	}
+
 	public boolean isIncludeTypeInfo()
 	{
 		return includeTypeInfo;
@@ -99,6 +113,22 @@ public class OWLObjectToJson implements OWLObjectMapper<Json>
 		return toJSON(ontology, object, true, new HashSet<OWLObject>(), shortFormProvider);
 	}
 
+	private String entityId(OWLEntity entity, ShortFormProvider shortFormProvider)
+	{
+		if (shortFormProvider != null)
+			return shortFormProvider.getShortForm(entity);
+		else
+			return entity.getIRI().toString();
+	}
+	
+	private Json objectReference(OWLNamedIndividual entity, ShortFormProvider shortFormProvider)
+	{
+		if (individualsAreAlwaysObject)
+			return Json.object().set("iri", entityId(entity, shortFormProvider));
+		else
+			return Json.make(entityId(entity, shortFormProvider));
+	}
+	
 	@SuppressWarnings("unchecked")
 	private OWLObjectMapper<Json> findObjectMapper(ShortFormProvider shortFormProvider, 
 	                                                OWLOntology ontology, 
@@ -120,7 +150,7 @@ public class OWLObjectToJson implements OWLObjectMapper<Json>
 		}
 	}
 
-    private OWLPropertyMapper<Json> findPropertyMapper(OWLProperty prop)
+    private OWLPropertyMapper<Json> findPropertyMapper(OWLProperty<?,?> prop)
     {
         OWLNamedIndividual asIndividual = individual(prop.getIRI());
         OWLNamedIndividual mapper = OWL.objectProperty(asIndividual, Refs.hasJsonMapper); 
@@ -142,7 +172,7 @@ public class OWLObjectToJson implements OWLObjectMapper<Json>
     }
 	
 	
-	private Json toJSON(OWLOntology ontology, OWLProperty prop, OWLObject x, Set<OWLObject> done, ShortFormProvider shortFormProvider)
+	private Json toJSON(OWLOntology ontology, OWLProperty<?,?> prop, OWLObject x, Set<OWLObject> done, ShortFormProvider shortFormProvider)
 	{
 		boolean expandIndividual =  (prop instanceof OWLObjectProperty)? 
 				(stopExpansionCondition == null || !stopExpansionCondition.isMet(prop)) 
@@ -185,8 +215,8 @@ public class OWLObjectToJson implements OWLObjectMapper<Json>
 		}
 		else if(done.contains(object))
 		{
-			 if (object instanceof OWLNamedIndividual) 
-				 return Json.make(((OWLIndividual) object).asOWLNamedIndividual().getIRI().toString());
+			 if (object instanceof OWLNamedIndividual)
+				 return objectReference(((OWLNamedIndividual) object).asOWLNamedIndividual(), shortFormProvider);
 			 else if (object instanceof OWLLiteral) 
 				 return Json.make(((OWLLiteral)object).getLiteral());			 
 		}
@@ -235,8 +265,6 @@ public class OWLObjectToJson implements OWLObjectMapper<Json>
 						String msg = "Encountered object with " + classes.size() + " types. First set as Json >type< property: " 
 								+ firstClass 
 								+ " \r\n of individual " + ind;
-						//for (OWLClassExpression classExp : classes) {
-						//msg += ("\r\n Classes:" + classExp.asOWLClass().getIRI().getFragment());
 						//}
 						if (STRICT_TYPES) 
 							throw new IllegalArgumentException(msg);
@@ -253,7 +281,7 @@ public class OWLObjectToJson implements OWLObjectMapper<Json>
 					if (dbg()) System.out.println("transient$protected: " + shortFormProvider.getShortForm(ind));
 				}
 			}
-			result.set("iri", ind.getIRI().toString());	
+			result.set("iri", entityId(ind, shortFormProvider));	
 			// Add the individuals Annotations 
 			try
 			{
@@ -290,8 +318,8 @@ public class OWLObjectToJson implements OWLObjectMapper<Json>
     						{
     							//iri only, but don't add to done set, it might be needed later; maybe do...
     							//done.add(x);
-    							if (x instanceof OWLNamedIndividual) 
-    								value.add(Json.make(((OWLIndividual) x).asOWLNamedIndividual().getIRI().toString()));
+    							if (x instanceof OWLNamedIndividual)
+    								value.add(objectReference(((OWLNamedIndividual) x).asOWLNamedIndividual(), shortFormProvider));
     						}
     					}
     					if (value.asJsonList().size() == 1)
@@ -310,7 +338,7 @@ public class OWLObjectToJson implements OWLObjectMapper<Json>
 		else if (object instanceof OWLClass)
 		{
 			OWLClass cl = (OWLClass)object;
-			Json result = Json.object().set("iri", cl.getIRI().toString());
+			Json result = Json.object().set("iri", entityId(cl, shortFormProvider));
 			annotate(cl, result, shortFormProvider);
 			return result;
 		}

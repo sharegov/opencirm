@@ -475,6 +475,26 @@ function resolveIris(x) {
     //console.log('Full graph ready', x);    
 }
 
+// Boris Aug 23 2014, new client-side IRI resolution when
+// new JSON<->OWL takes effect. There should probably be a separate
+// module to deal with OWL...
+function newResolveIris(x) {
+    var map = {};
+    objectRecurse(x, function(n,v,p) {
+        if (n == "iri" && p.type !== undefined)
+            map[v] = p;
+    });
+    objectRecurse(x, function(n,v,p) {
+        if (typeof v == "object" &&
+            v != null &&
+            v.iri !== undefined &&
+            v.type === undefined &&
+            map[v.iri] !== undefined)
+            p[n] = map[v.iri];			
+    });
+    //console.log('Full graph ready', x);    
+}
+
 function addLeadingZeroes(n, length) {
 	var result = ''+n;
 	while(result.length < length) {
