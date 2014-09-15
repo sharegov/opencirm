@@ -547,9 +547,15 @@
         <label>Created:</label>
 		<input name="Status" type="text" data-bind="value: computeDate(data().properties().hasDateCreated)" readonly=true/><br>
         
-        <label>Modified:</label>
-		<input name="Status" type="text" data-bind="value: computeDate(data().properties().hasDateLastModified)" readonly=true/><br>
+         <label>Due:</label>
+		<input name="DueDate" type="text" data-bind="value: computeDate(data().properties().hasDueDate)" readonly=true/><br>
         
+        <label>Modified:</label>
+		<input name="LastModified" type="text" data-bind="value: computeDate(data().properties().hasDateLastModified)" readonly=true/><br>
+          
+        <label>Closed:</label>
+		<input name="ClosedDate" type="text" data-bind="value: computeDate($root.getClosedDate()) " readonly=true/><br>
+		
         <label>Input By:</label>
 		<span data-bind="if: data().properties().isCreatedBy">
 			<input name="Status" type="text" data-bind="value: data().properties().isCreatedBy, click: $root.getProfile" readonly="true" style="text-decoration: underline" onmouseover="this.style.cursor='pointer';"/><br>

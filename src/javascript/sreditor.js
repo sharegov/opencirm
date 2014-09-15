@@ -3132,6 +3132,30 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 			$( id ).dialog('close');
 		};
 		
+		/**
+		 * Returns the earliest StatusChangeActivity with a status of closed,
+		 * returning it's date.
+		 */
+		self.getEarliestClosingActivity = function() {
+			var activities = self.data().properties().hasServiceActivity();
+			var closedDate = null;
+			$(activities).each(function(){
+				if(this.hasActivity().label() == 'StatusChangeActivity' && this.hasOutcome().iri().indexOf('#C-') > -1 )
+				{
+					var date = this.hasCompletedTimestamp;
+					if(closedDate == null || closedDate > date)
+					{ 
+						closedDate = date;
+					}
+				}
+			});
+			return closedDate;
+		};
+		
+		self.getClosedDate = ko.computed(function(){
+			return self.getEarliestClosingActivity();
+		});
+		
         return self;
     }
     
