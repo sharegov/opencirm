@@ -389,7 +389,7 @@
 		<div class="right_column grid_2" data-bind="if: result().record">
 			<div class="alignment_center">
 				<div id="wcs_right" class="button_group">
-					<input class="button blue" type="button" value="Send to SR" data-bind="click: $root.publishAccountInfo"></input>
+					<input class="button blue" type="button" id ="sendToSRButtonID" value="Send to SR" data-bind=" attr:{disabled: $root.isButtonDisable()}, click: $root.publishAccountInfo" ></input>
 	         	</div>
 			</div>
 		</div>
