@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import mjson.Json;
@@ -39,13 +40,14 @@ import org.sharegov.cirm.StartUp;
  * Encapsulate the OWL repository and networking services with some
  * convenience operations needed by the application;
  * 
- * @author boris
+ * @author boris, thomas
  *
  */
 public class OwlRepo
 {
 	private static final OwlRepo instance = new OwlRepo();
 	public static final int REMOTE_ONTO_TIMEOUT_MINS = 15;
+	
 	/**
 	 * Prefer Refs.owlRepo.resolve() as the correct method to get a reference to the repo.
 	 */
@@ -116,7 +118,7 @@ public class OwlRepo
 			}
 			if (bff == null)
 			{
-				repo.getPeer().stop();
+				ensurePeerStopped();
 				throw new RuntimeException("Best friend forever " + 
 						StartUp.config.at("network").at("bff").asString() +
 						" is offline, try again later.");
@@ -124,6 +126,37 @@ public class OwlRepo
 			return true;
 		}
 	}	
+
+	/**
+	 * Checks if peer is not connected and stops peer, if necessary.
+	 * 
+	 */
+	public void ensurePeerStopped() 
+	{
+		ensureRepository();
+		if (repo.getPeer() != null && repo.getPeer().getPeerInterface().isConnected()) 
+		{
+			synchronized (repo)
+			{
+				repo.getPeer().getPeerInterface().stop();
+			}
+		}
+	}
+	
+	/**
+	 * Shuts down the current repository by stopping peer, networking and closing the graph db.	
+	 */
+	public void shutdownRepository() {
+		synchronized(repo) {
+			if (repo == null) throw new IllegalStateException("No repository to shut down.");
+			if (repo != null) { 
+				ensurePeerStopped();
+				repo.stopNetworking();
+				repo.dispose();	
+				repo = null;
+			}
+		}
+	}
 	
 	/**
 	 * Creates a local repository at the given location and downloads (pulls) ontologies from the default peer.
@@ -164,24 +197,43 @@ public class OwlRepo
 				BrowseRepositoryActivity browseAct = repo.browseRemote(bff);
 				try
 				{
-					ActivityResult browseResult = browseAct.getFuture().get(REMOTE_ONTO_TIMEOUT_MINS, TimeUnit.MINUTES);
+					Future<ActivityResult> browseFuture = browseAct.getFuture(); 
+					ActivityResult browseResult = browseFuture.get(REMOTE_ONTO_TIMEOUT_MINS, TimeUnit.MINUTES);
+					
 					if (browseResult.getException() != null) throw browseResult.getException(); 
 					List<BrowseEntry> remoteEntries = findRemoteEntriesFor(ontologyIRIs, browseAct.getRepositoryBrowseEntries());
-					for(BrowseEntry remoteEntry : remoteEntries) {
+					for(BrowseEntry remoteEntry : remoteEntries) 
+					{
 						if (repo.getHyperGraph().get(remoteEntry.getUuid()) != null) {
 							throw new IllegalStateException("Cannot create ontology " + remoteEntry.getOwlOntologyIRI() + "in local repository with UUID " + remoteEntry.getUuid()+ " because it (the uuid) exists locally. \r\n ");
 						}
 					}
-					for(BrowseEntry remoteEntry : remoteEntries) {
+					for(BrowseEntry remoteEntry : remoteEntries) 
+					{
 						System.out.println("Pulling new ontology from remote: " + remoteEntry.getOwlOntologyIRI() + " (" + remoteEntry.getUuid() + ")" + " Mode: " + remoteEntry.getDistributionMode());
-						PullActivity a = repo.pullNew(remoteEntry.getUuid(), bff);
-						ActivityResult pullResult = a.getFuture().get(REMOTE_ONTO_TIMEOUT_MINS, TimeUnit.MINUTES);
-						if (pullResult.getException() != null) throw pullResult.getException(); 
-						System.out.println("Pulling new completed: " + a.getCompletedMessage());
-					}					
+						PullActivity pullActivity = repo.pullNew(remoteEntry.getUuid(), bff);
+						Future<ActivityResult> pullFuture = pullActivity.getFuture();
+						ActivityResult pullResult = pullFuture.get(REMOTE_ONTO_TIMEOUT_MINS, TimeUnit.MINUTES);
+						if (!pullFuture.isDone()) 
+						{	
+							throw new IllegalStateException("Error: Pulling ontology timed out after (" + REMOTE_ONTO_TIMEOUT_MINS + " mins) Delete /db directory and restart server.");
+						} 
+						else if (pullResult != null && pullResult.getException() != null)
+						{
+							throw pullResult.getException();
+						}
+						System.out.println("Pulling new completed: " + pullActivity.getCompletedMessage());
+					}
 				}
 				catch (Throwable e)
 				{
+					try {
+						System.out.println("Stopping networking and shutting down repo after failing to pull ontos.");
+						shutdownRepository();
+						System.out.println("Stopped.");
+					} catch (Exception ex){
+						System.err.println("During stopping peer: " + ex);
+					}
 					throw new RuntimeException(e);
 				}
 				return null;
