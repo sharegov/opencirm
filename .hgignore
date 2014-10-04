@@ -4,6 +4,7 @@ syntax: regexp
 syntax: glob
 classes/
 
+src\ontology\catalog-v001.xml
 syntax: regexp
 ^src/ontology/County_Working\.owl$
 syntax: regexp

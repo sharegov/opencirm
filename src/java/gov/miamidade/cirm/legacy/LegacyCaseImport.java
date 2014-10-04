@@ -94,6 +94,13 @@ public class LegacyCaseImport
 	public static final int POOL_CONNECTION_INACTIVE_TIMEOUT_SECS = 8 * 3600; //before it is removed from pool
 	public static final int POOL_CONNECTION_PREFETCH_ROWS = 1500; //single db roundtrip
 	public static final int POOL_CONNECTION_BATCH_ROWS = 50; //single db roundtrip
+	public static final Map<String, OWLNamedIndividual> EXPIRED_ANSWER_TO_INDIVIDUAL_MAP = new HashMap<String, OWLNamedIndividual>(){
+		private static final long serialVersionUID = -2099676196830821256L;
+		{
+			this.put("$000.00 (First time without Violation-No Fee)", OWL.individual("legacy:COMCESTL_ENTERREG_REGIFEE_1STFREE"));
+			this.put("$000.00 (First time-No Fee)", OWL.individual("legacy:COMCESTL_ENTERREG_REGIFEE_1STFREE"));
+		}
+	};
 	
 	
 	private static Map<String,String> personnelIDs = new HashMap<String,String>();
@@ -135,7 +142,7 @@ public class LegacyCaseImport
 		try
 		{
 			InputStream is = LegacyCaseImport.class.getClassLoader().
-			getResourceAsStream("org/sharegov/cirm/legacy/import.properties");
+			getResourceAsStream("gov/miamidade/cirm/legacy/import.properties");
 			props.load(is);
 		}
 		catch (Exception ex)
@@ -395,8 +402,7 @@ public class LegacyCaseImport
 				srImportedCount++;
 				ThreadLocalStopwatch.getWatch().time( srImportedCount + " ServiceCase(s) imported in this run thus far of " + srToImport + " total to import. Have ignored " +srNotImported + " ServiceCase(s) due to not being found in meta.");
 				ThreadLocalStopwatch.getWatch().time("importServiceRequests()"+ rs.getString("SERVICE_REQUEST_NUM") +" case finished.");
-				//ThreadLocalStopwatch.getWatch().reset();
-				//System.out.println( ((((srImportedCount + srNotImported)*100 )/srToImport)) + " % complete");
+				ThreadLocalStopwatch.startTop( ((((srImportedCount + srNotImported)*100 )/srToImport)) + " % complete");
 			}
 			System.out.println("Import complete. Not imported:");
 			if(notImportedSRs != null)
@@ -437,9 +443,11 @@ public class LegacyCaseImport
 		if(alreadyImported && !WRITE_RECORDS_TO_DISK)
 		{
 			String msg = "Sr:" + rs.getString("SERVICE_REQUEST_NUM") + " has already been imported";
-			//ThreadLocalStopwatch.getWatch().reset();
+			ThreadLocalStopwatch.getWatch().startTop(msg);
 			if(srNumber != null)
-				throw new RuntimeException(msg);
+			{	
+				//throw new RuntimeException(msg);
+			}
 			else
 				System.out.println(msg);
 			return;
@@ -1814,7 +1822,7 @@ public class LegacyCaseImport
 		return state;
 	}
 	
-	private static OWLNamedIndividual getAnswerObjectIndividual(OWLNamedIndividual serviceField, String legacyValue )
+	public static OWLNamedIndividual getAnswerObjectIndividual(OWLNamedIndividual serviceField, String legacyValue )
 	{
 			OWLDataFactory factory = OWL.dataFactory();
 			for( OWLNamedIndividual choiceValueList : OWL.objectProperties(serviceField, "legacy:hasChoiceValueList"))
@@ -1826,6 +1834,8 @@ public class LegacyCaseImport
 							return choiceValue;
 						else if(legacyValue != null &&	legacyValue.equalsIgnoreCase(OWL.getEntityLabel(choiceValue)))
 							return choiceValue;
+						else if(EXPIRED_ANSWER_TO_INDIVIDUAL_MAP.containsKey(OWL.getEntityLabel(choiceValue)))
+							return EXPIRED_ANSWER_TO_INDIVIDUAL_MAP.get(OWL.getEntityLabel(choiceValue));
 				}
 			}
 			return null;

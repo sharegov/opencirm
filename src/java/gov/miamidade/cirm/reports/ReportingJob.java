@@ -32,22 +32,27 @@ public class ReportingJob
 	public static boolean DISABLE_EXPORT_META_DATA = false;
 	public static boolean DISABLE_RUN_BATCH_JOB = false;
 
-	public static boolean SYSOUT_TO_FILE = true;
-	public static boolean CLEAR_ONTO_DIR = true;
+	public static boolean SYSOUT_TO_FILE = false;
+	public static boolean CLEAR_ONTO_DIR = false;
+	public static boolean USE_FILE_ONTOS = false;
 	
 	public final static String BATCH_JOB_DIR = "batchjob";
-	public final static String DATA_DIR = "data";
+	public final static String DATA_DIR = "data"; 
 	public final static String ONTO_DB_DIR = "ontodb";
 	public final static String LOG_FILE= "batchjob.log";
 	
 	private String baseWorkingDirectory;
 	private String batchJobCommand;
+	private String deploymentEndpoint;
 	
 	public static final ReportingJob TEST = new ReportingJob()
 	{
 		{
+			
+			StartUp.config.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#TestConfigSet");
 			setBaseWorkingDirectory("C:/Work/cirmservices_etl_test");
 			setBatchJobCommand("ReportingJobControl_Test2Test_0.2/ReportingJobControl_Test2Test/ReportingJobControl_Test2Test_run.bat");
+			setDeploymentEndpoint("http://cirm.miamidade.gov");
 		}
 	};
 	
@@ -55,8 +60,10 @@ public class ReportingJob
 	public static final ReportingJob PROD = new ReportingJob()
 	{
 		{
+			StartUp.config.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#ProdConfigSet");
 			setBaseWorkingDirectory("C:/Work/cirmservices_etl_prod");
 			setBatchJobCommand("ReportingJobControl_Prod2Prod_0.2/ReportingJobControl_Prod2Prod/ReportingJobControl_Prod2Prod_run.bat");
+			setDeploymentEndpoint("https://311hub.miamidade.gov");
 		}
 	};
 	
@@ -64,15 +71,26 @@ public class ReportingJob
 	public static void main(String args[])
 	{
 		
+		
 		if(args.length < 1)
 			throw new IllegalArgumentException("Please specify command line argument ['test' or 'prod']");
+		try
+		{
+			if("test".equals(args[0]))
+				TEST.run();
+			else if("prod".equals(args[0]))
+				PROD.run();
+			else
+				throw new IllegalArgumentException("Please specify command line argument ['test' or 'prod']");
+		}catch(RuntimeException e)
+		{
+			e.printStackTrace(System.out);
+			System.exit(1);
+		}
 		
-		if("test".equals(args[0]))
-			TEST.run();
-		else if("prod".equals(args[0]))
-			PROD.run();
-		else
-			throw new IllegalArgumentException("Please specify command line argument ['test' or 'prod']");
+		System.exit(0);
+		
+		
 	}
 	
 	public void run()
@@ -87,11 +105,7 @@ public class ReportingJob
 			}
 			if (!DISABLE_EXPORT_META_DATA) 
 			{
-				if(CLEAR_ONTO_DIR)
-				{
-					FileUtils.cleanDirectory(new File(getOntoDBDirectory()));
-				}
-				StartUp.config.set("metaDatabaseLocation", getOntoDBDirectory());
+				refreshOntology();
 				exportMetaData();
 			}
 			if (!DISABLE_RUN_BATCH_JOB) runBatchJob();
@@ -114,6 +128,33 @@ public class ReportingJob
 		{
 			throw new RuntimeException(t);
 		}
+	}
+
+	/**
+	 * Takes the latest ontology from a deployed operational environment
+	 * and copies it to the local ontology directory.
+	 * @throws IOException 
+	 */
+	private void refreshOntology() throws IOException
+	{
+		
+//		OntoAdmin localAdmin = new OntoAdmin();
+//		Json localOntos = localAdmin.listOntologies(); 
+//		
+//		Json deployedVersion = GenUtils.
+		if(USE_FILE_ONTOS)
+		{
+			StartUp.config.set("_metaDatabaseLocation", getOntoDBDirectory());
+		}
+		else 
+		{
+			if(CLEAR_ONTO_DIR)
+			{
+				FileUtils.cleanDirectory(new File(getOntoDBDirectory()));
+			}
+			StartUp.config.set("metaDatabaseLocation", getOntoDBDirectory());
+		}
+		
 	}
 
 	/**
@@ -279,4 +320,15 @@ public class ReportingJob
 	{
 		this.batchJobCommand = batchJobCommand;
 	}
+
+	public String getDeploymentEndpoint()
+	{
+		return deploymentEndpoint;
+	}
+
+	public void setDeploymentEndpoint(String deploymentEndpoint)
+	{
+		this.deploymentEndpoint = deploymentEndpoint;
+	}
+
 }

@@ -77,7 +77,7 @@ public class GisServiceRule
 			evaluator = new Mapping<Object, Boolean>() {
 			public Boolean eval(Object x)
 			{
-				return "CO".equals(x) || "CM".equals(x);
+				return "CO".equals(x) || "CM".equals(x) || "CC".equals(x); //09-09-2014 - Syed added OR 'CC' test, TODO: the last or clause needs to be addressed
 			}
 		};
 		else if ("NOT NULL AND > 0".equals(valueExpression))
