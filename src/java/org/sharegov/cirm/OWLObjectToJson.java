@@ -66,6 +66,8 @@ public class OWLObjectToJson implements OWLObjectMapper<Json>
 	// serialized as {"properyName" : { "iri":<iri> } } (true) or the default and
 	// current behavior as { "propertyNane" : <iri> } (false).
 	private boolean individualsAreAlwaysObject = false;  
+	// whether to use default short form provider for IRIs
+	private boolean useDefaultShortFormProvider = false;
 	
 	private Set<String> includeTypeFor = new HashSet<String>();	
 	
@@ -89,6 +91,16 @@ public class OWLObjectToJson implements OWLObjectMapper<Json>
 		this.includeTypeInfo = includeTypeInfo;
 	}
 	
+	public boolean isUseDefaultShortFormProvider() 
+	{
+		return useDefaultShortFormProvider;
+	}
+
+	public void setUseDefaultShortFormProvider(boolean useDefaultShortFormProvider) 
+	{
+		this.useDefaultShortFormProvider = useDefaultShortFormProvider;
+	}
+
 	public OWLObjectToJson() {}
 	
 	public OWLObjectToJson(OWLObjectPropertyCondition stopExpansionCondition) 
@@ -109,10 +121,17 @@ public class OWLObjectToJson implements OWLObjectMapper<Json>
 	@Override
 	public Json map(OWLOntology ontology, OWLObject object, ShortFormProvider shortFormProvider) 
 	{
-		if (shortFormProvider == null) shortFormProvider = OWLObjectMapper.DEFAULT_SHORTFORM_PROVIDER;
+		if (shortFormProvider == null && useDefaultShortFormProvider) 
+			shortFormProvider = OWLObjectMapper.DEFAULT_SHORTFORM_PROVIDER;
 		return toJSON(ontology, object, true, new HashSet<OWLObject>(), shortFormProvider);
 	}
 
+	private String shortIt(ShortFormProvider shortFormProvider, OWLEntity x)
+	{
+		return shortFormProvider != null ? shortFormProvider.getShortForm(x) 
+				: DEFAULT_SHORTFORM_PROVIDER.getShortForm(x);		
+	}
+	
 	private String entityId(OWLEntity entity, ShortFormProvider shortFormProvider)
 	{
 		if (shortFormProvider != null)
@@ -130,16 +149,13 @@ public class OWLObjectToJson implements OWLObjectMapper<Json>
 	}
 	
 	@SuppressWarnings("unchecked")
-	private OWLObjectMapper<Json> findObjectMapper(ShortFormProvider shortFormProvider, 
-	                                                OWLOntology ontology, 
-	                                                OWLNamedObject object, 
-	                                                String mapPropertyName)
+	private OWLObjectMapper<Json> findObjectMapper(OWLOntology ontology, OWLNamedObject object, String mapPropertyName)
 	{
 		OWLNamedIndividual asIndividual = individual(object.getIRI());
 		OWLNamedIndividual mapper = OWL.objectProperty(asIndividual, mapPropertyName); 
 		if (mapper == null)
 			return null;
-		String classname = shortFormProvider.getShortForm(mapper);
+		String classname = mapper.getIRI().getFragment();
 		try
 		{
 			return (OWLObjectMapper<Json>)Class.forName(classname).newInstance();
@@ -231,7 +247,7 @@ public class OWLObjectToJson implements OWLObjectMapper<Json>
 				if (! (expr instanceof OWLClass))
 					continue;
 				OWLClass type = (OWLClass)expr;
-				OWLObjectMapper<Json> jsonMapper = findObjectMapper(shortFormProvider, ontology(), type, Refs.hasJsonMapper);
+				OWLObjectMapper<Json> jsonMapper = findObjectMapper(ontology(), type, Refs.hasJsonMapper);
 				if (jsonMapper != null)
 					return jsonMapper.map(ontology, object, shortFormProvider);
 			}
@@ -246,7 +262,7 @@ public class OWLObjectToJson implements OWLObjectMapper<Json>
 				// 2013.01.08 hilpold added multiple type support w protection
 				Iterator<OWLClassExpression> it = classes.iterator();
 				OWLClass firstClass = it.next().asOWLClass();
-				String classIriFragment = shortFormProvider.getShortForm(firstClass);
+				String classIriFragment = shortIt(shortFormProvider, firstClass);
 				result.set("type", classIriFragment);
 				isProtectedIndividual = protectedCache.isProtectedClass(firstClass);
 				if (it.hasNext()) 
@@ -255,7 +271,7 @@ public class OWLObjectToJson implements OWLObjectMapper<Json>
 					while (it.hasNext()) 
 					{
 						OWLClass curClass = it.next().asOWLClass();
-						extendedClassesFragments.add(shortFormProvider.getShortForm(curClass));
+						extendedClassesFragments.add(shortIt(shortFormProvider, curClass));
 						if (!isProtectedIndividual)
 							isProtectedIndividual = protectedCache.isProtectedClass(curClass);
 					}
@@ -270,7 +286,7 @@ public class OWLObjectToJson implements OWLObjectMapper<Json>
 							throw new IllegalArgumentException(msg);
 						else if (dbg())
 							System.err.println(this.getClass() + " " + msg + "\r\n Type " + 
-							        shortFormProvider.getShortForm(firstClass) + "was added to JSON ");
+							        shortIt(shortFormProvider, firstClass) + "was added to JSON ");
 					}
 				}
 				if (dbg()) System.out.println("Type: " + classIriFragment + " for " + ind);
@@ -278,7 +294,7 @@ public class OWLObjectToJson implements OWLObjectMapper<Json>
 				if (isProtectedIndividual)
 				{
 					result.set("transient$protected", Boolean.TRUE);
-					if (dbg()) System.out.println("transient$protected: " + shortFormProvider.getShortForm(ind));
+					if (dbg()) System.out.println("transient$protected: " + shortIt(shortFormProvider, ind));
 				}
 			}
 			result.set("iri", entityId(ind, shortFormProvider));	
@@ -325,7 +341,7 @@ public class OWLObjectToJson implements OWLObjectMapper<Json>
     					if (value.asJsonList().size() == 1)
     						value = value.at(0);
 					}
-					properties.set(shortFormProvider.getShortForm(prop), value);
+					properties.set(shortIt(shortFormProvider, prop), value);
 				}
 			}
 			result.with(properties);
