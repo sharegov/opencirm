@@ -712,9 +712,7 @@ public class DepartmentIntegration extends RestService
 					String serviceCaseAnswer = serviceCaseAnswersVal.at("legacy:hasServiceField").at("iri").asString();
 					if (serviceCaseAnswer.endsWith("BULKYTRA_COMPLAIN")	|| 
 						serviceCaseAnswer.endsWith("BULKYTRA_BULKYWOR")||
-						serviceCaseAnswer.endsWith("MISSEDBU_PUBCMPLN")||
-						serviceCaseAnswer.endsWith("EZGO_PUBCMPLN")||
-						serviceCaseAnswer.endsWith("GARBAGEM_PUBCMPLN"))
+						serviceCaseAnswer.endsWith("_PUBCMPLN"))
 					{
 						if(!serviceCaseAnswersVal.at("legacy:hasAnswerValue").at("literal").asString().equalsIgnoreCase(""))
 							return true;
