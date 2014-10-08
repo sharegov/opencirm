@@ -727,7 +727,8 @@ public class OWL
 
 	public static synchronized Json annotate(OWLOntology ontology, OWLEntity object, Json x, ShortFormProvider sp)
 	{
-		if (sp == null) sp = OWLObjectMapper.DEFAULT_SHORTFORM_PROVIDER;
+		if (sp == null) 
+			sp = OWLObjectMapper.DEFAULT_SHORTFORM_PROVIDER;
 		Set<OWLAnnotation> annotations = object.getAnnotations(ontology);
 		for (OWLAnnotation ann : annotations)
 		{
