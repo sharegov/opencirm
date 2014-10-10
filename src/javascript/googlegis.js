@@ -9,21 +9,25 @@
  *
  * Google Gecoder usage limits:
  * https://developers.google.com/maps/documentation/geocoding/#Limits
- *
+ * The Google Geocoding API has the following limits in place:
+ * Users of the free API:
+ * 2,500 requests per 24 hour period.
+ * 5 requests per second.
+ * Google Maps API for Work customers:
+ * 100,000 requests per 24 hour period.
+ * 10 requests per second.
  *
  */
-define('cirmgis', ['async', 'async!http://maps.google.com/maps/api/js?v=3&sensor=false'], function () {
+define('cirmgis', ['jquery','async', 'async!http://maps.google.com/maps/api/js?v=3&sensor=false'], function ($) {
 
+    var url = null;
+    var path = null;
     var geocoder = null;
+    var defaultComponentRestrictions = {'administrativeArea' :'Miami-Dade County', 'country':'US'};
+
 
     function initConnection() {
         geocoder = new google.maps.Geocoder();
-        console.log('googlegis geocoder', geocoder);
-        var latlng = new google.maps.LatLng(-34.397, 150.644);
-        var mapOptions = {
-            zoom: 8,
-            center: latlng
-        }
     }
 
     function ensureInit() {
@@ -41,8 +45,22 @@ define('cirmgis', ['async', 'async!http://maps.google.com/maps/api/js?v=3&sensor
 
     function addressCandidates(address, zip, municipality, callback, error) {
         ensureInit();
-        error('This is a default implementation based on Google Maps.',
-            {status: 404}, 'Address candidates is not available.');
+        var componentRestrictions = defaultComponentRestrictions;
+        if (zip != undefined && zip.length > 0)
+        {
+            componentRestrictions.postalCode = zip;
+        }
+        geocoder.geocode( { 'address': address,
+                            'componentRestrictions': componentRestrictions
+                          },
+            function(results, status) {
+                console.log(results);
+                if (status == google.maps.GeocoderStatus.OK) {
+	                callback(resultsToAddresCandidates(results));
+	            } else {
+	                error(status);
+	            }
+        });
     }
 
     function commonLocationCandidates(name, callback, error) {
@@ -73,6 +91,30 @@ define('cirmgis', ['async', 'async!http://maps.google.com/maps/api/js?v=3&sensor
         ensureInit();
         error('This is a default implementation based on Google Maps.',
             {status: 404}, 'Standardized street address is not available.');
+    }
+    
+    function resultsToAddresCandidates(results) {
+    	var candidates = [];
+    	for (var i=0, l = results.length; i<l; i++) {
+    	   candidates.push(resultToAddressCandidate(results[i]));
+    	}
+    	return candidates;
+    }
+    
+    function resultToAddressCandidate(result) {
+    	var candidate = {address:'', municipality:'', zip: ''};
+    	candidate.address =  result.formatted_address.split(",")[0];
+    	for (var i=0, l = result.address_components.length; i<l; i++) {
+    		if($.inArray('locality',result.address_components[i].types) > -1)
+    		{
+    			candidate.municipality = result.address_components[i].short_name;
+    		}
+    		if($.inArray('postal_code', result.address_components[i].types) > -1)
+    		{
+    			candidate.zip = result.address_components[i].short_name;
+    		}
+     	}
+    	return candidate;
     }
 
     return {
