@@ -59,11 +59,6 @@ public class SolrSearchEngine
 		String agencyLabel = null;
 		for (Json o : doc.at("ontology").asJsonList())
 		{
-			// Syed Ticket #1002 - URIs are negated with a tilde in KB
-			// for now filter them because they cause and invalid URI syntax
-			// exception. This is short term fix.
-			if(o.asString().startsWith("~"))
-				continue;
 			if (o.asString().endsWith("City_of_Miami") || o.asString().contains("COM_"))
 			{
 				agencyLabel = "COM";
@@ -85,6 +80,7 @@ public class SolrSearchEngine
         SolrClient cl = new SolrClient();
         SearchQuery query = new SearchQuery();
         QueryExpression expression = null;
+        SearchResultTransform transform = new SearchResultTransform();
     	if (question == null || question.trim().length() == 0)
     	{
     		expression = requiredField("url", "h*");
@@ -154,10 +150,10 @@ public class SolrSearchEngine
 
         Json result = ok().set("docs", array());
         Json docs = result.at("docs");
-                
+  
         if (filter == null)
         {
-        	Json A = cl.search(query);
+        	Json A = cl.search(query, transform);
         	if (A.at("responseHeader").is("status", 0l))
         		result.set("docs", A.at("response").at("docs"))
         			  .set("total", A.at("response").at("numFound"));
@@ -167,7 +163,7 @@ public class SolrSearchEngine
         else while (docs.asJsonList().size() < rows)
         {
         	query.setStart(start);
-        	Json A = cl.search(query);
+        	Json A = cl.search(query, transform);
         	if (!result.has("total"))
         		result.set("total", A.at("response").at("numFound"));
         	if (A.at("responseHeader").is("status", 0l))
@@ -192,4 +188,6 @@ public class SolrSearchEngine
         	setAgencyLabel(x, reasoner);
         return result;        
     }
+    
+    
 }
