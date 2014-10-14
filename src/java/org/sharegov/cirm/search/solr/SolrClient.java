@@ -90,7 +90,7 @@ public class SolrClient
 		return ind == null ? null : OWL.dataProperty(ind, "hasUrl").getLiteral(); 
 	}
 
-	public Json search(SearchQuery query) //, DefaultSearchResultList out)
+	public Json search(SearchQuery query, SearchResultTransform transform) //, DefaultSearchResultList out)
 	{
 		// TMP - use of apache.commons HttpClient because of a bug in Restlet framework
 		// when fetching a ClientResource within a restlet server thread - No CallContext exception.
@@ -104,7 +104,7 @@ public class SolrClient
             int statusCode = client.executeMethod(method);
             if (statusCode != HttpStatus.SC_OK)
                 throw new RuntimeException("HTTP Error " + statusCode + " while calling " + url);
-            Json result = Json.read(method.getResponseBodyAsString());
+            Json result = transform.eval(Json.read(method.getResponseBodyAsString()));
             return result;
         }
         catch (Exception ex)
@@ -132,7 +132,8 @@ public class SolrClient
 	public static void main(String []argv)
 	{
 		SolrClient cl = new SolrClient();
-		Json result = cl.search(new SearchQuery(field("text", "tax")));
+		SearchResultTransform transform = new SearchResultTransform();
+		Json result = cl.search(new SearchQuery(field("text", "tax")), transform);
 		System.out.println(result);
 	}
 }
