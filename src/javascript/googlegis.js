@@ -102,17 +102,24 @@ define('cirmgis', ['jquery','async', 'async!http://maps.google.com/maps/api/js?v
     }
     
     function resultToAddressCandidate(result) {
-    	var candidate = {address:'', municipality:'', zip: ''};
+    	var candidate = {address:'', municipality:'', zip: '', fullAddress: '', parsedAddress: {zip:'', House:''}};
     	candidate.address =  result.formatted_address.split(",")[0];
+    	candidate.fullAddress = result.formatted_address;
     	for (var i=0, l = result.address_components.length; i<l; i++) {
+    		if($.inArray('street_number',result.address_components[i].types) > -1)
+    		{
+    			candidate.parsedAddress.House = result.address_components[i].short_name;
+    		}
     		if($.inArray('locality',result.address_components[i].types) > -1)
     		{
-    			candidate.municipality = result.address_components[i].short_name;
+    			candidate.municipality = result.address_components[i].short_name.toUpperCase();
     		}
     		if($.inArray('postal_code', result.address_components[i].types) > -1)
     		{
     			candidate.zip = result.address_components[i].short_name;
+    			candidate.parsedAddress.zip =  candidate.zip;
     		}
+    		//candidate.addressData = result.address_components[i];
      	}
     	return candidate;
     }
