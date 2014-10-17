@@ -236,7 +236,6 @@ public class OWLIndividuals extends RestService
 			for (OWLNamedIndividual ind : OWL.queryIndividuals(queryAsString))
 				if (allAllowed == null || allAllowed.contains(ind))
 					j.add(jsonEntities.individual(ind.getIRI()).resolve());
-			
 			//System.out.println("QUERY TIME for '" + queryAsString + "' -- " + (System.currentTimeMillis() - ss));
 			return j;
 //			for (OWLNamedIndividual ind : reasoner.getInstances(expr, false).getFlattened())

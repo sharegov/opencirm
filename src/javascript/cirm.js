@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-define(['jquery', 'rest', 'U','user', 'store!', 'refs!all'], function($, rest, U, user, store, refs) {
+define(['jquery', 'rest', 'U','user', 'store!', 'owl', 'refs!all'], function($, rest, U, user, store, owl, refs) {
 
     // A variation on JQuery's serializeArray that doesn't ignore unchecked checkboxes, radio buttons or
     // disabled elements (that could simply be read-only fields that we might want to submit back.
@@ -283,6 +283,7 @@ define(['jquery', 'rest', 'U','user', 'store!', 'refs!all'], function($, rest, U
         toQueryString:toQueryString,
         viewBusinessObject:viewBusinessObject,
         events:eventManager,
+        owl:owl,
         refs:refs
      };
     

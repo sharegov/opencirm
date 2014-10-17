@@ -68,7 +68,7 @@ paths: {
 priority: ["jquery", "jqueryconf", "logincheck"]
 , urlArgs: "cache_bust=" + (new Date()).getTime()
 },  [ "rest", "U", "cirm", "legacy", "sreditor", "answerhub", "store", "jquery", 
-    "jquery-ui", "jquery-tmpl", "jquery-autoresize", 
+    "jquery-ui", "jquery-tmpl", "jquery-autoresize",
     "jquery-marquee", "jquery-cookie", "jquery-jec",
     "jquery-upload", "jquery-knockout", "jquery-datatables", "jquery-dt-ko-binding"],
 function (rest, U, cirm, legacy, sreditor, answerhub, store) {     
@@ -102,7 +102,7 @@ function (rest, U, cirm, legacy, sreditor, answerhub, store) {
         var editor = sreditor.edit(null, answerHubModel.addressSearch.address);
 		window.serviceHubModel = editor.model;
         editor.embed($('#editorDiv'));
-		caseEditor = editor;
+		//caseEditor = editor; // what's the use of this, caseEditor variable never used again! (Boris)
 		
 		var wcsComponent = legacy.wcs(answerHubModel.addressSearch.address);
 		wcsComponent.embed($('#wcsDiv'));

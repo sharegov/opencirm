@@ -16,7 +16,19 @@
 define(['rest', 'U', 'store!'], function(rest, U, store) {
         
     var top = new rest.Client(U.baseurl);
-    
+
+    // Make function-object that, when called, returns a deep copy of itself.
+    var toPrototype = function(x) {
+        var f = function() {
+            var cl = U.clone(x);
+            delete cl.iri;
+            return cl;
+        }
+        $.extend(f, x);
+        delete f.iri;
+        return f;
+    };
+
     // Holds metadata references (ontology query results stored in JavaScript variables) 
     // that need to be updated when the metadata changes on the server side.
     //
@@ -44,6 +56,8 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
             		else
             			return A;
             }},
+            {"hasName": "defaultStreetAddress", "hasUrl": "/individuals/DefaultStreetAddress",
+                "map":function(I) { return toPrototype(I); }},
             {"hasName": "caseStatuses", "hasQueryExpression": "legacy:Status"},
             {"hasName": "casePriorities", "hasQueryExpression": "legacy:Priority"},
             {"hasName": "caseIntakeMethods", "hasQueryExpression": "legacy:IntakeMethod"},

@@ -272,7 +272,12 @@ public class SynchronizedOWLOntologyManager implements OWLOntologyManager
 		manager.removeOntology(ontology);
 	}
 
-	public synchronized IRI getOntologyDocumentIRI(OWLOntology ontology)
+//    public synchronized void removeOntology(OWLOntologyID ontologyID)
+//    {
+//        manager.removeOntology(ontologyID);
+//    }
+
+    public synchronized IRI getOntologyDocumentIRI(OWLOntology ontology)
 	{
 		return manager.getOntologyDocumentIRI(ontology);
 	}

@@ -447,16 +447,16 @@ function makeObservable(n,v,parent) {
         parent[n] = ko.observable(v);		
 }
 
-	function makeObservableTrimmed(n,v,parent) {
+function makeObservableTrimmed(n,v,parent) {
     if (isArray(parent) || ko.isObservable(v))
-        return; 
+        return;
     else if(n == "hasServiceCaseActor" || n == "hasServiceActivity")
         parent[n] = ko.observableArray(v);
     else if (isArray(parent[n]))
         parent[n] = ko.observableArray(v);
     else
-        parent[n] = ko.observable(v).trimmed();		
-	}
+        parent[n] = ko.observable(v).trimmed();
+}
 	
 // TMP solution to IRI instead of object problem
 function resolveIris(x) {

@@ -67,7 +67,7 @@ public class OWLObjectToJson implements OWLObjectMapper<Json>
 	// current behavior as { "propertyNane" : <iri> } (false).
 	private boolean individualsAreAlwaysObject = false;  
 	// whether to use default short form provider for IRIs
-	private boolean useDefaultShortFormProvider = false;
+	private boolean useDefaultShortFormProvider = true;
 	
 	private Set<String> includeTypeFor = new HashSet<String>();	
 	
@@ -134,7 +134,7 @@ public class OWLObjectToJson implements OWLObjectMapper<Json>
 	
 	private String entityId(OWLEntity entity, ShortFormProvider shortFormProvider)
 	{
-		if (shortFormProvider != null)
+		if (!this.useDefaultShortFormProvider && shortFormProvider != null)
 			return shortFormProvider.getShortForm(entity);
 		else
 			return entity.getIRI().toString();

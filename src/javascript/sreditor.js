@@ -13,21 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../html/srmarkup.ht"], 
-   function($, U, rest, ui, store, cirm, legacy, srmarkupText)   {
+define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "text!../html/srmarkup.ht"],
+   function($, U, rest, ui, store, owl, cirm, legacy, srmarkupText)   {
 	
     function AddressBluePrint() {
     	var self = this;
+        $.extend(self, cirm.refs.defaultStreetAddress());
 		self.Street_Number = "";
-		self.Street_Name = "";
-		self.fullAddress = ""; 
-		self.Street_Unit_Number = ""; 
-		self.Zip_Code = "";
+		self.fullAddress = "";
 		self.folio = "";
 		self.hasLocationName = "";
 		self.type = "Street_Address";
 		self.Street_Address_City = {"iri":"", "label":"" };
-		self.Street_Address_State = {"iri":"http://www.miamidade.gov/ontology#Florida", "label":"Florida" };
 		self.Street_Direction = {"label":"", "iri":""};
 		self.hasStreetType = {"label":"", "iri":""};
 		self.addressType = "";
@@ -36,12 +33,11 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
     function ServiceActorAddressBluePrint()
     {
     	var self = this;
+        $.extend(self, cirm.refs.defaultStreetAddress());
 		self.fullAddress = ""; 
-		self.Street_Unit_Number = ""; 
-		self.Zip_Code = "";
+		self.Street_Unit_Number = "";
 		self.type = "Street_Address";
 		self.Street_Address_City = {"iri":"", "label":"" };
-		self.Street_Address_State = {"iri":"http://www.miamidade.gov/ontology#Florida", "label":"Florida" };
     }
     
     function ServiceActor(iri, label, username, serverDate, isNew) {
@@ -72,7 +68,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
     }
     
 	function isCitizenActor(iri) {
-		return (iri === 'http://www.miamidade.gov/cirm/legacy#CITIZEN');
+		return (iri === owl.iri.cirmapp('CITIZEN'));
 	}
 
     function ServiceActivity(iri, label, username, serverDate, isNew) {
@@ -653,16 +649,13 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 	        var P = blue.properties; 
 			P.atAddress = {
 	            Street_Address_City: {iri : '', label: ''},
-	            Street_Address_State:{iri:"http://www.miamidade.gov/ontology#Florida","label": "FL"},
 			    Street_Direction: {iri: "", label: ""},
 			    hasStreetType: {iri: "", label: ""},
-			    Street_Name:'',
 				Street_Number: '',
-				Street_Unit_Number: '',
-				Zip_Code: '',
 				type: "Street_Address",
 				fullAddress: "",
 			    folio:""};
+            $.extend(P.atAddress, cirm.refs.defaultStreetAddress);
 			P.hasStatus = type.hasDefaultStatus ? U.clone(type.hasDefaultStatus) : { };
 			P.hasPriority = type.hasDefaultPriority ? U.clone(type.hasDefaultPriority) : { };
 			P.hasIntakeMethod =  type.hasDefaultIntakeMethod ? U.clone(type.hasDefaultIntakeMethod) : { };
@@ -719,11 +712,12 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 	    	}
 	    };
 	    
-	    self.startNewServiceRequest = function(type) {
-	    	self.enableValidationForSrType(type);
+	    self.startNewServiceRequest = function(typeName) {
+            var type = cirm.refs.serviceCases[owl.iri.cases(typeName)];
+	    	self.enableValidationForSrType(typeName);
 			var callback = function cb()
 			{
-			    var blueprint = self.makeCaseBlueprint(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + type]);
+			    var blueprint = self.makeCaseBlueprint(type);
                 var currentAddress = ko.toJS(self.data().properties().atAddress);
                 blueprint.properties.atAddress = currentAddress;
                 if(self.data().properties().hasXCoordinate() != "")
@@ -732,18 +726,18 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
                     blueprint.properties.hasYCoordinate = self.data().properties().hasYCoordinate();
                 fetchSR(blueprint, self, true);
 			};
-			if(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + type].isDisabledCreate == 'true')
+			if(type.isDisabledCreate == 'true')
 			{
 				var srTypeName = $('#srTypeID').val().trim();
 				alertDialog("The Creation of a new '" + srTypeName +"' Service Request is currently disabled for all users");
 			}
-			else if (!cirm.user.isNewAllowed(type)) 
+			else if (!cirm.user.isNewAllowed(typeName))
 			{
 				var srTypeName = $('#srTypeID').val().trim();
 				alertDialog("The Creation of a new '" + srTypeName +"' is currently not permitted for your group.");
 			}
 			else if(self.data().properties().hasXCoordinate() != "" && self.data().properties().hasYCoordinate() != "" ) {
-				self.validateTypeOnXY(type, self.data().properties().hasXCoordinate()
+				self.validateTypeOnXY(typeName, self.data().properties().hasXCoordinate()
 					, self.data().properties().hasYCoordinate(), callback, "Service Request Type is not valid for this location. Please try a different location.");
 			}
 			else {
@@ -754,34 +748,34 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		self.srTypeLookup = function() {
 			$("#sh_dialog_address_search").dialog({ height: 140, modal: true });
 			$("#sh_dialog_address_search").dialog('close');
-			var srTypeID = $('#srTypeID').val().trim();
-			var type = cirm.refs.serviceCaseList[srTypeID];
+			var typeLabel = $('#srTypeID').val().trim();
+			var typeName = cirm.refs.serviceCaseList[typeLabel];
 			//TODO Trigger type change event
-			$(document).trigger(legacy.InteractionEvents.SrTypeSelection, [type]);
+			$(document).trigger(legacy.InteractionEvents.SrTypeSelection, [typeName]);
 			if(!U.isEmptyString(self.data().type()))
 			{
-				if(!U.isEmptyString(type)){
-					if(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + type].isDisabled == 'true')
+				if(!U.isEmptyString(typeName)){
+					if(cirm.refs.serviceCases[owl.iri.cases(typeName)].isDisabled == 'true')
 						alertDialog("Cannot create a disabled Service Request Type");
 					else
-						self.clearSR(type);
+						self.clearSR(typeName);
 				}
 				else
 					alertDialog("Please select a valid Service Request Type");
 			}
 			else
 			{
-				if(!U.isEmptyString(type)){
-					if(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + type].isDisabled == 'true')
+				if(!U.isEmptyString(typeName)){
+					if(cirm.refs.serviceCases[owl.iri.cases(typeName)].isDisabled == 'true')
 						alertDialog("Cannot create a disabled Service Request Type");
 					else
-						self.startNewServiceRequest(type);
+						self.startNewServiceRequest(typeName);
 				}
-				else if(!U.isEmptyString(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + srTypeID])){
-					if(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + srTypeID].isDisabled == 'true')
+				else if(!U.isEmptyString(cirm.refs.serviceCases[owl.iri.cases(typeName)])){
+					if(cirm.refs.serviceCases[owl.iri.cases(typeName)].isDisabled == 'true')
 						alertDialog("Cannot create a disabled Service Request Type");
 					else
-						self.startNewServiceRequest(srTypeID);
+						self.startNewServiceRequest(typeLabel);
 				}
 				else
 					alertDialog("Please select a valid Service Request Type");
@@ -1009,75 +1003,6 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 			return !updateTypeAllowed;
 		};
 		
-
-/*		
-		self.loadFromServer = function(lookup_boid) {
-			//var userFriendlyPattern = /[A-Z]{2}[0-9]{3,6}.{1}[\d]{8}/;
-			//var alphabetPattern = /[A-Za-z]{2}/;
-			//TODO : temp fix. We don't have to do below check once all SRs have hasUserFriendlyID
-			if(self.data().boid() == parseInt(lookup_boid.split("-")[1]))
-				lookup_boid = lookup_boid.split("-")[1];
-			//END : temp fix.
-			if(lookup_boid.match(userFriendlyPattern))
-			{
-				self.loadUserFriendlyFromServer(lookup_boid);
-			}
-			else if(lookup_boid.match(alphabetPattern)) {
-				var pre = lookup_boid.substr(0,2);
-				var srID = lookup_boid.substr(2,lookup_boid.length);
-				var friendlyFormat = pre + U.getFullYear() + "-" + U.addLeadingZeroes(srID, 8);
-				if(friendlyFormat.match(userFriendlyPattern) && friendlyFormat.indexOf("AC") != -1)
-				{
-					self.loadUserFriendlyFromServer(friendlyFormat);
-				}
-				else {
-					$("#sh_dialog_sr_lookup").dialog('close');
-					var formatExample = "\n .SR_ID : 1234 \n .SR_ID : AC1234 or AC2012-00001234 \n .Legacy_ID : 13-00000434";
-					alertDialog("Unrecognizable SR ID Format. Please use one of these formats :" + formatExample);
-					return true;
-				}
-			}
-			else if(lookup_boid.indexOf("-") != -1) {
-				var query = {"type":"legacy:ServiceCase", "legacy:hasLegacyId":lookup_boid,
-							 "currentPage":1, "itemsPerPage":1};
-				cirm.top.async().postObject("/legacy/advSearch", query,  function(result) {
-					if(result.ok == true) {
-						if(result.resultsArray.length == 1)
-						{
-							//fetchSR(result.resultsArray[0], self, false);
-							var fetchedBOID = result.resultsArray[0].boid;
-							cirm.top.async().get("/legacy/search?id="+fetchedBOID, {}, function(result) {
-								$("#sh_dialog_sr_lookup").dialog('close');
-								if(result.ok == true)
-									fetchSR(result.bo, self, false);
-								else if(result.ok == false)
-									showErrorDialog("An error occurred while searching for the Service Request : <br>"+result.error);
-							});
-
-						}
-						else
-						{
-							$("#sh_dialog_sr_lookup").dialog('close');
-							alertDialog("No Search Results");
-						}
-					}
-					else {
-						$("#sh_dialog_sr_lookup").dialog('close');
-						showErrorDialog("An error occurred while searching for the Service Request : <br>"+result.error);
-					}
-				});
-			}
-			else {
-				cirm.top.async().get("/legacy/search?id="+lookup_boid, {}, function(result) {
-					$("#sh_dialog_sr_lookup").dialog('close');
-					if(result.ok == true)
-						fetchSR(result.bo, self, false);
-					else if(result.ok == false)
-						showErrorDialog("An error occurred while searching for the Service Request : <br>"+result.error);
-				});
-			}
-		};
-*/
 		self.srLookup = function() {
 			var lookup_boid = $('[name="SR Lookup"]').val().trim();
 			if(U.isEmptyString(lookup_boid))
@@ -1222,9 +1147,10 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 				postData.boid = self.data().boid();
 				postData.hasCaseNumber = self.data().properties().hasCaseNumber();
 			}
-			//TODO : temp fix below. State is sometimes undefined, some times set to Florida. Debug Random behavior.
+			//TODO : temp fix below. State is sometimes undefined, some times set to Florida.
+			// Debug Random behavior.
 			if(postData.address.Street_Address_State.iri === undefined)
-				postData.address.Street_Address_State.iri = "http://www.miamidade.gov/ontology#Florida";
+				postData.address.Street_Address_State.iri = cirm.refs.defaultStreetAddress.Street_Address_State.iri;
 			$('#dup_checking').show();
 			$('#save').hide();
 			cirm.top.async().post("/legacy/duplicateCheck", {data:JSON.stringify(postData)},  function(result) {
@@ -1253,7 +1179,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 					}
 					else
 					{
-						self.data().properties().hasStatus().iri("http://www.miamidade.gov/cirm/legacy#O-DUP");
+						self.data().properties().hasStatus().iri(owl.iri.cases("O-DUP"));
 						self.data().properties().hasStatus().label("O-DUP");
 					}
 					self.duplicateCount(filteredDetails.length);
@@ -2064,7 +1990,13 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 			{
 				alertDialog('Your group does not have permission to update this SR.');
 				return;
-			}	
+			}
+            // Boris -- added the below to allow for a city individual to be found without address validation
+            var addressCity = jsondata.properties.atAddress.Street_Address_City;
+            if (addressCity && !addressCity.iri)
+            {
+                addressCity.iri = cirm.refs.citiesByName[addressCity.label.toUpperCase()].iri;
+            }
 			if(!isServiceCaseValid(model.data()))
 			{
 				var msg = "Please add values to all the fields highlighted in RED. \n";
@@ -3003,8 +2935,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 			el.atAddress().Street_Unit_Number("");
 			el.atAddress().Street_Address_City().label("");
 			el.atAddress().Street_Address_City().iri("");
-			el.atAddress().Street_Address_State().label("Florida");
-			el.atAddress().Street_Address_State().iri("http://www.miamidade.gov/ontology#Florida");
+			el.atAddress().Street_Address_State().label(cirm.refs.defaultStreetAddress.Street_Address_City.label);
+			el.atAddress().Street_Address_State().iri(cirm.refs.defaultStreetAddress.Street_Address_City.iri);
 		};
 		
 		self.selectActorRow = function(el, event) {
@@ -3165,7 +3097,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 			type = "legacy:"+type;
 			bo.type = type;
 		}
-	    var srType = cirm.refs.serviceCases["http://www.miamidade.gov/cirm/legacy#" + type.split(":")[1]]; 
+	    var srType = cirm.refs.serviceCases[owl.iri.cases(type.split(":")[1])];
 	    console.log('type', srType);
 	    
 		if(srType.hasServiceCaseAlert && bo.boid == "") {
