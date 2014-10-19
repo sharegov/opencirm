@@ -31,6 +31,16 @@ import org.sharegov.cirm.Refs;
 
 import mjson.Json;
 
+/**
+ * The UI service is responsible for dynamically constructing
+ * user interface components for various business interactions
+ * between system and people. Most commonly, those are forms to
+ * edit data and actions that can be performed to affect the workflow
+ * of a business object.
+ *  
+ * @author borislav
+ *
+ */
 @Path("ui")
 @Produces("application/json")
 public class UiService extends RestService

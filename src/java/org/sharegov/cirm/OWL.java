@@ -1510,13 +1510,11 @@ public class OWL
 
 	public static Set<OWLNamedIndividual> queryIndividuals(String expression, OWLOntology ontology)
 	{
-		OWLReasoner reasoner = reasoner(ontology);
-		DLQueryParser parser = DLQueryParser.getParser(ontology, 
-				(DefaultPrefixManager)prefixManager()); 	
 		try
 		{
+			DLQueryParser parser = DLQueryParser.getParser(ontology, (DefaultPrefixManager)prefixManager()); 				
 			OWLClassExpression clexpr = parser.parseClassExpression(expression);
-			return reasoner.getInstances(clexpr, false).getFlattened();
+			return queryIndividuals(clexpr, ontology);
 		}
 		catch (Exception ex)
 		{
@@ -1524,11 +1522,22 @@ public class OWL
 		}
 		finally
 		{
-			if (isBusinessObjectOntology(ontology)) {
+			if (isBusinessObjectOntology(ontology)) 
+			{
 				System.out.println("Disposing DL parser for BO " + ontology);
 				DLQueryParser.disposeCachedParser(ontology);
 			}
 		}		
+	}
+
+	public static Set<OWLNamedIndividual> queryIndividuals(OWLClassExpression expression, OWLOntology ontology)
+	{
+		return reasoner(ontology).getInstances(expression, false).getFlattened();
+	}
+
+	public static Set<OWLNamedIndividual> queryIndividuals(OWLClassExpression expression)
+	{
+		return queryIndividuals(expression, ontology());
 	}
 	
 	public static <T> Set<T> set(T...args)
