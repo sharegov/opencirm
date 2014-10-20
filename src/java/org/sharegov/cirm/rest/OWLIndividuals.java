@@ -47,6 +47,7 @@ import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.StartUp;
 import org.sharegov.cirm.legacy.Permissions;
 import org.sharegov.cirm.owl.OWLSerialEntityCache;
+import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.TraceUtils;
 
 @Path("individuals")
@@ -113,12 +114,9 @@ public class OWLIndividuals extends RestService
 		{
 			Json el = OWL.toJSON(ontology(), ind);
 			Json result = Json.object();
+			GenUtils.ensureArray(el, "hasMember");
 			for (Json x : el.at("hasMember").asJsonList())
-			{
-				//System.out.println(x);
-				result.set(x.at("Name").asString(), x.at("Value"));
-				
-			}
+				result.set(x.at("Name").asString(), x.at("Value"));				
 			if (!isClientExempt() && 
 				reasoner().getTypes(ind, false).containsEntity(OWL.owlClass("Protected")) &&					
 				!!Permissions.check(individual("BO_View"), 

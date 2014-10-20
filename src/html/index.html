@@ -32,7 +32,7 @@
 <link type="text/css" href="/html/css/jquery.dataTables_themeroller.css" rel="stylesheet" />
 <link type="text/css" href="/html/css/jquery.dataTables.css" rel="stylesheet" />
 
-<script type="text/javascript" charset="utf-8" src="/javascript/require.js"></script>
+<script type="text/javascript" charset="utf-8" src="/javascript/require-2.1.14.js"></script>
 <script type="text/javascript" charset="utf-8" src="/javascript/knockout-2.0.0.js"></script>
 <script type="text/javascript" src="/javascript/swfobject.js"></script>
 <script type="text/javascript" src="/javascript/MDCJSLibrary.js"></script>
@@ -65,8 +65,19 @@ paths: {
 "jquery-dt-ko-binding":"knockout.bindings.dataTables",
 "cirmgis": "googlegis"
 },
-priority: ["jquery", "jqueryconf", "logincheck"]
-, urlArgs: "cache_bust=" + (new Date()).getTime()
+shim : {
+	'jquery':{ deps:[], exports:'$'},
+	'jquery-ui':['jquery'],
+	'jquery-jec':['jquery'],
+	'jquery-upload':['jquery'],
+	'jquery-tmpl':['jquery'],
+	'jquery-autoresize':['jquery'],
+	'jquery-marquee':['jquery'],
+	'jquery-cookie':['jquery'],
+	'jquery-knockout':['jquery'],
+	'jquery-datatables':['jquery'],
+	"jquery-dt-ko-binding":['jquery']
+}, urlArgs: "cache_bust=" + (new Date()).getTime()
 },  [ "rest", "U", "cirm", "legacy", "sreditor", "answerhub", "store", "jquery", 
     "jquery-ui", "jquery-tmpl", "jquery-autoresize", 
     "jquery-marquee", "jquery-cookie", "jquery-jec",
@@ -100,8 +111,7 @@ function (rest, U, cirm, legacy, sreditor, answerhub, store) {
         var editor = sreditor.edit(null, answerHubModel.addressSearch.address);
 		window.serviceHubModel = editor.model;
         editor.embed($('#editorDiv'));
-		caseEditor = editor;
-		
+
 		var advSearchComponent = legacy.advancedSearch(new answerhub.AddressModel() ); //answerHubModel.addressSearch.address);
 		advSearchComponent.embed($('#advancedSearchDiv'));
 
@@ -234,8 +244,10 @@ function (rest, U, cirm, legacy, sreditor, answerhub, store) {
 			            address.hasStreetType().iri(streetType.iri);
 			        }
 		        	address.hasLocationName(data.commonLocation.name());
-					editor.model.data().properties().hasXCoordinate(data.coordinates().x);
-					editor.model.data().properties().hasYCoordinate(data.coordinates().y);
+                    if (data.coordinates()) {
+                        editor.model.data().properties().hasXCoordinate(data.coordinates().x);
+                        editor.model.data().properties().hasYCoordinate(data.coordinates().y);
+                    }
 	        	}
 	        	if(!behindTheScenes)
 					editor.model.dupChecker();

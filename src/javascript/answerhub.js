@@ -623,7 +623,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 		};
 		
 		function initGis() {
-			var config = cirm.top.get("/individuals/predefined/configset");
+			var config = cirm.refs.configSet; // cirm.top.get("/individuals/predefined/configset");
 			var fullUrl = config.GisConfig.hasUrl;
 			var url = fullUrl.substring(0,fullUrl.lastIndexOf("/"));
 			var path = fullUrl.substring(fullUrl.lastIndexOf("/"));

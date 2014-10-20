@@ -2946,7 +2946,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 		function initGis() {
 			if(!MDCJSLIB.modules.gis.getPath())
 			{
-				var config = cirm.top.get("/individuals/predefined/configset");
+				var config = cirm.refs.configSet; // cirm.top.get("/individuals/predefined/configset");
 				var fullUrl = config.GisConfig.hasUrl;
 				var url = fullUrl.substring(0,fullUrl.lastIndexOf("/"));
 				var path = fullUrl.substring(fullUrl.lastIndexOf("/"));

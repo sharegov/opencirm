@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-define(['rest', 'U', 'owlprefixes', 'store!'], function(rest, U, prefixes, store) {
+define(['rest', 'U', '/code/owlprefixes', 'store!'], function(rest, U, prefixes, store) {
 
     var owl = function() { };
     owl.iri = {};

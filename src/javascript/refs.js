@@ -44,6 +44,7 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
         var self = this;
         self.cached = {};
         self.all = [
+            {"hasName": "configSet", "hasUrl": "/individuals/predefined/configset"},
             {"hasName": "time", "hasUrl":"/op/time", 
             	"map":function(A) {
             		if(A.ok)
@@ -64,7 +65,7 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
             {"hasName": "statesInUS", "hasQueryExpression": "State__U.S._"},
             {"hasName": "typeToXSDMappings", "hasUrl": "/legacy/getHasTypeMappingToXSD"},
             {"hasName": "serviceCaseClass", "hasUrl": "/individuals/legacy:ServiceCase"},
-            {"hasName": "cities", "hasQueryExpression": "Miami_Dade_City or County"},
+            {"hasName": "cities", "hasQueryExpression": "City or County"},
             {"hasName": "directions", "hasQueryExpression" : "Direction"},
             {"hasName": "streetTypes", "hasQueryExpression" : "Street_Type"},
             {"hasName": "GeoLayerAttributes", "hasQueryExpression" : "GeoLayerAttribute"},

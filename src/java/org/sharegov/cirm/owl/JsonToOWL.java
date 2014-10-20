@@ -147,7 +147,13 @@ public class JsonToOWL
 				if (dprop == null)
 				{
 					if (!rep.isPrimitive())
-						throw new IllegalArgumentException("No data property with name " + p.getKey());					
+						throw new IllegalArgumentException("No data property with name " + p.getKey());
+					OWLObjectProperty oprop = referenceContext.entity(p.getKey(), EntityType.OBJECT_PROPERTY);
+					if (oprop != null && rep.isString() && rep.asString().startsWith("http://"))
+					{
+						addObjectPropertyAxioms(ind, Json.object("iri", rep), oprop, axioms);
+						continue;
+					}
 					OWLAnnotationProperty aprop = null;
 					if ("label".equals(p.getKey()))
 						aprop = OWL.annotationProperty("rdfs:label");  
