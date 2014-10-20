@@ -1,0 +1,1396 @@
+<?xml version="1.0"?>
+<Ontology xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://opencirm.org/demo"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     ontologyIRI="http://opencirm.org/demo">
+    <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+    <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
+    <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
+    <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Import>http://opencirm.org/cirm</Import>
+    <Declaration>
+        <Class IRI="http://opencirm.org#AnswerHubConfiguration"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#AnswerHubMarquee"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#AnswerHubMarqueeList"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#City"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#ConfigParam"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#ConfigSet"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#Software_Configuration"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#Bal_Harbour_Village"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIty_of_Sunny_Isles_Beach"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Aventura"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Coral_Gables"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Doral"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Florida_City"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Hialeah"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Hialeah_Gardens"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Homestead"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Miami"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Miami_Beach"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Miami_Gardens"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Miami_Lakes"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Miami_Springs"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#City_of_North_Miami"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#City_of_North_Miami_Beach"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Opa-Locka"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Palmetto_Bay"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Pinecrest"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#City_of_South_Miami"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Surfside"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Sweetwater"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#City_of_West_Miami"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ClientSideOwlPrefixes"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#DefaultStreetAddress"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#DemoConfigSet"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#Florida"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GisDemoConfig"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GisGoogle"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#Indian_Creek_Village"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#LocalPostgresDatabase"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#Miami_Shores_Village"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#North_Bay_Village"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#OperationsLocalPostgresDB"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#Town_of_Bay_Harbor_Islands"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#Town_of_Cutler_Bay"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#Town_of_Golden_Beach"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#Town_of_Medley"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#Village_of_Biscayne_Park"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#Village_of_El_Portal"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#Village_of_Key_Biscayne"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#Village_of_Palmetto_Bay"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#Village_of_Virginia_Gardens"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.semanticweb.HermiT.Reasoner$ReasonerFactory"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.semanticweb.owlapi.reasoner.OWLReasonerFactory"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.CodeService"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.LegacyEmulator"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.MetaService"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OWLIndividuals"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OWLTypes"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OntoAdmin"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OperationService"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.RestServiceAdmin"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.SearchService"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.SystemMonitorService"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.UiService"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.search.GoogleSearchEngine"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.search.SearchEngine"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.services.OWLWebServices"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.utils.JsonEntityProvider"/>
+    </Declaration>
+    <SubClassOf>
+        <Class IRI="http://opencirm.org#AnswerHubConfiguration"/>
+        <Class IRI="http://opencirm.org#Software_Configuration"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://opencirm.org#AnswerHubMarquee"/>
+        <Class IRI="http://opencirm.org#Software_Configuration"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://opencirm.org#AnswerHubMarqueeList"/>
+        <Class IRI="http://opencirm.org#Software_Configuration"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://opencirm.org#City"/>
+        <Class IRI="http://opencirm.org#Place"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://opencirm.org#City"/>
+        <DataExactCardinality cardinality="1">
+            <DataProperty IRI="http://opencirm.org#Name"/>
+            <Datatype abbreviatedIRI="xsd:string"/>
+        </DataExactCardinality>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://opencirm.org#ConfigParam"/>
+        <Class IRI="http://opencirm.org#Software_Configuration"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://opencirm.org#ConfigSet"/>
+        <Class IRI="http://opencirm.org#Software_Configuration"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <Class IRI="http://opencirm.org#City"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://opencirm.org#Software_Configuration"/>
+        <Class IRI="http://opencirm.org#Software_Object"/>
+    </SubClassOf>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#Bal_Harbour_Village"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#Bal_Harbour_Village"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#JSR311Application"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#CIty_of_Sunny_Isles_Beach"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#CIty_of_Sunny_Isles_Beach"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Aventura"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Aventura"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Coral_Gables"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Coral_Gables"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Doral"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Doral"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Florida_City"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Florida_City"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Hialeah"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Hialeah"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Hialeah_Gardens"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Hialeah_Gardens"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Homestead"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Homestead"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Miami"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Miami"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Miami_Beach"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Miami_Beach"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Miami_Gardens"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Miami_Gardens"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Miami_Lakes"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Miami_Lakes"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Miami_Springs"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Miami_Springs"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_North_Miami"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_North_Miami"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_North_Miami_Beach"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_North_Miami_Beach"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Opa-Locka"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Opa-Locka"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Palmetto_Bay"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Palmetto_Bay"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Pinecrest"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Pinecrest"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_South_Miami"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_South_Miami"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Surfside"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Surfside"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Sweetwater"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Sweetwater"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_West_Miami"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_West_Miami"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#JavaScriptLibrary"/>
+        <NamedIndividual IRI="http://opencirm.org#ClientSideOwlPrefixes"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Street_Address"/>
+        <NamedIndividual IRI="http://opencirm.org#DefaultStreetAddress"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#ConfigSet"/>
+        <NamedIndividual IRI="http://opencirm.org#DemoConfigSet"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#ConfigParam"/>
+        <NamedIndividual IRI="http://opencirm.org#GisDemoConfig"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#RestService"/>
+        <NamedIndividual IRI="http://opencirm.org#GisGoogle"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#Indian_Creek_Village"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#Indian_Creek_Village"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DatabaseConnection"/>
+        <NamedIndividual IRI="http://opencirm.org#LocalPostgresDatabase"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#Miami_Shores_Village"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#Miami_Shores_Village"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#North_Bay_Village"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#North_Bay_Village"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#ConfigParam"/>
+        <NamedIndividual IRI="http://opencirm.org#OperationsLocalPostgresDB"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#Town_of_Bay_Harbor_Islands"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#Town_of_Bay_Harbor_Islands"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#Town_of_Cutler_Bay"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#Town_of_Cutler_Bay"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#Town_of_Golden_Beach"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#Town_of_Golden_Beach"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#Town_of_Medley"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#Town_of_Medley"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#Village_of_Biscayne_Park"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#Village_of_Biscayne_Park"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#Village_of_El_Portal"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#Village_of_El_Portal"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#Village_of_Key_Biscayne"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#Village_of_Key_Biscayne"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#Village_of_Palmetto_Bay"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#Village_of_Palmetto_Bay"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#City_Organization"/>
+        <NamedIndividual IRI="http://opencirm.org#Village_of_Virginia_Gardens"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#Miami_Dade_City"/>
+        <NamedIndividual IRI="http://opencirm.org#Village_of_Virginia_Gardens"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#JavaClass"/>
+        <NamedIndividual IRI="http://opencirm.org#org.semanticweb.HermiT.Reasoner$ReasonerFactory"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#JavaInterface"/>
+        <NamedIndividual IRI="http://opencirm.org#org.semanticweb.owlapi.reasoner.OWLReasonerFactory"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#JavaClass"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.CodeService"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#JavaClass"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.LegacyEmulator"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#JavaClass"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.MetaService"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#JavaClass"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OWLIndividuals"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#JavaClass"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OWLTypes"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#JavaClass"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OntoAdmin"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#JavaClass"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OperationService"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#JavaClass"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.RestServiceAdmin"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#JavaClass"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.SearchService"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#JavaClass"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.SystemMonitorService"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#JavaClass"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.UiService"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#JavaClass"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.search.GoogleSearchEngine"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#JavaInterface"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.search.SearchEngine"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#JavaClass"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.services.OWLWebServices"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#JavaClass"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.utils.JsonEntityProvider"/>
+    </ClassAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.services.OWLWebServices"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OperationService"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.UiService"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.LegacyEmulator"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.SearchService"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.MetaService"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OWLIndividuals"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.CodeService"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.utils.JsonEntityProvider"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OWLTypes"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.RestServiceAdmin"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OntoAdmin"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.SystemMonitorService"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.UserService"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#Street_Address_State"/>
+        <NamedIndividual IRI="http://opencirm.org#DefaultStreetAddress"/>
+        <NamedIndividual IRI="http://opencirm.org#Florida"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasMember"/>
+        <NamedIndividual IRI="http://opencirm.org#DemoConfigSet"/>
+        <NamedIndividual IRI="http://opencirm.org#OperationsLocalPostgresDB"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasMember"/>
+        <NamedIndividual IRI="http://opencirm.org#DemoConfigSet"/>
+        <NamedIndividual IRI="http://opencirm.org#GisDemoConfig"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#Value"/>
+        <NamedIndividual IRI="http://opencirm.org#GisDemoConfig"/>
+        <NamedIndividual IRI="http://opencirm.org#GisGoogle"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasDatabaseType"/>
+        <NamedIndividual IRI="http://opencirm.org#LocalPostgresDatabase"/>
+        <NamedIndividual IRI="http://opencirm.org#PostgresDatabase"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#Value"/>
+        <NamedIndividual IRI="http://opencirm.org#OperationsLocalPostgresDB"/>
+        <NamedIndividual IRI="http://opencirm.org#LocalPostgresDatabase"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
+        <NamedIndividual IRI="http://opencirm.org#org.semanticweb.owlapi.reasoner.OWLReasonerFactory"/>
+        <NamedIndividual IRI="http://opencirm.org#org.semanticweb.HermiT.Reasoner$ReasonerFactory"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.search.SearchEngine"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.search.GoogleSearchEngine"/>
+    </ObjectPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Bal_Harbour_Village"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">BAL HARBOUR</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#Bal_Harbour_Village"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Bal Harbour Village</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#CIty_of_Sunny_Isles_Beach"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">SUNNY ISLES BEACH</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#CIty_of_Sunny_Isles_Beach"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Sunny Isles Beach</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Aventura"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">AVENTURA</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Aventura"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">City of Aventura</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Coral_Gables"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CORAL GABLES</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Coral_Gables"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">City of Coral Gables</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Doral"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">DORAL</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Doral"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">City of Doral</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Florida_City"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">FLORIDA CITY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Florida_City"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">City of Florida City</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Hialeah"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">HIALEAH</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Hialeah"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">City of Hialeah</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Hialeah_Gardens"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">HIALEAH GARDENS</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Hialeah_Gardens"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">City of Hialeah Gardens</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Homestead"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">HOMESTEAD</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Homestead"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">City of Homestead</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Miami"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">MIAMI</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Dept_Code"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Miami"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CITYOFMIAMI</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Miami"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">City of Miami</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Miami_Beach"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">MIAMI BEACH</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Miami_Beach"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">City of Miami Beach</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Miami_Gardens"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">MIAMI GARDENS</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Miami_Gardens"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">City of Miami Gardens</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Miami_Lakes"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">MIAMI LAKES</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Miami_Lakes"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Town of Miami Lakes</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Miami_Springs"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">MIAMI SPRINGS</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Miami_Springs"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">City of Miami Springs</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_North_Miami"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">NORTH MIAMI</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_North_Miami"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">City of North Miami</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_North_Miami_Beach"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">NORTH MIAMI BEACH</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_North_Miami_Beach"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">City of North Miami Beach</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Opa-Locka"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">OPA-LOCKA</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Opa-Locka"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">City of Opa-Locka</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Palmetto_Bay"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">PALMETTO BAY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Palmetto_Bay"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Palmetto Bay</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Pinecrest"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">PINECREST</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Pinecrest"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Village of Pinecrest</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_South_Miami"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">SOUTH MIAMI</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_South_Miami"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">City of South Miami</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Surfside"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">SURFSIDE</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Surfside"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Surfside</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Sweetwater"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">SWEETWATER</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_Sweetwater"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">City of Sweetwater</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_West_Miami"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">WEST MIAMI</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#City_of_West_Miami"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">West Miami</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasContents"/>
+        <NamedIndividual IRI="http://opencirm.org#ClientSideOwlPrefixes"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">define([], function() {
+    return {
+        def : &quot;http://opencirm.org#&quot;,
+        cirmapp : &quot;http://opencirm.org/cirm#&quot;,
+        cases : &quot;http://opencirm.org/demo#&quot;
+    };
+})</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasName"/>
+        <NamedIndividual IRI="http://opencirm.org#ClientSideOwlPrefixes"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">owlprefixes</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Street_Name"/>
+        <NamedIndividual IRI="http://opencirm.org#DefaultStreetAddress"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string"></Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Street_Unit_Number"/>
+        <NamedIndividual IRI="http://opencirm.org#DefaultStreetAddress"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string"></Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Zip_Code"/>
+        <NamedIndividual IRI="http://opencirm.org#DefaultStreetAddress"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string"></Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#GisDemoConfig"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">GisConfig</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasUrl"/>
+        <NamedIndividual IRI="http://opencirm.org#GisGoogle"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">http://maps.google.com/maps/api/js?v=3&amp;sensor=false</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Indian_Creek_Village"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">INDIAN CREEK VILLAGE</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#Indian_Creek_Village"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Indian Creek Village</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasPassword"/>
+        <NamedIndividual IRI="http://opencirm.org#LocalPostgresDatabase"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">cirm</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasUrl"/>
+        <NamedIndividual IRI="http://opencirm.org#LocalPostgresDatabase"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">jdbc:postgresql://localhost:5432/cirm</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasUsername"/>
+        <NamedIndividual IRI="http://opencirm.org#LocalPostgresDatabase"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">cirm</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Miami_Shores_Village"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">MIAMI SHORES</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#Miami_Shores_Village"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Miami Shores Village</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#North_Bay_Village"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">NORTH BAY VILLAGE</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#North_Bay_Village"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">North Bay Village</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#OperationsLocalPostgresDB"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">OperationsDatabaseConfig</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Town_of_Bay_Harbor_Islands"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">BAY HARBOR ISLANDS</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#Town_of_Bay_Harbor_Islands"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Town of Bay Harbor Islands</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Town_of_Cutler_Bay"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CUTLER BAY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#Town_of_Cutler_Bay"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Town of Cutler Bay</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Town_of_Golden_Beach"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">GOLDEN BEACH</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#Town_of_Golden_Beach"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Town of Golden Beach</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Town_of_Medley"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">MEDLEY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#Town_of_Medley"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Town of Medley</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Village_of_Biscayne_Park"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">BISCAYNE PARK</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#Village_of_Biscayne_Park"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Village of Biscayne Park</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Village_of_El_Portal"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">EL PORTAL</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#Village_of_El_Portal"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Village of El Portal</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Village_of_Key_Biscayne"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">KEY BISCAYNE</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#Village_of_Key_Biscayne"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Village of Key Biscayne</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Village_of_Palmetto_Bay"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">PALMETTO BAY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#Village_of_Palmetto_Bay"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Village of Palmetto Bay</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Village_of_Virginia_Gardens"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">VIRGINIA GARDENS</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#Village_of_Virginia_Gardens"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Village of Virginia Gardens</Literal>
+    </DataPropertyAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#Bal_Harbour_Village</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Bal Harbour</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#Bal_Harbour_Village</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Bal Harbour Village</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#CIty_of_Sunny_Isles_Beach</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Sunny Isles Beach</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#City_of_Aventura</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Aventura</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#City_of_Coral_Gables</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Coral Gables</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#City_of_Doral</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Doral</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#City_of_Florida_City</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Florida City</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#City_of_Hialeah</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Hialeah</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#City_of_Hialeah_Gardens</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Hialeah Gardens</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#City_of_Homestead</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Homestead</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#City_of_Miami</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Miami</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#City_of_Miami_Beach</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Miami Beach</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#City_of_Miami_Gardens</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Miami Gardens</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#City_of_Miami_Lakes</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Town of Miami Lakes</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#City_of_Miami_Springs</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Miami Springs</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#City_of_North_Miami</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">North Miami</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#City_of_North_Miami_Beach</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">North Miami Beach</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#City_of_Opa-Locka</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Opa-Locka</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#City_of_Palmetto_Bay</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Palmetto Bay</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#City_of_Pinecrest</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Pinecrest</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#City_of_South_Miami</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">South Miami</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#City_of_Surfside</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Surfside</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#City_of_Sweetwater</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Sweetwater</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#City_of_West_Miami</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">West Miami</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#ClientSideOwlPrefixes</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">ClientSideOwlPrefixes</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#Indian_Creek_Village</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Indian Creek Village</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#Miami_Shores_Village</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Miami Shores Village</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#North_Bay_Village</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">North Bay Village</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#Town_of_Bay_Harbor_Islands</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Bay Harbor Islands</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#Town_of_Bay_Harbor_Islands</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Town of Bay Harbor Islands</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#Town_of_Cutler_Bay</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Cutler Bay</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#Town_of_Cutler_Bay</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Town of Cutler Bay</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#Town_of_Golden_Beach</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Golden Beach</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#Town_of_Golden_Beach</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Town of Golden Beach</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#Town_of_Medley</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Medley</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#Town_of_Medley</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Town of Medley</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#Village_of_Biscayne_Park</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Biscayne Park</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#Village_of_Biscayne_Park</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Village of Biscayne Park</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#Village_of_El_Portal</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">El Portal</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#Village_of_El_Portal</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Village of El Portal</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#Village_of_Key_Biscayne</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Key Biscayne</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#Village_of_Key_Biscayne</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Village of Key Biscayne</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#Village_of_Palmetto_Bay</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Village of Palmetto Bay</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#Village_of_Virginia_Gardens</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Village of Virginia Gardens</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#Village_of_Virginia_Gardens</IRI>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Virginia Gardens</Literal>
+    </AnnotationAssertion>
+</Ontology>
+
+
+
+<!-- Generated by the OWL API (version 3.2.4.1806) http://owlapi.sourceforge.net -->
+
