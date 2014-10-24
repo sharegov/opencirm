@@ -76,11 +76,18 @@ import org.sharegov.cirm.utils.TraceUtils;
  * This listener should be started as a background thread upon server startup. 
  * </p>
  * 
- * @author Borislav Iordanov
+ * @author Borislav Iordanov, Thomas Hilpold
  *
  */
 public class LegacyJMSListener extends Thread
 {	
+	/**
+	 * Year, for which case not found situations are reported as errors.
+	 * Case not found situations prior to this year, are reported as ok with a tag. 
+	 */
+	public static final int CASE_NOT_FOUND_CUTOFF_YEAR = 2009;
+	public static final String CASE_NOT_FOUND_TAG = "Historic Data:";
+	
 	private SRCirmStatsDataReporter srStatsReporter = 
 			CirmStatisticsFactory.createServiceRequestStatsReporter(MDRefs.mdStats.resolve(), "LegacyJMSListener"); 
 
@@ -674,52 +681,68 @@ public class LegacyJMSListener extends Thread
 				Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
 				public Json call() throws JMSException
 				{							
-					ThreadLocalStopwatch.now("LegacyJMSListener.process lookup case for update or new activity");					
-					Json sr = emulator.lookupServiceCase(jmsg.at("data").at("boid"));
+					ThreadLocalStopwatch.now("LegacyJMSListener.process lookup case for update or new activity");
+					Json boidOrCaseNum = jmsg.at("data").at("boid");
+					Json sr = emulator.lookupServiceCase(boidOrCaseNum);
 					if (!sr.is("ok", true))
-					{					
+					{				
+						Json response;
+						if (ServiceCaseJsonHelper.isCaseNumberString(boidOrCaseNum)
+							&& ServiceCaseJsonHelper.getCaseNumberYear(boidOrCaseNum.asString()) < CASE_NOT_FOUND_CUTOFF_YEAR) 
+						{
+							//failed case update concerns case created prior to cutoff year, we'll respond ok:true to interface to stop if from sending retry messages. 
+							response = Json.object("ok", true, 
+									"error", CASE_NOT_FOUND_TAG + "Unable to load SR case " + jmsg.at("data").at("boid") + 
+											 ": " + sr.at("error"));
+						} 
+						else 
+						{
+							//failed case update of case we should have found
+							response = Json.object("ok", false, 
+								"error", "Unable to load SR case " + jmsg.at("data").at("boid") + 
+										 ": " + sr.at("error"));
+						}
 						srStatsReporter.failed("process-NewActivityOrCaseUpdate", jmsg, "emulator.lookupServiceCase(boid) failed", "" + sr.at("error") + " "+ jmsg);
-						ThreadLocalStopwatch.error("ERROR: LegacyJMSListener.process lookup for update or new activity: case not found, responding that");
-						Json jerror = Json.object("ok", false, 
-							"error", "Unable to load SR case " + jmsg.at("data").at("boid") + 
-									 ": " + sr.at("error"));
+						ThreadLocalStopwatch.error("ERROR: LegacyJMSListener.process lookup for update or new activity: case not found, responding that");							
 						try
 						{
-							JMSClient.connectAndRespond(jmsg, jerror);
+							JMSClient.connectAndRespond(jmsg, response);
 						}
 						// TODO: we should re-implement this to ask the TimeServer to call back and retry sending the response
 						catch (Exception ex) { throw new RuntimeException(ex); }					
-						return jerror;					
+						return response;					
 					}
 					else
+					{
 						sr = sr.at("bo");
-					// This should be done already by the framework, but we are not their
-					// yet...not clear on strategy, maybe "all non-functional properties
-					// should be turned into arrays".
-					sr.at("properties").delAt("extendedTypes");
-					sr.at("properties").delAt("gisAddressData");
-					trace("Existing: " + sr + "\n\n");
-					Json R;
-					if (type == LegacyMessageType.NewActivity) 
-					{
-						ThreadLocalStopwatch.now("LegacyJMSListener.process newActivityTxn ");					
-						R = newActivityTxn(emulator, sr, jmsg.at("data").at("hasServiceActivity").at(0));
+						// This should be done already by the framework, but we are not there
+						// yet...not clear on strategy, maybe "all non-functional properties
+						// should be turned into arrays".
+						sr.at("properties").delAt("extendedTypes");
+						sr.at("properties").delAt("gisAddressData");
+						trace("Existing: " + sr + "\n\n");
+						Json R;
+						if (type == LegacyMessageType.NewActivity) 
+						{
+							ThreadLocalStopwatch.now("LegacyJMSListener.process newActivityTxn ");					
+							R = newActivityTxn(emulator, sr, jmsg.at("data").at("hasServiceActivity").at(0));
+						}
+						else
+						{ //update service case
+							ThreadLocalStopwatch.now("LegacyJMSListener.process updateTxn ");					
+							R = updateTxn(emulator, sr, jmsg.at("data").dup().delAt("boid"));
+						}
+	//					Json R = (type == LegacyMessageType.NewActivity) ? 
+	//								  newActivityTxn(emulator, sr, jmsg.at("data").at("hasServiceActivity").at(0)) :
+	//								  updateTxn(emulator, sr, jmsg.at("data").dup().delAt("boid"));
+						if (R.is("ok", false)) 
+						{
+							ThreadLocalStopwatch.error("ERROR: LegacyJMSListener.process newActivityTxn or updateTxn failed, responding");
+							System.err.println(R.at("error") + " for " + jmsg);
+						}
+						JMSClient.connectAndRespond(jmsg, R);								
+						return R;
 					}
-					else
-					{ //update service case
-						ThreadLocalStopwatch.now("LegacyJMSListener.process updateTxn ");					
-						R = updateTxn(emulator, sr, jmsg.at("data").dup().delAt("boid"));
-					}
-//					Json R = (type == LegacyMessageType.NewActivity) ? 
-//								  newActivityTxn(emulator, sr, jmsg.at("data").at("hasServiceActivity").at(0)) :
-//								  updateTxn(emulator, sr, jmsg.at("data").dup().delAt("boid"));
-					if (R.is("ok", false)) 
-					{
-						ThreadLocalStopwatch.error("ERROR: LegacyJMSListener.process newActivityTxn or updateTxn failed, responding");
-						System.err.println(R.at("error") + " for " + jmsg);
-					}
-					JMSClient.connectAndRespond(jmsg, R);								
-					return R;
 				}});
 				break;
 			}
