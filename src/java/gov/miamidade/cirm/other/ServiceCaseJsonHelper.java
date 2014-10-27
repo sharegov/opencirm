@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import mjson.Json;
 
@@ -54,12 +56,14 @@ import org.sharegov.cirm.utils.Mapping;
  * from the legacy interface. 
  * </p>
  * 
- * @author boris
+ * @author boris, hilpold
  *
  */
 public class ServiceCaseJsonHelper
 {	    
-    private static Set<String> ignorePrefixFor = OWL.set("PW_PWSTATUS");
+	public static final Pattern CASE_NUMBER_REGEX_PATTERN = Pattern.compile("^[0-9]{2}-[0-9]+$"); //Pattern is thread safe!
+
+	private static Set<String> ignorePrefixFor = OWL.set("PW_PWSTATUS");
  
     public static Json removeAnswerFieldByIri(Json answers, String fieldIri)
     {
@@ -447,4 +451,42 @@ public class ServiceCaseJsonHelper
 			addr.set("hasStreetType", Json.object("USPS_Suffix", parsed.at("SufType").asString()));
 		return addr;		
     }
+    
+    /**
+     * Determines if the json is a case number string in format [0-9][0-9]-{[0-9]}+
+     * @param caseNumJson a case number candidate (null && json.null() && no string allowed)
+     * @return true iff caseNumJson is a valid case number, false otherwise.
+     * @throws no exception
+     */
+    public static boolean isCaseNumberString(Json caseNumJson)
+    {
+    	if (caseNumJson == null || !caseNumJson.isString()) return false;
+    	String caseNumStr = caseNumJson.asString();
+    	Matcher m = CASE_NUMBER_REGEX_PATTERN.matcher(caseNumStr);
+    	return m.find();
+    }
+    
+    /**
+     * returns the four digit year number based on the two digit year prefix of a case number.
+     * If the case number is 00-123456, year 2000 is returned.
+     * 
+     * @param caseNum
+     * @return 2000 + 2 digit year number before dash, or -1 
+     * @throws no exception
+     */
+    public static int getCaseNumberYear(String caseNum)
+    {    	
+    	try {
+    		String yearStr = caseNum.split("-")[0];
+    		if (yearStr.length() > 2) throw new Exception(caseNum +" year length > 2 not allowed");
+    		int  year = 2000 + Integer.parseInt(yearStr);
+    		return year;
+    	} catch (Exception e) 
+    	{
+    		System.out.println(e);
+    		e.printStackTrace();
+    		return -1;
+    	}
+    }
+    
 }
