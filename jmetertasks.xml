@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." name="CiRM Services" default="make-dist">
+	<description>CiRM Services Build and Deployment File</description>
+    <property name="versionSuffix" value=""/> <!-- e.g. "beta" or "rc" -->
+    <property name="opencirm" value="../opencirm"/>
+    <property name="build" value="classes"/>    
+    <property name="dist" value="dist"/>
+    <property name="backup" value="backup"/>
+    <property name="javadoc" value="javadoc"/>    
+    <property name="jars" value="lib"/>
+    <property name="debug" value="on"/>
+	<!-- jmeter setup for running simulation -->
+	<property name="jmeter.home" location="C:/Work/Apps/apache-jmeter-2.8" />
+	<property name="jmeter.tests" location="conf" />
+	<property name="jmeter.results.dir" location="simulation-results" />
+	<property name="jmeter.results.xsl" location="${jmeter.home}/extras/jmeter-results-detail-report_21.xsl" />
+	<property name="maxwaitstart" value="4800"/>
+    <property file="build_info.properties"/>	
+    <property name="build.number" value="${majorVersion}.${minorVersion}.${revisionNumber}"/>
+	
+  <target name="simulation-init">
+    <mkdir dir="${jmeter.results.dir}" />
+  </target>
+
+  <target name="simulation-clean">
+    <!--delete failonerror="false">
+      <fileset dir="${jmeter.results.dir}">
+        <include name="**/*" />
+      </fileset>
+    </delete-->
+  </target>
+
+  <target name="simulation-reformat-report">
+    <xslt in="${jmeter.results.jtl}" out="${jmeter.results.html}" style="${jmeter.results.xsl}" />
+  </target> 
+
+ <target name="jmeter-run">
+ 	<property name="jmeter.results.jtl" location="${jmeter.results.dir}/localhost-jmeter.xml" />
+ 	<property name="jmeter.results.html" location="${jmeter.results.dir}/localhost-jmeter.html" />
+ 	<jmeter jmeterhome="${jmeter.home}" resultlog="${jmeter.results.jtl}" failureproperty="failure-property" testplan="conf/cirmsimulation.jmx">
+ 	      <property name="simulation.server" value="${server}"/>
+ 	      <property name="simulation.server.port" value="${server.port}"/>
+ 	      <property name="simulation.threads" value="1"/>
+ 	      <property name="simulation.threads.loop" value="1"/>
+ 	      <property name="loginCount" value="0"/>
+ 	      <property name="jmeter.save.saveservice.output_format" value="xml" />
+ 	      <property name="jmeter.save.saveservice.response_data.on_error" value="true" /> 
+    </jmeter>
+ 	<antcall target="simulation-reformat-report" />
+ </target>
+ 
+ <target name="simulation-run-local" depends="simulation-init, simulation-clean" >
+	<property name="jmeter.results.jtl" location="${jmeter.results.dir}/localhost-jmeter.xml" />
+	<property name="jmeter.results.html" location="${jmeter.results.dir}/localhost-jmeter.html" />
+ 	<property name="server" value="localhost"/>
+ 	<property name="server.port" value="8182"/>
+ 	<parallel>
+ 		<antcall target="start-server-monitor" />
+ 		<!--antcall target="jmeter-run" /-->
+ 	</parallel>
+  </target>
+
+  <target name="simulation-run-test" depends="simulation-init, simulation-clean">
+	<property name="jmeter.results.jtl" location="${jmeter.results.dir}/s0020269-jmeter.xml" />
+	<property name="jmeter.results.html" location="${jmeter.results.dir}/s0020269-jmeter.html" />
+ 	<property name="server" value="s0020269"/>
+ 	<property name="server.port" value="8182"/>
+  	<parallel>
+  		<antcall target="start-server-monitor" />
+  		<antcall target="jmeter-run" />
+ 	</parallel>
+  </target>
+	
+  <target name="simulation-run-prod" depends="simulation-init, simulation-clean">
+	<property name="jmeter.results.jtl" location="${jmeter.results.dir}/s0020284-jmeter.xml" />
+	<property name="jmeter.results.html" location="${jmeter.results.dir}/s0020284-jmeter.html" />
+  	<property name="server" value="s0020284"/>
+ 	<property name="server.port" value="80"/>
+  	<parallel>
+  		<antcall target="start-server-monitor" />
+  	 	<antcall target="jmeter-run" />
+  	</parallel>
+  </target>
+  
+</project>
+  

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="." name="CiRM Services" default="make-dist">
 	<description>CiRM Services Build and Deployment File</description>
-    <property name="versionSuffix" value=""/> <!-- e.g. "beta" or "rc" -->
     <property name="opencirm" value="../opencirm"/>
     <property name="build" value="classes"/>    
     <property name="dist" value="dist"/>
@@ -9,11 +8,6 @@
     <property name="javadoc" value="javadoc"/>    
     <property name="jars" value="lib"/>
     <property name="debug" value="on"/>
-	<!-- jmeter setup for running simulation -->
-	<property name="jmeter.home" location="C:/Work/Apps/apache-jmeter-2.8" />
-	<property name="jmeter.tests" location="conf" />
-	<property name="jmeter.results.dir" location="simulation-results" />
-	<property name="jmeter.results.xsl" location="${jmeter.home}/extras/jmeter-results-detail-report_21.xsl" />
 	<property name="maxwaitstart" value="4800"/>
     <property file="build_info.properties"/>	
     <property name="build.number" value="${majorVersion}.${minorVersion}.${revisionNumber}"/>
@@ -33,9 +27,6 @@
 	<target name="show">
 		    <echo>Classpath is ${toString:compile-classpath}</echo>
    </target>
-	<target name="updateTomsClients">
-		<updateClients server="w203-777:8182"/>
-    </target>	
 	
     <target name="init" description="Create build directories, cleanup old build files.">
 		<mkdir dir="${build}"/>
@@ -209,12 +200,12 @@
      </sequential>
   </macrodef>
 
-   <target name="deploy-test" depends="get-revision, fail, tag-test, make-dist" description="Deploy to test server">
+   <target name="deploy-test" depends="make-dist" description="Deploy to test server">
      <deploy server="s0020269"/>   
      <deploy server="s0020284"/>
    </target>
 
-   <target name="deploy-public" depends="get-revision, fail, tag-test, make-dist" description="Deploy to public server">
+   <target name="deploy-public" depends="make-dist" description="Deploy to public server">
      <deploy server="s0142012"/>
    </target>
 
@@ -228,13 +219,14 @@
 
    <target name="update-test" depends="deploy-test, restart-test" description="Deploy to test servers, then restart the test cluster one server after the other."/>
 
-   <target name="deploy-to" depends="get-revision, fail, tag-release, make-dist" description="Deploy to specified 'server'.">
+   <target name="deploy-to" depends="make-dist" description="Deploy to specified 'server'.">
         <deploy server="${server}"/>
    </target>
 
     <target name="prepare-release"   
-              depends="get-revision, fail, tag-release, make-dist" 
+              depends="version-increment, save-version, make-dist" 
               description="Compile, revision tag, make distribution ready for deployment."/> 
+              
    <target name="deploy-prod" depends="prepare-release" description="Deploy to production server, does not autorestart.">
     <echo message="Deploying ${changesetid} to production..."/>     
      <deploy server="s2030050"/>
@@ -405,154 +397,14 @@
   	<echo message="Server ${server} is being monitored."></echo>
   	</parallel>
   </target>
-	
-  <target name="simulation-init">
-    <mkdir dir="${jmeter.results.dir}" />
-  </target>
 
-  <target name="simulation-clean">
-    <!--delete failonerror="false">
-      <fileset dir="${jmeter.results.dir}">
-        <include name="**/*" />
-      </fileset>
-    </delete-->
-  </target>
-
-  <target name="simulation-reformat-report">
-    <xslt in="${jmeter.results.jtl}" out="${jmeter.results.html}" style="${jmeter.results.xsl}" />
-  </target> 
-
- <target name="jmeter-run">
- 	<property name="jmeter.results.jtl" location="${jmeter.results.dir}/localhost-jmeter.xml" />
- 	<property name="jmeter.results.html" location="${jmeter.results.dir}/localhost-jmeter.html" />
- 	<jmeter jmeterhome="${jmeter.home}" resultlog="${jmeter.results.jtl}" failureproperty="failure-property" testplan="conf/cirmsimulation.jmx">
- 	      <property name="simulation.server" value="${server}"/>
- 	      <property name="simulation.server.port" value="${server.port}"/>
- 	      <property name="simulation.threads" value="1"/>
- 	      <property name="simulation.threads.loop" value="1"/>
- 	      <property name="loginCount" value="0"/>
- 	      <property name="jmeter.save.saveservice.output_format" value="xml" />
- 	      <property name="jmeter.save.saveservice.response_data.on_error" value="true" /> 
-    </jmeter>
- 	<antcall target="simulation-reformat-report" />
- </target>
- 
- <target name="simulation-run-local" depends="simulation-init, simulation-clean" >
-	<property name="jmeter.results.jtl" location="${jmeter.results.dir}/localhost-jmeter.xml" />
-	<property name="jmeter.results.html" location="${jmeter.results.dir}/localhost-jmeter.html" />
- 	<property name="server" value="localhost"/>
- 	<property name="server.port" value="8182"/>
- 	<parallel>
- 		<antcall target="start-server-monitor" />
- 		<!--antcall target="jmeter-run" /-->
- 	</parallel>
-  </target>
-
-  <target name="simulation-run-test" depends="simulation-init, simulation-clean">
-	<property name="jmeter.results.jtl" location="${jmeter.results.dir}/s0020269-jmeter.xml" />
-	<property name="jmeter.results.html" location="${jmeter.results.dir}/s0020269-jmeter.html" />
- 	<property name="server" value="s0020269"/>
- 	<property name="server.port" value="8182"/>
-  	<parallel>
-  		<antcall target="start-server-monitor" />
-  		<antcall target="jmeter-run" />
- 	</parallel>
-  </target>
-	
-  <target name="simulation-run-prod" depends="simulation-init, simulation-clean">
-	<property name="jmeter.results.jtl" location="${jmeter.results.dir}/s0020284-jmeter.xml" />
-	<property name="jmeter.results.html" location="${jmeter.results.dir}/s0020284-jmeter.html" />
-  	<property name="server" value="s0020284"/>
- 	<property name="server.port" value="80"/>
-  	<parallel>
-  		<antcall target="start-server-monitor" />
-  	 	<antcall target="jmeter-run" />
-  	</parallel>
-  </target>
-  
-  <!--task definitions	
-  
-  <taskdef name="jmeter" classname="org.programmerplanet.ant.taskdefs.jmeter.JMeterTask">
-    <classpath>
-      <fileset dir="${jmeter.home}/extras">
-        <include name="ant-jmeter-*.jar" />
-      </fileset>
-    </classpath>
-  </taskdef>
-  -->
-  
-  <!-- A release tag should be executed only once, when deploying to production.
-   This is because it has a side effect to increment the version number for 
-   the next release. Test deployments on the other hand can be tagged multiple
-   times.
-   
-   There's no easy way to detect if the current version is already tagged because
-   tagging creates a new changeset. This task will commit the tag, so one
-   must make sure it is not called to inadvertantly commit other pending local changes
-  -->
-  <target name="tag-release" depends="get-revision, version-increment" description="Tag the release in Mercurial.">
-    <exec executable="hg">
-      <arg value="tag"/>
-      <arg value="v${build.number}"/>
-    </exec>
-    <exec executable="hg">
-      <arg value="commit"/>
-      <arg value="-m"/>
-      <arg value="autocommit release tag"/>
-    </exec>
-    <!-- Auto-push right away. It's better to push separately after one
-     makes sure that the deployment went ok and the servers are up and running,
-     but production deployments are usually done late at night and I (Boris) often forget 
-     to do the push. -->
-    <exec executable="hg">
-      <arg value="push"/>
-      <arg value="-f"/>
-      <arg value="-B"/>
-      <arg value="rel"/>
-    </exec>    
-  </target>
-
-  <!-- Add a test tag by appending "b" for beta to the current build number.
-    This can be called many times for many test deployments. Tagging with the same
-    identifier is forced in Mercurial. -->
-  <target name="tag-test" depends="get-revision" description="Tag a beta version to be deployed in test.">
-    <exec executable="hg">
-      <arg value="tag"/>
-      <arg value="-f"/>
-      <arg value="v${build.number}b"/>
-    </exec>
-  </target>
-
-	<target name="get-revision" description="Get latest version number (changeset hash) from Mercurial.">
-    <!-- get latest changeset id-->  
-    <exec executable="hg" outputproperty="changesetid">
-      <arg value="id"/>
-      <arg value="-i"/>
-    </exec>
-    <condition property="hasChangedLocally">
-      <contains string="${changesetid}" substring="+"/>
-    </condition>
-    <!-- get current bookmark branch - should be 'rel' -->
-    <exec executable="hg" outputproperty="bookmarks">
-      <arg value="id"/>
-      <arg value="-B"/>
-    </exec>
-    <condition property="isReleaseBranch">
-        <matches string="${bookmarks}" pattern=".*\brel\b.*"/>
-    </condition>
-    <echo message="Storing changeset id ${changesetid} in configuration files."/>
+	<target name="save-version" description="Save the version number in dist config json files.">
+    <echo message="Storing version number v${build.number} in configuration files."/>
     <copy file="${dist}/conf/testconfig.json.template" tofile="${dist}/conf/testconfig.json" overwrite="true"/>
-    <replace file="${dist}/conf/testconfig.json" token="@changeset@" value="${changesetid}"/>
     <replace file="${dist}/conf/testconfig.json" token="@version@" value="v${build.number}b"/>    
-    <!-- this doesn't work full because of the SSL certificate s2030050 that appears in both places
-      we need to insert the certificate filename somehow contextually...-->     
     <copy file="${dist}/conf/prodconfig.json.template" tofile="${dist}/conf/prodconfig.json" overwrite="true"/>
     <echo message="copied file"/>
-    <replace file="${dist}/conf/prodconfig.json" token="@changeset@" value="${changesetid}"/>
     <replace file="${dist}/conf/prodconfig.json" token="@version@" value="v${build.number}"/>    
   </target>
   
-  <target name="fail" depends="get-revision" if="hasChangedLocally" description="Conditional failure if there are uncommitted changes.">
-    <fail message="Refusing to deploy, hasChangeLocally=${hasChangedLocally}, isReleaseBranch=${isReleaseBranch} - make sure you push first and you are using a release branch."/>
-  </target>
 </project>
