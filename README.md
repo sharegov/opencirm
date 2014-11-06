@@ -8,7 +8,7 @@ The main goal of OpenCiRM is to provide a free, open and extensible platform for
 
 **Where can I see it?**
 
-A demo installation is available at [OpenCiRM Demo](OpenCiRM-Demo)
+A demo installation is available at [OpenCiRM Demo](https://github.com/sharegov/opencirm/wiki/OpenCiRM-Demo)
 
 **Where can I get support?**
 
