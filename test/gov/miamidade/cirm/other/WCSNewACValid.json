@@ -1,0 +1,24 @@
+{
+	"transactionId": "1740365",
+	"source": "MD-WCSL",
+	"data": {
+		"boid": "14-10581330",
+		"hasDetails": "",
+		"hasLegacyId": "74309600",
+		"hasServiceActivity": [{
+			"hasCompletedTimestamp": "2014-12-02T00:00:00.000-0500",
+			"hasDueDate": "2014-12-02T00:00:00.000-0500",
+			"type": "ServiceActivity",
+			"hasOutcome": {
+				"hasLegacyCode": "SWMFR",
+				"type": "Outcome"
+			},
+			"hasActivity": {
+				"hasLegacyCode": "SWMWCSBW",
+				"type": "Activity"
+			}
+		}]
+	},
+	"referenceId": "J420041WCSB00801204201421001174309600",
+	"messageType": "NewActivity"
+}

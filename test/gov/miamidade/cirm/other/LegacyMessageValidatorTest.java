@@ -20,6 +20,8 @@ import org.sharegov.cirm.utils.GenUtils;
 public class LegacyMessageValidatorTest
 {
 
+	static Json WCSUpdateValid; //WCS have no data.type
+	static Json WCSNewACValid;
 	static Json PWNewCaseValid;
 	static Json PWCaseUpdateValid;
 	static Json PWNewActivitiyValid; //we must allow retry as age cannot (yet) be determined, because no case number exists.
@@ -31,6 +33,8 @@ public class LegacyMessageValidatorTest
 	@BeforeClass
 	public static void setupBeforeClass()
 	{
+		WCSUpdateValid = Json.read(GenUtils.readAsStringUTF8(LegacyMessageValidatorTest.class.getResource("WCSUpdateValid.json")));
+		WCSNewACValid = Json.read(GenUtils.readAsStringUTF8(LegacyMessageValidatorTest.class.getResource("WCSNewACValid.json")));
 		PWNewCaseValid = Json.read(GenUtils.readAsStringUTF8(LegacyMessageValidatorTest.class.getResource("PWNewCaseValid.json")));
 		PWCaseUpdateValid = Json.read(GenUtils.readAsStringUTF8(LegacyMessageValidatorTest.class.getResource("PWCaseUpdateValid.json")));
 		PWNewActivitiyValid = Json.read(GenUtils.readAsStringUTF8(LegacyMessageValidatorTest.class.getResource("PWNewActivityValid.json")));
@@ -57,7 +61,13 @@ public class LegacyMessageValidatorTest
 	public void testValidateNewActivity()
 	{
 		RestService.forceClientExempt.set(true);
-		MessageValidationResult validResult = validator.validateNewActivity(PWNewActivitiyValid);
+		//WCS no type
+		MessageValidationResult validResult = validator.validateNewActivity(WCSNewACValid);
+		assertTrue(validResult.getExistingSR().at("ok").asBoolean());
+		assertTrue(validResult.isValid());
+		assertTrue(validResult.isAllowRetry());
+		//PW
+		validResult = validator.validateNewActivity(PWNewActivitiyValid);
 		assertTrue(validResult.getExistingSR().at("ok").asBoolean());
 		assertTrue(validResult.isValid());
 		assertTrue(validResult.isAllowRetry());
@@ -71,7 +81,13 @@ public class LegacyMessageValidatorTest
 	public void testValidateCaseUpdate()
 	{
 		RestService.forceClientExempt.set(true);
-		MessageValidationResult validResult = validator.validateCaseUpdate(PWCaseUpdateValid);
+		//WCS no type
+		MessageValidationResult validResult = validator.validateCaseUpdate(WCSUpdateValid);
+		assertTrue(validResult.getExistingSR().at("ok").asBoolean());
+		assertTrue(validResult.isValid());
+		assertTrue(validResult.isAllowRetry());
+		//PW
+		validResult = validator.validateCaseUpdate(PWCaseUpdateValid);
 		assertTrue(validResult.getExistingSR().at("ok").asBoolean());
 		assertTrue(validResult.isValid());
 		assertTrue(validResult.isAllowRetry());

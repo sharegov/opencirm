@@ -55,7 +55,8 @@ public class LegacyMessageValidator
 		}
 		MessageValidationResult result;
 		OWLClass srTypeClass = getMessageSRType(jmsg);
-		boolean typeValid = checkSRTypeConfigured(srTypeClass);
+		//WCS messages do NOT contain an SR type, therefore we assume valid if it's not given.
+		boolean typeValid = (srTypeClass == null)? true : checkSRTypeConfigured(srTypeClass);
 		//boolean preCutoffYear = isPreCutoffYear(jmsg);
 		if (typeValid) 
 		{
@@ -114,7 +115,8 @@ public class LegacyMessageValidator
 	{
 		MessageValidationResult result;
 		OWLClass srTypeClass = getMessageSRType(jmsg);
-		boolean typeValid = checkSRTypeConfigured(srTypeClass);
+		//WCS messages do NOT contain an SR type, therefore we assume valid if it's not given.
+		boolean typeValid = (srTypeClass == null)? true : checkSRTypeConfigured(srTypeClass);
 		boolean preCutoffYear = isPreCutoffYear(jmsg);
 		boolean existingSrFound = false;
 		Json existingSR; 
@@ -172,6 +174,7 @@ public class LegacyMessageValidator
 	}
 	protected OWLClass getMessageSRType(Json jmsg) 
 	{
+		if (!jmsg.at("data").has("type")) return null;
 		String srType = jmsg.at("data").at("type").asString();
 		if (!srType.contains("#") || !srType.contains("legacy:")) {
 			srType = "legacy:" + srType;

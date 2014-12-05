@@ -1,0 +1,16 @@
+{
+	"transactionId": "1740364",
+	"source": "MD-WCSL",
+	"data": {
+		"boid": "14-10581383",
+		"hasDetails": "",
+		"hasLegacyId": "74311900",
+		"updateDate": "2014-12-02T00:00:00.000-0500",
+		"hasStatus": {
+			"hasLegacyCode": "C-CLOSED",
+			"label": "C-CLOSED"
+		}
+	},
+	"referenceId": "433586",
+	"messageType": "CaseUpdate"
+}
