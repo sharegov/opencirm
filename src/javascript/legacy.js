@@ -537,7 +537,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 			workOrders = U.ensureArray(workOrders);
 			for (var i = 0; i < workOrders.length; i++) 
 			{ 
-				if (workOrders[i].WorkOrder.OrderStatus == "PP"  || workOrders[i].WorkOrder.OrderStatus == "SC")
+				if (workOrders[i].WorkOrder.OrderStatus == "PP"  || workOrders[i].WorkOrder.OrderStatus == "SC" || workOrders[i].WorkOrder.OrderStatus == "CK")
 				{
 					isPendingWorkOrder = true;
 					pendingWorkOrderStatus = workOrders[i].WorkOrder.OrderStatus;
@@ -583,6 +583,10 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 
 		$(document).bind(InteractionEvents.SrTypeSelection, function(event, srTypeFragment) {
 			self.handleSrTypeChange(srTypeFragment);
+		});
+
+		$(document).bind(InteractionEvents.ServiceRequestTypeClick, function(event, type) {
+			self.handleSrTypeChange(U.IRI.name(type));
 		});
 
 	 	return self;
