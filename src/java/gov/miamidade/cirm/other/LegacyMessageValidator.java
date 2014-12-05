@@ -17,7 +17,7 @@ import mjson.Json;
  * A LegacyMessageValidator validates a message coming from an interface against the current configuration and business rules. 
  * e.g. 
  * A) messages for cases created prior to 2009 are invalid, but should not be responded as error to avoid retry loops.
- * B) messages for cases created prior to 2009 with types that are not configured
+ * B) messages for cases created prior to 2009 with types that are not configured should be retried util the configuration is updated.
  * 
  * 
  * Before a message coming from an interface is processed by the Cirm system it should be validated using this class.
@@ -36,9 +36,9 @@ public class LegacyMessageValidator
 	public static final String CASE_NOT_FOUND_TAG = "Historic Data:";
 	
 	public static final String TYPE_NOT_CONFIGURED_PRE_CUTOFF_OK_MESSAGE = "Error: Messages with SR Type ";
-	public static final String TYPE_NOT_CONFIGURED_PRE_CUTOFF_OK_MESSAGE_END = " not allowed, because it the type is intentionally not configured in Cirm";
+	public static final String TYPE_NOT_CONFIGURED_PRE_CUTOFF_OK_MESSAGE_END = " not allowed, because it's type is intentionally not configured in Cirm";
 	public static final String TYPE_NOT_CONFIGURED_POST_CUTOFF__ERROR_MESSAGE = "Error: Type  ";
-	public static final String TYPE_NOT_CONFIGURED_POST_CUTOFF__ERROR_MESSAGE_END = " not configured. Contact CiRM admin to add this missing type to the Cirm configuration.";
+	public static final String TYPE_NOT_CONFIGURED_POST_CUTOFF__ERROR_MESSAGE_END = " not configured. Contact CiRM admin to add this missing type.";
 
 	/**
 	 * Validates a new case message received from MDCEAI.
