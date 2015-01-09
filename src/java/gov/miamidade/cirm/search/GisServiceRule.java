@@ -150,6 +150,15 @@ public class GisServiceRule
 				return x != null && ((Number)x).longValue() > 0;
 			}
 		};
+			else if ("ENFORCEMEN <> 61 AND NOT NULL".equals(valueExpression))
+				evaluator = new Mapping<Object, Boolean>() {
+				public Boolean eval(Object x)
+				{
+					if (x instanceof String)
+						x = Integer.parseInt(x.toString());
+					return x != null && ((Number)x).longValue() != 61;
+				}
+		};
 		else if (valueExpression.trim().charAt(0) == '{' || valueExpression.trim().charAt(0) == '[')
 			evaluator = new JsonEvaluator(valueExpression);
 		else
