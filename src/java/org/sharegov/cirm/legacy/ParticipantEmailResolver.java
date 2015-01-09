@@ -25,16 +25,17 @@ import mjson.Json;
 public class ParticipantEmailResolver implements VariableResolver
 {
 	public static boolean DBG = true;
-	public static final String VAR_PARTICIPANT_EMAIL = "$$PARTICIPANT_EMAIL$$";
+	//public static final String VAR_PARTICIPANT_EMAIL = "$$PARTICIPANT_EMAIL$$";
+	//2015.01.09 Multiple MessageVariables refer to ParticipantEmailResolver issue mdCirm 2027
 	
 	@Override
 	public String resolve(String variableName, Json sr, Properties properties)
 	{
 		String result;
-		if(VAR_PARTICIPANT_EMAIL.equals(variableName))
+		//if(VAR_PARTICIPANT_EMAIL.equals(variableName))
 			result = resolveParticipantEmail(sr, properties);
-		else 
-			result = null;
+		//else 
+		//	result = null;
 		if(DBG)
 		{
 			System.out.println("ParticipantEmailResolver: Var: " + variableName + " result: " + result);
