@@ -69,7 +69,7 @@ import oracle.jdbc.pool.OracleDataSource;
 public class CirmDownTimeMonitor extends JFrame
 {
 	static final String DEFAULT_CONFIG_JSON = "CirmDownTimeMonitorConfig.json";
-	static final String DEFAULT_LOG_FILE_NAME = "CirmDownTimeLog.log";
+	static final String DEFAULT_LOG_FILE_NAME = "C:\\logs\\CirmDownTimeLog.log";
 	static final boolean DEFAULT_APPEND = true;
 	static final boolean DEFAULT_LOG_UP = true;
 	static final int URL_CONNECT_TIMEOUT_MS = 1000;
@@ -222,8 +222,9 @@ public class CirmDownTimeMonitor extends JFrame
 	
 	private File getLogFile() 
 	{
-		String userDir = System.getProperty("user.home");
-		return  new File(userDir + File.separator + DEFAULT_LOG_FILE_NAME);
+		//String userDir = System.getProperty("user.home");
+		//return  new File(userDir + File.separator + DEFAULT_LOG_FILE_NAME);
+		return new File(DEFAULT_LOG_FILE_NAME);
 	}
 	
 	private void appendToLog(String line) 
