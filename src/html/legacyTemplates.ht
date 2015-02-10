@@ -302,6 +302,9 @@
 				<div class="grid_2"><Strong>Account Status: </Strong></div> 
 				<div class="grid_3 omega"> <label data-bind="text: Account.AccountStatus == null ? 'ACTIVE' : Account.AccountStatus"/> </div>
 				<div class="clear">&nbsp;</div> <br>
+				<div class="grid_2 alpha"><Strong>Waste Unit: </Strong></div> 
+				<div class="grid_3 omega"> <label data-bind="text: Account.WasteUnit"/></label> </div>
+				<div class="clear">&nbsp;</div> <br>
 			</div>
 			<br>
 			<h5> Bulky Pickups </h5>
