@@ -10,7 +10,6 @@ import javax.ws.rs.QueryParam;
 import mjson.Json;
 
 import org.sharegov.cirm.rest.RestService;
-import org.sharegov.cirm.rest.StatisticsService;
 import org.sharegov.cirm.utils.GenUtils;
 
 /**
@@ -47,8 +46,15 @@ public class GisService extends RestService
 						+ "find an address for coordinates x "  + x	+ " y " + y
 						+ ". Ensure it's inside Miami Dade."); 
 			} else {
-				//resolve usps prefixes
-				ServiceCaseJsonHelper.assignIris(result);				
+				// resolve usps prefixes to iris
+				ServiceCaseJsonHelper.assignIris(result);
+				// clean up and set type
+				if (result.has("Street_Direction") && result.at("Street_Direction").has("USPS_Abbreviation")) {
+					result.at("Street_Direction").delAt("USPS_Abbreviation");
+				}
+				if (result.has("hasStreetType") && result.at("hasStreetType").has("USPS_Suffix")) {
+					result.at("hasStreetType").delAt("USPS_Suffix");
+				}
 				result.set("type" , "Street_Address");
 				result = GenUtils.ok().set("atAddress", result);
 			}
