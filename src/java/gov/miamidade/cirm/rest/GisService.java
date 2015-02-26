@@ -16,12 +16,11 @@ import org.sharegov.cirm.utils.GenUtils;
 /**
  * A GisService.
  *   
- * @see StatisticsService for rest endpoints. 
- * 
  * @author Thomas Hilpold
  *
  */
 @Path("gis")
+@Produces("application/json")
 public class GisService extends RestService
 {
 	
@@ -35,9 +34,9 @@ public class GisService extends RestService
 	 * @return ok with atAddress property or ko with error message. 
 	 */
 	@GET
-	@Path("reverseGeocode")
+	@Path("/reverseGeocode")
 	@Produces("application/json")
-	protected Json getReverseGeocode(@QueryParam("x") double x, @QueryParam("y") double y)
+	public Json getReverseGeocode(@QueryParam("x") double x, @QueryParam("y") double y)
 	{
 		Json result;
 		try {
