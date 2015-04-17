@@ -108,6 +108,8 @@ import org.sharegov.cirm.legacy.CirmMessage;
 import org.sharegov.cirm.legacy.MessageManager;
 import org.sharegov.cirm.legacy.Permissions;
 import org.sharegov.cirm.owl.Model;
+import org.sharegov.cirm.process.ApprovalException;
+import org.sharegov.cirm.process.ApprovalProcess;
 import org.sharegov.cirm.rdb.Concepts;
 import org.sharegov.cirm.rdb.DBIDFactory;
 import org.sharegov.cirm.rdb.Query;
@@ -1708,6 +1710,7 @@ public class LegacyEmulator extends RestService
 		}
 	}
 
+	
 	public Json saveNewCaseTransaction(Json legacyform)
 	{
 		// System.out.println(formData);
@@ -2709,5 +2712,71 @@ public class LegacyEmulator extends RestService
 		String json = new Scanner(emulator.getClass().getResourceAsStream(
 				"test.json")).useDelimiter("\\A").next();
 		emulator.updateServiceCase(json);
+	}
+	
+
+	/**
+	 * Creates a new Service Request.
+	 * 
+	 * 04//07/2015 -Sabbas - Annotated as a REST endpoint to provide access to a clean SR save with no SideEffects.
+	 *  
+	 *
+	 * 
+	 * @param sr : The Service Request data as json
+	 * @return : returns the SR
+	 * 
+	 */
+	@POST
+	@Path("sr")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public Json saveNewServiceRequestEndpoint(Json sr)
+	{ 
+		return saveNewServiceRequest(sr.toString());
+	}
+	/**
+	 * Get the current Approval State of the SR. 
+	 *
+	 * 
+	 * @param caseNumber : The Service Request data stringified json
+	 * @return : returns the Business Ontology which is persisted to db in Json format
+	 * 
+	 */
+	
+	@GET
+	@Path("sr/{caseNumber}/approvalState")
+	@Produces("application/json")
+	public Json getApprovalState(@PathParam("caseNumber") String caseNumber)
+	{
+		
+		Json sr = Json.object();
+		ApprovalProcess approvalProcess = new ApprovalProcess();
+		approvalProcess.setSr(sr);
+		return Json.object().set("caseNumber", caseNumber)
+				.set("approvalState", approvalProcess.getApprovalState().toString());
+	}
+	
+	/**
+	 * Approves an existing service request.
+	 * 
+	 * @param formData : The Service Request data stringified json
+	 * @return : returns the Business Ontology which is persisted to db in Json format
+	 * 
+	 */
+	@POST
+	@Path("sr/approve")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public Json approveCase(Json legacyform)
+	{
+		ApprovalProcess approvalProcess = new ApprovalProcess();
+		approvalProcess.setSr(legacyform);
+		try{
+			approvalProcess.approve();
+		}catch(ApprovalException e)
+		{
+			return ko(e);
+		}
+		return ok();		
 	}
 }
