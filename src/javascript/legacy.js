@@ -952,7 +952,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 
     	self.getFilteredSCList = function() {
 			return function(s, back) {
-				var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(s.term), "i" );
+				var matcher = new RegExp("\\b" + $.ui.autocomplete.escapeRegex(s.term), "i" );
 				back($.grep(cirm.refs.autoCompleteServiceCaseList, function(value) {
 					return matcher.test( value.label || value.value || value );
 			})) };
