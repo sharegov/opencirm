@@ -1,0 +1,16 @@
+{
+	"transactionId": "1739651",
+	"source": "MD-PWS",
+	"data": {
+		"boid": "10-00074245",
+		"hasDetails": "",
+		"type": "PW159",
+		"updateDate": "2014-11-25T00:00:00.000-0500",
+		"hasStatus": {
+			"hasLegacyCode": "C-CLOSED",
+			"label": "C-CLOSED"
+		}
+	},
+	"referenceId": "2050593746",
+	"messageType": "CaseUpdate"
+}

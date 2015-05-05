@@ -2,6 +2,8 @@ package gov.miamidade.cirm.maintenance;
 
 import static org.sharegov.cirm.OWL.individual;
 import static org.sharegov.cirm.rest.OperationService.getPersister;
+import static org.sharegov.cirm.utils.GenUtils.ko;
+import static org.sharegov.cirm.utils.GenUtils.ok;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,12 +15,14 @@ import java.io.PrintStream;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -26,10 +30,18 @@ import java.util.concurrent.Executors;
 import mjson.Json;
 
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.sharegov.cirm.BOntology;
 import org.sharegov.cirm.OWL;
+import org.sharegov.cirm.Refs;
+import org.sharegov.cirm.StartUp;
+import org.sharegov.cirm.legacy.Permissions;
 import org.sharegov.cirm.rdb.Concepts;
+import org.sharegov.cirm.rdb.Query;
+import org.sharegov.cirm.rdb.QueryTranslator;
 import org.sharegov.cirm.rdb.RelationalOWLPersister;
+import org.sharegov.cirm.rdb.RelationalStore;
 import org.sharegov.cirm.rdb.RelationalStoreExt;
 import org.sharegov.cirm.rdb.Sql;
 import org.sharegov.cirm.rdb.Statement;
@@ -96,12 +108,14 @@ public class ScriptVerifyAndClose
 	public static final ScriptVerifyAndClose PWS_SCRIPT = new ScriptVerifyAndClose()
 	{
 			{
-				this.setSpreadsheetFile("C:/Work/cirmservices_fixes/pws_closed_date/ALL PW 311 SRS 2013 - PRESENT.txt");
+				this.setSpreadsheetFile("C:/Work/cirmservices_fixes/pws_closed_date/PWS 311 ALL MAY 2014 PRESENT.txt");
 				this.setOutputFile("C:/Work/cirmservices_fixes/pws_closed_date/pws_processed.txt");
 				this.setLogFile("C:/Work/cirmservices_fixes/pws_closed_date/pws_log.txt");
 				this.setCaseNumberIdx(1);
 				this.setClosedDateIdx(6);
 				this.setRowsToSkip(4);
+				//this.setCaseDateFormat("dd-MMM-yy hh'.'mm");
+				//03-25-2015
 				this.setCaseDateFormat("dd-MMM-yy hh'.'mm");
 				this.setStatusIdx(2);
 				this.setDeptIdIdx(0);
@@ -112,12 +126,58 @@ public class ScriptVerifyAndClose
 		
 	};
 	
+	
+	public static final ScriptVerifyAndClose WCS_SCRIPT = new ScriptVerifyAndClose()
+	{
+			{
+				this.setSpreadsheetFile("C:/Work/cirmservices_fixes/wcs_closed_date_fix/wcs_file.txt");
+				this.setOutputFile("C:/Work/cirmservices_fixes/wcs_closed_date_fix/wcs_processed.txt");
+				this.setLogFile("C:/Work/cirmservices_fixes/wcs_closed_date_fix/wcs_log.txt");
+				this.setCaseNumberIdx(2);
+				this.setClosedDateIdx(4);
+				//this.setRowsToSkip(1);
+				//this.setRowsToSkip(29935);
+				//this.setRowsToSkip(55216);
+				this.setRowsToSkip(73199);
+				//this.setCaseDateFormat("dd-MMM-yy hh'.'mm");
+				//03-25-2015
+				this.setCaseDateFormat("M/d/yyyy");
+				this.setStatusIdx(5);
+				this.setDeptIdIdx(0);
+				this.getStatusMap().put("FR", "C-CLOSED");
+				this.getStatusMap().put("CK", "C-CLOSED");
+				this.getStatusMap().put("CN", "C-CLOSED");
+				this.getStatusMap().put("PP", "O-OPEN");
+				this.getStatusMap().put("SC", "O-OPEN");
+				this.getStatusMap().put("PD", "O-OPEN");
+			}
+		
+	};
+	
+	public static Date zeroedTimeValue(Date date) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		calendar.set(Calendar.HOUR_OF_DAY,0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		return calendar.getTime();
+	}
+	
 	public static void main(String[] args)
 	{
-		//StartUp.config.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#ProdConfigSet");
+		StartUp.config.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#ProdConfigSet");
+		System.out.println(
+				StartUp.config.at("ontologyConfigSet").toString()
+				);
+		
+		
 		//CMS_SCRIPT.run();
-		PWS_SCRIPT.run();
+		//PWS_SCRIPT.run();
+		WCS_SCRIPT.run();
 	}
+	
+	
 	
 	public void run()
 	{
@@ -183,7 +243,38 @@ public class ScriptVerifyAndClose
 										String caseNum = entry.getKey();
 										String[] fieldsForCase = entry.getValue(); 
 										LegacyEmulator e = new LegacyEmulator();
-										Json sr = e.lookupByCaseNumber(caseNum);
+										//04-01-2015 - LegacyEmulator has horrible api for retrieving SR ontos.
+										//bringing the code in here for now.
+										QueryTranslator qt = new QueryTranslator();
+										RelationalOWLPersister persister = getPersister();
+										RelationalStore store = persister.getStore();
+										Query q = qt.translate(Json.object("legacy:hasCaseNumber", 
+												caseNum, "type", "legacy:ServiceCase"), store);
+										Set<Long> results = store.query(q, Refs.tempOntoManager.resolve().getOWLDataFactory());
+										Json sr = null;
+										BOntology bo = null;
+										if (results.size() == 0)
+											sr = Json.nil();
+										else{
+											Long caseId = results.iterator().next();
+											try
+											{
+												bo = e.findServiceCaseOntology(caseId);
+												if (bo == null)
+													sr = ko("Case not found.");				
+												sr = bo.toJSON();
+												GenUtils.ensureArray(sr.at("properties"), "hasServiceActivity");
+												GenUtils.ensureArray(sr.at("properties"), "hasServiceAnswer");
+												GenUtils.ensureArray(sr.at("properties"), "hasServiceCaseActor");		
+												//e.addAddressData(result);
+												sr = ok().set("bo", sr);
+											}
+											catch (Throwable ex)
+											{
+												ex.printStackTrace();
+												return ko(ex);
+											}
+										}
 										if (!sr.isNull() && sr.is("ok", true))
 								        {
 								            sr = sr.at("bo");
@@ -194,6 +285,7 @@ public class ScriptVerifyAndClose
 								        
 								        }
 										verifyAndClose(sr, fieldsForCase);
+										clearOntologyManager(bo.getOntology());
 										
 									}
 									return toVerifyAndClose;
@@ -201,6 +293,7 @@ public class ScriptVerifyAndClose
 							};
 							service.submit(readVerifyAndClose);
 							caseNumbers.clear();
+							
 						} else {
 							continue;
 						}
@@ -242,7 +335,13 @@ public class ScriptVerifyAndClose
 		VerifyAndCloseDecisionTable table = new VerifyAndCloseDecisionTable(sr,givenFields, givenStatus,currentStatus,closedDate,givenClosedDate,earliestClosingActivity);
 		for(Rule rule : table.getRules())
 		{
-			rule.ifthen();
+			try
+			{
+				rule.ifthen();
+			}catch(Exception e)
+			{
+				System.out.println(rule.getName());
+			}
 		}
 		writeOutput(row);
 	}
@@ -516,9 +615,9 @@ public class ScriptVerifyAndClose
 		Statement stmt = new Statement();
 		Sql update = Sql.UPDATE("CIRM_SR_ACTIVITY")
 				.SET("DETAILS", "?")
-				.VALUES("UPDATED_BY", "'script'"  )
-				.VALUES("COMPLETE_DATE", "?"  )
-				.VALUES("UPDATED_DATE", "?"  )
+				.SET("UPDATED_BY", "'script'"  )
+				.SET("COMPLETE_DATE", "?"  )
+				.SET("UPDATED_DATE", "?"  )
 				.WHERE("ACTIVITY_ID").EQUALS("(select ID from CIRM_IRI where IRI = ?)");
 		List<OWLNamedIndividual> types = new ArrayList<OWLNamedIndividual>();
 		types.add(individual(Concepts.VARCHAR));
@@ -865,7 +964,8 @@ public class ScriptVerifyAndClose
 			try
 			{
 					
-					OperationService.getPersister().getStoreExt().executeStatement(fixStatement);
+				System.out.println(fixStatement.getSql().SQL());
+				OperationService.getPersister().getStoreExt().executeStatement(fixStatement);
 			}catch(Exception e)
 			{
 				e.printStackTrace();
@@ -911,7 +1011,7 @@ public class ScriptVerifyAndClose
             this.deptStatusEqualClosed = (givenStatus==null)?false:givenStatus.startsWith("C");
 			this.cirmStatusNotEqualDeptStatus = givenStatus == null || givenStatus.equals("") || !currentStatus.getIRI().getFragment().startsWith(givenStatus.substring(0,1));
 			this.cirmClosedDateNotEqualDeptClosedDate = (!(this.closedDate==null) && !GenUtils.parseDate(this.closedDate).equals(givenClosedDate));
-			this.cirmClosedDateLessThanDeptClosedDate = (!(this.closedDate==null) && GenUtils.parseDate(this.closedDate).before(givenClosedDate));
+			this.cirmClosedDateLessThanDeptClosedDate = (!(this.closedDate==null) && zeroedTimeValue(GenUtils.parseDate(this.closedDate)).before(zeroedTimeValue(givenClosedDate)));
 		}
 		
 		public List<Rule> getRules()
@@ -1094,5 +1194,29 @@ public class ScriptVerifyAndClose
 		}
 		
 		
-	} 
+	}
+	
+ /**
+     * Removes all ontologies from temporory ontology Manager.
+     * (e.g Clears loaded SR ontologies)
+     */
+     public synchronized void clearOntologyManager() {
+            OWLOntologyManager m = Refs.tempOntoManager.resolve();
+            Set<OWLOntology> tempOntos = m.getOntologies();
+            for(OWLOntology o : tempOntos) {
+                   m.removeOntology(o);
+            }
+     }
+
+    /**
+     * Removes one ontology from temporory ontology Manager.
+     * (e.g Clears loaded SR ontologies)
+     */
+     public synchronized void clearOntologyManager(OWLOntology o) {
+            OWLOntologyManager m = Refs.tempOntoManager.resolve();
+            //m is a SynchonizedOntoManager, so it’s thread save to remove an ontology 
+            //that was just processed
+            m.removeOntology(o);
+     }
+
 }

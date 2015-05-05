@@ -15,6 +15,9 @@
  ******************************************************************************/
 package gov.miamidade.cirm.search;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.sharegov.cirm.utils.JsonEvaluator;
 import org.sharegov.cirm.utils.Mapping;
 
@@ -150,6 +153,21 @@ public class GisServiceRule
 				return x != null && ((Number)x).longValue() > 0;
 			}
 		};
+		else if ("ENFORCEMEN <> 61 AND NOT NULL".equals(valueExpression)) {
+			evaluator = new Mapping<Object, Boolean>() {
+		       public Boolean eval(Object x)
+		       {
+	              if (!(x instanceof String)) 
+	              {
+	                     System.err.println("ERROR: GisServiceRule: ENFORCEMEN <>61 AND NOT NULL did not receive a String to validate against: " + x);
+	                     return false;
+	              }
+	              Matcher m = Pattern.compile("(^[0-9]+).*").matcher((String)x); 
+	              Integer number = (m.find())? Integer.parseInt(m.group(1)) : null;
+	              return number != null && number != 61;
+		       }
+			};
+		}
 		else if (valueExpression.trim().charAt(0) == '{' || valueExpression.trim().charAt(0) == '[')
 			evaluator = new JsonEvaluator(valueExpression);
 		else

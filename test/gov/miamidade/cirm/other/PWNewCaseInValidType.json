@@ -1,0 +1,59 @@
+{
+	"transactionId": "1739251",
+	"source": "MD-PWS",
+	"data": {
+		"hasServiceCaseActor": [{
+			"Name": "PUBLIC AT LARGE",
+			"hasServiceActor": {
+				"hasLegacyCode": "ORIGIN"
+			},
+			"type": "ServiceCaseActor"
+		},
+		{
+			"Name": "Cabrera",
+			"HomePhoneNumber": "305-375-4720",
+			"hasServiceActor": {
+				"hasLegacyCode": "CITIZEN"
+			},
+			"type": "ServiceCaseActor",
+			"LastName": "Lisset"
+		}],
+		"hasServiceAnswer": [{
+			"hasAnswerValue": "Corridor",
+			"hasServiceField": {
+				"hasLegacyCode": "GIS1"
+			},
+			"type": "ServiceAnswer"
+		},
+		{
+			"hasAnswerValue": "SW 128TH ST",
+			"hasServiceField": {
+				"hasLegacyCode": "GIS2"
+			},
+			"type": "ServiceAnswer"
+		},
+		{
+			"hasAnswerValue": "SW 92ND AVE",
+			"hasServiceField": {
+				"hasLegacyCode": "GIS3"
+			},
+			"type": "ServiceAnswer"
+		},
+		{
+			"hasAnswerValue": "SW 136TH ST",
+			"hasServiceField": {
+				"hasLegacyCode": "GIS4"
+			},
+			"type": "ServiceAnswer"
+		}],
+		"hasDetails": "",
+		"type": "PW159",
+		"hasDateCreated": "2014-12-03T00:39:00.000-0500",
+		"hasStatus": {
+			"hasLegacyCode": "O-LOCKED",
+			"label": "O-LOCKED"
+		}
+	},
+	"referenceId": "2050593019",
+	"messageType": "NewCase"
+}

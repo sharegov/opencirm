@@ -1,0 +1,23 @@
+{
+	"transactionId": "1739597",
+	"source": "MD-PWS",
+	"data": {
+		"boid": "01-0000000",
+		"hasDetails": "",
+		"hasServiceActivity": [{
+			"hasCompletedTimestamp": "2014-12-03T00:00:00.000-0500",
+			"type": "ServiceActivity",
+			"hasOutcome": {
+				"hasLegacyCode": "PW08000328",
+				"type": "Outcome"
+			},
+			"hasActivity": {
+				"hasLegacyCode": "PW_PWSTATUS",
+				"type": "Activity"
+			}
+		}],
+		"type": "PW6102"
+	},
+	"referenceId": "2050593649",
+	"messageType": "NewActivity"
+}

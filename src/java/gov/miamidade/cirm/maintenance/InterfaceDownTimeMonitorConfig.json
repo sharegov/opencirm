@@ -1,0 +1,68 @@
+[
+{
+	"ID" : "MQ",
+	"TYPE" : "URL",
+	"URL" : "http://sabbas:sabbas@s0141245/mqstatus/index.html",
+	"REGEX" : ".*\"CURDEPTH\":\"([\\w|.]+)\","
+},
+{
+ 	"ID" : "PcmsDBIn", 
+	"TYPE" : "ORA",
+	"URL" : "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=prodgrid1-scan.miamidade.gov)(PORT=1521)))(CONNECT_DATA=(SERVICE_NAME=ptmr.miamidade.gov)))",
+	"USER" : "CSRUSER",
+	"PASS" : "CSRUSER",
+	"QUERY" : "SELECT COUNT(*) FROM TMMT_CSRIN where event_date>sysdate - 1"
+	},
+	{
+ 	"ID" : "PcmsDBOut", 
+	"TYPE" : "ORA",
+	"URL" : "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=prodgrid1-scan.miamidade.gov)(PORT=1521)))(CONNECT_DATA=(SERVICE_NAME=ptmr.miamidade.gov)))",
+	"USER" : "CSRUSER",
+	"PASS" : "CSRUSER",
+	"QUERY" : "SELECT COUNT(*) FROM TMMT_CSROUT where status_date>sysdate - 1"
+	},
+{
+ 	"ID" : "PmdceaiDBTx", 
+	"TYPE" : "ORA",
+	"URL" : "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=prodgrid2-scan.miamidade.gov)(PORT=1521)))(CONNECT_DATA=(SERVICE_NAME=pcirm.miamidade.gov)))",
+	"USER" : "mdeaix",
+	"PASS" : "mdeaix",
+	"QUERY" : "select count(*) from transact where trans_date> sysdate - 1"
+	},
+	
+{
+ 	"ID" : "PCMSTimeMac", 
+	"TYPE" : "ORA",
+	"URL" : "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=prodgrid2-scan.miamidade.gov)(PORT=1521)))(CONNECT_DATA=(SERVICE_NAME=pcirm.miamidade.gov)))",
+	"USER" : "cirmschm",
+	"PASS" : "pciaocirm",
+	"QUERY" : "select count(*) from CIRM_QRTM_HISTORY
+	where name like 'CMSProcessUpdates%' 
+	and group_name like 'cirm_cms_integration'
+	and to_char(fire_time,'yyyy-mm-dd hh24:mi:ss') > to_char(sysdate - 1/24,'yyyy-mm-dd hh24:mi:ss')"
+	},
+
+{
+ 	"ID" : "PpwsDB", 
+	"TYPE" : "ORA",
+	"URL" : "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS =(PROTOCOL = TCP)(HOST = prodgrid2-scan.miamidade.gov)(PORT = 1521))(CONNECT_DATA =(SERVER = DEDICATED)(SERVICE_NAME = prdpwm.miamidade.gov)))",
+	"USER" : "csr",
+	"PASS" : "csr1",
+	"QUERY" : "SELECT COUNT(*) FROM csrtb_temp_interface where csri_date>sysdate - 1"
+	},
+{
+	"ID" : "MDCEAI UP",
+	"TYPE" : "URL",
+	"URL" : "http://s2030058/mdceaiWS/index.jsp",
+	"REGEX" : ".*\"Status\":\"([\\w|.]+)\","
+},	
+{
+	"ID" : "JMS IN",
+	"TYPE" : "URL",
+	"URL" : "https://s2030060.miamidade.gov/legacy/departments/status",
+	"REGEX" : ".*\"status\":\"([\\w|.|:| ]+)\","
+},
+
+
+
+]	
