@@ -1710,33 +1710,68 @@ public class LegacyEmulator extends RestService
 		}
 	}
 
-	
-	public Json saveNewCaseTransaction(Json legacyform)
+	/**
+	 * Saves a new non Cirm originated (e.g. PW, CMS Interfaces, Open311) or referral service case into the cirm database.
+	 * 
+	 * Must be called from within a CirmTransaction.
+	 * @param legacyform
+	 * @return
+	 */
+	public Json saveNewCaseTransaction(Json legacyForm)
 	{
-		// System.out.println(formData);
 		OperationService op = new OperationService();
-		String type = legacyform.at("type").asString();
+		// 1 Determine SR type and create a new case number
+		String type = legacyForm.at("type").asString();
 		int i = type.indexOf("legacy:");
 		if (i == -1)
 			type = "legacy:" + type;
 		BOntology bontology = op.createBusinessObject(owlClass(type));
-		legacyform.set("boid", bontology.getObjectId());
-		createCaseNumber(legacyform);
-		bontology = BOntology.makeRuntimeBOntology(legacyform);
-		populateGisData(legacyform, bontology);		
+		legacyForm.set("boid", bontology.getObjectId());
+		createCaseNumber(legacyForm);
+		// 2 Parse all legacyForm data into a business ontology
+		bontology = BOntology.makeRuntimeBOntology(legacyForm);
+		populateGisData(legacyForm, bontology);		
+		// 3 Save BO		
 		getPersister().saveBusinessObjectOntology(bontology.getOntology());
-		BOntology verbose;
+		// 4 Extend BO by adding meta data axioms		
+		final BOntology bontologyVerbose;
 		try
 		{
-			verbose = addMetaDataAxioms(bontology);
+			bontologyVerbose = addMetaDataAxioms(bontology);
 		}
 		catch (OWLOntologyCreationException e)
 		{
 			throw new RuntimeException(e);
 		}
-		Json finalJson = OWL.toJSON(verbose.getOntology(), bontology.getBusinessObject()); 
-		finalJson.set("boid", bontology.getObjectId());
-		return ok().set("data", finalJson);		
+		final Json bontologyVerboseJson = OWL.toJSON(bontologyVerbose.getOntology(), bontology.getBusinessObject()); 
+		bontologyVerboseJson.set("boid", bontology.getObjectId());
+		// 5 Fire a legacy:NewServiceCaseExternalEvent only if the overall transaction finishes successfully.
+		// This ignores retries (we're inside a repeatable transaction!), so the event is guaranteed to fire only once.
+		// Assumes access to final variables bontologyVerboseJson, bontologyVerbose during event processing,
+		// so we must not change the json bontologyVerboseJson points to after returning it.
+		CirmTransaction.get().addTopLevelEventListener(new CirmTransactionListener() {
+		    public void transactionStateChanged(final CirmTransactionEvent e)
+		    {
+		    	if (e.isSucceeded())
+		    	{
+		    		try
+		    		{
+					        EventDispatcher.get().dispatch(
+					                OWL.individual("legacy:NewServiceCaseNonCirmEvent"), 
+					                bontologyVerbose.getBusinessObject(), 
+					                OWL.individual("BO_New"),
+					                Json.object("case", bontologyVerboseJson));
+					                // maybe add "locationInfo", locationInfo
+		    		}
+		    		catch (Exception ex)
+		    		{
+		    			String errmsg ="Failure during the dispatch of a legacy:NewServiceCaseExternalEvent for " + bontologyVerbose.getObjectId(); 
+		    			ThreadLocalStopwatch.error(errmsg);
+		    		}
+		    	}
+		    }
+		});
+		return ok().set("data", bontologyVerboseJson);		
 	}
 	
 	/**
@@ -2718,10 +2753,8 @@ public class LegacyEmulator extends RestService
 	/**
 	 * Creates a new Service Request.
 	 * 
-	 * 04//07/2015 -Sabbas - Annotated as a REST endpoint to provide access to a clean SR save with no SideEffects.
+	 * 04/07/2015 -Sabbas - Annotated as a REST endpoint to provide access to a clean SR save with no SideEffects.
 	 *  
-	 *
-	 * 
 	 * @param sr : The Service Request data as json
 	 * @return : returns the SR
 	 * 
