@@ -15,6 +15,9 @@
  ******************************************************************************/
 package gov.miamidade.cirm.other;
 
+import gov.miamidade.cirm.MDRefs;
+
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import mjson.Json;
@@ -23,41 +26,87 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.sharegov.cirm.event.EventTrigger;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
+/**
+ * Handler for new Service Requests created in CiRM (311HUb UI) that may need sending to departmental interfaces and
+ * live reporting (if enabled).
+ * <br> 
+ * Sending to live reporting will be immediate. 
+ * <br> 
+ * Sending to department will be delayed for a fix grace period using the time machine. if scheduling fails, a case 
+ * would be sent immediately.
+ * <br>
+ *  
+ * @author Thomas Hilpold
+ *
+ */
 public class NewCaseEventHandler implements EventTrigger
 {
+	public static final boolean USE_DELAY_SEND_SR_TO_DEPARTMENT = true;
+	
     private static Logger logger = Logger.getLogger("gov.miamidade.cirm.other");
     
-    @SuppressWarnings("unused")
     @Override
     public void apply(OWLNamedIndividual entity, OWLNamedIndividual changeType, Json data)
     {
-        ThreadLocalStopwatch.getWatch().time("START NewCaseEventHandler entity: " + entity + " changetype: " + changeType);
+    	//assert changeType == BO_NEW
+        ThreadLocalStopwatch.start("START NewCaseEventHandler entity: " + entity + " changetype: " + changeType);
+        if (MDRefs.liveReportingStatus.resolve().isEnabled()) {
+        	sendNewCaseToReporting(data);
+        	ThreadLocalStopwatch.now("NewCaseEventHandler sendNewCaseToReporting completed");
+        }
+        sendNewCaseToDepartmentInterfaceIfNeeded(data);
+        ThreadLocalStopwatch.now("NewCaseEventHandler sendNewCaseToDepartmentInterfaceIfNeeded completed");
+        ThreadLocalStopwatch.stop("END NewCaseEventHandler");        
+    }
+    
+    /**
+     * Immediately sends a new SR to live reporting.
+     * 
+     * @param newSR
+     * @throws never any exception, logs on failure.
+     */
+    private void sendNewCaseToReporting(Json newSR) {
+    	try {
+    		LiveReportingSender sender = new LiveReportingSender();
+    		sender.sendNewServiceRequestToReporting(newSR);
+    	} catch (Exception e){
+    		//We only post a warning here.
+    		logger.log(Level.WARNING, "sendNewCaseToReporting to reporting failed with " + e);
+    		e.printStackTrace();
+    	}
+    }
+    
+    /**
+     * 
+     * Modifies the newSR (adds property case.hasLegacyInterface)
+     * @param newSR
+     * @return true if case needed to be sent, false otherwise
+     */
+    private boolean sendNewCaseToDepartmentInterfaceIfNeeded(Json newSR) {
     	DepartmentIntegration D = new DepartmentIntegration();
-        Json deptInterface = D.getDepartmentInterfaceCode(data.at("case").at("type").asString());
-        if (!deptInterface.isNull())
-           data.at("case").set("hasLegacyInterface", deptInterface);
-
-        if (!deptInterface.isNull() 
-                /*
-                && 
-                (!locationInfo.has("extendedInfo")||!locationInfo.at("extendedInfo").has("error")) */)
+        Json deptInterface = D.getDepartmentInterfaceCode(newSR.at("case").at("type").asString());
+        boolean needsToBeSent = !(deptInterface == null || deptInterface.isNull()); 
+        if (needsToBeSent) 
         {
-            if (false) // send immediately or delay...for debugging purposes (normally we delay)
+        	newSR.at("case").set("hasLegacyInterface", deptInterface);
+            if (USE_DELAY_SEND_SR_TO_DEPARTMENT) // send immediately or delay...for debugging purposes (normally we delay)
             {
-                D.sendToDepartment(data.at("case"), data.at("locationInfo"));
-            }
-            else
-            {
-                Json delay = D.delaySendToDepartment(data.at("case"), data.at("locationInfo"), -1); 
+                Json delay = D.delaySendToDepartment(newSR.at("case"), newSR.at("locationInfo"), -1); 
                 if (!delay.is("ok", true))
                 {
-                    ThreadLocalStopwatch.getWatch().time("IMMEDIATE DEPT SEND NewCaseEventHandler");
+                    ThreadLocalStopwatch.now("Delay failed, IMMEDIATE DEPT SEND NewCaseEventHandler");
                     logger.warning("Unable to schedule send case to department: " + 
                                     delay + ", sending immediately...");
-                    D.sendToDepartment(data.at("case"), data.at("locationInfo"));
+                    D.sendToDepartment(newSR.at("case"), newSR.at("locationInfo"));
                 }
             }
+            else 
+            {
+            	//Don't delay use immediate send not allowing for calltakers to fix an SR after save
+            	//Use for testing only.
+            	D.sendToDepartment(newSR.at("case"), newSR.at("locationInfo"));
+            }
         }
-        ThreadLocalStopwatch.getWatch().time("END NewCaseEventHandler");
+        return needsToBeSent;
     }
 }
