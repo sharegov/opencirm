@@ -18,12 +18,10 @@ package gov.miamidade.cirm.other;
 import java.util.Properties;
 
 /**
- * <p>
  * Holds all configuration properties needed for CSR-ServiceDirect bidirectional
  * communication via JMS. 
- * </p>
  * 
- * @author Borislav Iordanov
+ * @author Borislav Iordanov, Thomas Hilpold
  */
 public class JMSConfig
 {
@@ -42,6 +40,7 @@ public class JMSConfig
 	private String port;
 	private String inQueueName;
 	private String outQueueName;
+	private String outReportingQueueName;
 	private boolean authenticate = false;
 	private String user ="";
 	private String pwd ="";
@@ -140,6 +139,21 @@ public class JMSConfig
 	{
 		this.outQueueName = outQueueName;
 	}
+
+	public String getOutReportingQueueName()
+	{
+		return outReportingQueueName;
+	}
+	
+	/**
+	 * Set the queue name for live reporting.
+	 * @param outReportingQueueName
+	 */
+	public void setOutReportingQueueName(String outReportingQueueName)
+	{		
+		this.outReportingQueueName = outReportingQueueName;
+	}
+
 	public String getPort()
 	{
 		return port;
@@ -186,4 +200,5 @@ public class JMSConfig
 		result.append("]");
 		return result.toString();
 	}
+
 }

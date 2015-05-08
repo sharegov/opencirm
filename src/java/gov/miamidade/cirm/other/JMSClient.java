@@ -51,6 +51,12 @@ import com.ibm.mq.jms.JMSC;
 import com.ibm.mq.jms.MQDestination;
 import com.ibm.mq.jms.MQQueueConnectionFactory;
 
+/**
+ * JMS client connecting to three queues, in, out, outReporting (live reporting).
+ * 
+ * @author unknown, Thomas Hilpold
+ *
+ */
 public class JMSClient
 {
 	private PrintStream err = System.err, out = System.out; 
@@ -59,7 +65,7 @@ public class JMSClient
 	private QueueConnectionFactory factory = null;
 	private QueueConnection connection = null;
 	private QueueSession session = null;
-	private Queue inQueue, outQueue;
+	private Queue inQueue, outQueue, outReportingQueue;
 	private boolean isopen = false;
 	
 	/**
@@ -112,10 +118,24 @@ public class JMSClient
 				"response", response);
 	}
 	
-	public static void connectAndSend(Json msg) throws JMSException
+	private static void connectAndSendToReporting(Json msg) throws JMSException {
+		connectAndSend(msg, true);
+	}
+
+	public static void connectAndSend(Json msg) throws JMSException {
+		connectAndSend(msg, false);
+	}
+
+	/**
+	 * Connects to queues and sends msg on outQueue.
+	 * @param msg
+	 * @throws JMSException
+	 */
+	private static void connectAndSend(Json msg, boolean liveReportingMode) throws JMSException
 	{
-		ThreadLocalStopwatch.start("START JMS: connect and send ");
-		Refs.logger.resolve().info("Sending message to interface.");
+		String liveRepInfo = (liveReportingMode? " - LiveReportingMode " : "");
+		ThreadLocalStopwatch.start("START JMS: connect and send " + liveRepInfo);
+		Refs.logger.resolve().info("Sending message to interface." + liveRepInfo);
 		try
 		{
 			JMSClient jmsClient = new JMSClient();
@@ -124,8 +144,8 @@ public class JMSClient
 	    		jmsClient.open();
 	    		TextMessage textmsg = jmsClient.session.createTextMessage();
 	    		textmsg.setText(msg.toString());
-	    		System.out.println("Send to JMS: " + msg.toString());
-	    		jmsClient.send(textmsg, jmsClient.outQueue);	
+	    		jmsClient.send(textmsg, liveReportingMode? jmsClient.outReportingQueue : jmsClient.outQueue);	
+	    		ThreadLocalStopwatch.start("END JMS: connect and send " + liveRepInfo);
 	    	}
 	    	finally
 	    	{
@@ -134,22 +154,33 @@ public class JMSClient
 		}
 		catch (JMSException jmsex)
 		{
-			ThreadLocalStopwatch.error("Error JMS and scheduling TM retry");
-			Json queued = JMSClient.queueAtTimeServer(msg, 60);
-			if (!queued.is("ok", true))
-				throw new RuntimeException("While queueing JMS message at Time Server: " + queued.at("error"));
+			if (!liveReportingMode) {
+				ThreadLocalStopwatch.error("Error JMS and scheduling TM retry");
+				Json queued = JMSClient.queueAtTimeServer(msg, 60);
+				if (!queued.is("ok", true))
+					throw new RuntimeException("While queueing JMS message at Time Server: " + queued.at("error"));
+			} else {
+				ThreadLocalStopwatch.error("Error JMS in live reporting mode. Not retrying");				
+			}
 			throw jmsex;
 		}
 		catch (Throwable t)
 		{
+			String emailSubject = "JMS Failed to send, CiRM " + liveRepInfo;
+			String emailMessage = "connectAndSend " + liveRepInfo + "\r\n";
+			emailMessage = emailMessage + msg.toString();
 			ThreadLocalStopwatch.fail("FAIL JMS: connect and send with email");
-			MessageManager.get().sendEmail("cirm-no-reply@miamidade.gov", "assia@miamidade.gov", 
-					"JMS Failed to send, CiRM", msg.toString());
-			Refs.logger.resolve().log(Level.SEVERE, "Error in send method", t);
+			MessageManager.get().sendEmail("cirm-no-reply@miamidade.gov", "GIC-311M@miamidade.gov", emailSubject, emailMessage);
+			Refs.logger.resolve().log(Level.SEVERE, "Error (Unrecoverable) in connectAndSend method " + liveRepInfo, t);
 			Refs.logger.resolve().log(Level.SEVERE, "While sending data to JMS queue", msg.toString());
 		}
 	}
 	
+	public static void connectAndSendToReporting(LegacyMessageType type, long transactionId, Json data) throws JMSException
+	{
+		connectAndSendToReporting(makeMessage(type, transactionId, data));
+	}	
+
 	public static void connectAndSend(LegacyMessageType type, long transactionId, Json data) throws JMSException
 	{
 		connectAndSend(makeMessage(type, transactionId, data));
@@ -187,6 +218,7 @@ public class JMSClient
 				((MQDestination)inQueue).setTargetClient(JMSC.MQJMS_CLIENT_NONJMS_MQ);
 			}
 			outQueue = session.createQueue(jmsConfig.getOutQueueName());
+			outReportingQueue = session.createQueue(jmsConfig.getOutReportingQueueName());
 			isopen = true;
 		}
 		catch (Exception ex)
@@ -206,6 +238,7 @@ public class JMSClient
 		String channel = OWL.dataProperty(info, "hasChannel").getLiteral();
 		String queueManager = OWL.dataProperty(info, "hasQueueManager").getLiteral();
 		String outQueueName = OWL.dataProperty(info, "hasOutQueueName").getLiteral();
+		String outReportingQueueName = OWL.dataProperty(info, "hasOutReportingQueueName").getLiteral();
 		String inQueueName = OWL.dataProperty(info, "hasInQueueName").getLiteral();
 		String port = OWL.dataProperty(info, "hasPort").getLiteral();
 		JMSConfig config = new JMSConfig();
@@ -214,6 +247,7 @@ public class JMSClient
 		config.setQueueManager(queueManager);
 		config.setInQueueName(inQueueName);
 		config.setOutQueueName(outQueueName);
+		config.setOutReportingQueueName(outReportingQueueName);
 		config.setPort(port);
 		config.setHostName(url);
 		return config;
