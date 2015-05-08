@@ -49,7 +49,6 @@ import org.sharegov.cirm.BOntology;
 import org.sharegov.cirm.CirmTransaction;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
-import org.sharegov.cirm.StartUp.CirmServerResource;
 import org.sharegov.cirm.gis.GisException;
 import org.sharegov.cirm.legacy.MessageManager;
 import org.sharegov.cirm.legacy.Permissions;
