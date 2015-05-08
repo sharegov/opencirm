@@ -615,7 +615,7 @@ public class GenUtils
     	String body = "<p>Case " + caseNumber + " has invalid extra GIS info.</p>";
     	body += "<p>"  + error + "</p>";
     	MessageManager.get().sendEmail("cirm@miamidade.gov", 
-    						"angel.martin@miamidade.gov;assia@miamidade.gov;silval@miamidade.gov", 
+    						"angel.martin@miamidade.gov;silval@miamidade.gov", 
     						"[PW GIS ISSUE] " + caseNumber, body);
     }
     
