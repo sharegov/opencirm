@@ -318,6 +318,7 @@
     </antcall>
    	<echo message="59 (fast) should now be loading ontos and therefore the /db folder size increase."/>   	   	 
    	<echo message="Sleeping 5 minutes to ensure sequential ontology download during server startup"/>
+   	<sleep seconds="300"/>
    	<antcall target="restart-with-fresh-ontodb">
         <param name="server" value="s2030050"/>
     </antcall>
