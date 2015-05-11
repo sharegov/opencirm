@@ -1,7 +1,16 @@
 package org.sharegov.cirm.process;
 
+import static org.sharegov.cirm.rest.OperationService.getPersister;
+import static org.sharegov.cirm.utils.GenUtils.ok;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import org.sharegov.cirm.BOntology;
+import org.sharegov.cirm.CirmTransaction;
+import org.sharegov.cirm.legacy.CirmMessage;
+import org.sharegov.cirm.utils.GenUtils;
+
 
 import mjson.Json;
 
@@ -26,8 +35,12 @@ public class ApprovalProcess
 	private Json sr;
 	private ApprovalState approvalState;
 	private List<ApprovalSideEffect> sideEffects = new ArrayList<ApprovalSideEffect>();
-
-	public Json getSr()
+    private BOntology bo;
+    private List<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();
+    private ArrayList<BOntology> withMetadata = new ArrayList<BOntology>();
+    private Json locationInfo = Json.object();
+    
+    public Json getSr()
 	{
 		return sr;
 	}
@@ -62,11 +75,18 @@ public class ApprovalProcess
 	{
 		if (approvalState.equals(ApprovalState.APPROVAL_PENDING))
 		{
-			for (ApprovalSideEffect sideEffect : sideEffects)
-			{
-				sideEffect.execute();
-			}
-
+			Json result = getPersister().getStore().txn(new CirmTransaction<Json> () {
+				@Override
+				public Json call() throws Exception
+				{
+					for (ApprovalSideEffect sideEffect : sideEffects)
+					{
+						sideEffect.execute(ApprovalProcess.this);
+					}
+					return GenUtils.ok().set("bo", ApprovalProcess.this.getBOntology().toJSON());
+				}
+				
+			});
 		}
 		else
 		{
@@ -98,5 +118,48 @@ public class ApprovalProcess
 		return ApprovalState.APPROVAL_NOT_NEEDED;
 
 	}
+	
+    public BOntology getBOntology() {
+        if(bo == null)
+        {
+            if(sr != null)
+            {
+                bo = BOntology.makeRuntimeBOntology(sr);
+            }
+        }
+        return bo;
+    }
+    
+	public List<CirmMessage> getEmailsToSend()
+	{
+		return emailsToSend;
+	}
+
+	public void setEmailsToSend(List<CirmMessage> emailsToSend)
+	{
+		this.emailsToSend = emailsToSend;
+	}
+
+	public ArrayList<BOntology> getWithMetadata()
+	{
+		return withMetadata;
+	}
+
+	public void setWithMetadata(ArrayList<BOntology> withMetadata)
+	{
+		this.withMetadata = withMetadata;
+	}
+
+	public Json getLocationInfo()
+	{
+		return locationInfo;
+	}
+
+	public void setLocationInfo(Json locationInfo)
+	{
+		this.locationInfo = locationInfo;
+	}
+
+
 
 }

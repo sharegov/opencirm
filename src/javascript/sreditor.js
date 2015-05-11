@@ -2053,7 +2053,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
               cirm.top.async().post('/legacy/update', {data:JSON.stringify(send)}, upcontinuation);
     	};
     	
-    	self.doSubmit = function(model) { 
+    	
+      	self.doSubmit = function(model) { 
 			var jsondata = ko.toJS(model.data);
 			//console.log("jsondata", jsondata);
 			if(!jsondata.type) {
@@ -3156,6 +3157,43 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 			return self.getEarliestClosingActivity();
 		});
 		
+		/**
+		 * Calls the approve service which fires any and all side affects associated with the SR.
+		 */
+		self.approve = function (jsondata, model) {
+            jsondata.properties.hasDateLastModified = self.getServerDateTime().asISODateString();
+            jsondata.properties.isModifiedBy = cirm.user.username;
+            var send = prefixMaker(jsondata);
+            console.log("send", send);
+  		  $("#sh_save_progress").dialog({height: 140, modal: true, dialogClass: 'no-close'});
+
+  		  var upcontinuation = function(result) {
+                  console.log("result", ko.toJS(result));
+                  if(result.ok == true) {
+                      $(document).trigger(legacy.InteractionEvents.UserAction, 
+                          ["SR Updated", result.bo.type + ":" + result.bo.properties.hasCaseNumber]);
+                      $("#sh_save_progress").dialog('close');
+                      alertDialog("Successfully updated SR : "+ result.bo.properties.hasCaseNumber);
+                      var type = result.bo.type;
+                      if(type.indexOf("legacy:") == -1) {
+                          type = "legacy:"+type; 
+                          result.bo.type = type;
+                      }
+                      self.removeDuplicates();
+                      setModel(result.bo, model, model.srType(), type, true, false);
+                  }
+                  else if(result.ok == false) {
+                      $("#sh_save_progress").dialog('close');
+                      var caseNumber = send.properties['legacy:hasCaseNumber'];
+                      showErrorDialog("An error occurred while updating the Service Request # "+caseNumber+" : <br>"+result.error);
+                  }
+            };
+            if (send.properties['legacy:hasStatus'].iri.indexOf('X-ERROR') > -1)
+                cirm.top.async().postObject( '/legacy/departments/send', send, upcontinuation);
+            else
+                cirm.top.async().post('/legacy/update', {data:JSON.stringify(send)}, upcontinuation);
+      	};
+
         return self;
     }
     
@@ -3185,8 +3223,35 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		else {
 			$('#srTypeID').val(srType.label + " - " +srType.hasJurisdictionCode);
 			setModel(bo, model, srType, type, false, isNew);
+			approvalCheck(bo.hasCaseNumber);
 		}
     }
+    
+	/**
+	 * Checks the approval service for state. Returns true when 
+	 */
+    function approvalCheck (caseNumber) {
+		cirm.top.async().get("/legacy/sr/"+caseNumber+ "/approvalState", {}, 
+			function(data){
+					if(data.approvalState == 'APPROVAL_PENDING')
+					{
+						$("#sh_dialog_alert")[0].innerText = "The following Service Request has been identified as a self-service request and is 'Pending Approval'. Please review the request and make appropriate changes. When complete, set the status to 'Open' then save.";
+						$("#sh_dialog_alert").dialog({ height: 150, width: 500, modal: true, buttons: {
+								"Continue" : function() {
+								$("#sh_dialog_alert").dialog('close');
+							
+								}
+							} 
+						});
+					}
+					else
+					{
+						//do nothing
+						return;
+					}
+				});  	    
+	};
+	
     //apply view logic here hilpold?
     function setModel(bo, model, srType, type, sameTypeAsCurrent, isNew) {
     	var currentDateTime = model.getServerDateTime();
@@ -3624,6 +3689,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		//END : Old Activities
 		//model.bindData(U.visit(srType, U.makeObservable),U.visit(bo, U.makeObservable), original);
 		model.bindData(srType, U.visit(bo, U.makeObservableTrimmed), original);
+		
     }
     
     /**
