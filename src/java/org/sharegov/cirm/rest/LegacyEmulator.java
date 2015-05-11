@@ -390,7 +390,7 @@ public class LegacyEmulator extends RestService
 	// properties should really be only data that is part of the objects (the hasGisDataId is, but not
 	// the full gisAddressData thingy). 
 	// -- Boris
-	private void addAddressData(Json data)
+	public void addAddressData(Json data)
 	{
 		if(data.at("properties").has("legacy:hasGisDataId") &&
 				!data.at("properties").has("gisAddressData"))
