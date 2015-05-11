@@ -75,20 +75,25 @@ import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
+import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLIndividualAxiom;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.SWRLBuiltInAtom;
 import org.semanticweb.owlapi.model.SWRLDArgument;
 import org.semanticweb.owlapi.model.SWRLVariable;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
-import org.sharegov.cirm.BOUtils;
 import org.sharegov.cirm.BOntology;
 import org.sharegov.cirm.CirmTransaction;
 import org.sharegov.cirm.CirmTransactionEvent;
@@ -103,14 +108,8 @@ import org.sharegov.cirm.legacy.CirmMessage;
 import org.sharegov.cirm.legacy.MessageManager;
 import org.sharegov.cirm.legacy.Permissions;
 import org.sharegov.cirm.owl.Model;
-import org.sharegov.cirm.process.AddTxnListenerForNewSR;
 import org.sharegov.cirm.process.ApprovalException;
 import org.sharegov.cirm.process.ApprovalProcess;
-import org.sharegov.cirm.process.AttachSendEmailListener;
-import org.sharegov.cirm.process.CreateDefaultActivities;
-import org.sharegov.cirm.process.CreateNewSREmail;
-import org.sharegov.cirm.process.PopulateGisData;
-import org.sharegov.cirm.process.SaveOntology;
 import org.sharegov.cirm.rdb.Concepts;
 import org.sharegov.cirm.rdb.DBIDFactory;
 import org.sharegov.cirm.rdb.Query;
@@ -391,7 +390,7 @@ public class LegacyEmulator extends RestService
 	// properties should really be only data that is part of the objects (the hasGisDataId is, but not
 	// the full gisAddressData thingy). 
 	// -- Boris
-	public void addAddressData(Json data)
+	private void addAddressData(Json data)
 	{
 		if(data.at("properties").has("legacy:hasGisDataId") &&
 				!data.at("properties").has("gisAddressData"))
@@ -1311,7 +1310,76 @@ public class LegacyEmulator extends RestService
 		}
 	}
 	
-    
+    /**
+     * Augment a business object ontology with metadata axioms.
+     * 
+     */
+    public BOntology addMetaDataAxioms(BOntology bo) throws OWLOntologyCreationException
+    {
+        OWLOntology ontology = bo.getOntology();
+    	IRI verboseiri = IRI.create(ontology.getOntologyID().getOntologyIRI().toString() + "/verbose");        
+        OWLOntologyManager manager = Refs.tempOntoManager.resolve();
+        OWLOntology result = manager.getOntology(verboseiri);
+        if (result != null)
+        	manager.removeOntology(result);
+        result = manager.createOntology(
+            IRI.create(ontology.getOntologyID().getOntologyIRI().toString() + "/verbose"), 
+            Collections.singleton(ontology));
+        OWLDataFactory factory = manager.getOWLDataFactory();
+        Set<OWLNamedIndividual> individuals = result.getIndividualsInSignature();
+        List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+        for (OWLNamedIndividual ind : individuals)
+        {
+            // Idk if this is the best way to check if an individual is declared
+            // in meta.
+            // OWLReasoner doesn't provide facilities to retrieve axioms for an
+            // individual.
+            // and for now we are only interested in adding legacy axioms.
+            
+            // If the individual lives in the CiRM namespace, we add all information about it.
+            if (OWL.ontology().containsEntityInSignature(ind, true))
+            {
+            	ind = OWL.individual(ind.getIRI());            	
+            	for (OWLOntology O : OWL.ontologies())
+            	{
+            		for (OWLIndividualAxiom axiom : O.getDataPropertyAssertionAxioms(ind))
+            			changes.add(new AddAxiom(result, axiom));
+            		for (OWLObjectPropertyAssertionAxiom axiom : O.getObjectPropertyAssertionAxioms(ind))
+            			// I'm not sure why we are skipping those two properties. Perhaps they are not needed
+            			// but are they harmful? That logic takes away the generality of the method.
+            			if (!axiom.getProperty().equals(objectProperty("legacy:hasLegacyInterface")) &&
+            				!axiom.getProperty().equals(objectProperty("legacy:hasAllowableEvent")))
+            			changes.add(new AddAxiom(result, axiom));
+            	}
+           }
+            else
+            {
+                // add boid to businessObject in the BOntology
+                OWLDataProperty boid = factory.getOWLDataProperty(Model.legacy("boid"));
+                if (ind.getDataPropertyValues(boid, result).isEmpty())
+                {
+                    Long id = Long.valueOf(bo.getObjectId()); // identifiers.get(ind);
+                    // 1-15-2013 save the round trip to the DB and grab the id
+                    // from the onto.
+                    if (id != null)
+                        changes.add(new AddAxiom(
+                                result,
+                                factory.getOWLDataPropertyAssertionAxiom(
+                                        boid,
+                                        ind,
+                                        factory.getOWLLiteral(
+                                                id.toString(),
+                                                factory.getOWLDatatype(OWL2Datatype.XSD_INT
+                                                        .getIRI())))));
+                }
+            }
+        }
+        if (changes.size() > 0)
+            manager.applyChanges(changes);
+        BOntology newBO = new BOntology(result);
+        return newBO;
+    }
+	
 	/**
 	 * If an outcome is set for any EXISTING ACTIVITY, then have to
 	 * update that particular Activity via ActivityManager.updateActivity
@@ -1549,7 +1617,7 @@ public class LegacyEmulator extends RestService
 					{
 						try
 						{
-							BOntology withMeta = BOUtils.addMetaDataAxioms(bontology);
+							BOntology withMeta = addMetaDataAxioms(bontology);
 							withMetadata.add(withMeta);
 							CirmMessage msg = MessageManager.get().createMessageFromTemplate(
 									withMeta,
@@ -1573,7 +1641,7 @@ public class LegacyEmulator extends RestService
 					    		try
 					    		{
 					    			BOntology withMeta = withMetadata.isEmpty() ?
-						    			   BOUtils.addMetaDataAxioms(bontology):withMetadata.get(0);
+						    			    LegacyEmulator.this.addMetaDataAxioms(bontology):withMetadata.get(0);
 								        EventDispatcher.get().dispatch(
 								                OWL.individual("legacy:NewServiceCaseEvent"), 
 								                bontology.getBusinessObject(), 
@@ -1642,33 +1710,68 @@ public class LegacyEmulator extends RestService
 		}
 	}
 
-	
-	public Json saveNewCaseTransaction(Json legacyform)
+	/**
+	 * Saves a new non Cirm originated (e.g. PW, CMS Interfaces, Open311) or referral service case into the cirm database.
+	 * 
+	 * Must be called from within a CirmTransaction.
+	 * @param legacyform
+	 * @return
+	 */
+	public Json saveNewCaseTransaction(Json legacyForm)
 	{
-		// System.out.println(formData);
 		OperationService op = new OperationService();
-		String type = legacyform.at("type").asString();
+		// 1 Determine SR type and create a new case number
+		String type = legacyForm.at("type").asString();
 		int i = type.indexOf("legacy:");
 		if (i == -1)
 			type = "legacy:" + type;
 		BOntology bontology = op.createBusinessObject(owlClass(type));
-		legacyform.set("boid", bontology.getObjectId());
-		createCaseNumber(legacyform);
-		bontology = BOntology.makeRuntimeBOntology(legacyform);
-		populateGisData(legacyform, bontology);		
+		legacyForm.set("boid", bontology.getObjectId());
+		createCaseNumber(legacyForm);
+		// 2 Parse all legacyForm data into a business ontology
+		bontology = BOntology.makeRuntimeBOntology(legacyForm);
+		populateGisData(legacyForm, bontology);		
+		// 3 Save BO		
 		getPersister().saveBusinessObjectOntology(bontology.getOntology());
-		BOntology verbose;
+		// 4 Extend BO by adding meta data axioms		
+		final BOntology bontologyVerbose;
 		try
 		{
-			verbose = BOUtils.addMetaDataAxioms(bontology);
+			bontologyVerbose = addMetaDataAxioms(bontology);
 		}
 		catch (OWLOntologyCreationException e)
 		{
 			throw new RuntimeException(e);
 		}
-		Json finalJson = OWL.toJSON(verbose.getOntology(), bontology.getBusinessObject()); 
-		finalJson.set("boid", bontology.getObjectId());
-		return ok().set("data", finalJson);		
+		final Json bontologyVerboseJson = OWL.toJSON(bontologyVerbose.getOntology(), bontology.getBusinessObject()); 
+		bontologyVerboseJson.set("boid", bontology.getObjectId());
+		// 5 Fire a legacy:NewServiceCaseExternalEvent only if the overall transaction finishes successfully.
+		// This ignores retries (we're inside a repeatable transaction!), so the event is guaranteed to fire only once.
+		// Assumes access to final variables bontologyVerboseJson, bontologyVerbose during event processing,
+		// so we must not change the json bontologyVerboseJson points to after returning it.
+		CirmTransaction.get().addTopLevelEventListener(new CirmTransactionListener() {
+		    public void transactionStateChanged(final CirmTransactionEvent e)
+		    {
+		    	if (e.isSucceeded())
+		    	{
+		    		try
+		    		{
+					        EventDispatcher.get().dispatch(
+					                OWL.individual("legacy:NewServiceCaseNonCirmEvent"), 
+					                bontologyVerbose.getBusinessObject(), 
+					                OWL.individual("BO_New"),
+					                Json.object("case", bontologyVerboseJson));
+					                // maybe add "locationInfo", locationInfo
+		    		}
+		    		catch (Exception ex)
+		    		{
+		    			String errmsg ="Failure during the dispatch of a legacy:NewServiceCaseExternalEvent for " + bontologyVerbose.getObjectId(); 
+		    			ThreadLocalStopwatch.error(errmsg);
+		    		}
+		    	}
+		    }
+		});
+		return ok().set("data", bontologyVerboseJson);		
 	}
 	
 	/**
@@ -1822,7 +1925,7 @@ public class LegacyEmulator extends RestService
 								getUserActors()))
 					return ko("Permission denied.");
 				MessageManager manager = new MessageManager();
-				BOntology verbose = BOUtils.addMetaDataAxioms(bo);
+				BOntology verbose = addMetaDataAxioms(bo);
 				Json sr = OWL.toJSON(verbose.getOntology(), verbose.getBusinessObject());
 				return ok().set("data", manager.toDOMString(sr));
 			}
@@ -2650,10 +2753,8 @@ public class LegacyEmulator extends RestService
 	/**
 	 * Creates a new Service Request.
 	 * 
-	 * 04//07/2015 -Sabbas - Annotated as a REST endpoint to provide access to a clean SR save with no SideEffects.
+	 * 04/07/2015 -Sabbas - Annotated as a REST endpoint to provide access to a clean SR save with no SideEffects.
 	 *  
-	 *
-	 * 
 	 * @param sr : The Service Request data as json
 	 * @return : returns the SR
 	 * 
@@ -2703,12 +2804,6 @@ public class LegacyEmulator extends RestService
 	{
 		ApprovalProcess approvalProcess = new ApprovalProcess();
 		approvalProcess.setSr(legacyform);
-		approvalProcess.getSideEffects().add(new AttachSendEmailListener());
-		approvalProcess.getSideEffects().add(new CreateDefaultActivities());
-		approvalProcess.getSideEffects().add(new PopulateGisData());
-		approvalProcess.getSideEffects().add(new SaveOntology());
-		approvalProcess.getSideEffects().add(new CreateNewSREmail());
-		approvalProcess.getSideEffects().add(new AddTxnListenerForNewSR());
 		try{
 			approvalProcess.approve();
 		}catch(ApprovalException e)
