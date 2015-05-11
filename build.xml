@@ -292,9 +292,9 @@
             <arg value="cirmservices"/>
         </exec>
    </target>
-   <target name="restart-with-fresh-ontodb" depends="stop, wipeonto, start" description="Restart all servers by deleting onto database for a fresh copy of it."/>
-   <target name="restart-now" depends="stop, start" description="Restart server specified with -Dserver=hostname parameter."/>   
-   <target name="restart-all-now" description="Restart all production servers abruptly, without waiting for each of them get up.">
+   <target name="restart-with-fresh-ontodb" depends="stop, wipeonto, start" description="Restarts one server deleting /db, needs -Dserver=hostname parameter."/>
+   <target name="restart-now" depends="stop, start" description="Restarts one server specified with -Dserver=hostname parameter."/>   
+   <target name="restart-prod-now" description="Restart all production servers abruptly, without waiting for each of them get up.">
     <antcall target="restart-now">
         <param name="server" value="s2030050"/>
     </antcall>
@@ -312,33 +312,40 @@
     </antcall>
    </target>
    
-   <target name="restart-all-with-fresh-ontodb" description="Restart all servers after deleting their ontologies local DBs (which forces a clean reload of onto data)">
-    <antcall target="restart-with-fresh-ontodb">
+   <target name="restart-prod-with-fresh-ontodb" description="Restart all servers after deleting their ontologies local DBs (which forces a clean reload of onto data)">
+   	<antcall target="restart-with-fresh-ontodb">
+        <param name="server" value="s2030059"/>
+    </antcall>
+   	<echo message="59 (fast) should now be loading ontos and therefore the /db folder size increase."/>   	   	 
+   	<echo message="Sleeping 5 minutes to ensure sequential ontology download during server startup"/>
+   	<sleep seconds="300"/>
+   	<antcall target="restart-with-fresh-ontodb">
         <param name="server" value="s2030050"/>
     </antcall>
+   	<echo message="50 (slow) should now be loading ontos."/>   	   	 
    	<echo message="Sleeping 5 minutes to ensure sequential ontology download during server startup"/>   	
    	<sleep seconds="300"/>
     <antcall target="restart-with-fresh-ontodb">
         <param name="server" value="s2030051"/>
     </antcall>
+   	<echo message="51 (slow) should now be loading ontos"/>   	   	 
    	<echo message="Sleeping 5 minutes to ensure sequential ontology download during server startup"/>   	
    	<sleep seconds="300"/>
     <antcall target="restart-with-fresh-ontodb">
         <param name="server" value="s2030057"/>
     </antcall>
-   	<echo message="Sleeping 5 minutes to ensure sequential ontology download during server startup"/>   	
-   	<sleep seconds="300"/>
-    <antcall target="restart-with-fresh-ontodb">
-        <param name="server" value="s2030059"/>
-    </antcall>
+   	<echo message="57 (slow) should now be loading ontos."/>   	   	 
    	<echo message="Sleeping 5 minutes to ensure sequential ontology download during server startup"/>   	
    	<sleep seconds="300"/>
     <antcall target="restart-with-fresh-ontodb">
         <param name="server" value="s2030060"/>
     </antcall>
-   	
+   	<echo message="60 (fast) should now be loading ontos."/>   	   	 
+   	<echo message="Refresh all five production servers with fresh ontologies finished."/>   	
+   	<echo message="Server s2030059 should now be up for testing the changes."/>   	
    </target>
-	   <target name="restart-test-with-fresh-ontodb" description="Restart test servers (69 and 84) after deleting their ontologies local DBs (which forces a clean reload of onto data)">
+	
+   <target name="restart-test-with-fresh-ontodb" description="Restart test servers (69 and 84) after deleting their ontologies local DBs (which forces a clean reload of onto data)">
 	    <antcall target="restart-with-fresh-ontodb">
 	        <param name="server" value="s0020269"/>
 	    </antcall>

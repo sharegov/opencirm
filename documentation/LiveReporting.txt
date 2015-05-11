@@ -1,0 +1,115 @@
+Live Reporting
+This document explains the Live Reporting requirements, it's core architecture, as well as serves as a user's guide for common tasks.
+
+Hilpold 2015.05.06 valid for mdCirm/OpenCirm v1.0.23+
+
+1) Live Reporting Requirements (Core)
+1.1) The initial requirement for live reporting is that during time of emergency activation (Hurricane, other emergency), the EOC needs a feed of new SRs 
+in a timely manner for mapping the data using GIS applications, creating hourly reports, et.c..
+All SRs, whether they originate in 311HUB, an interface or Open311 should be reported (just as it is the case with our regular Cognos reporting)
+1.2) CiRM shall make all SRs that are stored in it's production database available in a timely fashion (max 30 min delay)
+ (This includes SRs received through the 311Hub user interface, departmental interfaces or Open311) 
+1.3) We shall make a database connection for queries available to external emergency activation applications that allows for high query load during activation.
+(A visit with the ITD GIS group and inspecting ARCGis integration showed that a screen refresh of a single user may lead to a query execution)
+1.4) Certain data (e.g. X,Y in projected NAD83, case number, type, status) as specified in a separate email shall be available for each SR.
+1.5) The performance impact on 311 Hub production should be low
+ (During times of activation high load can already be expected)
+1.6) Status updates for SRs should be transmitted (NOT IMPLEMENTED IN PHASE 1)
+
+2) Live Reporting Architecture
+2.1) Considerations
+	Sending each new SR including configured meta data as message to a queue, reading the message in a different process and storing it in a different 
+	database was chosen to fulfill Req 1.1-1.5., guarantees that 311HUB is not impacted and allows for maximum flexibility.
+	Also 1.6 can be fulfilled following the model in phase 2 by sending SR update messages, which carry the same but more current data of an SR. 
+	Depending on the message reader functionality, queue availability guarantees and other aspects, this model could eventually augment the current
+	nightly reporting processes. However for purposes of Emergency reporting, the message reader and the live reporting query model will be realized as 
+	simple as possible to fulfill only above requirements.
+	
+2.2) MdCirm/OpenCirm Layers
+  
+	OpenCirm:        311Hub user SR creation    | NonCirm SR creation (Open311 for approval, PW, CMS/RER) | MdCirm: LiveReportingService
+	--------------------------------------------|---------------------------------------------------------|------------------------------
+	Event Handling:  MDCirm NewCaseEventHandler | MdCirm NewCaseNonCirmEventHandler                       |
+	--------------------------------------------|---------------------------------------------------------|------------------------------	
+	Message Sending High:              MDCirm    LiveReportingSender                                      | MDRefs LiveReportingStatus
+	--------------------------------------------|---------------------------------------------------------|------------------------------	
+	Message Sending Low:               MDCirm    JMSClient                                                |
+	--------------------------------------------|---------------------------------------------------------|------------------------------
+	Queuing: 							MQSeries CIRMDW	(Test or Production, dependent on configuration ConfigSet)
+	
+
+2.3) Typical Flow SR created by 311HUB user person
+	1. A 311HUB User Saves a new SR
+	2. LegacyEmulator createNewKOSR receives and stores the new SR, assigns a case number
+	3. A legacy:NewServiceCaseEvent is thrown by createNewKOSR, carrying data with two properties:
+		"case"... the new verbose service case in json format after all processing and including meta data.
+		"locationInfo"...GIS data which is not required by Live Reporting anywhere, but will currently be sent in the message. 
+	4. Event dispatch will instantiate a NewCaseEventHandler
+	5. The handler will instantly create a live reporting message and send it to the queue. An failure will be caught and no retry will be done.
+	(Priority here is on timeliness, high performance and low load on a Cirm server)
+	6. The CIRMDW queue will hold a message, waiting for it to be processed outside of Cirm.
+	7. Next, the handler will determine, if the SR is an interface SR and may schedule a callback for later send, et.c.
+	8. LegacyEmulator createNewKOSR will respond to the user.
+	
+2.3) Typical Flow SR created by Interface (PW, CMS/RER), Open311. 
+	1. The entry point for all such new SRs in LegacyEmulator is Json saveNewCaseTransaction(Json legacyForm) 
+	2. saveNewCaseTransaction receives and stores the new SR, assigns a case number
+	3. A legacy:NewServiceCaseNonCirmEvent is thrown, carrying data with one property:
+		"case"... the new verbose service case in json format after all processing and including meta data.
+	4. Event dispatch will instantiate a NewCaseNonCirmEventHandler
+	5. The handler will instantly create a live reporting message and send it to the queue. An failure will be caught and no retry will be done.
+	(Priority here is on timeliness, high performance and low load on a Cirm server)
+	6. The CIRMDW queue will hold a message, waiting for it to be processed outside of Cirm.
+	7. In contrast to 2.1-7 above this handler will never send an SR to an interface (!!), as the SR might originate from an interface.
+	8. LegacyEmulator saveNewCaseTransaction will return a Json response to the caller, which might be an interface class, etc.
+	9. (For Open311 SRs, this method is called for SRs that need approval, however they are live reported instantly but can not and are not sent to any 
+	interface yet. We'll most likely need a new event for after approval that will send such SR to an interface if needed.)
+
+2.4) Details
+
+LiveReportingService class
+	This is the only class that needs to be looked at for controlling live reporting. It implements 
+	Start/Stop/Status or manually sending a case.
+
+LiveReportingSender class
+	This class is the main abstraction for sending SRs to the CIRMDW reporting queue, either as new SRs or SR updates.
+	If in the future, we stop using queues, JMS, et.c. everything above this class can remain as is.
+	Currently it uses JMS / MQSeries and in lower levels the configured CIRMDW queue. Depending on the ConfigSet, either the Test or Production 
+	CIRMDW queue will receive live reporting messages.
+
+Implemented Usage:
+	We exploit the event framework inside Cirm and two event Handlers: NewCaseEventhandler and NewCaseNonCirmEventHandler, which in turn use 
+	LiveReportingSenders. 
+
+3) Common Tasks
+3.1) Start Live Reporting
+Live reporting is disabled by default on all servers. Therefore it has to be enabled using the following post REST call on each server:
+
+POST /liveReporting/start
+
+Call this on each server in the cluster.
+
+After this call returns successfully, all new SRs that are received by the server from all sources will be sent to the outReportingQueue (CIRMDW queue).
+If the listener on the other end of the queue is not running, the queue will fill up and once it's full, additional messages will be lost.
+(Overflow messages will be sent to a MQ Series system queue and in case of emergency they could be recovered, 
+however, Live Reporting has a facility to send any new case on demand. See 3.4. below.)
+
+If Live Reporting was already started, it will remain running and an appropriate response will be sent.
+
+3.2) Stop Live Reporting
+
+POST /liveReporting/stop
+
+3.3) Query status
+
+GET /liveReporting/status
+
+3.4) Manually send an SR - sendAsNewSR
+This should only be used for testing or if is known that a particular SR failed to be sent.
+
+To send a new SR to live reporting, submit a POST call against the following endpoint:
+POST /liveReporting/sendAsNewSR?caseID=<long boid>
+
+This will load the SR, add meta data, convert it to JSON, create a message (BO_NEW) and sends the message to CIRMDW queue.
+
+

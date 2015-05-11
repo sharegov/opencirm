@@ -1,0 +1,90 @@
+This document explains basic MdCirm/OpenCirm permission related tasks, such as
+
+A. How to find out which permissions a user has using LDAP & Protege
+B. How to find out which access policies exist and which groups they are associated with
+Z. Additional Hints
+
+Hilpold 2015.01.14 valid for mdCirm/OpenCirm v1.0.16+
+---------------------------------------------------------------------------------------------------------
+
+A. How to find out which permissions a user has using LDAP & Protege:
+
+A.1. Determine user's mdcDepartment and mdcDivision in LDAP 
+   Example: e22786 -? dept 096, div 26
+A.2. Determine which CiRM ldap groups the user is a member of using: 
+	(uniqueMember=uid=e22786*) as Filter against Base: DC=MIAMIDADE,DC=GOV
+	Result:
+	cn=cirmWASDAll,ou=groups,DC=MIAMIDADE,DC=GOV
+	cn=department096,DC=MIAMIDADE,DC=GOV (IGNORE THIS ONE, it's not used by CiRM)
+	
+A.2. Find the Department/Office/Agency in Protege:
+   2.a.) Open legacy ontology (current production version), importing all dependent ontos
+   2.b.) Start Pellet Reasoner using Menu, wait until initialized
+   2.c.) Goto DL_Query Tab, check "Individuals" Checkbox, uncheck others.
+   2.d.) Enter: "Dept_Code value 96" (096 should yield the same results) and EXECUTE
+   2.e.) Click on Water_and_Sewer_Department, this should take you to the entities TAB.
+
+A.3. Explore the "Water_and_Sewer_Department" Department in the Entities tab:
+   3.a.) Take note of all Object Property Assertions hasAccessPolicy AP 1
+   	All these will be applied to the user on logon.
+   	You'll find that no access policies exist for WASD department at the department level.
+
+A.4. Find and Explore the Division div 26 of dept 96: 
+	4.a) Find the division either by name in object property assertions, but better DL query:
+		"Division_Code value 26 and hasParentAgency some (Dept_Code value 96)"
+		You'll find that no division exist, therefore also no Access policies can be defined at the divsion level.
+		
+In this example 311HUB will no assign any persmissions based on Department and Division Membership,
+but how about the Cirm Ldap group: cirmWASDAll.
+
+A.5. Find and Explore CirmLdap group cirmWASDAll
+   5.1.) In Protege class names start capitalized, so we're looking for CirmWASDAll.
+   5.2.) Enter CirmWASDAll in the Protege search box top right, double click on the suggested individual.
+   		This should open the CirmUserGroup CirmWASDAll in the Entities view.
+   5.3.) Take note of all legacy:hasAccessPolicy Object Property Assertions:
+   		legacy:311_SV_STATUS_ACCESS ("Users that are members of groups having this access policy" are allowed supervisor status changes (dup, cancel, ...)
+   		legacy:WASD_51_SR_ACCESS (SR_ACCESS means, here is defined which SRs  they can access, klick on it to see: 
+   			Allowed actions on which objects. 	 
+   		legacy:WASD_61_SR_ACCESS
+   
+A.6. Result:
+ In the example above:
+   Access Policies based on Department: none
+   Access Policies based on Division: none 
+   Access Policies based on Cirm LDAP User Group CirmWASDAll:  3 :
+   	1. legacy:311_SV_STATUS_ACCESS,
+   	2. legacy:WASD_51_SR_ACCESS
+   	3. legacy:WASD_61_SR_ACCESS
+   
+   (This was simple, but as an exercise try to list all access policies for a call center supervisor.) 
+   
+
+B. How to find out which access policies exist and which groups they are associated with:
+
+B.1. Open Protege with lecgacy ontology, enter AccessPolicy in Search box and select the suggested class.
+B.2. Click on Individuals Tab, you should see a list of all access policies
+B.3. The naming conventions are (mostly) as follows:
+	<UNIT>_SR_ACCESS = Create (Bo_New), Read(Bo_View) and Update any SR object in the policy
+	<UNIT>_SR_VIEW_ ACCESS = Read(Bo_View) any SR object in the policy
+	<UNIT>_SR_PRIV_ACCESS = Unit private SRs: Create (Bo_New), Read(Bo_View) and Update any SR object in the policy
+
+B.4. Use the Member Filter input box with e.g. COM, _SR_, _PRIV, VIEW
+B.5. Select one Access Policy (in our example we use MDC_SR_VIEW_ACCESS)
+B.5. To find, which groups use the access policy click on <Usage> tab.
+	 In the example, District 13,6,8 and the Office of the Mayor use this access policy.
+B.6. You'll find organizational units, but also Cirm LDAP User groups
+B.7. Note that MDC_SR_VIEW_ACCESS only hasAction BO_View, so a group can only view the SRs in the group based 
+     on this access policy, BUT (!!!) the group may have another access policy with the same SR with Update/Bo_New.
+     Therefore remember, that one Access policy is not enough to determine what a user can do with an SR.
+
+
+Z. Additional Hints:
+
+* Occasionally change File / Preferences / Renderer tab
+	From default: "Render by qualified name" to "Render by annotation property" to see the labels of the SR. 
+	This takes a while! Default view should always be "QUALIFIED NAME", as the filters work only on the IRI. 
+	
+	  
+	
+
+   
