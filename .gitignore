@@ -1,3 +1,5 @@
+.classpath
 *.class
 dist/
 /classes/
+

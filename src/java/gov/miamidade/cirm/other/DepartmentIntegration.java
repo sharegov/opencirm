@@ -24,6 +24,7 @@ import static org.sharegov.cirm.OWL.owlClass;
 import static org.sharegov.cirm.OWL.reasoner;
 import static org.sharegov.cirm.utils.GenUtils.ko;
 import static org.sharegov.cirm.utils.GenUtils.ok;
+import gov.miamidade.cirm.MDRefs;
 
 import java.util.Calendar;
 import java.util.Set;
@@ -45,11 +46,11 @@ import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.sharegov.cirm.BOUtils;
 import org.sharegov.cirm.BOntology;
 import org.sharegov.cirm.CirmTransaction;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
-import org.sharegov.cirm.StartUp.CirmServerResource;
 import org.sharegov.cirm.gis.GisException;
 import org.sharegov.cirm.legacy.MessageManager;
 import org.sharegov.cirm.legacy.Permissions;
@@ -60,11 +61,8 @@ import org.sharegov.cirm.stats.CirmStatistics;
 import org.sharegov.cirm.stats.CirmStatisticsFactory;
 import org.sharegov.cirm.stats.SRCirmStatsDataReporter;
 import org.sharegov.cirm.utils.GenUtils;
-import org.sharegov.cirm.utils.ThreadLocalStopwatch;
-
-import gov.miamidade.cirm.MDRefs;
-import gov.miamidade.cirm.other.JMSClient;
 import org.sharegov.cirm.utils.JsonUtil;
+import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
 /**
  * <p>
@@ -468,7 +466,7 @@ public class DepartmentIntegration extends RestService
         BOntology vontology;
         try
         {
-            vontology = emulator.addMetaDataAxioms(bontology); 
+            vontology = BOUtils.addMetaDataAxioms(bontology); 
         }
         catch (OWLOntologyCreationException e)
         {
