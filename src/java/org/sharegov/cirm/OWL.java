@@ -1243,8 +1243,9 @@ public class OWL
 					}
 					catch (Throwable t)
 					{
-						System.out.println("OWL.resolveIris here");
-						System.err.println("OWL.resolveIris" + t);
+						System.err.println("OWL.resolveIris error ignored " + t);
+						System.err.println("Json x was " + x + " entry.getKey() was " + entry.getKey() 
+								+ " entry.getValue() was " + entry.getValue());
 						GenUtils.logStackTrace(t.getStackTrace(), 10);
 					}
 				}

@@ -107,11 +107,18 @@ public class SRCirmStatsDataReporter extends CirmStatsDataReporter
 	static Json findCaseRoot(final Json serviceCaseOrJmsg) 
 	{
 		Json caseRoot = serviceCaseOrJmsg;
-		if (serviceCaseOrJmsg.has("response") && serviceCaseOrJmsg.at("response").at("response").has("data")) 
+		if (serviceCaseOrJmsg.has("response") 
+				&& serviceCaseOrJmsg.at("response").has("data") 
+				&& ( serviceCaseOrJmsg.at("response").at("data").has("type")
+						|| serviceCaseOrJmsg.at("response").at("data").has("case"))
+		   ) 
 		{
 			caseRoot = serviceCaseOrJmsg.at("response").at("data");
 		} else if (serviceCaseOrJmsg.has("bo")) caseRoot = serviceCaseOrJmsg.at("bo");
 		else if (serviceCaseOrJmsg.has("data")) caseRoot = serviceCaseOrJmsg.at("data");
+		else if (serviceCaseOrJmsg.has("originalMessage") && serviceCaseOrJmsg.at("originalMessage").has("data")) {
+			caseRoot = serviceCaseOrJmsg.at("originalMessage").at("data");
+		}
 		//else could not yet find caseRoot
 		
 		//we might have case, data.case or response.data.case, so we'll investigate that:
