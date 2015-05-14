@@ -413,6 +413,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
         // because the $.each loop below ends up unbinding all jquery events!
 		self.listeners = []; 
 	    self.isNew = true;
+	    self.isPendingApproval = false;
 	    self.bindData = function(type, request, original) {
 	    	self.data(emptyModel.data);
 	    	self.srType(ko.toJS(emptyModel.srType));
@@ -2048,12 +2049,21 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
                 }
           };
           if (send.properties['legacy:hasStatus'].iri.indexOf('X-ERROR') > -1)
+          {
               cirm.top.async().postObject( '/legacy/departments/send', send, upcontinuation);
+          }
+          else if(model.isPendingApproval && send.properties['legacy:hasStatus'].iri.indexOf('O-OPEN') > -1)
+          {
+        	  cirm.top.async().postObject('/legacy/sr/approve', send, upcontinuation);
+          }
           else
+          {
               cirm.top.async().post('/legacy/update', {data:JSON.stringify(send)}, upcontinuation);
+          }
     	};
     	
-    	self.doSubmit = function(model) { 
+    	
+      	self.doSubmit = function(model) { 
 			var jsondata = ko.toJS(model.data);
 			//console.log("jsondata", jsondata);
 			if(!jsondata.type) {
@@ -3155,10 +3165,10 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		self.getClosedDate = ko.computed(function(){
 			return self.getEarliestClosingActivity();
 		});
-		
-        return self;
+	    
+		return self;
     }
-    
+    	
     function fetchSR(bo, model, isNew) {
 		var type = bo.type;
 		if(type.indexOf("legacy:") == -1) {
@@ -3185,8 +3195,35 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		else {
 			$('#srTypeID').val(srType.label + " - " +srType.hasJurisdictionCode);
 			setModel(bo, model, srType, type, false, isNew);
+			approvalCheck(bo.properties().hasCaseNumber(), model);
 		}
     }
+    
+	/**
+	 * Checks the approval service for state. Returns true when 
+	 */
+    function approvalCheck (caseNumber, model) {
+		cirm.top.async().get("/legacy/sr/"+caseNumber+ "/approvalState", {}, 
+			function(data){
+					if(data.approvalState == 'APPROVAL_PENDING')
+					{
+						model.isPendingApproval = true;
+						$("#sh_dialog_alert")[0].innerText = "The following Service Request has been identified as a self-service request and is 'Pending Approval'. Please review the request and make appropriate changes. When complete, set the status to 'Open' then save.";
+						$("#sh_dialog_alert").dialog({ height: 150, width: 500, modal: true, buttons: {
+								"Continue" : function() {
+									$("#sh_dialog_alert").dialog('close');
+								}
+							} 
+						});
+					}
+					else
+					{
+						//do nothing
+						return;
+					}
+				});  	    
+	};
+	
     //apply view logic here hilpold?
     function setModel(bo, model, srType, type, sameTypeAsCurrent, isNew) {
     	var currentDateTime = model.getServerDateTime();
@@ -3624,6 +3661,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		//END : Old Activities
 		//model.bindData(U.visit(srType, U.makeObservable),U.visit(bo, U.makeObservable), original);
 		model.bindData(srType, U.visit(bo, U.makeObservableTrimmed), original);
+		
     }
     
     /**

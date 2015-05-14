@@ -108,8 +108,14 @@ import org.sharegov.cirm.legacy.CirmMessage;
 import org.sharegov.cirm.legacy.MessageManager;
 import org.sharegov.cirm.legacy.Permissions;
 import org.sharegov.cirm.owl.Model;
+import org.sharegov.cirm.process.AddTxnListenerForNewSR;
 import org.sharegov.cirm.process.ApprovalException;
 import org.sharegov.cirm.process.ApprovalProcess;
+import org.sharegov.cirm.process.AttachSendEmailListener;
+import org.sharegov.cirm.process.CreateDefaultActivities;
+import org.sharegov.cirm.process.CreateNewSREmail;
+import org.sharegov.cirm.process.PopulateGisData;
+import org.sharegov.cirm.process.SaveOntology;
 import org.sharegov.cirm.rdb.Concepts;
 import org.sharegov.cirm.rdb.DBIDFactory;
 import org.sharegov.cirm.rdb.Query;
@@ -390,7 +396,7 @@ public class LegacyEmulator extends RestService
 	// properties should really be only data that is part of the objects (the hasGisDataId is, but not
 	// the full gisAddressData thingy). 
 	// -- Boris
-	private void addAddressData(Json data)
+	public void addAddressData(Json data)
 	{
 		if(data.at("properties").has("legacy:hasGisDataId") &&
 				!data.at("properties").has("gisAddressData"))
@@ -1693,22 +1699,22 @@ public class LegacyEmulator extends RestService
 	}
 
 	private void sendEmailToCustomers(BOntology bo, 
-			List<Json> customers, 
-			List<CirmMessage> emailsToSend, 
-			String caseNumber, String srType)
-	{
-		for(Json customer : customers)
+				List<Json> customers, 
+				List<CirmMessage> emailsToSend, 
+				String caseNumber, String srType)
 		{
-			CirmMessage msg = MessageManager.get().createMessageFromTemplate(
-					bo, individual("legacy:SERVICEHUB_EMAIL_CUSTOMERS"), 
-					srType + " " + caseNumber, 
-					customer.at("email").asString(), 
-					null, null, null);
-//					"Dear "+customer.at("name").asString()
-//					+", \n We successfully processed the Service Request.");
-			emailsToSend.add(msg);
+			for(Json customer : customers)
+			{
+				CirmMessage msg = MessageManager.get().createMessageFromTemplate(
+						bo, individual("legacy:SERVICEHUB_EMAIL_CUSTOMERS"), 
+						srType + " " + caseNumber, 
+						customer.at("email").asString(), 
+						null, null, null);
+	//					"Dear "+customer.at("name").asString()
+	//					+", \n We successfully processed the Service Request.");
+				emailsToSend.add(msg);
+			}
 		}
-	}
 
 	/**
 	 * Saves a new non Cirm originated (e.g. PW, CMS Interfaces, Open311) or referral service case into the cirm database.
@@ -2781,12 +2787,15 @@ public class LegacyEmulator extends RestService
 	@Produces("application/json")
 	public Json getApprovalState(@PathParam("caseNumber") String caseNumber)
 	{
-		
-		Json sr = Json.object();
-		ApprovalProcess approvalProcess = new ApprovalProcess();
-		approvalProcess.setSr(sr);
-		return Json.object().set("caseNumber", caseNumber)
-				.set("approvalState", approvalProcess.getApprovalState().toString());
+		try {
+			Json sr = OWL.prefix(lookupByCaseNumber(caseNumber));
+			ApprovalProcess approvalProcess = new ApprovalProcess();
+			approvalProcess.setSr(sr);
+			return Json.object().set("caseNumber", caseNumber)
+					.set("approvalState", approvalProcess.getApprovalState().toString());
+		} catch (Exception e) {
+			return ko(e);
+		}
 	}
 	
 	/**
@@ -2802,14 +2811,23 @@ public class LegacyEmulator extends RestService
 	@Consumes("application/json")
 	public Json approveCase(Json legacyform)
 	{
-		ApprovalProcess approvalProcess = new ApprovalProcess();
-		approvalProcess.setSr(legacyform);
 		try{
+			//We could optionally choose to lookup the current SR in the DB to ensure approval state
+			//is still APPROVAL_PENDING
+			ApprovalProcess approvalProcess = new ApprovalProcess();
+			approvalProcess.setSr(legacyform);
+			approvalProcess.getSideEffects().add(new AttachSendEmailListener());
+			approvalProcess.getSideEffects().add(new CreateDefaultActivities());
+			approvalProcess.getSideEffects().add(new PopulateGisData());
+			approvalProcess.getSideEffects().add(new SaveOntology());
+			approvalProcess.getSideEffects().add(new CreateNewSREmail());
+			approvalProcess.getSideEffects().add(new AddTxnListenerForNewSR());
 			approvalProcess.approve();
-		}catch(ApprovalException e)
+			return ok().set("bo", approvalProcess.getBOntology().toJSON());
+		}catch(Exception e)
 		{
 			return ko(e);
 		}
-		return ok();		
+			
 	}
 }
