@@ -2823,7 +2823,7 @@ public class LegacyEmulator extends RestService
 			approvalProcess.getSideEffects().add(new CreateNewSREmail());
 			approvalProcess.getSideEffects().add(new AddTxnListenerForNewSR());
 			approvalProcess.approve();
-			return ok();
+			return ok().set("bo", approvalProcess.getBOntology().toJSON());
 		}catch(Exception e)
 		{
 			return ko(e);
