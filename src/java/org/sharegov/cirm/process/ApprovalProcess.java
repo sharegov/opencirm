@@ -1,18 +1,16 @@
 package org.sharegov.cirm.process;
 
 import static org.sharegov.cirm.rest.OperationService.getPersister;
-import static org.sharegov.cirm.utils.GenUtils.ok;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import mjson.Json;
 
 import org.sharegov.cirm.BOntology;
 import org.sharegov.cirm.CirmTransaction;
 import org.sharegov.cirm.legacy.CirmMessage;
 import org.sharegov.cirm.utils.GenUtils;
-
-
-import mjson.Json;
 
 /**
  * Simple State Machine that represents the ApprovalProcess of self service SRs.
@@ -48,6 +46,7 @@ public class ApprovalProcess
 	public void setSr(Json sr)
 	{
 		this.sr = sr;
+		cleanSR();
 		approvalState = determineCurrentState();
 	}
 
@@ -73,8 +72,8 @@ public class ApprovalProcess
 
 	public void approve() throws ApprovalException
 	{
-		if (approvalState.equals(ApprovalState.APPROVAL_PENDING))
-		{
+//		if (approvalState.equals(ApprovalState.APPROVAL_PENDING))
+//		{
 			Json result = getPersister().getStore().txn(new CirmTransaction<Json> () {
 				@Override
 				public Json call() throws Exception
@@ -87,20 +86,20 @@ public class ApprovalProcess
 				}
 				
 			});
-		}
-		else
-		{
-			if (approvalState.equals(ApprovalState.APPROVED))
-			{
-				throw new ApprovalException("The SR has already been approved.");
-			}
-			else
-			{
-				throw new ApprovalException(
-						"Cannot approve SR, invalid state transition.");
-			}
-
-		}
+//		}
+//		else
+//		{
+//			if (approvalState.equals(ApprovalState.APPROVED))
+//			{
+//				throw new ApprovalException("The SR has already been approved.");
+//			}
+//			else
+//			{
+//				throw new ApprovalException(
+//						"Cannot approve SR, invalid state transition.");
+//			}
+//
+//		}
 	}
 
 	private ApprovalState determineCurrentState()
@@ -111,12 +110,28 @@ public class ApprovalProcess
 		// and SR status is O-PENDNG
 		// and there is no prior status history
 		// then current state is APPROVAL_PENDING.
-
-		//
-
-		// else
-		return ApprovalState.APPROVAL_NOT_NEEDED;
-
+		Json bo = sr.has("bo")? sr.at("bo") : sr;
+		if(bo.at("properties").at("legacy:hasIntakeMethod").at("iri").asString().endsWith("IPHONE")
+				|| bo.at("properties").at("legacy:hasIntakeMethod").at("iri").asString().endsWith("ANDROID")
+					|| bo.at("properties").at("legacy:hasIntakeMethod").at("iri").asString().endsWith("WEB"))
+		{
+			if(bo.at("properties").at("legacy:hasStatus").at("iri").asString().endsWith("O-PENDNG"))
+			{
+				return ApprovalState.APPROVAL_PENDING;
+			}
+			else if(bo.at("properties").at("legacy:hasStatus").at("iri").asString().endsWith("O-OPEN"))
+			{
+				return ApprovalState.APPROVED;
+			}
+			else
+			{
+				return ApprovalState.APPROVAL_NOT_NEEDED;
+			}
+		}
+		else
+		{
+			return ApprovalState.APPROVAL_NOT_NEEDED;
+		}
 	}
 	
     public BOntology getBOntology() {
@@ -159,7 +174,13 @@ public class ApprovalProcess
 	{
 		this.locationInfo = locationInfo;
 	}
-
+	
+	private void cleanSR()
+	{
+		Json bo = sr.has("bo")? sr.at("bo"): sr;
+		bo.at("properties").atDel("actorEmails");
+		bo.at("properties").atDel("hasRemovedImage");
+	}
 
 
 }
