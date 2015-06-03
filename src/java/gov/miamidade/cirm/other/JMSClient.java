@@ -39,6 +39,7 @@ import javax.jms.TextMessage;
 import mjson.Json;
 
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLNamedObject;
 import org.sharegov.cirm.OWL;
@@ -59,14 +60,27 @@ import com.ibm.mq.jms.MQQueueConnectionFactory;
  */
 public class JMSClient
 {
+	private static volatile JMSConfig jmsConfig;
+	
 	private PrintStream err = System.err, out = System.out; 
-	private JMSConfig jmsConfig = getConfig();
 	private String clientId = "311HUB_JMS_CLIENT";
 	private QueueConnectionFactory factory = null;
 	private QueueConnection connection = null;
 	private QueueSession session = null;
 	private Queue inQueue, outQueue, outReportingQueue;
 	private boolean isopen = false;
+	
+	public JMSClient() {
+		//thread safe one time initialization of JMS queue only on first JMS Client creation.
+		if (jmsConfig == null) {
+			synchronized(JMSClient.class) {
+				if (jmsConfig == null) {
+					jmsConfig = createJMSConfigFromOntology();		
+					ThreadLocalStopwatch.now("JMS Client initialized with configuration \r\n" + jmsConfig);
+				}
+			}
+		}
+	}
 	
 	/**
 	 * Ask the time server to call us back in "delayInMInutes",
@@ -203,13 +217,15 @@ public class JMSClient
 			MQQueueConnectionFactory mqFactory  = (com.ibm.mq.jms.MQQueueConnectionFactory)factory;			
 			mqFactory.setTransportType(com.ibm.mq.jms.JMSC.MQJMS_TP_CLIENT_MQ_TCPIP);
 			mqFactory.setHostName(jmsConfig.getHostName());
-			mqFactory.setPort(Integer.parseInt(jmsConfig.getPort()));
+			mqFactory.setPort(jmsConfig.getPort());
 			mqFactory.setQueueManager(jmsConfig.getQueueManager());
 			mqFactory.setChannel(jmsConfig.getChannel());
-			if(jmsConfig.isAuthenticate())
+			if(jmsConfig.isAuthenticate()) {
 				connection = factory.createQueueConnection(jmsConfig.getUser(),jmsConfig.getPwd());
-			else
+			} else {
+				//no auth, however, the user that started the JVM might be automatically sent dependent on queue library version.
 				connection = factory.createQueueConnection();
+			}
 			connection.setClientID(clientId);
 			session = connection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
 			inQueue = session.createQueue(jmsConfig.getInQueueName());
@@ -226,10 +242,18 @@ public class JMSClient
 			throw new RuntimeException(ex);
 		}		
 	}
-	
-	private JMSConfig getConfig()
+
+	/**
+	 * Creates a JMS Config object by reading the OperationsQueue configuration from the ontology.
+	 * This can be test, production, et.c. See QueueConnection class members.
+	 * @since v1.0.25 
+	 * 
+	 * @return
+	 */
+	public static JMSConfig createJMSConfigFromOntology()
 	{
 		
+		JMSConfig config = new JMSConfig();
 		OWLNamedObject x = Refs.configSet.resolve().get("OperationsQueue");
 		OWLNamedIndividual info = OWL.individual(x.getIRI()); // OWL.individual("CIRMTestQueueConnection"); 
 		OWLNamedIndividual queueType = OWL.objectProperty(info, "hasQueueType");
@@ -240,8 +264,9 @@ public class JMSClient
 		String outQueueName = OWL.dataProperty(info, "hasOutQueueName").getLiteral();
 		String outReportingQueueName = OWL.dataProperty(info, "hasOutReportingQueueName").getLiteral();
 		String inQueueName = OWL.dataProperty(info, "hasInQueueName").getLiteral();
-		String port = OWL.dataProperty(info, "hasPort").getLiteral();
-		JMSConfig config = new JMSConfig();
+		String portStr = OWL.dataProperty(info, "hasPort").getLiteral();
+		int port = Integer.parseInt(portStr);
+		
 		config.setFactoryClassName(factoryClassName);
 		config.setChannel(channel);
 		config.setQueueManager(queueManager);
@@ -250,6 +275,20 @@ public class JMSClient
 		config.setOutReportingQueueName(outReportingQueueName);
 		config.setPort(port);
 		config.setHostName(url);
+
+		//Authentication, only if configured in mdc:QueueConnection member
+		OWLLiteral userNameLit = OWL.dataProperty(info, "hasUsername");
+		if (userNameLit != null && !userNameLit.getLiteral().isEmpty()) {
+			String username = userNameLit.getLiteral();			
+			String password = OWL.dataProperty(info, "hasPassword").getLiteral();
+			if (password == null) throw new IllegalArgumentException(
+					"Queue " + x + " has a non empty hasUsername " + username + " but no password is configured. Fix in ontology."); 
+			config.setAuthenticate(true);
+			config.setUser(username);
+			config.setPwd(password);
+		} else {
+			config.setAuthenticate(false);
+		}
 		return config;
 	}
 
@@ -355,14 +394,14 @@ public class JMSClient
 		return receive(timeout, outQueue);
 	}
 	
-	public JMSConfig getJmsConfig()
+	public static synchronized JMSConfig getJmsConfig()
 	{
 		return jmsConfig;
 	}
 
-	public void setJmsConfig(JMSConfig jmsConfig)
+	public static synchronized void setJmsConfig(JMSConfig jmsConfig)
 	{
-		this.jmsConfig = jmsConfig;
+		JMSClient.jmsConfig = jmsConfig;
 	}	
 	
 	public void setErr(PrintStream err)

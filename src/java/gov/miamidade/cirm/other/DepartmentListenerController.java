@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import org.sharegov.cirm.StartUp;
 import org.sharegov.cirm.utils.Ref;
 import org.sharegov.cirm.utils.SingletonRef;
+import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
 import mjson.Json;
 
@@ -44,8 +45,7 @@ public class DepartmentListenerController
 	private Json config = Json.object(
 			"trace", true,
 			"timeout", 30000,
-			"logFile", "departmentalJMSListener",
-			"jms", null
+			"logFile", "departmentalJMSListener"
 	);
 	
 	private volatile LegacyJMSListener listener = null;
@@ -62,6 +62,7 @@ public class DepartmentListenerController
 		try
 		{
 			out = new PrintStream(new FileOutputStream(outfile));
+			ThreadLocalStopwatch.now("DepartmentListenerController using logfile " + outfile.getAbsolutePath());
 		}
 		catch (FileNotFoundException e)
 		{

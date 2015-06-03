@@ -15,8 +15,6 @@
  ******************************************************************************/
 package gov.miamidade.cirm.other;
 
-import java.util.Properties;
-
 /**
  * Holds all configuration properties needed for CSR-ServiceDirect bidirectional
  * communication via JMS. 
@@ -25,19 +23,12 @@ import java.util.Properties;
  */
 public class JMSConfig
 {
-	public static final String CONNECTION_FACTORY_PROP = "jms-factory";
-	public static final String HOSTNAME = "hostname";
-	public static final String PORT = "port";
-	public static final String QUEUE_MANAGER_NAME = "queue-manager";
-	public static final String CHANNEL = "channel";
-	public static final String TOCSR_QUEUE_NAME = "tocsr-queue";
-	public static final String FROMCSR_QUEUE_NAME = "fromcsr-queue";
 	
 	private String factoryClassName;
 	private String channel;	
 	private String queueManager;
 	private String hostName;
-	private String port;
+	private int port;
 	private String inQueueName;
 	private String outQueueName;
 	private String outReportingQueueName;
@@ -69,44 +60,12 @@ public class JMSConfig
 		this.user = user;
 	}
 
-	/**
-	 * Make sure all needed connection properties are present.
-	 * @return <code>null</code> if everything is alright or an error message if not.
-	 */
-	public static String validate(Properties props)
-	{
-		if (props.getProperty(CONNECTION_FACTORY_PROP) == null)
-			return "No connection factory specified, please use 'jms-factory' property";
-		else if (props.getProperty(HOSTNAME) == null)
-			return "No hostname specified, please use 'hostname' property";
-		else if (props.getProperty(PORT) == null)
-			return "No port number specified, please use 'port' property";		
-		else if (props.getProperty(QUEUE_MANAGER_NAME) == null)
-			return "No queue manager specified, please use 'queue-manager' property";			
-		else if (props.getProperty(TOCSR_QUEUE_NAME) == null)
-			return "No 'tocsr' queue name specified, please use 'tocsr-queue' property";
-		else if (props.getProperty(FROMCSR_QUEUE_NAME) == null)
-			return "No 'fromcsr' queue specified, please use 'fromcsr-queue' property";		
-		else
-			return null;
-	}
 	
 	public JMSConfig()
 	{		
 			
 	}
-	
-	public JMSConfig(Properties props)
-	{		
-		this.setFactoryClassName(props.getProperty(CONNECTION_FACTORY_PROP));
-		this.setChannel(props.getProperty(CHANNEL));
-		this.setHostName(props.getProperty(HOSTNAME));
-		this.setPort(props.getProperty(PORT));
-		this.setQueueManager(props.getProperty(QUEUE_MANAGER_NAME));
-		this.setInQueueName(props.getProperty(TOCSR_QUEUE_NAME));
-		this.setOutQueueName(props.getProperty(FROMCSR_QUEUE_NAME));
-	}
-	
+		
 	public String getFactoryClassName()
 	{
 		return factoryClassName;
@@ -154,11 +113,11 @@ public class JMSConfig
 		this.outReportingQueueName = outReportingQueueName;
 	}
 
-	public String getPort()
+	public int getPort()
 	{
 		return port;
 	}
-	public void setPort(String port)
+	public void setPort(int port)
 	{
 		this.port = port;
 	}
@@ -186,17 +145,25 @@ public class JMSConfig
 		StringBuffer result = new StringBuffer();
 		result.append("JMSConfig[");
 		result.append("factory=");
-		result.append(this.factoryClassName);
-		result.append(";hostName=");
+		result.append(factoryClassName);
+		result.append("; hostName=");
 		result.append(hostName);
-		result.append(";port=");
+		result.append("; port=");
 		result.append(port);
-		result.append(";queueManager=");
+		result.append("; queueManager=");
 		result.append(queueManager);
-		result.append("; tocsrQueue=");
+		result.append("; authenticate=");
+		result.append(authenticate);
+		if (authenticate) {
+			result.append("; user=");
+			result.append(user);
+		}
+		result.append(";\r\n inQueueName=");
 		result.append(inQueueName);
-		result.append("; fromcsrQueue=");
+		result.append("; outQueueName=");
 		result.append(outQueueName);
+		result.append("; outReportingQueueName=");
+		result.append(outReportingQueueName);
 		result.append("]");
 		return result.toString();
 	}

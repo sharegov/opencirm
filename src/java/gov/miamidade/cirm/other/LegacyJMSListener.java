@@ -46,7 +46,6 @@ import javax.jms.TextMessage;
 
 import mjson.Json;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
-import org.semanticweb.owlapi.model.OWLNamedObject;
 import org.sharegov.cirm.CirmTransaction;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
@@ -84,10 +83,14 @@ import org.sharegov.cirm.utils.TraceUtils;
 public class LegacyJMSListener extends Thread
 {	
 
+	public static final String JMS_CLIENT_ID = "311HUB_JMS_LEGACYCLIENT";
+	
 	private SRCirmStatsDataReporter srStatsReporter = 
 			CirmStatisticsFactory.createServiceRequestStatsReporter(MDRefs.mdStats.resolve(), "LegacyJMSListener"); 
 
 	private Json config = null;
+	private JMSConfig jmsConfig;
+	
 	
 //	private volatile boolean trace;
 //	private long timeout;
@@ -145,33 +148,35 @@ public class LegacyJMSListener extends Thread
 	private boolean init()
 	{
 		trace("Initializing JMS Connector with configuration: " );
-		
 		try
 		{
 			try
 			{
-				if (config.at("jms").isNull())
-					config.set("jms", getConfig());
-				Json jmsConfig = config.at("jms");
+				if (jmsConfig == null) {
+					jmsConfig = JMSClient.createJMSConfigFromOntology();
+					ThreadLocalStopwatch.now("LegacyJMSListener initialized with config " + jmsConfig);
+				}
 				if (factory == null)
-					factory = (QueueConnectionFactory)Class.forName(
-							jmsConfig.at("factoryClassName").asString()).newInstance();
+					factory = (QueueConnectionFactory)Class.forName(jmsConfig.getFactoryClassName()).newInstance();
 				// Dependency on MQ Series API here... this avoids us the need to configure a JNDI resource.
-				// Also, the County's messaging system has been standartized to MQ Series so there is very
+				// Also, the County's messaging system has been standardized to MQ Series so there is very
 				// little chance of a JMS implementation change in the future.
 				com.ibm.mq.jms.MQQueueConnectionFactory mqFactory  = (com.ibm.mq.jms.MQQueueConnectionFactory)factory;
 				mqFactory.setTransportType(com.ibm.mq.jms.JMSC.MQJMS_TP_CLIENT_MQ_TCPIP);
-				mqFactory.setQueueManager(jmsConfig.at("queueManager").asString());
-				mqFactory.setHostName(jmsConfig.at("url").asString());
-				mqFactory.setPort(Integer.parseInt(jmsConfig.at("port").asString()));
-				mqFactory.setClientId("311HUB_JMS_LEGACYCLIENT");			
-//				if(jmsConfig.isAuthenticate())
-//					connection = factory.createQueueConnection(jmsConfig.getUser(),jmsConfig.getPwd());
-//				else
+				mqFactory.setQueueManager(jmsConfig.getQueueManager());
+				mqFactory.setHostName(jmsConfig.getHostName());
+				mqFactory.setPort(jmsConfig.getPort());
+				mqFactory.setClientId(JMS_CLIENT_ID);
+				//2015.06.01 set channel was always missing
+				mqFactory.setChannel(jmsConfig.getChannel());
+				if(jmsConfig.isAuthenticate()) {
+					connection = factory.createQueueConnection(jmsConfig.getUser(),jmsConfig.getPwd());
+				} else {
 					connection = factory.createQueueConnection();
+				}
 				connection.start();
 				session = connection.createQueueSession(false, Session.CLIENT_ACKNOWLEDGE);
-				queue = session.createQueue(jmsConfig.at("inQueueName").asString());
+				queue = session.createQueue(jmsConfig.getInQueueName());
 				receiver = session.createReceiver(queue);
 				trace("JMS Connector initialized successfully.");
 				return true;
@@ -911,21 +916,23 @@ public class LegacyJMSListener extends Thread
 		quit = true;
 	}
 	
-	private Json getConfig()
-	{
-		OWLNamedObject x = Refs.configSet.resolve().get("OperationsQueue");
-		OWLNamedIndividual info = OWL.individual(x.getIRI()); // OWL.individual("CIRMTestQueueConnection"); 
-		OWLNamedIndividual queueType = OWL.objectProperty(info, "hasQueueType");
-		return Json.object(
-			"factoryClassName", OWL.dataProperty(queueType, "hasFactoryClassName").getLiteral(),
-			"url", OWL.dataProperty(info, "hasUrl").getLiteral(),
-			"channel", OWL.dataProperty(info, "hasChannel").getLiteral(),
-			"queueManager", OWL.dataProperty(info, "hasQueueManager").getLiteral(),
-			"outQueueName", OWL.dataProperty(info, "hasOutQueueName").getLiteral(),
-			"inQueueName", OWL.dataProperty(info, "hasInQueueName").getLiteral(),
-			"port", OWL.dataProperty(info, "hasPort").getLiteral()
-		);
-	}
+//	private Json getConfig()
+//	{
+//		OWLNamedObject x = Refs.configSet.resolve().get("OperationsQueue");
+//		OWLNamedIndividual info = OWL.individual(x.getIRI()); // OWL.individual("CIRMTestQueueConnection"); 
+//		OWLNamedIndividual queueType = OWL.objectProperty(info, "hasQueueType");
+//		Json config = Json.object(
+//			"factoryClassName", OWL.dataProperty(queueType, "hasFactoryClassName").getLiteral(),
+//			"url", OWL.dataProperty(info, "hasUrl").getLiteral(),
+//			"channel", OWL.dataProperty(info, "hasChannel").getLiteral(),
+//			"queueManager", OWL.dataProperty(info, "hasQueueManager").getLiteral(),
+//			"outQueueName", OWL.dataProperty(info, "hasOutQueueName").getLiteral(),
+//			"inQueueName", OWL.dataProperty(info, "hasInQueueName").getLiteral(),
+//			"port", OWL.dataProperty(info, "hasPort").getLiteral()
+//		);
+//		
+//		return config;
+//	}
  
 	public static void main(String args[])
 	{
