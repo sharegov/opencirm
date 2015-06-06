@@ -49,6 +49,8 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 				self.folio(data.propertyInfo.parcelFolioNumber );
 				if(data.propertyInfo.homeOwnerAssociationName == undefined)
 					data.propertyInfo.homeOwnerAssociationName = "";
+			} else {
+				self.folio(null);
 			}
 			self.municipality( data.municipality );
 			self.municipalityId( data.municipalityId );
