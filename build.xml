@@ -282,7 +282,7 @@
             <arg value="stop"/>
             <arg value="cirmservices"/>
         </exec>
-    <sleep seconds="25"/>
+    <sleep seconds="60"/>
    </target>
    <target name="start" description="Start server specified with -Dserver=hostname parameter.">
      <echo message="Starting ${server}"/>
