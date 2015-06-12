@@ -1035,7 +1035,6 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
 		};
 
 		function isServiceFieldUpdateWithinTimeout(el) {
-		    //return true;
 			/*
 			1) Determine effective hasUpdateTimeoutMins value 
 				1. check if serviceField has the updateTime obj prop
@@ -1043,12 +1042,15 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
 				3. if not, use the ServiceCase default
 				4. if not return undefined
 			2) return (currentTimeLong - srCreatedTime) / 60000 <= effectiveUpdateTimeoutMins  
-			*/
+			*/		    	
 			var isAnswerUpdateAllowed = undefined;
-			if(el && el.hasBusinessCodes && el.hasBusinessCodes().indexOf("NOUPDATE") != -1)
-				return isAnswerUpdateAllowed;
-			if(!U.isEmptyString(self.currentServerTime))
-			{
+			if(el && el.hasBusinessCodes && el.hasBusinessCodes().indexOf("NOUPDATE") != -1) {
+				//do nothing == isAnswerUpdateAllowed = undefined;
+			} 
+			else if(self.isPendingApproval) {
+				isAnswerUpdateAllowed = true;
+			} 
+			else if(!U.isEmptyString(self.currentServerTime)) {
 				var comparableTime = "";
 				if(self.data().properties().hasDateCreated === undefined)
 					return true;
@@ -3102,7 +3104,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
     }
     	
     function fetchSR(bo, model, isNew) {
-		var type = bo.type;
+    	var type = bo.type;
 		if(type.indexOf("legacy:") == -1) {
 			type = "legacy:"+type;
 			bo.type = type;
@@ -3140,6 +3142,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
 					if(data.approvalState == 'APPROVAL_PENDING')
 					{
 						model.isPendingApproval = true;
+						unlockEntryFields();
 						$("#sh_dialog_alert")[0].innerText = "The following Service Request has been identified as a self-service request and is 'Pending Approval'. Please review the request and make appropriate changes. When complete, set the status to 'Open' then save.";
 						$("#sh_dialog_alert").dialog({ height: 150, width: 500, modal: true, buttons: {
 								"Continue" : function() {
@@ -3156,8 +3159,16 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
 				});  	    
 	};
 	
+	function unlockEntryFields() {
+		$('SELECT',$('#sr_details')).prop('disabled', false);
+		$('textarea',$('#sr_details')).prop('disabled', false);
+		$('input',$('#sr_details')).prop('disabled', false);
+	};
+	
+	
     //apply view logic here hilpold?
     function setModel(bo, model, srType, type, sameTypeAsCurrent, isNew) {
+    	model.isPendingApproval = false;
     	var currentDateTime = model.getServerDateTime();
     	var original = U.clone(bo);
         console.log('set model', original);
