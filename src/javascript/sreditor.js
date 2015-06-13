@@ -3197,7 +3197,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		else {
 			$('#srTypeID').val(srType.label + " - " +srType.hasJurisdictionCode);
 			setModel(bo, model, srType, type, false, isNew);
-			approvalCheck(bo.properties().hasCaseNumber(), model);
+			if (bo.boid() != "") {
+				approvalCheck(bo.properties().hasCaseNumber(), model);
+			}
 		}
     }
     
