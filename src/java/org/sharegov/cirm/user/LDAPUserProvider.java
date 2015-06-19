@@ -455,10 +455,16 @@ public class LDAPUserProvider implements UserProvider, AutoConfigurable
 			if (L.asJsonList().isEmpty())
 				return Json.nil();
 			Json p = L.at(0);
-			//p.set("username", p.at("uid"));
-			p.set("hasUsername", p.at("uid"))
+			if(p.has("uid"))
+			{
+						p.set("hasUsername", p.at("uid"))
 						.set("FirstName", p.at("givenName"))
 						.set("LastName", p.at("sn"));
+			}else{
+				p.set("hasUsername", "NA")
+				.set("FirstName", "NA")
+				.set("LastName", "NA");
+			}
 			if (!secureClient) p.delAt("userPassword");
 			return p;
 		}
