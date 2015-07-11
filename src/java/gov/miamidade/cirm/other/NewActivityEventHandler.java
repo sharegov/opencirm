@@ -25,6 +25,7 @@ public class NewActivityEventHandler implements EventTrigger
 {
 	public final String DEPT = "department";
 	public final String ORIG = "originator";
+	public final String FEEDBACK_ACTIVITY_FRAGMENT = "MDSHARED_FEEDBACK";
 	
     @Override
     public void apply(OWLNamedIndividual entity, OWLNamedIndividual changeType, Json data)
@@ -34,8 +35,41 @@ public class NewActivityEventHandler implements EventTrigger
     		ThreadLocalStopwatch.now("NewActivityEventHandler activity originated from department, not sending act " + entity);
     	} 
     	else 
-        {
-    		new DepartmentIntegration().tryActivitySend(data.at("serviceCase"), data.at("activity"), -1);
+        {    	
+    		if (!isFeedBackActivity(data.at("activity"))) {
+    			DepartmentIntegration di =  new DepartmentIntegration();
+    			Json result = di.tryActivitySend(data.at("serviceCase"), data.at("activity"), -1);
+    			if (result == null || result.is("ok", false)) {
+    				ThreadLocalStopwatch.error("NewActivityEventHandler failed to tryActivitySend with " + result);
+    			}
+    		} else {
+    			ThreadLocalStopwatch.now("NewActivityEventHandler is not sending a " + FEEDBACK_ACTIVITY_FRAGMENT + " activity.");
+    		}
         }
-    }    
+    }
+    
+    /**
+     * Determines if activity type's fragment is MDSHARED_FEEDBACK.
+     * 
+     * This method does return false if type cannot be determined or activity parameter is null.
+     * 
+     * @param activity
+     * @return true if MDSHARED_FEEDBACK, false if not OR type could not be determined.
+     */
+    public boolean isFeedBackActivity(Json activity) {
+    	if (activity == null || Json.nil().equals(activity)) {
+    		System.err.println("NewActivityEventHandler.isFeedBackActivity activity was null or nil " + activity);
+    	}
+    	String actTypeIRI = null;    	
+    	if (activity.has("legacy:hasActivity")) {
+    		Json hasActivity = activity.at("legacy:hasActivity");
+    		if (hasActivity.isObject() && hasActivity.has("iri") && hasActivity.at("iri").isString()) {
+    			actTypeIRI = hasActivity.at("iri").asString();
+    		} else if (hasActivity.isString()) {
+    			actTypeIRI = hasActivity.asString();
+    		} // else cannot find activity type iri
+    	}    	
+    	return actTypeIRI == null? false : actTypeIRI.endsWith(FEEDBACK_ACTIVITY_FRAGMENT);
+    }
+    
 }
