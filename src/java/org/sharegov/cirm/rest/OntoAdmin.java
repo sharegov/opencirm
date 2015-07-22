@@ -40,10 +40,17 @@ import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.PullActivity;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.PushActivity;
 import org.hypergraphdb.peer.HGPeerIdentity;
+import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
@@ -253,11 +260,14 @@ public class OntoAdmin extends RestService
 	}
 
 	@POST
-	@Path("/commit/{ontologyIri}")
-	public Json commit(@PathParam("ontologyIri") String ontologyIri,
-				@QueryParam("userName") String userName,
-				@QueryParam("comment") String comment)
+	@Path("/commit")
+	public Json commit(Json changes)
 	{
+		//hard coded for now
+		changes = Json.object().set("ontologyIri", "http://www.miamidade.gov/cirm/legacy").set("userName", "camilo").set("comment", "Disable SR").set("srtype","legacy:BULKTRA").set("axioms", Json.object().set("legacy:isDisabledCreate", true));
+		String ontologyIri = changes.at("ontologyIri").asString();
+		String userName = changes.at("userName").asString();
+		String comment = changes.at("comment").asString();
 		if (ontologyIri == null) throw new IllegalArgumentException("ontologyIri == null");
 		if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
 		if (comment == null || comment.isEmpty()) throw new IllegalArgumentException("comment null or empty");
@@ -266,13 +276,31 @@ public class OntoAdmin extends RestService
 		{ 
 			Refs.owlRepo.resolve().ensurePeerStarted();
 			OWLOntology O = OWL.manager().getOntology(IRI.create(ontologyIri)); 
+			
 			if (O == null) {
 				return ko("Ontology not found: " + ontologyIri);
 			}
-			VersionedOntology vo = repo.getVersionControlledOntology(O); 
+			
+			//disable an SR type
+			//OWL
+			OWLOntologyManager manager = OWL.manager();
+			OWLDataFactory factory = manager.getOWLDataFactory();
+			OWLIndividual sr = factory.getOWLNamedIndividual(OWL.fullIri(changes.at("srtype").asString()));
+			OWLDataProperty property = factory.getOWLDataProperty(OWL.fullIri("legacy:isDisabledCreate"));
+			OWLLiteral value =	factory.getOWLLiteral(changes.at("axioms").at("legacy:isDisabledCreate").asBoolean());
+			OWLDataPropertyAssertionAxiom assertion = factory.getOWLDataPropertyAssertionAxiom(property, sr, value);
+			//factory.get
+			//manager.
+			AddAxiom addAxiom = new AddAxiom(O, assertion);
+			//RemoveAxiom re
+			manager.applyChange(addAxiom);			
+			
+			VersionedOntology vo = repo.getVersionControlledOntology(O);
+			
 			if (vo == null) {
 				return ko("Ontology found, but not versioned: " + ontologyIri);
 			}
+			
 			
 			int nrOfCommittableChanges = vo.getNrOfCommittableChanges(); 
 			if (nrOfCommittableChanges == 0) {
@@ -298,6 +326,8 @@ public class OntoAdmin extends RestService
 			t.printStackTrace(System.err);
 			return ko(t.toString());
 		}		
+		
+		
 	}
 
 	
