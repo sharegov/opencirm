@@ -29,6 +29,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
 import mjson.Json;
 
@@ -250,6 +251,55 @@ public class OntoAdmin extends RestService
 			return ko(t.toString());
 		}		
 	}
+
+	@POST
+	@Path("/commit/{ontologyIri}")
+	public Json commit(@PathParam("ontologyIri") String ontologyIri,
+				@QueryParam("userName") String userName,
+				@QueryParam("comment") String comment)
+	{
+		if (ontologyIri == null) throw new IllegalArgumentException("ontologyIri == null");
+		if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
+		if (comment == null || comment.isEmpty()) throw new IllegalArgumentException("comment null or empty");
+		VDHGDBOntologyRepository repo = repo();
+		try
+		{ 
+			Refs.owlRepo.resolve().ensurePeerStarted();
+			OWLOntology O = OWL.manager().getOntology(IRI.create(ontologyIri)); 
+			if (O == null) {
+				return ko("Ontology not found: " + ontologyIri);
+			}
+			VersionedOntology vo = repo.getVersionControlledOntology(O); 
+			if (vo == null) {
+				return ko("Ontology found, but not versioned: " + ontologyIri);
+			}
+			
+			int nrOfCommittableChanges = vo.getNrOfCommittableChanges(); 
+			if (nrOfCommittableChanges == 0) {
+				int conflicts = vo.getWorkingSetConflicts().size(); 
+				if (conflicts > 0) {
+					return ko("All " + conflicts + " pending changes in Ontology " + ontologyIri + " are conflicts, " 
+							+ "which will be removed automatically on commit, so there is no single change to commit..");			
+				} else {
+					return ko("Ontology " + ontologyIri + " did not have any pending changes.");
+				}
+			} else {
+				vo.commit(userName, comment);
+				//assert 
+				//vo.getNrOfCommittableChanges() == 0
+				//vo.getNrOfRevisions() = before commit revision count + 1
+				String message = "Committed " + nrOfCommittableChanges + " changes for ontology " + ontologyIri 
+						+ " new head revision is " + vo.getHeadRevision().getRevision();
+				return ok().set("message", message);
+			}
+		}
+		catch (Throwable t)
+		{
+			t.printStackTrace(System.err);
+			return ko(t.toString());
+		}		
+	}
+
 	
 	@POST
 	@Path("/reloadFileBased/{iri}")
