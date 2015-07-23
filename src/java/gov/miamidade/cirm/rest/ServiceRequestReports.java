@@ -90,6 +90,9 @@ import org.sharegov.cirm.rest.LegacyEmulator;
 @Path("reports")
 public class ServiceRequestReports
 {
+	
+	public static final int FTP_MAX_ON_ERROR_RETRIES = 5;
+	
 	private Map<String, Integer> blueCartColumnOrder = Collections.emptyMap();
 	private QueryTranslator qt = null;
 	private RelationalStore store = null;
@@ -500,7 +503,7 @@ public class ServiceRequestReports
 				System.out.println("data passed into the recyclingBlueCartIssuesReport method : " + data.toString());
 			}
 			if(ftp)
-				sendFile(result.toString());
+				sendReportToFTPWithOnErrorRetry(result.toString());
 			if(saveLocally)
 				saveTextFileLocally(result.toString());
 			System.out.println("Successfully created the Recycling Blue Cart Issues report.");
@@ -541,12 +544,39 @@ public class ServiceRequestReports
 		    return ko(e.getMessage());
 		}
 	}
-	
+
 	/**
-	 * FTPs the report to the PROD/TEST location
+	 * FTPs the report to the PROD/TEST location with up to FTP_MAX_ON_ERROR_RETRIES retries on any error.
+	 * 
 	 * @param fileStr
 	 */
-	private void sendFile(String fileStr)
+	private void sendReportToFTPWithOnErrorRetry(String reportContent) {
+		int attemptCount = 0;
+		boolean success;
+		do {
+			try {
+				attemptCount++;
+				sendReportToFTP(reportContent);
+				success = true;
+			} catch (Exception e) {
+				success = false;
+				System.err.println("Blue Cart Report failed to send to FTP on " + attemptCount + ". of "
+						+ FTP_MAX_ON_ERROR_RETRIES + "attempts."
+						+ "Error was: " + e);
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException ie) 
+				{ /* do nothing */ }
+			}
+		} while (!success && attemptCount <= FTP_MAX_ON_ERROR_RETRIES); 
+	}
+
+	/**
+	 * FTPs the report to the PROD/TEST location
+	 * 
+	 * @param reportContent the full report which will be used as file content.
+	 */
+	private void sendReportToFTP(String reportContent)
 	{
 		OWLNamedIndividual ftpConfig = Refs.configSet.resolve().get("FTPServerConfig");
 		OWLLiteral hasUserName = OWL.dataProperty(ftpConfig, "hasUsername");
@@ -574,7 +604,6 @@ public class ServiceRequestReports
 					throw new RuntimeException("Unable to change the working directory to "
 							+ destinationDir + " on FTP Server");
 			}
-			client.listFiles(recyclingCartsFileName);
 			FTPFile[] listFiles = client.listFiles(recyclingCartsFileName);
 			for(FTPFile file : listFiles)
 			{
@@ -588,7 +617,7 @@ public class ServiceRequestReports
 			}
 
 			boolean storeFile = client.storeFile(recyclingCartsFileName, 
-					new ByteArrayInputStream(fileStr.getBytes()));
+					new ByteArrayInputStream(reportContent.getBytes()));
 			if(!storeFile)
 				throw new RuntimeException("Unable to store the file on FTP Server");
 			boolean logout = client.logout();
@@ -597,13 +626,11 @@ public class ServiceRequestReports
 		}
 		catch(IOException e)
 		{
-			e.printStackTrace();
-			throw new RuntimeException(e.getMessage());
+			throw new RuntimeException(e);
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
-			throw new RuntimeException(e.getMessage());
+			throw new RuntimeException(e);
 		}
 		finally
 		{
