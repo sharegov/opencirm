@@ -22,6 +22,7 @@ import static org.sharegov.cirm.utils.GenUtils.ko;
 import static org.sharegov.cirm.utils.GenUtils.ok;
 
 import java.io.File;
+import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.GET;
@@ -49,6 +50,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
@@ -60,6 +62,8 @@ import org.sharegov.cirm.owl.CachedReasoner;
 import org.sharegov.cirm.owl.SynchronizedOWLOntologyManager;
 //import org.sharegov.cirm.owl.Wrapper;
 import org.sharegov.cirm.utils.GenUtils;
+
+import com.sun.tools.internal.ws.wsdl.document.jaxws.Exception;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLOntologyManagerImpl;
 
@@ -73,7 +77,7 @@ public class OntoAdmin extends RestService
 	public final String CACHED_REASONER_POPULATE_GET_INSTANCES_CACHE_FILE = CACHED_REASONER_RESDIR + "populateGetInstancesCache.json";
 	
 	
-	private VDHGDBOntologyRepository repo()
+	protected VDHGDBOntologyRepository repo()
 	{
 		return Refs.owlRepo.resolve().repo();
 	}
@@ -259,18 +263,8 @@ public class OntoAdmin extends RestService
 		}		
 	}
 
-	@POST
-	@Path("/commit")
-	public Json commit(Json changes)
-	{
-		//hard coded for now
-		changes = Json.object().set("ontologyIri", "http://www.miamidade.gov/cirm/legacy").set("userName", "camilo").set("comment", "Disable SR").set("srtype","legacy:BULKTRA").set("axioms", Json.object().set("legacy:isDisabledCreate", true));
-		String ontologyIri = changes.at("ontologyIri").asString();
-		String userName = changes.at("userName").asString();
-		String comment = changes.at("comment").asString();
-		if (ontologyIri == null) throw new IllegalArgumentException("ontologyIri == null");
-		if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
-		if (comment == null || comment.isEmpty()) throw new IllegalArgumentException("comment null or empty");
+	protected boolean commit(String ontologyIri, String userName, String comment, List <OWLOntologyChange> changes) throws RuntimeException
+	{		
 		VDHGDBOntologyRepository repo = repo();
 		try
 		{ 
@@ -278,27 +272,18 @@ public class OntoAdmin extends RestService
 			OWLOntology O = OWL.manager().getOntology(IRI.create(ontologyIri)); 
 			
 			if (O == null) {
-				return ko("Ontology not found: " + ontologyIri);
+				throw new RuntimeException ("Ontology not found: " + ontologyIri);
 			}
 			
-			//disable an SR type
 			//OWL
 			OWLOntologyManager manager = OWL.manager();
-			OWLDataFactory factory = manager.getOWLDataFactory();
-			OWLIndividual sr = factory.getOWLNamedIndividual(OWL.fullIri(changes.at("srtype").asString()));
-			OWLDataProperty property = factory.getOWLDataProperty(OWL.fullIri("legacy:isDisabledCreate"));
-			OWLLiteral value =	factory.getOWLLiteral(changes.at("axioms").at("legacy:isDisabledCreate").asBoolean());
-			OWLDataPropertyAssertionAxiom assertion = factory.getOWLDataPropertyAssertionAxiom(property, sr, value);
-			//factory.get
-			//manager.
-			AddAxiom addAxiom = new AddAxiom(O, assertion);
-			//RemoveAxiom re
-			manager.applyChange(addAxiom);			
+	
+			manager.applyChanges(changes);
 			
 			VersionedOntology vo = repo.getVersionControlledOntology(O);
 			
 			if (vo == null) {
-				return ko("Ontology found, but not versioned: " + ontologyIri);
+				throw new RuntimeException ("Ontology found, but not versioned: " + ontologyIri);
 			}
 			
 			
@@ -306,28 +291,26 @@ public class OntoAdmin extends RestService
 			if (nrOfCommittableChanges == 0) {
 				int conflicts = vo.getWorkingSetConflicts().size(); 
 				if (conflicts > 0) {
-					return ko("All " + conflicts + " pending changes in Ontology " + ontologyIri + " are conflicts, " 
+					throw new RuntimeException ("All " + conflicts + " pending changes in Ontology " + ontologyIri + " are conflicts, " 
 							+ "which will be removed automatically on commit, so there is no single change to commit..");			
 				} else {
-					return ko("Ontology " + ontologyIri + " did not have any pending changes.");
+					throw new RuntimeException("Ontology " + ontologyIri + " did not have any pending changes.");
 				}
 			} else {
 				vo.commit(userName, comment);
 				//assert 
 				//vo.getNrOfCommittableChanges() == 0
 				//vo.getNrOfRevisions() = before commit revision count + 1
-				String message = "Committed " + nrOfCommittableChanges + " changes for ontology " + ontologyIri 
-						+ " new head revision is " + vo.getHeadRevision().getRevision();
-				return ok().set("message", message);
+//				String message = "Committed " + nrOfCommittableChanges + " changes for ontology " + ontologyIri 
+//						+ " new head revision is " + vo.getHeadRevision().getRevision();
+				return true;
 			}
 		}
 		catch (Throwable t)
 		{
 			t.printStackTrace(System.err);
-			return ko(t.toString());
-		}		
-		
-		
+			throw new RuntimeException(t.toString());
+		}				
 	}
 
 	
