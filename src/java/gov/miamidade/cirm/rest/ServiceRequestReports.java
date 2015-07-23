@@ -553,12 +553,14 @@ public class ServiceRequestReports
 	private void sendReportToFTPWithOnErrorRetry(String reportContent) {
 		int attemptCount = 0;
 		boolean success;
+		Exception lastExc = null;
 		do {
 			try {
 				attemptCount++;
 				sendReportToFTP(reportContent);
 				success = true;
 			} catch (Exception e) {
+				lastExc = e;
 				success = false;
 				System.err.println("Blue Cart Report failed to send to FTP on " + attemptCount + ". of "
 						+ FTP_MAX_ON_ERROR_RETRIES + "attempts."
@@ -569,6 +571,9 @@ public class ServiceRequestReports
 				{ /* do nothing */ }
 			}
 		} while (!success && attemptCount <= FTP_MAX_ON_ERROR_RETRIES); 
+		if (!success) {
+			throw new RuntimeException("Blue Cart Report failed to send to FTP. All " + FTP_MAX_ON_ERROR_RETRIES + " attempts failed. Last error was " + lastExc);
+		}
 	}
 
 	/**
