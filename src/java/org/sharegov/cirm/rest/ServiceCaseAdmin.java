@@ -1,38 +1,85 @@
 package org.sharegov.cirm.rest;
 
+import static org.sharegov.cirm.OWL.owlClass;
+import static org.sharegov.cirm.OWL.reasoner;
+import static org.sharegov.cirm.utils.GenUtils.ko;
+import static org.sharegov.cirm.utils.GenUtils.ok;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
-import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
+import mjson.Json;
+
 import org.semanticweb.owlapi.model.AddAxiom;
-import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
-import static org.sharegov.cirm.utils.GenUtils.ok;
-import static org.sharegov.cirm.utils.GenUtils.ko;
-
-import mjson.Json;
 
 @Path("sradmin")
 @Produces("application/json")
 public class ServiceCaseAdmin extends OntoAdmin {
 	
 	private static final String PREFIX = "legacy:";
-
+	/**
+	 * 
+	 *
+	 */
+	
+	@GET
+	@Path("/serviceCases/enabled")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getEnabledServiceCases() {
+		try
+		{
+			OWLReasoner reasoner = reasoner();
+			OWLClass serviceCase = owlClass(PREFIX + "ServiceCase");
+			//TODO enable security
+//			if (!isClientExempt() && reasoner.getSuperClasses(expr, false).containsEntity(owlClass("Protected")))
+//				expr = and(expr, Permissions.constrain(individual("BO_View"), getUserActors()));
+//			else if (!isClientExempt() && !reasoner.getSubClasses(and(expr, owlClass("Protected")), false).isBottomSingleton())
+//			{
+//				return ko("Access denied - protected resources could be returned, please split the query.");
+//			}
+			Set<OWLNamedIndividual> S = reasoner.getInstances(serviceCase, false).getFlattened();
+			Json A = Json.array();
+			for (OWLNamedIndividual ind : S)
+			{	
+				Set<OWLLiteral> values = OWL.dataProperties(ind, PREFIX+ "isDisabledCreate");
+				if(!values.contains(OWL.dataFactory().getOWLLiteral(true))){
+					A.add(Json.object().set("iri",ind.getIRI().toString()).set("code", ind.getIRI().getFragment()).set("label",OWL.getEntityLabel(ind)));
+				}
+			}
+			return Response.ok(A, MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
 	@POST
-	@Path("/disable/")
+	@Path("/disable")
 	public Json disable(Json srData)
 	{
 		try
