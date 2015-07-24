@@ -32,8 +32,8 @@ public class ReportingJob
 	public static boolean DISABLE_EXPORT_META_DATA = false;
 	public static boolean DISABLE_RUN_BATCH_JOB = false;
 
-	public static boolean SYSOUT_TO_FILE = false;
-	public static boolean CLEAR_ONTO_DIR = false;
+	public static boolean SYSOUT_TO_FILE = true;
+	public static boolean CLEAR_ONTO_DIR = true;
 	public static boolean USE_FILE_ONTOS = false;
 	
 	public final static String BATCH_JOB_DIR = "batchjob";
