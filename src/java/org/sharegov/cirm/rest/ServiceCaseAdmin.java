@@ -21,6 +21,7 @@ import mjson.Json;
 
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
@@ -33,6 +34,7 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
+import org.sharegov.cirm.legacy.Permissions;
 
 @Path("sradmin")
 @Produces("application/json")
@@ -52,13 +54,8 @@ public class ServiceCaseAdmin extends OntoAdmin {
 		{
 			OWLReasoner reasoner = reasoner();
 			OWLClass serviceCase = owlClass(PREFIX + "ServiceCase");
-			//TODO enable security
-//			if (!isClientExempt() && reasoner.getSuperClasses(expr, false).containsEntity(owlClass("Protected")))
-//				expr = and(expr, Permissions.constrain(individual("BO_View"), getUserActors()));
-//			else if (!isClientExempt() && !reasoner.getSubClasses(and(expr, owlClass("Protected")), false).isBottomSingleton())
-//			{
-//				return ko("Access denied - protected resources could be returned, please split the query.");
-//			}
+			//TODO: Permission check
+			//permissionCheck(serviceCase)
 			Set<OWLNamedIndividual> S = reasoner.getInstances(serviceCase, false).getFlattened();
 			Json A = Json.array();
 			for (OWLNamedIndividual ind : S)
@@ -125,6 +122,17 @@ public class ServiceCaseAdmin extends OntoAdmin {
 			t.printStackTrace(System.err);
 			return ko(t.toString());
 		}
+		
+	}
+	
+	private void permissionCheck(OWLClassExpression expr){
+		//TODO enable security
+//		if (!isClientExempt() && reasoner().getSuperClasses(expr, false).containsEntity(owlClass("Protected")))
+//			expr = OWL.and(expr, Permissions.constrain(OWL.individual("BO_View"), getUserActors()));
+//		else if (!isClientExempt() && !reasoner().getSubClasses(OWL.and(expr, owlClass("Protected")), false).isBottomSingleton())
+//		{
+//			return ko("Access denied - protected resources could be returned, please split the query.");
+//		}
 		
 	}
 
