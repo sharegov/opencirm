@@ -42,6 +42,18 @@ public class OracleHook implements DatabaseHook
 			ods.setURL(description.at("hasUrl").asString());
 			ods.setUser(description.at("hasUsername").asString());
 			ods.setPassword(description.at("hasPassword").asString());
+			//Set connection timeout if configured
+			if (description.has("hasTimeoutSecs")) {
+				try {
+					Properties connectionProperties = new Properties();
+					int timeoutSecs = Integer.parseInt(description.at("hasTimeoutSecs").asString());
+					connectionProperties.setProperty("oracle.jdbc.ReadTimeout", "" + timeoutSecs);
+					ods.setConnectionProperties(connectionProperties);
+				} catch (Exception e) {
+					ThreadLocalStopwatch.error("Database connection hasTimeoutSecs not an integer value, using default for data source url" + ods.getURL());
+					e.printStackTrace();
+				}
+			}	
 			return ods;
 		}
 		catch (Exception ex)
@@ -76,6 +88,16 @@ public class OracleHook implements DatabaseHook
 			Properties connectionProperties = new Properties();
 			connectionProperties.setProperty("defaultRowPrefetch", "" + POOL_CONNECTION_PREFETCH_ROWS);
 			connectionProperties.setProperty("defaultBatchValue", "" + POOL_CONNECTION_BATCH_ROWS);
+			//Set connection timeout if configured
+			if (description.has("hasTimeoutSecs")) {
+				try {
+					int timeoutSecs = Integer.parseInt(description.at("hasTimeoutSecs").asString());
+					connectionProperties.setProperty("oracle.jdbc.ReadTimeout", "" + timeoutSecs);
+				} catch (Exception e) {
+					ThreadLocalStopwatch.error("Database connection hasTimeoutSecs not an integer value, using default for pool data source url" + pds.getURL());
+					e.printStackTrace();
+				}
+			}	
 			pds.setConnectionProperties(connectionProperties);
 		}
 		catch (Exception ex)
