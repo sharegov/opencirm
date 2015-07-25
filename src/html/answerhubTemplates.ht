@@ -418,6 +418,7 @@
 				<li><label>Street Name:</label><span data-bind="text: streetName"></span></li>
 				<li><label>Maintenance Code:</label><span data-bind="text: $root.addressSearch.getMaintenanceInfo($data)"></span></li>
 			</ul>
+		    <li><label>COM PW Grid Number:</label><span data-bind="text: addressSearch.address.addressData().publicWorksGridNumber"></span></li>
             </ul>
 		</div>
 		<div id="wastePickup_continued">
