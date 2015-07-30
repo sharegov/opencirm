@@ -35,27 +35,39 @@ public class ServiceCaseManager extends OntoAdmin {
 	public Json getDisabled() {
 		return getServiceCasesByStatus(false);
 	}
+	
+	public Json getAll(){
+		Set<OWLNamedIndividual> S = getAllIndividuals();
+		Json A = Json.array();
+		for (OWLNamedIndividual ind : S) {			
+			A.add(Json.object().set("iri", ind.getIRI().toString())
+					.set("code", ind.getIRI().getFragment())
+					.set("label", OWL.getEntityLabel(ind)));
+		}
+
+		return A;
+	}
+	
+	private Set<OWLNamedIndividual> getAllIndividuals (){
+		OWLReasoner reasoner = reasoner();
+		OWLClass serviceCase = owlClass(PREFIX + "ServiceCase");
+		// TODO: Permission check
+		// permissionCheck(serviceCase)
+		return reasoner.getInstances(serviceCase, false).getFlattened();
+	}
 
 	// returns a list of enabled/disabled service cases
 	// parameter isGetEnabled describes whether the function returns all enabled
 	// or all disabled SRs
 	// if isGetEnabled == true, returns all enabled
 	// if isGetEnabled == false, returns all disabled
-	private Json getServiceCasesByStatus(boolean isGetEnabled) {
-		OWLReasoner reasoner = reasoner();
-		OWLClass serviceCase = owlClass(PREFIX + "ServiceCase");
-		// TODO: Permission check
-		// permissionCheck(serviceCase)
-		Set<OWLNamedIndividual> S = reasoner.getInstances(serviceCase, false)
-				.getFlattened();
+	private Json getServiceCasesByStatus(boolean isGetEnabled) {		
+		Set<OWLNamedIndividual> S = getAllIndividuals();
 		Json A = Json.array();
 		for (OWLNamedIndividual ind : S) {
-			Set<OWLLiteral> values = OWL.dataProperties(ind, PREFIX
-					+ "isDisabledCreate");
-			if ((!isGetEnabled && values.contains(OWL.dataFactory()
-					.getOWLLiteral(true)))
-					|| (isGetEnabled && !values.contains(OWL.dataFactory()
-							.getOWLLiteral(true)))) {
+			boolean isSrDisabledOrDisabledCreate = isSrDisabledOrDisabledCreate(ind);
+			boolean shouldAddServiceCase = (!isGetEnabled && isSrDisabledOrDisabledCreate) || (isGetEnabled && !isSrDisabledOrDisabledCreate); 
+			if (shouldAddServiceCase) {
 				A.add(Json.object().set("iri", ind.getIRI().toString())
 						.set("code", ind.getIRI().getFragment())
 						.set("label", OWL.getEntityLabel(ind)));
@@ -63,6 +75,20 @@ public class ServiceCaseManager extends OntoAdmin {
 		}
 
 		return A;
+	}
+	
+	/**
+	 * Checks if an Sr has isDisabledCreate true or isDisabled true
+	 * @param srTypeIndividual
+	 * @return false if either no property
+	 */
+	private boolean isSrDisabledOrDisabledCreate(OWLNamedIndividual srTypeIndividual) {
+		Set<OWLLiteral> values = OWL.dataProperties(srTypeIndividual, PREFIX
+				+ "isDisabledCreate");		
+		boolean isDisabledCreate = values.contains(OWL.dataFactory().getOWLLiteral(true));
+		values = OWL.dataProperties(srTypeIndividual, PREFIX
+				+ "isDisabled");
+		return isDisabledCreate || values.contains(OWL.dataFactory().getOWLLiteral(true));		
 	}
 
 	public Json disable(String srType, String userName, String comment) {

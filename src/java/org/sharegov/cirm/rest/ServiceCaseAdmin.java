@@ -44,12 +44,30 @@ public class ServiceCaseAdmin extends RestService {
 	@GET
 	@Path("/types/disabled")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getDisnabledServiceCases() {
+	public Response getDisabledServiceCases() {
 		try
 		{
 			ServiceCaseManager scm = new ServiceCaseManager();
 			
 			return Response.ok(scm.getDisabled(), MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
+	@GET
+	@Path("/types/all")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getAllServiceCases() {
+		try
+		{
+			ServiceCaseManager scm = new ServiceCaseManager();
+			
+			return Response.ok(scm.getAll(), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			return Response
 					.status(Status.INTERNAL_SERVER_ERROR)
