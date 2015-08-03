@@ -35,7 +35,12 @@ import javax.ws.rs.QueryParam;
 import mjson.Json;
 
 import org.hypergraphdb.app.owl.HGDBOntology;
+import org.hypergraphdb.app.owl.versioning.Revision;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
+import org.hypergraphdb.app.owl.versioning.VersionedOntologyComparator.RevisionCompareOutcome;
+import org.hypergraphdb.app.owl.versioning.VersionedOntologyComparator.RevisionComparisonResult;
+import org.hypergraphdb.app.owl.versioning.VersionedOntologyComparator.VersionedOntologyComparisonResult;
+import org.hypergraphdb.app.owl.versioning.distributed.ClientCentralizedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.DistributedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.PullActivity;
@@ -434,6 +439,74 @@ public class OntoAdmin extends RestService
 			return Json.make("Reasoner is not a CachedReasoner instance.");
 	}
 
+	
+	@GET 
+	@Path("/compare") 
+	public Json compare(){
+		VDHGDBOntologyRepository repo = Refs.owlRepo.resolve().repo();
+		Json json = Json.array(); 
+	    
+		String iri = "hgdb://www.miamidade.gov/cirm/legacy";
+		/*******************************/
+		
+		/*****************/
+        
+		HGDBOntology activeOnto = repo().getOntologyByDocumentIRI(IRI.create(iri));
+		//HGDBOntology activeOnto = repo.getOntologyByDocumentIRI(OWL.fullIri("http://www.miamidade.gov/cirm/legacy"));
+		
+		
+		
+		DistributedOntology distributedOnto = repo.getDistributedOntology(activeOnto); 
+		
+		
+		HGPeerIdentity server;  
+		ClientCentralizedOntology centralO = (ClientCentralizedOntology)distributedOnto; 
+		
+		
+		server = centralO.getServerPeer(); 
+		
+		
+		VersionedOntologyComparisonResult result = repo.compareOntologyToRemote(distributedOnto, server, 180); 
+		
+		Revision source = null; 
+		Revision target = null;
+		
+		for(RevisionComparisonResult r : result.getRevisionResults()){
+			
+			RevisionCompareOutcome revisionOutcome = r.getOutcome();
+		    
+			source = r.getSource(); 
+			target = r.getTarget(); 
+			
+			
+			Json outcome = Json.object().set("name", revisionOutcome.name());
+		    
+			Json sourceJson = Json.object().set("revision", source.getRevision())
+		    		.set("comment", source.getRevisionComment())
+		    		.set("timestamp", source.getTimeStamp().toString())
+		    		.set("user", source.getUser()); 
+		   
+		    
+		    Json targetJson = Json.object().set("revision", target.getRevision())
+		    		.set("comment", target.getRevisionComment())
+		    		.set("timestamp", target.getTimeStamp().toString())
+		    		.set("user", target.getUser()); 	
+		    
+			
+			
+			Json obj = Json.object().set("outcome", outcome)
+					.set("source", sourceJson)
+					.set("target", targetJson); 
+			
+			
+					
+			
+			json.add(obj);
+		}
+		
+		
+		return json;
+	}
 	
 	
 	public static void main(String[]args)
