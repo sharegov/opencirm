@@ -12,6 +12,7 @@ import javax.ws.rs.core.Response.Status;
 import mjson.Json;
 
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.sharegov.cirm.legacy.ServiceCaseManager;
 
 @Path("sradmin")
 @Produces("application/json")
