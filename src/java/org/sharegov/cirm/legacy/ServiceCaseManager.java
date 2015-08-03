@@ -1,4 +1,4 @@
-package org.sharegov.cirm.rest;
+package org.sharegov.cirm.legacy;
 
 import static org.sharegov.cirm.OWL.owlClass;
 import static org.sharegov.cirm.OWL.reasoner;
@@ -23,6 +23,7 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
+import org.sharegov.cirm.rest.OntoAdmin;
 
 public class ServiceCaseManager extends OntoAdmin {
 
