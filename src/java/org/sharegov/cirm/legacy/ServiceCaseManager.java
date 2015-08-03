@@ -24,6 +24,8 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.rest.OntoAdmin;
+import org.sharegov.cirm.utils.Base64;
+import org.sharegov.cirm.utils.GenUtils;
 
 public class ServiceCaseManager extends OntoAdmin {
 
@@ -117,5 +119,11 @@ public class ServiceCaseManager extends OntoAdmin {
 		commit(ontologyIri, userName, comment, changes);
 
 		return Json.object().set("success", true);
+	}
+	
+	public Json refreshOnto() {
+		String jenkingsEndpoint = "https://api.miamidade.gov/jenkins/job/CIRM-ADMIN-TEST-CI-JOB-OPENCIRM/build?token=7ef54dc3a604a1514368e8707d8415";
+
+		return  GenUtils.httpPostWithBasicAuth(jenkingsEndpoint, "cirm", "admin", "");	
 	}
 }

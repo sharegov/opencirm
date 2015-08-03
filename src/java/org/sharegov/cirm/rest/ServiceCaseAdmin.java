@@ -1,6 +1,7 @@
 package org.sharegov.cirm.rest;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -19,6 +20,7 @@ import org.sharegov.cirm.legacy.ServiceCaseManager;
 public class ServiceCaseAdmin extends RestService {
 	
 	private static final String PREFIX = "legacy:";
+	private static final String KEY = "7ef54dc3a604a1514368e8707d8415";
 	/**
 	 * 
 	 *
@@ -93,6 +95,30 @@ public class ServiceCaseAdmin extends RestService {
 			ServiceCaseManager scm = new ServiceCaseManager();
 			
 			return Response.ok(scm.disable(srType, userName, comment), MediaType.APPLICATION_JSON).build();
+		}
+		catch(Exception e){
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+		
+	}
+	
+	@POST	
+	@Path("/refresh/now")
+	public Response refresh(Json aKey)
+	{
+		try
+		{
+			String key = aKey.at("key").asString();
+			if (key == null || key.isEmpty()) throw new IllegalArgumentException("key needed for this operation");
+			if (key.compareTo(KEY) != 0) throw new IllegalArgumentException("key is invalid");
+			
+			ServiceCaseManager scm = new ServiceCaseManager();
+			
+			return Response.ok(scm.refreshOnto(), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
 			return Response
