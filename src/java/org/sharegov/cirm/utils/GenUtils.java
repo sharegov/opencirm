@@ -385,6 +385,7 @@ public class GenUtils
 	        }
 
 	        int HttpResult = connection.getResponseCode(); 
+	        connection.disconnect();
 	        Json result = Json.object().set("response_code", HttpResult);
 	        if(HttpResult == HttpURLConnection.HTTP_OK){	        
 	        	return result.set("response", IOUtils.toString((InputStream)connection.getInputStream()));

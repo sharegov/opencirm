@@ -134,8 +134,9 @@ public class ServiceCaseManager extends OntoAdmin {
 	}
 	
 	public Json refreshOnto() {
-		String jenkingsEndpoint = "https://api.miamidade.gov/jenkins/job/CIRM-ADMIN-TEST-CI-JOB-OPENCIRM/build?token=7ef54dc3a604a1514368e8707d8415";
+//		String jenkingsEndpointFullDeploy = "https://api.miamidade.gov/jenkins/job/CIRM-ADMIN-TEST-CI-JOB-OPENCIRM/build?token=7ef54dc3a604a1514368e8707d8415";
+		String jenkingsEndpointRefreshOntosOnly = "https://api.miamidade.gov/jenkins/job/CIRM-ADMIN-TEST-REFRESH-ONTOS/build?token=1a85a585ef7c424191c7c58ee3c4a97d556eec91";
 
-		return  GenUtils.httpPostWithBasicAuth(jenkingsEndpoint, "cirm", "admin", "");	
+		return  GenUtils.httpPostWithBasicAuth(jenkingsEndpointRefreshOntosOnly, "cirm", "admin", "");	
 	}
 }

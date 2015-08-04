@@ -444,23 +444,16 @@ public class OntoAdmin extends RestService
 	@GET 
 	@Path("/compare") 
 	public Json compare(){
-		OwlRepo owlRepo = Refs.owlRepo.resolve(); 
-		synchronized(owlRepo){ 
-		
-		//VDHGDBOntologyRepository repo = Refs.owlRepo.resolve().repo();
-			VDHGDBOntologyRepository repo = owlRepo.repo();
+		VDHGDBOntologyRepository repo = Refs.owlRepo.resolve().repo();
+	//			VDHGDBOntologyRepository repo = owlRepo.repo();
+
 		Json json = Json.array(); 
 	    
 		String iri = "hgdb://www.miamidade.gov/cirm/legacy";
-		/*******************************/
-		
-		/*****************/
-        
+
 		HGDBOntology activeOnto = repo().getOntologyByDocumentIRI(IRI.create(iri));
 		//HGDBOntology activeOnto = repo.getOntologyByDocumentIRI(OWL.fullIri("http://www.miamidade.gov/cirm/legacy"));
-		
-		
-		
+					
 		DistributedOntology distributedOnto = repo.getDistributedOntology(activeOnto); 
 		
 		
@@ -486,32 +479,37 @@ public class OntoAdmin extends RestService
 			
 			Json outcome = Json.object().set("name", revisionOutcome.name());
 		    
-			Json sourceJson = Json.object().set("revision", source.getRevision())
-		    		.set("comment", source.getRevisionComment())
-		    		.set("timestamp", source.getTimeStamp().toString())
-		    		.set("user", source.getUser()); 
-		   
-		    
-		    Json targetJson = Json.object().set("revision", target.getRevision())
-		    		.set("comment", target.getRevisionComment())
-		    		.set("timestamp", target.getTimeStamp().toString())
-		    		.set("user", target.getUser()); 	
-		    
+			Json sourceJson = Json.object();
+			if(source == null)
+			{
+				sourceJson.set("revision","null");
+			}else{
+				sourceJson.set("revision", source.getRevision())
+			    		.set("comment", source.getRevisionComment())
+			    		.set("timestamp", source.getTimeStamp().toString())
+			    		.set("user", source.getUser());	
+			}		 		   			
+		  
+			Json targetJson = Json.object();
+		    if(target == null){
+		    	targetJson.set("revision", "null");		    	
+		    }
+		    else{
+		    	targetJson.set("revision", target.getRevision())
+			    		.set("comment", target.getRevisionComment())
+			    		.set("timestamp", target.getTimeStamp().toString())
+			    		.set("user", target.getUser());	
+		    }
 			
 			
 			Json obj = Json.object().set("outcome", outcome)
 					.set("source", sourceJson)
-					.set("target", targetJson); 
-			
-			
-					
+					.set("target", targetJson);										
 			
 			json.add(obj);
-		}
-		
+		}		
 		
 		return json;
-		}
 	}
 	
 	
