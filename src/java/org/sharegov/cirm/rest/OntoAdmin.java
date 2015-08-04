@@ -64,6 +64,7 @@ import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.StartUp;
 import org.sharegov.cirm.event.EventDispatcher;
 import org.sharegov.cirm.owl.CachedReasoner;
+import org.sharegov.cirm.owl.OwlRepo;
 import org.sharegov.cirm.owl.SynchronizedOWLOntologyManager;
 //import org.sharegov.cirm.owl.Wrapper;
 import org.sharegov.cirm.utils.GenUtils;
@@ -443,7 +444,11 @@ public class OntoAdmin extends RestService
 	@GET 
 	@Path("/compare") 
 	public Json compare(){
-		VDHGDBOntologyRepository repo = Refs.owlRepo.resolve().repo();
+		OwlRepo owlRepo = Refs.owlRepo.resolve(); 
+		synchronized(owlRepo){ 
+		
+		//VDHGDBOntologyRepository repo = Refs.owlRepo.resolve().repo();
+			VDHGDBOntologyRepository repo = owlRepo.repo();
 		Json json = Json.array(); 
 	    
 		String iri = "hgdb://www.miamidade.gov/cirm/legacy";
@@ -506,6 +511,7 @@ public class OntoAdmin extends RestService
 		
 		
 		return json;
+		}
 	}
 	
 	
