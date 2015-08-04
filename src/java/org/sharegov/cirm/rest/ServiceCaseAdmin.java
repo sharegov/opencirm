@@ -107,6 +107,24 @@ public class ServiceCaseAdmin extends RestService {
 	}
 	
 	@POST	
+	@Path("/push")
+	public Response refresh(){
+		try
+		{			
+			ServiceCaseManager scm = new ServiceCaseManager();
+			
+			return Response.ok(scm.push(), MediaType.APPLICATION_JSON).build();
+		}
+		catch(Exception e){
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
+	@POST	
 	@Path("/refresh/now")
 	public Response refresh(Json aKey)
 	{
