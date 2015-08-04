@@ -121,6 +121,18 @@ public class ServiceCaseManager extends OntoAdmin {
 		return Json.object().set("success", true);
 	}
 	
+	public Json push (){
+		Refs.owlRepo.resolve().ensurePeerStarted();
+		OWLOntology O = OWL.ontology();
+		String ontologyIri = Refs.defaultOntologyIRI.resolve();
+
+		if (O == null) {
+			throw new RuntimeException("Ontology not found: " + ontologyIri);
+		}
+		
+		return push (ontologyIri);
+	}
+	
 	public Json refreshOnto() {
 		String jenkingsEndpoint = "https://api.miamidade.gov/jenkins/job/CIRM-ADMIN-TEST-CI-JOB-OPENCIRM/build?token=7ef54dc3a604a1514368e8707d8415";
 
