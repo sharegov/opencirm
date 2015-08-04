@@ -13,7 +13,9 @@ import javax.ws.rs.core.Response.Status;
 import mjson.Json;
 
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.legacy.ServiceCaseManager;
+import org.sharegov.cirm.owl.OwlRepo;
 
 @Path("sradmin")
 @Produces("application/json")
@@ -84,26 +86,28 @@ public class ServiceCaseAdmin extends RestService {
 	@Path("{srType}/disable")
 	public Response disable(@PathParam("srType") String srType, Json aData)
 	{
-		try
-		{ 
-
-			String userName = aData.at("userName").asString();
-			String comment = "Disable Service Request "+PREFIX+srType;
-			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
-			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
-			
-			ServiceCaseManager scm = new ServiceCaseManager();
-			
-			return Response.ok(scm.disable(srType, userName, comment), MediaType.APPLICATION_JSON).build();
+		OwlRepo repo = Refs.owlRepo.resolve();
+		synchronized(repo) {
+			try
+			{ 
+	
+				String userName = aData.at("userName").asString();
+				String comment = "Disable Service Request "+PREFIX+srType;
+				if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
+				if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
+				
+				ServiceCaseManager scm = new ServiceCaseManager();
+				
+				return Response.ok(scm.disable(srType, userName, comment), MediaType.APPLICATION_JSON).build();
+			}
+			catch(Exception e){
+				return Response
+						.status(Status.INTERNAL_SERVER_ERROR)
+						.type(MediaType.APPLICATION_JSON)
+						.entity(Json.object().set("error", e.getClass().getName())
+								.set("message", e.getMessage())).build();
+			}
 		}
-		catch(Exception e){
-			return Response
-					.status(Status.INTERNAL_SERVER_ERROR)
-					.type(MediaType.APPLICATION_JSON)
-					.entity(Json.object().set("error", e.getClass().getName())
-							.set("message", e.getMessage())).build();
-		}
-		
 	}
 	
 	@POST	
