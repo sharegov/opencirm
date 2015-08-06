@@ -82,6 +82,24 @@ public class ServiceCaseAdmin extends RestService {
 		}
 	}
 	
+	@GET
+	@Path("/compare")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response compareOntos() {
+		try
+		{
+			ServiceCaseManager scm = new ServiceCaseManager();
+			
+			return Response.ok(scm.compare(), MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
 	@PUT
 	@Path("{srType}/disable")
 	public Response disable(@PathParam("srType") String srType, Json aData)

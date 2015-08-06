@@ -9,6 +9,7 @@ import java.util.Set;
 
 import mjson.Json;
 
+import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -23,6 +24,7 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
+import org.sharegov.cirm.owl.OwlRepo;
 import org.sharegov.cirm.rest.OntoAdmin;
 import org.sharegov.cirm.utils.Base64;
 import org.sharegov.cirm.utils.GenUtils;
@@ -30,6 +32,13 @@ import org.sharegov.cirm.utils.GenUtils;
 public class ServiceCaseManager extends OntoAdmin {
 
 	private static final String PREFIX = "legacy:";
+	
+	private OwlRepo getRepo(){
+		OwlRepo repo = Refs.owlRepo.resolve();
+		synchronized(repo) {
+			return repo;
+		}
+	}
 
 	public Json getEnabled() {
 		return getServiceCasesByStatus(true);
@@ -95,7 +104,8 @@ public class ServiceCaseManager extends OntoAdmin {
 	}
 
 	public Json disable(String srType, String userName, String comment) {
-		Refs.owlRepo.resolve().ensurePeerStarted();
+		OwlRepo repo = getRepo();
+		repo.ensurePeerStarted();
 		OWLOntology O = OWL.ontology();
 		String ontologyIri = Refs.defaultOntologyIRI.resolve();
 
@@ -122,7 +132,8 @@ public class ServiceCaseManager extends OntoAdmin {
 	}
 	
 	public Json push (){
-		Refs.owlRepo.resolve().ensurePeerStarted();
+		OwlRepo repo = getRepo();
+		repo.ensurePeerStarted();
 		OWLOntology O = OWL.ontology();
 		String ontologyIri = Refs.defaultOntologyIRI.resolve();
 
@@ -132,7 +143,7 @@ public class ServiceCaseManager extends OntoAdmin {
 		
 		return push (ontologyIri);
 	}
-	
+		
 	public Json refreshOnto() {
 //		String jenkingsEndpointFullDeploy = "https://api.miamidade.gov/jenkins/job/CIRM-ADMIN-TEST-CI-JOB-OPENCIRM/build?token=7ef54dc3a604a1514368e8707d8415";
 		String jenkingsEndpointRefreshOntosOnly = "https://api.miamidade.gov/jenkins/job/CIRM-ADMIN-TEST-REFRESH-ONTOS/build?token=1a85a585ef7c424191c7c58ee3c4a97d556eec91";
