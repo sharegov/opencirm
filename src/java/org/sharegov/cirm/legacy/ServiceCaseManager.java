@@ -9,7 +9,6 @@ import java.util.Set;
 
 import mjson.Json;
 
-import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -18,26 +17,24 @@ import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.owl.OwlRepo;
 import org.sharegov.cirm.rest.OntoAdmin;
-import org.sharegov.cirm.utils.Base64;
 import org.sharegov.cirm.utils.GenUtils;
 
 public class ServiceCaseManager extends OntoAdmin {
 
 	private static final String PREFIX = "legacy:";
 	
-	private OwlRepo getRepo(){
-		OwlRepo repo = Refs.owlRepo.resolve();
-		synchronized(repo) {
-			return repo;
-		}
+	private OwlRepo getRepo(){ 
+		return Refs.owlRepo.resolve();
 	}
 
 	public Json getEnabled() {
@@ -105,43 +102,82 @@ public class ServiceCaseManager extends OntoAdmin {
 
 	public Json disable(String srType, String userName, String comment) {
 		OwlRepo repo = getRepo();
-		repo.ensurePeerStarted();
-		OWLOntology O = OWL.ontology();
-		String ontologyIri = Refs.defaultOntologyIRI.resolve();
 
-		if (O == null) {
-			throw new RuntimeException("Ontology not found: " + ontologyIri);
+		synchronized(repo) {
+			repo.ensurePeerStarted();
+			OWLOntology O = OWL.ontology();
+			String ontologyIri = Refs.defaultOntologyIRI.resolve();
+	
+			if (O == null) {
+				throw new RuntimeException("Ontology not found: " + ontologyIri);
+			}
+	
+			OWLOntologyManager manager = OWL.manager();
+			OWLDataFactory factory = manager.getOWLDataFactory();
+			OWLIndividual sr = factory.getOWLNamedIndividual(OWL.fullIri(PREFIX
+					+ srType));
+			OWLDataProperty property = factory.getOWLDataProperty(OWL
+					.fullIri(PREFIX + "isDisabledCreate"));
+			OWLLiteral value = factory.getOWLLiteral(true);
+			OWLDataPropertyAssertionAxiom assertion = factory
+					.getOWLDataPropertyAssertionAxiom(property, sr, value);
+			AddAxiom addAxiom = new AddAxiom(O, assertion);
+			List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+			changes.add(addAxiom);
+			
+			return Json.object().set("success", commit(ontologyIri, userName, comment, changes));
 		}
-
-		OWLOntologyManager manager = OWL.manager();
-		OWLDataFactory factory = manager.getOWLDataFactory();
-		OWLIndividual sr = factory.getOWLNamedIndividual(OWL.fullIri(PREFIX
-				+ srType));
-		OWLDataProperty property = factory.getOWLDataProperty(OWL
-				.fullIri(PREFIX + "isDisabledCreate"));
-		OWLLiteral value = factory.getOWLLiteral(true);
-		OWLDataPropertyAssertionAxiom assertion = factory
-				.getOWLDataPropertyAssertionAxiom(property, sr, value);
-		AddAxiom addAxiom = new AddAxiom(O, assertion);
-		List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
-		changes.add(addAxiom);
-
-		commit(ontologyIri, userName, comment, changes);
-
-		return Json.object().set("success", true);
+	}
+	
+	public Json enable(String srType, String userName, String comment){
+		OwlRepo repo = getRepo();
+		synchronized(repo) {
+			repo.ensurePeerStarted();
+			OWLOntology O = OWL.ontology();
+			String ontologyIri = Refs.defaultOntologyIRI.resolve();
+	
+			if (O == null) {
+				throw new RuntimeException("Ontology not found: " + ontologyIri);
+			}
+			
+			OWLOntologyManager manager = OWL.manager();
+			OWLDataFactory factory = manager.getOWLDataFactory();
+			OWLIndividual sr = factory.getOWLNamedIndividual(OWL.fullIri(PREFIX
+					+ srType));
+			OWLDataProperty property = factory.getOWLDataProperty(OWL
+					.fullIri(PREFIX + "isDisabledCreate"));
+			
+			OWLLiteral disableValue = factory.getOWLLiteral(true);
+			OWLDataPropertyAssertionAxiom removeAssertion = factory
+					.getOWLDataPropertyAssertionAxiom(property, sr, disableValue);
+			RemoveAxiom removeAxiom = new RemoveAxiom(O, removeAssertion);			
+			
+			OWLLiteral enableValue = factory.getOWLLiteral(false);
+			OWLDataPropertyAssertionAxiom addAssertion = factory
+					.getOWLDataPropertyAssertionAxiom(property, sr, enableValue);
+			AddAxiom addAxiom = new AddAxiom(O, addAssertion);
+			
+			List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+			changes.add(removeAxiom);
+			changes.add(addAxiom);	
+				
+			return Json.object().set("success", commit(ontologyIri, userName, comment, changes));
+		}
 	}
 	
 	public Json push (){
 		OwlRepo repo = getRepo();
-		repo.ensurePeerStarted();
-		OWLOntology O = OWL.ontology();
-		String ontologyIri = Refs.defaultOntologyIRI.resolve();
-
-		if (O == null) {
-			throw new RuntimeException("Ontology not found: " + ontologyIri);
+		synchronized(repo) {
+			repo.ensurePeerStarted();
+			OWLOntology O = OWL.ontology();
+			String ontologyIri = Refs.defaultOntologyIRI.resolve();
+	
+			if (O == null) {
+				throw new RuntimeException("Ontology not found: " + ontologyIri);
+			}
+			
+			return push (ontologyIri);
 		}
-		
-		return push (ontologyIri);
 	}
 		
 	public Json refreshOnto() {
