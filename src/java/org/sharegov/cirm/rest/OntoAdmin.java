@@ -300,15 +300,10 @@ public class OntoAdmin extends RestService
 					throw new RuntimeException ("All " + conflicts + " pending changes in Ontology " + ontologyIri + " are conflicts, " 
 							+ "which will be removed automatically on commit, so there is no single change to commit..");			
 				} else {
-					throw new RuntimeException("Ontology " + ontologyIri + " did not have any pending changes.");
+					return false;
 				}
 			} else {
 				vo.commit(userName, comment);
-				//assert 
-				//vo.getNrOfCommittableChanges() == 0
-				//vo.getNrOfRevisions() = before commit revision count + 1
-//				String message = "Committed " + nrOfCommittableChanges + " changes for ontology " + ontologyIri 
-//						+ " new head revision is " + vo.getHeadRevision().getRevision();
 				return true;
 			}
 		}
@@ -444,7 +439,7 @@ public class OntoAdmin extends RestService
 	@GET 
 	@Path("/compare") 
 	public Json compare(){
-		VDHGDBOntologyRepository repo = Refs.owlRepo.resolve().repo();
+		VDHGDBOntologyRepository repo = repo();
 	//			VDHGDBOntologyRepository repo = owlRepo.repo();
 
 		Json json = Json.array(); 

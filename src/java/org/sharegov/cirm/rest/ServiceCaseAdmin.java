@@ -82,31 +82,69 @@ public class ServiceCaseAdmin extends RestService {
 		}
 	}
 	
+	@GET
+	@Path("/compare")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response compareOntos() {
+		try
+		{
+			ServiceCaseManager scm = new ServiceCaseManager();
+			
+			return Response.ok(scm.compare(), MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
 	@PUT
 	@Path("{srType}/disable")
 	public Response disable(@PathParam("srType") String srType, Json aData)
-	{
-		OwlRepo repo = Refs.owlRepo.resolve();
-		synchronized(repo) {
-			try
-			{ 
+	{		
+		try
+		{ 
+			String userName = aData.at("userName").asString();
+			String comment = "Disable Service Request "+PREFIX+srType;
+			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
+			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
+			
+			ServiceCaseManager scm = new ServiceCaseManager();
+			
+			return Response.ok(scm.disable(srType, userName, comment), MediaType.APPLICATION_JSON).build();
+		}
+		catch(Exception e){
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
 	
-				String userName = aData.at("userName").asString();
-				String comment = "Disable Service Request "+PREFIX+srType;
-				if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
-				if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
-				
-				ServiceCaseManager scm = new ServiceCaseManager();
-				
-				return Response.ok(scm.disable(srType, userName, comment), MediaType.APPLICATION_JSON).build();
-			}
-			catch(Exception e){
-				return Response
-						.status(Status.INTERNAL_SERVER_ERROR)
-						.type(MediaType.APPLICATION_JSON)
-						.entity(Json.object().set("error", e.getClass().getName())
-								.set("message", e.getMessage())).build();
-			}
+	@PUT
+	@Path("{srType}/enable")
+	public Response enable(@PathParam("srType") String srType, Json aData)
+	{
+		try
+		{ 
+			String userName = aData.at("userName").asString();
+			String comment = "Enable Service Request "+PREFIX+srType;
+			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
+			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
+			
+			ServiceCaseManager scm = new ServiceCaseManager();
+			
+			return Response.ok(scm.enable(srType, userName, comment), MediaType.APPLICATION_JSON).build();
+		}
+		catch(Exception e){
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
 		}
 	}
 	
