@@ -153,6 +153,44 @@ public class ServiceCaseManager extends OntoAdmin {
 			return push(ontologyIri);
 		}
 	}
+	
+	public Json replaceObjectAnnotation(String individualID, String newAnnotationContent, String userName, String comment){
+		OwlRepo repo = getRepo();
+		synchronized (repo) {
+			repo.ensurePeerStarted();
+			OWLOntology O = OWL.ontology();
+			String ontologyIri = Refs.defaultOntologyIRI.resolve();
+			//get the individual
+			OWLEntity entity = OWL.dataFactory().getOWLNamedIndividual(OWL.fullIri(PREFIX + individualID));
+			String existingLabel = OWL.getEntityLabel(entity);
+			//create existing annotation
+			OWLAnnotationAssertionAxiom toRemove = OWL.dataFactory().getOWLAnnotationAssertionAxiom(
+					entity.getIRI(), OWL.dataFactory().getOWLAnnotation(OWL.annotationProperty("http://www.w3.org/2000/01/rdf-schema#label"), OWL.dataFactory().getOWLLiteral(existingLabel)));
+			//create new annotation
+			OWLAnnotationAssertionAxiom toAdd = OWL.dataFactory().getOWLAnnotationAssertionAxiom(
+					entity.getIRI(), OWL.dataFactory().getOWLAnnotation(OWL.annotationProperty("http://www.w3.org/2000/01/rdf-schema#label"), OWL.dataFactory().getOWLLiteral(newAnnotationContent)));		
+			
+			RemoveAxiom removeAxiom = new RemoveAxiom(O, toRemove);			
+			AddAxiom addAxiom = new AddAxiom(O, toAdd); 
+			
+			List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+			changes.add(removeAxiom);
+			changes.add(addAxiom);
+			
+			return Json.object().set("success", commit(ontologyIri, userName, comment, changes));
+		}
+	}
+	
+	public Json refreshOnto() {
+		// String jenkingsEndpointFullDeploy = "https://api.miamidade.gov/jenkins/job/CIRM-ADMIN-TEST-CI-JOB-OPENCIRM/build?token=7ef54dc3a604a1514368e8707d8415";
+		String jenkingsEndpointRefreshOntosOnly = "https://api.miamidade.gov/jenkins/job/CIRM-ADMIN-TEST-REFRESH-ONTOS/build?token=1a85a585ef7c424191c7c58ee3c4a97d556eec91";
+
+		return GenUtils.httpPostWithBasicAuth(jenkingsEndpointRefreshOntosOnly, "cirm", "admin", "");
+	}
+	
+	/*
+	 * Ontology generic handling functions, maybe better on other class.
+	 */
 		
 	private <Type> OWLLiteral createTypedLiteral (Type value){
 		OWLOntologyManager manager = OWL.manager();
@@ -173,12 +211,12 @@ public class ServiceCaseManager extends OntoAdmin {
 		}
 	}
 
-	private <Type> boolean replaceIndividualLiteralProperty(String individualID, String propertyID, Type newValue) {
+	private <Type> List<OWLOntologyChange> createReplaceIndividualLiteralPropertyChanges (String individualID, String propertyID, Type newValue) {
 		List<OWLOntologyChange> changes = createRemoveIndividualPropertyChanges(individualID, propertyID);
 		
 		changes.add(createIndividualLiteralAddAxiom (individualID, propertyID, newValue));
 
-		return true;
+		return changes;
 	}
 	
 	private <Type> AddAxiom createIndividualLiteralAddAxiom (String individualID, String propertyID, Type newValue){
@@ -248,47 +286,7 @@ public class ServiceCaseManager extends OntoAdmin {
 		
 		return result;
 	}
-	
-	public Json replaceObjectAnnotation(String individualID, String newAnnotationContent, String userName, String comment){
-		//Init repo
-		OwlRepo repo = getRepo();
-		synchronized (repo) {
-			repo.ensurePeerStarted();
-			OWLOntology O = OWL.ontology();
-			String ontologyIri = Refs.defaultOntologyIRI.resolve();
-			//get the individual
-			OWLEntity entity = OWL.dataFactory().getOWLNamedIndividual(OWL.fullIri(PREFIX + individualID));
-			String existingLabel = OWL.getEntityLabel(entity);
-			//create existing annotation
-			OWLAnnotationAssertionAxiom toRemove = OWL.dataFactory().getOWLAnnotationAssertionAxiom(
-					entity.getIRI(), OWL.dataFactory().getOWLAnnotation(OWL.annotationProperty("http://www.w3.org/2000/01/rdf-schema#label"), OWL.dataFactory().getOWLLiteral(existingLabel)));
-			//create new annotation
-			OWLAnnotationAssertionAxiom toAdd = OWL.dataFactory().getOWLAnnotationAssertionAxiom(
-					entity.getIRI(), OWL.dataFactory().getOWLAnnotation(OWL.annotationProperty("http://www.w3.org/2000/01/rdf-schema#label"), OWL.dataFactory().getOWLLiteral(newAnnotationContent)));		
-			//create remove axiom for existing annotation
-			RemoveAxiom removeAxiom = new RemoveAxiom(O, toRemove);
-			//create add axiom for new annotation
-			AddAxiom addAxiom = new AddAxiom(O, toAdd); 
-			//add changes 
-			List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
-			changes.add(removeAxiom);
-			changes.add(addAxiom);
-			//TODO:
-			//commit to database			
-			return Json.object().set("success", commit(ontologyIri, userName, comment, changes));
-		}
-	}
-
-	public Json refreshOnto() {
-		// String jenkingsEndpointFullDeploy =
-		// "https://api.miamidade.gov/jenkins/job/CIRM-ADMIN-TEST-CI-JOB-OPENCIRM/build?token=7ef54dc3a604a1514368e8707d8415";
-		String jenkingsEndpointRefreshOntosOnly = "https://api.miamidade.gov/jenkins/job/CIRM-ADMIN-TEST-REFRESH-ONTOS/build?token=1a85a585ef7c424191c7c58ee3c4a97d556eec91";
-
-		return GenUtils.httpPostWithBasicAuth(jenkingsEndpointRefreshOntosOnly, "cirm", "admin", "");
-	}
-
 		
-
 	public void testAxiom() {
 		OwlRepo repo = getRepo();
 		repo.ensurePeerStarted();

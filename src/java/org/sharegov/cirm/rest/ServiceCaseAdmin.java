@@ -197,13 +197,11 @@ public class ServiceCaseAdmin extends RestService {
 		{ 
 			String userName = aData.at("userName").asString();
 			String questionUri = aData.at("questionUri").asString();
-			String oldLabel = aData.at("oldLabel").asString();
 			String newLabel = aData.at("newLabel").asString();
 			String comment = "Update Service Request Question "+PREFIX+srType;
 			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
 			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
 			if (questionUri == null || questionUri.isEmpty()) throw new IllegalArgumentException("question uri null or empty");
-			if (oldLabel == null || oldLabel.isEmpty()) throw new IllegalArgumentException("old label null or empty");
 			if (newLabel == null || newLabel.isEmpty()) throw new IllegalArgumentException("new label null or empty");
 			
 			ServiceCaseManager scm = new ServiceCaseManager();
