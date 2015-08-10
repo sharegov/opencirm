@@ -18,6 +18,8 @@ import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -143,12 +145,8 @@ public class ServiceCaseManager extends OntoAdmin {
 		OwlRepo repo = getRepo();
 		synchronized (repo) {
 			repo.ensurePeerStarted();
-			OWLOntology O = OWL.ontology();
+			
 			String ontologyIri = Refs.defaultOntologyIRI.resolve();
-
-			if (O == null) {
-				throw new RuntimeException("Ontology not found: " + ontologyIri);
-			}
 
 			return push(ontologyIri);
 		}
@@ -157,25 +155,11 @@ public class ServiceCaseManager extends OntoAdmin {
 	public Json replaceObjectAnnotation(String individualID, String newAnnotationContent, String userName, String comment){
 		OwlRepo repo = getRepo();
 		synchronized (repo) {
-			repo.ensurePeerStarted();
-			OWLOntology O = OWL.ontology();
-			String ontologyIri = Refs.defaultOntologyIRI.resolve();
-			//get the individual
-			OWLEntity entity = OWL.dataFactory().getOWLNamedIndividual(OWL.fullIri(PREFIX + individualID));
-			String existingLabel = OWL.getEntityLabel(entity);
-			//create existing annotation
-			OWLAnnotationAssertionAxiom toRemove = OWL.dataFactory().getOWLAnnotationAssertionAxiom(
-					entity.getIRI(), OWL.dataFactory().getOWLAnnotation(OWL.annotationProperty("http://www.w3.org/2000/01/rdf-schema#label"), OWL.dataFactory().getOWLLiteral(existingLabel)));
-			//create new annotation
-			OWLAnnotationAssertionAxiom toAdd = OWL.dataFactory().getOWLAnnotationAssertionAxiom(
-					entity.getIRI(), OWL.dataFactory().getOWLAnnotation(OWL.annotationProperty("http://www.w3.org/2000/01/rdf-schema#label"), OWL.dataFactory().getOWLLiteral(newAnnotationContent)));		
+			repo.ensurePeerStarted();		 
 			
-			RemoveAxiom removeAxiom = new RemoveAxiom(O, toRemove);			
-			AddAxiom addAxiom = new AddAxiom(O, toAdd); 
-			
-			List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
-			changes.add(removeAxiom);
-			changes.add(addAxiom);
+			List<OWLOntologyChange> changes = createReplaceObjectAnnotationChanges (individualID, newAnnotationContent);			
+
+			String ontologyIri = Refs.defaultOntologyIRI.resolve();	
 			
 			return Json.object().set("success", commit(ontologyIri, userName, comment, changes));
 		}
@@ -189,8 +173,30 @@ public class ServiceCaseManager extends OntoAdmin {
 	}
 	
 	/*
-	 * Ontology generic handling functions, maybe better on other class.
+	 * Generic Ontology handling functions, maybe better on other class/package.
 	 */
+	
+	public List<OWLOntologyChange> createReplaceObjectAnnotationChanges (String individualID, String newAnnotationContent){
+		OWLOntology O = OWL.ontology();
+		//get the individual
+		OWLEntity entity = OWL.dataFactory().getOWLNamedIndividual(OWL.fullIri(PREFIX + individualID));
+		String existingLabel = OWL.getEntityLabel(entity);
+		//create existing annotation
+		OWLAnnotationAssertionAxiom toRemove = OWL.dataFactory().getOWLAnnotationAssertionAxiom(
+				entity.getIRI(), OWL.dataFactory().getOWLAnnotation(OWL.annotationProperty("http://www.w3.org/2000/01/rdf-schema#label"), OWL.dataFactory().getOWLLiteral(existingLabel)));
+		//create new annotation
+		OWLAnnotationAssertionAxiom toAdd = OWL.dataFactory().getOWLAnnotationAssertionAxiom(
+				entity.getIRI(), OWL.dataFactory().getOWLAnnotation(OWL.annotationProperty("http://www.w3.org/2000/01/rdf-schema#label"), OWL.dataFactory().getOWLLiteral(newAnnotationContent)));		
+		
+		RemoveAxiom removeAxiom = new RemoveAxiom(O, toRemove);			
+		AddAxiom addAxiom = new AddAxiom(O, toAdd); 
+		
+		List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+		changes.add(removeAxiom);
+		changes.add(addAxiom);
+
+		return changes;			
+	}
 		
 	private <Type> OWLLiteral createTypedLiteral (Type value){
 		OWLOntologyManager manager = OWL.manager();
@@ -254,7 +260,7 @@ public class ServiceCaseManager extends OntoAdmin {
 		OWLNamedIndividual individual = factory.getOWLNamedIndividual(OWL.fullIri(PREFIX + individualID));
 		OWLDataProperty property = factory.getOWLDataProperty(OWL.fullIri(PREFIX + propertyID));
 		
-		Set<OWLLiteral> propValues = OWL.reasoner().getDataPropertyValues(OWL.individual(PREFIX + individualID), OWL.dataProperty(PREFIX + propertyID));
+		Set<OWLLiteral> propValues = OWL.reasoner().getDataPropertyValues(individual, property);
 		
 		List<RemoveAxiom> result = new ArrayList<RemoveAxiom>();
 		
@@ -273,6 +279,53 @@ public class ServiceCaseManager extends OntoAdmin {
 	
 	private List<OWLOntologyChange> createRemoveIndividualPropertyChanges (String individualID, String propertyID){
 		List<RemoveAxiom> axioms = createIndividualLiteralRemoveAxioms (individualID, propertyID);
+		
+		List<OWLOntologyChange> result = new ArrayList<OWLOntologyChange>();
+		
+		if (axioms.isEmpty()){
+			return result;
+		}
+		
+		for (RemoveAxiom axiom : axioms) {
+			result.add(axiom);
+		}
+		
+		return result;
+	}
+	
+	private List <RemoveAxiom> createIndividualObjectPropertyRemoveAxioms (String individualID, String propertyID){
+		OWLOntology O = OWL.ontology();
+		String ontologyIri = Refs.defaultOntologyIRI.resolve();
+
+		if (O == null) {
+			throw new RuntimeException("Ontology not found: " + ontologyIri);
+		}
+
+		OWLOntologyManager manager = OWL.manager();
+		OWLDataFactory factory = manager.getOWLDataFactory();
+
+		OWLNamedIndividual individual = factory.getOWLNamedIndividual(OWL.fullIri(PREFIX + individualID));
+		OWLObjectPropertyExpression property = factory.getOWLObjectProperty(OWL.fullIri(PREFIX + propertyID));
+		
+		Set <OWLNamedIndividual> propObjects = OWL.reasoner().getObjectPropertyValues(individual, property).getFlattened();
+		
+		List<RemoveAxiom> result = new ArrayList<RemoveAxiom>();
+		
+		if (propObjects.isEmpty()){
+			// Axioms not found 
+			return result;
+		}						
+		
+		for (OWLNamedIndividual value : propObjects) {
+			OWLObjectPropertyAssertionAxiom removeAssertion = factory.getOWLObjectPropertyAssertionAxiom(property, individual, value);
+			result.add(new RemoveAxiom(O, removeAssertion));
+		}				
+		
+		return result;
+	}
+	
+	private List<OWLOntologyChange> createRemoveIndividualObjectPropertyChanges (String individualID, String propertyID){
+		List<RemoveAxiom> axioms = createIndividualObjectPropertyRemoveAxioms (individualID, propertyID);
 		
 		List<OWLOntologyChange> result = new ArrayList<OWLOntologyChange>();
 		
