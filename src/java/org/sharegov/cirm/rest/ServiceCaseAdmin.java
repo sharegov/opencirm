@@ -13,9 +13,7 @@ import javax.ws.rs.core.Response.Status;
 import mjson.Json;
 
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.legacy.ServiceCaseManager;
-import org.sharegov.cirm.owl.OwlRepo;
 
 @Path("sradmin")
 @Produces("application/json")
@@ -87,7 +85,7 @@ public class ServiceCaseAdmin extends RestService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response compareOntos() {
 		try
-		{
+		{			
 			ServiceCaseManager scm = new ServiceCaseManager();
 			
 			return Response.ok(scm.compare(), MediaType.APPLICATION_JSON).build();
@@ -99,6 +97,7 @@ public class ServiceCaseAdmin extends RestService {
 							.set("message", e.getMessage())).build();
 		}
 	}
+	
 	
 	@PUT
 	@Path("{srType}/disable")
@@ -188,6 +187,34 @@ public class ServiceCaseAdmin extends RestService {
 							.set("message", e.getMessage())).build();
 		}
 		
+	}
+	
+	@PUT
+	@Path("{srType}/question")
+	public Response updateQuestion(@PathParam("srType") String srType, Json aData)
+	{
+		try
+		{ 
+			String userName = aData.at("userName").asString();
+			String questionUri = aData.at("questionUri").asString();
+			String newLabel = aData.at("newLabel").asString();
+			String comment = "Update Service Request Question "+PREFIX+srType;
+			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
+			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
+			if (questionUri == null || questionUri.isEmpty()) throw new IllegalArgumentException("question uri null or empty");
+			if (newLabel == null || newLabel.isEmpty()) throw new IllegalArgumentException("new label null or empty");
+			
+			ServiceCaseManager scm = new ServiceCaseManager();
+			
+			return Response.ok(scm.replaceObjectAnnotation(questionUri, newLabel, userName, comment), MediaType.APPLICATION_JSON).build();
+		}
+		catch(Exception e){
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
 	}
 	
 	private void permissionCheck(OWLClassExpression expr){
