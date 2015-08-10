@@ -16,7 +16,6 @@ import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -110,28 +109,16 @@ public class ServiceCaseManager extends OntoAdmin {
 
 		synchronized (repo) {
 			repo.ensurePeerStarted();
-			OWLOntology O = OWL.ontology();
-			String ontologyIri = Refs.defaultOntologyIRI.resolve();
-
-			if (O == null) {
-				throw new RuntimeException("Ontology not found: " + ontologyIri);
-			}
-
-			OWLOntologyManager manager = OWL.manager();
-			OWLDataFactory factory = manager.getOWLDataFactory();
-			OWLIndividual sr = factory.getOWLNamedIndividual(OWL.fullIri(PREFIX
-					+ srType));
-			OWLDataProperty property = factory.getOWLDataProperty(OWL
-					.fullIri(PREFIX + "isDisabledCreate"));
-			OWLLiteral value = factory.getOWLLiteral(true);
-			OWLDataPropertyAssertionAxiom assertion = factory
-					.getOWLDataPropertyAssertionAxiom(property, sr, value);
-			AddAxiom addAxiom = new AddAxiom(O, assertion);
+						
 			List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
-			changes.add(addAxiom);
+			changes.addAll(createRemoveIndividualPropertyChanges(srType, "isDisabledCreate"));	
+			changes.addAll(createIndividualLiteralRemoveAxioms(srType, "isDisabled"));			
 
-			return Json.object().set("success",
-					commit(ontologyIri, userName, comment, changes));
+			AddAxiom isDisabledCreateAddAxiom = createIndividualLiteralAddAxiom(srType, "isDisabledCreate", true);
+			
+			changes.add(isDisabledCreateAddAxiom);
+
+			return Json.object().set("success", commit(Refs.defaultOntologyIRI.resolve(), userName, comment, changes));
 		}
 	}
 
@@ -139,37 +126,16 @@ public class ServiceCaseManager extends OntoAdmin {
 		OwlRepo repo = getRepo();
 		synchronized (repo) {
 			repo.ensurePeerStarted();
-			OWLOntology O = OWL.ontology();
-			String ontologyIri = Refs.defaultOntologyIRI.resolve();
-
-			if (O == null) {
-				throw new RuntimeException("Ontology not found: " + ontologyIri);
-			}
-
-			OWLOntologyManager manager = OWL.manager();
-			OWLDataFactory factory = manager.getOWLDataFactory();
-			OWLIndividual sr = factory.getOWLNamedIndividual(OWL.fullIri(PREFIX
-					+ srType));
-			OWLDataProperty property = factory.getOWLDataProperty(OWL
-					.fullIri(PREFIX + "isDisabledCreate"));
-
-			OWLLiteral disableValue = factory.getOWLLiteral(true);
-			OWLDataPropertyAssertionAxiom removeAssertion = factory
-					.getOWLDataPropertyAssertionAxiom(property, sr,
-							disableValue);
-			RemoveAxiom removeAxiom = new RemoveAxiom(O, removeAssertion);
-
-			OWLLiteral enableValue = factory.getOWLLiteral(false);
-			OWLDataPropertyAssertionAxiom addAssertion = factory
-					.getOWLDataPropertyAssertionAxiom(property, sr, enableValue);
-			AddAxiom addAxiom = new AddAxiom(O, addAssertion);
-
+			
 			List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
-			changes.add(removeAxiom);
-			changes.add(addAxiom);
+			changes.addAll(createRemoveIndividualPropertyChanges(srType, "isDisabledCreate"));	
+			changes.addAll(createRemoveIndividualPropertyChanges(srType, "isDisabled"));			
 
-			return Json.object().set("success",
-					commit(ontologyIri, userName, comment, changes));
+			AddAxiom isDisabledCreateAddAxiom = createIndividualLiteralAddAxiom(srType, "isDisabledCreate", false);
+			
+			changes.add(isDisabledCreateAddAxiom);
+
+			return Json.object().set("success", commit(Refs.defaultOntologyIRI.resolve(), userName, comment, changes));
 		}
 	}
 
@@ -187,60 +153,35 @@ public class ServiceCaseManager extends OntoAdmin {
 			return push(ontologyIri);
 		}
 	}
-
-	public Json changeQuestionLabel(String questionUri, String oldLabel, String newLabel, String userName, String comment) {
-		OwlRepo repo = getRepo();
-		synchronized (repo) {
-			repo.ensurePeerStarted();
-			OWLOntology O = OWL.ontology();
-			String ontologyIri = Refs.defaultOntologyIRI.resolve();
-
-			if (O == null) {
-				throw new RuntimeException("Ontology not found: " + ontologyIri);
-			}
-
-			OWLOntologyManager manager = OWL.manager();
-			OWLDataFactory factory = manager.getOWLDataFactory();
-
-			OWLNamedIndividual ind = factory.getOWLNamedIndividual(OWL
-					.fullIri(PREFIX + questionUri));
-			OWLDataProperty property = factory.getOWLDataProperty(OWL
-					.fullIri(PREFIX + "label"));
-
-			OWLLiteral oldValue = factory.getOWLLiteral(oldLabel);
-			OWLDataPropertyAssertionAxiom removeAssertion = factory
-					.getOWLDataPropertyAssertionAxiom(property, ind, oldValue);
-			RemoveAxiom removeAxiom = new RemoveAxiom(O, removeAssertion);
-
-			OWLLiteral newValue = factory.getOWLLiteral(newLabel);
-			OWLDataPropertyAssertionAxiom addAssertion = factory
-					.getOWLDataPropertyAssertionAxiom(property, ind, newValue);
-			AddAxiom addAxiom = new AddAxiom(O, addAssertion);
-
-			List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
-			changes.add(removeAxiom);
-			changes.add(addAxiom);
-
-			return Json.object().set("success",
-					commit(ontologyIri, userName, comment, changes));
-
+		
+	private <Type> OWLLiteral createTypedLiteral (Type value){
+		OWLOntologyManager manager = OWL.manager();
+		OWLDataFactory factory = manager.getOWLDataFactory();
+		
+		if (value instanceof Boolean) {
+			return factory.getOWLLiteral((Boolean) value);
+		} else if (value instanceof String){
+			return factory.getOWLLiteral((String) value);
+		} else if (value instanceof Integer){
+			return factory.getOWLLiteral((Integer) value);
+		} else if (value instanceof Float){
+			return factory.getOWLLiteral((Float) value);
+		} else if (value instanceof Double){
+			return factory.getOWLLiteral((Double) value);
+		} else {
+			throw new RuntimeException("Invalid parameter tyoe: " + value.getClass().toString());
 		}
 	}
 
-	private boolean replaceObjectLiteralProperty(String individualID, String propertyID, String newValue) {
-		List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+	private <Type> boolean replaceIndividualLiteralProperty(String individualID, String propertyID, Type newValue) {
+		List<OWLOntologyChange> changes = createRemoveIndividualPropertyChanges(individualID, propertyID);
 		
-		RemoveAxiom removeAxiom = createIndividualRemoveAxiom (individualID, propertyID);
-		
-		if (removeAxiom == null ) return false;
-		
-		changes.add(removeAxiom);
-		changes.add(createIndividualAddAxiom (individualID, propertyID, newValue));
+		changes.add(createIndividualLiteralAddAxiom (individualID, propertyID, newValue));
 
 		return true;
 	}
 	
-	private AddAxiom createIndividualAddAxiom (String individualID, String propertyID, String newValue){
+	private <Type> AddAxiom createIndividualLiteralAddAxiom (String individualID, String propertyID, Type newValue){
 		OWLOntology O = OWL.ontology();
 		String ontologyIri = Refs.defaultOntologyIRI.resolve();
 
@@ -254,13 +195,14 @@ public class ServiceCaseManager extends OntoAdmin {
 		OWLNamedIndividual individual = factory.getOWLNamedIndividual(OWL.fullIri(PREFIX + individualID));
 		OWLDataProperty property = factory.getOWLDataProperty(OWL.fullIri(PREFIX + propertyID));
 		
-		OWLLiteral newLiteralValue = factory.getOWLLiteral(newValue);
+		OWLLiteral newLiteralValue = createTypedLiteral(newValue);		 
+		
 		OWLDataPropertyAssertionAxiom addAssertion = factory.getOWLDataPropertyAssertionAxiom(property, individual, newLiteralValue);
 		
 		return new AddAxiom(O, addAssertion);
 	}
 	
-	private RemoveAxiom createIndividualRemoveAxiom (String individualID, String propertyID){
+	private List <RemoveAxiom> createIndividualLiteralRemoveAxioms (String individualID, String propertyID){
 		OWLOntology O = OWL.ontology();
 		String ontologyIri = Refs.defaultOntologyIRI.resolve();
 
@@ -274,22 +216,37 @@ public class ServiceCaseManager extends OntoAdmin {
 		OWLNamedIndividual individual = factory.getOWLNamedIndividual(OWL.fullIri(PREFIX + individualID));
 		OWLDataProperty property = factory.getOWLDataProperty(OWL.fullIri(PREFIX + propertyID));
 		
-		Set<OWLLiteral> propValues = OWL.reasoner().getDataPropertyValues(OWL.individual(PREFIX + individualID),	OWL.dataProperty(PREFIX + propertyID));
+		Set<OWLLiteral> propValues = OWL.reasoner().getDataPropertyValues(OWL.individual(PREFIX + individualID), OWL.dataProperty(PREFIX + propertyID));
+		
+		List<RemoveAxiom> result = new ArrayList<RemoveAxiom>();
 		
 		if (propValues.isEmpty()){
-			// Axiom not found 
-			return null;
+			// Axioms not found 
+			return result;
+		}						
+		
+		for (OWLLiteral value : propValues) {
+			OWLDataPropertyAssertionAxiom removeAssertion = factory.getOWLDataPropertyAssertionAxiom(property, individual, value);
+			result.add(new RemoveAxiom(O, removeAssertion));
+		}				
+		
+		return result;
+	}
+	
+	private List<OWLOntologyChange> createRemoveIndividualPropertyChanges (String individualID, String propertyID){
+		List<RemoveAxiom> axioms = createIndividualLiteralRemoveAxioms (individualID, propertyID);
+		
+		List<OWLOntologyChange> result = new ArrayList<OWLOntologyChange>();
+		
+		if (axioms.isEmpty()){
+			return result;
 		}
 		
-		String existingValue = "";		
-		for (OWLLiteral v : propValues) {
-			existingValue = v.getLiteral().toString();
+		for (RemoveAxiom axiom : axioms) {
+			result.add(axiom);
 		}
 		
-		OWLLiteral oldLiteralValue = factory.getOWLLiteral(existingValue);
-		OWLDataPropertyAssertionAxiom removeAssertion = factory.getOWLDataPropertyAssertionAxiom(property, individual, oldLiteralValue);
-		
-		return new RemoveAxiom(O, removeAssertion);
+		return result;
 	}
 	
 	public Json replaceObjectAnnotation(String individualID, String newAnnotationContent, String userName, String comment){
