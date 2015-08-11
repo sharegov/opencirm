@@ -39,7 +39,6 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant.VariantListBuilder;
 import javax.ws.rs.ext.RuntimeDelegate;
 
-
 import mjson.Json;
 
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
