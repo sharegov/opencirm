@@ -221,10 +221,7 @@ public class ServiceCaseAdmin extends RestService {
 	@Path("{srType}/alert")
 	public Response updateAlert(@PathParam("srType") String srType, Json aData)
 	{
-		System.out.println("srType.... " + srType);
-		System.out.println("userName.... " + aData.at("userName").asString());
-		System.out.println("alertUri.... " + aData.at("alertUri").asString());
-		System.out.println("newLabel.... " + aData.at("newLabel").asString());
+		
 		try
 		{ 
 			String userName = aData.at("userName").asString();
@@ -236,7 +233,6 @@ public class ServiceCaseAdmin extends RestService {
 			if (alertUri == null || alertUri.isEmpty()) throw new IllegalArgumentException("alert uri null or empty");
 			if (newLabel == null || newLabel.isEmpty()) throw new IllegalArgumentException("new label null or empty");
 		     
-			System.out.println("srType.... " + srType);
 			
 			ServiceCaseManager scm = new ServiceCaseManager();
 			
