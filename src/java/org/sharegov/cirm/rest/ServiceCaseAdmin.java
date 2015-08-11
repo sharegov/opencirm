@@ -217,6 +217,41 @@ public class ServiceCaseAdmin extends RestService {
 		}
 	}
 	
+	@PUT
+	@Path("{srType}/alert")
+	public Response updateAlert(@PathParam("srType") String srType, Json aData)
+	{
+		System.out.println("srType.... " + srType);
+		System.out.println("userName.... " + aData.at("userName").asString());
+		System.out.println("alertUri.... " + aData.at("alertUri").asString());
+		System.out.println("newLabel.... " + aData.at("newLabel").asString());
+		try
+		{ 
+			String userName = aData.at("userName").asString();
+			String alertUri = aData.at("alertUri").asString();
+			String newLabel = aData.at("newLabel").asString();
+			String comment = "Update Service Request Alert "+PREFIX+srType;
+			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
+			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
+			if (alertUri == null || alertUri.isEmpty()) throw new IllegalArgumentException("alert uri null or empty");
+			if (newLabel == null || newLabel.isEmpty()) throw new IllegalArgumentException("new label null or empty");
+		     
+			System.out.println("srType.... " + srType);
+			
+			ServiceCaseManager scm = new ServiceCaseManager();
+			
+			return Response.ok(scm.replaceObjectAnnotation(alertUri, newLabel, userName, comment), MediaType.APPLICATION_JSON).build();
+		}
+		catch(Exception e){
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
+	
 	private void permissionCheck(OWLClassExpression expr){
 		//TODO enable security
 //		if (!isClientExempt() && reasoner().getSuperClasses(expr, false).containsEntity(owlClass("Protected")))
