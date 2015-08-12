@@ -60,7 +60,7 @@ import org.sharegov.cirm.utils.GenUtils;
 
 /**
  *  
- * @author Camilo Chirino
+ * @author Chirino
  * 
  * Utility wrapper over Meta Ontology operations
  * 
@@ -73,7 +73,7 @@ public class MetaOntology
 	 * Generic Ontology handling functions.
 	 */
 	
-	public static List<OWLOntologyChange> createReplaceObjectAnnotationChanges (String individualID, String newAnnotationContent){
+	public static List<OWLOntologyChange> getReplaceObjectAnnotationChanges (String individualID, String newAnnotationContent){
 		OWLOntology O = OWL.ontology();
 		//get the individual
 		OWLEntity entity = OWL.dataFactory().getOWLNamedIndividual(OWL.fullIri(PREFIX + individualID));
@@ -325,7 +325,7 @@ public class MetaOntology
 		return result;
 	}
 	
-	public static List<OWLOntologyChange> setPropertiesFor(OWLNamedIndividual individual, Json properties, OWLOntology O, OWLOntologyManager manager, OWLDataFactory factory)
+	protected static List<OWLOntologyChange> setPropertiesFor(OWLNamedIndividual individual, Json properties, OWLOntology O, OWLOntologyManager manager, OWLDataFactory factory)
 	{
 		// Remove all data and object properties currently declared in the
 		// ontology.
@@ -340,7 +340,7 @@ public class MetaOntology
 		return L;
 	}
 	
-	public static List<OWLOntologyChange> addDataProperty(OWLIndividual ind, OWLDataProperty prop, Json value, OWLOntology O, OWLOntologyManager manager, OWLDataFactory factory)
+	protected static List<OWLOntologyChange> addDataProperty(OWLIndividual ind, OWLDataProperty prop, Json value, OWLOntology O, OWLOntologyManager manager, OWLDataFactory factory)
 	{
 		List<OWLOntologyChange> result = new ArrayList<OWLOntologyChange>();
 		OWLLiteral literal;

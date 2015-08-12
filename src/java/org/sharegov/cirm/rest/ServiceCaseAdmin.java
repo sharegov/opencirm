@@ -247,6 +247,32 @@ public class ServiceCaseAdmin extends RestService {
 		}
 	}
 	
+	@PUT
+	@Path("update/object")
+	public Response updateObjectProperty(Json aData)
+	{
+		
+		try
+		{ 
+			String userName = aData.at("userName").asString();
+			String objectUri = aData.at("objectUri").asString();
+			String comment = "Update Individial Object Property "+PREFIX+objectUri;
+			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
+			if (objectUri == null || objectUri.isEmpty()) throw new IllegalArgumentException("alert uri null or empty");
+		    			
+			ServiceCaseManager scm = new ServiceCaseManager();
+			
+			return Response.ok(scm.replaceIndividualObjectProperty(objectUri, aData.at("payload"), userName, comment), MediaType.APPLICATION_JSON).build();
+		}
+		catch(Exception e){
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
 	
 	private void permissionCheck(OWLClassExpression expr){
 		//TODO enable security
