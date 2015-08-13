@@ -238,65 +238,122 @@ public class MetaOntology
 	}
 	
 	/*
-	 * function asumes that an Individual with identifier rootUri exists on the Meta Ontology
+	 * function creates a new named idividual using properties described on the json structure and attach it to the parent on property described by propertyID.
 	 * 
 	 */
-	public static List<OWLOntologyChange> getAddIndividualObjectFromJsonChanges (String rootUri, Json data){
+	public static List<OWLOntologyChange> getAddIndividualObjectFromJsonChanges (String parentID, String propertyID,  Json data){
 		OWLOntology O = OWL.ontology();
 		String ontologyIri = Refs.defaultOntologyIRI.resolve();
 
 		if (O == null) {
 			throw new RuntimeException("Ontology not found: " + ontologyIri);
 		}
+		
+		if (!data.has("iri")){
+			throw new RuntimeException("root iri not found : " + data.toString());
+		}
 
 		OWLOntologyManager manager = OWL.manager();
 		OWLDataFactory factory = manager.getOWLDataFactory();
-		OWLIndividual parent = factory.getOWLNamedIndividual(fullIri(PREFIX + rootUri)); 
-		return makeObjectIndividual (parent, data, O, manager, factory);
+		OWLIndividual newInd = factory.getOWLNamedIndividual(fullIri(PREFIX + data.at("iri").asString())); 
+		
+		List<OWLOntologyChange> result = getRemoveAllPropertiesIndividualChanges (O, newInd);
+		
+		result.addAll(makeObjectIndividual (newInd, data, O, manager, factory));
+		
+		OWLIndividual parent = factory.getOWLNamedIndividual(fullIri(PREFIX + parentID));
+		OWLObjectProperty property =  factory.getOWLObjectProperty(fullIri(PREFIX + propertyID));
+		
+		result.add(new AddAxiom(O, factory.getOWLObjectPropertyAssertionAxiom(property, parent, newInd)));
+		
+		return result;
+	}
+	
+	private static List<OWLOntologyChange> getRemoveAllPropertiesIndividualChanges (OWLOntology O, OWLIndividual individual){
+		List<OWLOntologyChange> L = new ArrayList<OWLOntologyChange>();
+		
+		for (OWLAxiom a : O.getDataPropertyAssertionAxioms(individual)) L.add(new RemoveAxiom(O, a));
+		for (OWLAxiom a : O.getObjectPropertyAssertionAxioms(individual)) L.add(new RemoveAxiom(O, a));
+		for (OWLAxiom a : O.getAnnotationAssertionAxioms(((OWLEntity) individual).getIRI())) L.add(new RemoveAxiom(O, a));
+		for (OWLAxiom a : O.getClassAssertionAxioms(individual)) L.add(new RemoveAxiom(O, a));
+		
+		return L;
+	}
+	
+	protected static PropertyDescriptor findPropertyIri (String irifragment){
+		PropertyDescriptor result = new PropertyDescriptor();
+		Json prefixes = Json.array().add("legacy:").add("mdc:").add(":");
+		
+		for (Json prefix :  prefixes.asJsonList()){
+			IRI propIri = fullIri(prefix.asString() + irifragment);
+			PropertyType type = OWL.getPropertyType(propIri);
+			if (type != PropertyType.UNKNOWN){
+				result.setIri(propIri);
+				result.setType(type);
+				return result;
+			}
+		}
+		
+		return null;
 	}
 	
 	/*
 	 * Refactored code coming from BOntology class 
 	 * 
-	 */
+	 */	
 	
 	protected static List<OWLOntologyChange> makeObjectIndividual (OWLIndividual parent, Json properties, OWLOntology O, OWLOntologyManager manager, OWLDataFactory factory){
 		List<OWLOntologyChange> result = new ArrayList<OWLOntologyChange>();
 		for (Map.Entry<String, Json> e : properties.asJsonMap().entrySet())
 		{
-			if (e.getKey().equals("label") || e.getKey().equals("iri") || e.getKey().equals("type"))
+			String key = e.getKey();
+			Json value = e.getValue();
+			if (key.equals("label") || key.equals("iri") || key.equals("type"))
 			{
-				if (e.getKey().equals("type"))
+				if (key.equals("type"))
 					result.add(new AddAxiom(O, factory.getOWLClassAssertionAxiom(owlClass(fullIri(e.getValue().asString())),parent)));
+				else if (key.equals("label"))
+					result.add(new  AddAxiom(O,factory.getOWLAnnotationAssertionAxiom(((OWLEntity) parent).getIRI(), 
+																					  factory.getOWLAnnotation(OWL.annotationProperty("http://www.w3.org/2000/01/rdf-schema#label"), 
+																				      factory.getOWLLiteral(value.asString())))));
 				continue;
 			}
-			IRI propIri = fullIri(e.getKey());
-			if (OWL.isObjectProperty(propIri))
+			
+			PropertyDescriptor pd = findPropertyIri(key);
+			
+			if (pd == null) throw new RuntimeException("Unknown OWL property or annotation for key: " + key);
+			
+			if (pd.getType() == PropertyType.UNKNOWN) throw new RuntimeException("Undeclared OWL property or annotation: " + pd.getIri());
+			
+			IRI propIri = pd.getIri();
+			if (pd.getType() == PropertyType.OBJECT)
 			{
-				if (e.getValue().isArray())
+				if (value.isArray())
 				{
 					for (int i = 0; i < e.getValue().asList().size(); i++)
 					{
-						result.addAll(addObjectProperty(parent, OWL.dataFactory().getOWLObjectProperty(propIri), e.getValue().at(i), O, manager, factory));
+						result.addAll(addObjectProperty(parent, OWL.dataFactory().getOWLObjectProperty(propIri), value.at(i), O, manager, factory));
 					}
 				}
 				else
-					result.addAll(addObjectProperty(parent, OWL.dataFactory().getOWLObjectProperty(propIri), e.getValue(), O, manager, factory));
+					result.addAll(addObjectProperty(parent, OWL.dataFactory().getOWLObjectProperty(propIri), value, O, manager, factory));
 			}
-			else if (OWL.isDataProperty(propIri))
+			else if (pd.getType() == PropertyType.DATA)
 			{
-				if (e.getValue().isArray())
+				if (value.isArray())
 				{
 					for (int i = 0; i < e.getValue().asList().size(); i++)
 					{
-						result.addAll(addDataProperty(parent, OWL.dataFactory().getOWLDataProperty(propIri), e.getValue().at(i), O, manager, factory));
+						result.addAll(addDataProperty(parent, OWL.dataFactory().getOWLDataProperty(propIri), value.at(i), O, manager, factory));
 					}
 				}
 				else
-					result.addAll(addDataProperty(parent, OWL.dataFactory().getOWLDataProperty(propIri), e.getValue(), O, manager, factory));
+					result.addAll(addDataProperty(parent, OWL.dataFactory().getOWLDataProperty(propIri), value, O, manager, factory));
 			}
-			else if (!OWL.isAnnotation(propIri))
-				throw new RuntimeException("Undeclared OWL property or annotation: " + propIri);
+			else if (pd.getType() == PropertyType.ANNOTATION){
+				// TO-DO
+			}
+				
 		}
 		return result;
 	}
@@ -308,7 +365,7 @@ public class MetaOntology
 		if (value.isObject())
 		{
 			if (value.has("iri")){
-				OWLNamedIndividual object = factory.getOWLNamedIndividual(fullIri(value.at("iri").asString()));
+				OWLNamedIndividual object = factory.getOWLNamedIndividual(fullIri(PREFIX + value.at("iri").asString()));
 				result.add(new AddAxiom(O, factory.getOWLObjectPropertyAssertionAxiom(prop, ind, object)));
 				result.addAll(setPropertiesFor(object, value, O, manager, factory));
 			}
@@ -318,7 +375,7 @@ public class MetaOntology
 			}
 		}
 		else{
-			OWLNamedIndividual object = factory.getOWLNamedIndividual(fullIri(value.asString()));
+			OWLNamedIndividual object = factory.getOWLNamedIndividual(fullIri(PREFIX + value.asString()));
 			result.add(new AddAxiom(O, factory.getOWLObjectPropertyAssertionAxiom(prop, ind, object)));
 		}
 		
@@ -356,7 +413,7 @@ public class MetaOntology
 								+ " property is: " + prop.getIRI()
 								+ " value is: " + value.at("literal"));
 			valueStr = value.at("literal").asString();
-			xsdType = OWL2Datatype.getDatatype(OWL.fullIri(typeStr));// IRI.create(typeStr));
+			xsdType = OWL2Datatype.getDatatype(OWL.fullIri(PREFIX + typeStr));// IRI.create(typeStr));
 			if (xsdType == null)
 				throw new IllegalArgumentException(
 						"Unable to read type for Json value." + value);

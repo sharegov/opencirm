@@ -162,12 +162,12 @@ public class ServiceCaseManager extends OntoAdmin {
 		}
 	}
 	
-	public Json replaceIndividualObjectProperty(String individualID, Json data, String userName, String comment){
+	public Json addIndividualObjectPropertyToIndividual(String individualID, String propertyID, Json data, String userName, String comment){
 		OwlRepo repo = getRepo();
 		synchronized (repo) {
 			repo.ensurePeerStarted();		 
 			
-			List<OWLOntologyChange> changes = MetaOntology.getAddIndividualObjectFromJsonChanges(individualID, data);		
+			List<OWLOntologyChange> changes = MetaOntology.getAddIndividualObjectFromJsonChanges(individualID, propertyID, data);		
 
 			String ontologyIri = Refs.defaultOntologyIRI.resolve();	
 			

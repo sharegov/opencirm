@@ -256,13 +256,15 @@ public class ServiceCaseAdmin extends RestService {
 		{ 
 			String userName = aData.at("userName").asString();
 			String objectUri = aData.at("objectUri").asString();
+			String propertyUri = aData.at("propertyUri").asString();
 			String comment = "Update Individial Object Property "+PREFIX+objectUri;
 			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
-			if (objectUri == null || objectUri.isEmpty()) throw new IllegalArgumentException("alert uri null or empty");
+			if (objectUri == null || objectUri.isEmpty()) throw new IllegalArgumentException("object uri null or empty");
+			if (propertyUri == null || propertyUri.isEmpty()) throw new IllegalArgumentException("property uri null or empty");
 		    			
 			ServiceCaseManager scm = new ServiceCaseManager();
 			
-			return Response.ok(scm.replaceIndividualObjectProperty(objectUri, aData.at("payload"), userName, comment), MediaType.APPLICATION_JSON).build();
+			return Response.ok(scm.addIndividualObjectPropertyToIndividual(objectUri, propertyUri, aData.at("payload"), userName, comment), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
 			return Response
