@@ -36,8 +36,6 @@ import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
@@ -269,7 +267,7 @@ public class MetaOntology
 		return result;
 	}
 	
-	private static List<OWLOntologyChange> getRemoveAllPropertiesIndividualChanges (OWLOntology O, OWLIndividual individual){
+	protected static List<OWLOntologyChange> getRemoveAllPropertiesIndividualChanges (OWLOntology O, OWLIndividual individual){
 		List<OWLOntologyChange> L = new ArrayList<OWLOntologyChange>();
 		
 		for (OWLAxiom a : O.getDataPropertyAssertionAxioms(individual)) L.add(new RemoveAxiom(O, a));
@@ -384,14 +382,9 @@ public class MetaOntology
 	
 	protected static List<OWLOntologyChange> setPropertiesFor(OWLNamedIndividual individual, Json properties, OWLOntology O, OWLOntologyManager manager, OWLDataFactory factory)
 	{
-		// Remove all data and object properties currently declared in the
-		// ontology.
+		// Remove all data and object properties currently declared on the ontology.
 		List<OWLOntologyChange> L = new ArrayList<OWLOntologyChange>();
-		for (OWLAxiom a : O.getDataPropertyAssertionAxioms(individual))
-			L.add(new RemoveAxiom(O, a));
-		for (OWLAxiom a : O.getObjectPropertyAssertionAxioms(individual))
-			L.add(new RemoveAxiom(O, a));
-		
+		L.addAll(getRemoveAllPropertiesIndividualChanges(O, individual));		
 		L.addAll(makeObjectIndividual(individual, properties, O, manager, factory));
 		
 		return L;

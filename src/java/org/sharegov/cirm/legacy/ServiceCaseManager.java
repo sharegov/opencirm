@@ -19,6 +19,7 @@ import org.sharegov.cirm.MetaOntology;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.owl.OwlRepo;
+import org.sharegov.cirm.rest.OWLIndividuals;
 import org.sharegov.cirm.rest.OntoAdmin;
 import org.sharegov.cirm.utils.GenUtils;
 
@@ -50,7 +51,8 @@ public class ServiceCaseManager extends OntoAdmin {
 		for (OWLNamedIndividual ind : S) {
 			A.add(Json.object().set("iri", ind.getIRI().toString())
 					.set("code", ind.getIRI().getFragment())
-					.set("label", OWL.getEntityLabel(ind)));
+					.set("label", OWL.getEntityLabel(ind))
+					.set("disabled", isSrDisabledOrDisabledCreate(ind)));
 		}
 
 		return A;
@@ -74,12 +76,12 @@ public class ServiceCaseManager extends OntoAdmin {
 		Json A = Json.array();
 		for (OWLNamedIndividual ind : S) {
 			boolean isSrDisabledOrDisabledCreate = isSrDisabledOrDisabledCreate(ind);
-			boolean shouldAddServiceCase = (!isGetEnabled && isSrDisabledOrDisabledCreate)
-					|| (isGetEnabled && !isSrDisabledOrDisabledCreate);
+			boolean shouldAddServiceCase = (!isGetEnabled && isSrDisabledOrDisabledCreate) || (isGetEnabled && !isSrDisabledOrDisabledCreate);
 			if (shouldAddServiceCase) {
 				A.add(Json.object().set("iri", ind.getIRI().toString())
 						.set("code", ind.getIRI().getFragment())
-						.set("label", OWL.getEntityLabel(ind)));
+						.set("label", OWL.getEntityLabel(ind))
+						.set("disabled", isSrDisabledOrDisabledCreate));
 			}
 		}
 
@@ -92,8 +94,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	 * @param srTypeIndividual
 	 * @return false if either no property
 	 */
-	private boolean isSrDisabledOrDisabledCreate(
-			OWLNamedIndividual srTypeIndividual) {
+	private boolean isSrDisabledOrDisabledCreate(OWLNamedIndividual srTypeIndividual) {
 		Set<OWLLiteral> values = OWL.dataProperties(srTypeIndividual, PREFIX
 				+ "isDisabledCreate");
 		boolean isDisabledCreate = values.contains(OWL.dataFactory()
@@ -136,6 +137,21 @@ public class ServiceCaseManager extends OntoAdmin {
 
 			return Json.object().set("success", commit(Refs.defaultOntologyIRI.resolve(), userName, comment, changes));
 		}
+	}
+	
+	public Json getServiceCaseAlert (String srType){
+		
+		OWLIndividuals q = new OWLIndividuals();
+		
+		Json srL = q.doInternalQuery("{" + PREFIX + srType + "}");
+		
+		for (Json sr : srL.asJsonList()){
+			if (sr.has("hasServiceCaseAlert")){			
+				return sr.at("hasServiceCaseAlert");
+			} 
+		}
+	
+		return null;
 	}
 
 	public Json push() {

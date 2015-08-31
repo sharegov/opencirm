@@ -217,6 +217,37 @@ public class ServiceCaseAdmin extends RestService {
 		}
 	}
 	
+	@GET
+	@Path("{srType}/alert")
+	public Response getAlert(@PathParam("srType") String srType)
+	{
+		
+		try
+		{ 
+			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
+		     
+			
+			ServiceCaseManager scm = new ServiceCaseManager();
+			
+			Json result = scm.getServiceCaseAlert(srType);
+			
+			if (result == null) {
+				return Response
+						.status(Status.NOT_FOUND)
+						.type(MediaType.APPLICATION_JSON).build();
+			} else {			
+				return Response.ok(result, MediaType.APPLICATION_JSON).build();
+			}
+		}
+		catch(Exception e){
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
 	@PUT
 	@Path("{srType}/alert")
 	public Response updateAlert(@PathParam("srType") String srType, Json aData)
@@ -227,6 +258,38 @@ public class ServiceCaseAdmin extends RestService {
 			String userName = aData.at("userName").asString();
 			String alertUri = aData.at("alertUri").asString();
 			String newLabel = aData.at("newLabel").asString();
+			boolean isEnable = aData.at("isEnabled").asBoolean();
+			String comment = "Update Service Request Alert "+PREFIX+srType;
+			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
+			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
+			if (alertUri == null || alertUri.isEmpty()) throw new IllegalArgumentException("alert uri null or empty");
+			if (newLabel == null || newLabel.isEmpty()) throw new IllegalArgumentException("new label null or empty");
+		     
+			
+			ServiceCaseManager scm = new ServiceCaseManager();
+			
+			return Response.ok(scm.replaceObjectAnnotation(alertUri, newLabel, userName, comment), MediaType.APPLICATION_JSON).build();
+		}
+		catch(Exception e){
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
+	@POST
+	@Path("{srType}/alert")
+	public Response createAlert(@PathParam("srType") String srType, Json aData)
+	{
+		
+		try
+		{ 
+			String userName = aData.at("userName").asString();
+			String alertUri = aData.at("alertUri").asString();
+			String newLabel = aData.at("newLabel").asString();
+			boolean isEnable = aData.at("isEnabled").asBoolean();
 			String comment = "Update Service Request Alert "+PREFIX+srType;
 			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
 			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
