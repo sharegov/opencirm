@@ -88,7 +88,7 @@ public class ServiceCaseManager extends OntoAdmin {
 
 		OWLNamedIndividual ind = OWL.individual(iri);
 		
-		Json np = getSerializedIndividual(ind.getIRI().getFragment(), ind.getIRI().getScheme());
+		Json np = (p.isObject()&&p.has("type")&&p.has("Name")) ? p : getSerializedIndividual(ind.getIRI().getFragment(), ind.getIRI().getScheme());
 		
 		if (np.has("type") && np.at("type").asString().toLowerCase().compareTo("division_county") != 0){
 			return Json.object().set("Name", np.at("Name").asString()).set("Type", np.at("type").asString());
