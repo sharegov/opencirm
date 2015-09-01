@@ -424,16 +424,17 @@ public class OntoAdmin extends RestService
 	}
 
 	
-	@GET 
-	@Path("/compare") 
-	public Json compare(){
+	public Json compare(String ontologyName){
 		VDHGDBOntologyRepository repo = repo();
 	//			VDHGDBOntologyRepository repo = owlRepo.repo();
 
 		Json json = Json.array(); 
-	    
-		String iri = "hgdb://www.miamidade.gov/cirm/legacy";
-
+	    String iri = null;
+		if(ontologyName.equals("legacy"))
+		iri = "hgdb://www.miamidade.gov/cirm/legacy";
+		else if(ontologyName.equals("test"))
+		iri = " ";
+			
 		HGDBOntology activeOnto = repo().getOntologyByDocumentIRI(IRI.create(iri));
 		//HGDBOntology activeOnto = repo.getOntologyByDocumentIRI(OWL.fullIri("http://www.miamidade.gov/cirm/legacy"));
 					
@@ -459,37 +460,42 @@ public class OntoAdmin extends RestService
 			source = r.getSource(); 
 			target = r.getTarget(); 
 			
-			
+			if(!revisionOutcome.name().equals("MATCH"))
+			{
 			Json outcome = Json.object().set("name", revisionOutcome.name());
 		    
 			Json sourceJson = Json.object();
-			if(source == null)
+			if(source != null)
 			{
-				sourceJson.set("revision","null");
-			}else{
+			
 				sourceJson.set("revision", source.getRevision())
 			    		.set("comment", source.getRevisionComment())
-			    		.set("timestamp", source.getTimeStamp().toString())
+			    		.set("date", source.getTimeStamp().getTime())
 			    		.set("user", source.getUser());	
-			}		 		   			
+			}
+			else
+			sourceJson = Json.nil();
 		  
 			Json targetJson = Json.object();
-		    if(target == null){
-		    	targetJson.set("revision", "null");		    	
-		    }
-		    else{
+		    if(target != null){
+		    
 		    	targetJson.set("revision", target.getRevision())
 			    		.set("comment", target.getRevisionComment())
-			    		.set("timestamp", target.getTimeStamp().toString())
+			    		.set("date", target.getTimeStamp().getTime())
 			    		.set("user", target.getUser());	
 		    }
+		    else
+		    	targetJson = Json.nil();
 			
 			
 			Json obj = Json.object().set("outcome", outcome)
 					.set("source", sourceJson)
-					.set("target", targetJson);										
+					.set("target", targetJson);			
+			
+			
 			
 			json.add(obj);
+			}
 		}		
 		
 		return json;
