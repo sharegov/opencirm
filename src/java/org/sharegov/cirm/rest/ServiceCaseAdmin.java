@@ -81,14 +81,14 @@ public class ServiceCaseAdmin extends RestService {
 	}
 	
 	@GET
-	@Path("/compare")
+	@Path("/ontology/{ontologyname}/diff")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response compareOntos() {
+	public Response compareOntos(@PathParam("ontologyname") String ontologyName) {
 		try
 		{			
 			ServiceCaseManager scm = new ServiceCaseManager();
 			
-			return Response.ok(scm.compare(), MediaType.APPLICATION_JSON).build();
+			return Response.ok(scm.compare(ontologyName), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			return Response
 					.status(Status.INTERNAL_SERVER_ERROR)
