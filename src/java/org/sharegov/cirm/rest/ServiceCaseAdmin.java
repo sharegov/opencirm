@@ -224,8 +224,7 @@ public class ServiceCaseAdmin extends RestService {
 		
 		try
 		{ 
-			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
-		     
+			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");		     
 			
 			ServiceCaseManager scm = new ServiceCaseManager();
 			
