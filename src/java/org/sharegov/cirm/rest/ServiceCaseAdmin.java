@@ -254,12 +254,16 @@ public class ServiceCaseAdmin extends RestService {
 		
 		try
 		{ 
-			String userName = aData.at("userName").asString();
-			String alertUri = aData.at("alertUri").asString();
-			String newLabel = aData.at("newLabel").asString();
-			boolean isEnable = aData.at("isEnabled").asBoolean();
-			String comment = "Update Service Request Alert "+PREFIX+srType;
-			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
+			
+			//Uer will be hardcoded for now
+			String userName = "TestUser";
+			String comment = "Alert update by CIRM Admin user " + userName; 
+			
+			String alertUri = aData.at("iri").asString();
+			String newLabel = aData.at("label").asString();
+			String type = aData.at("type").asString();
+			
+			
 			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
 			if (alertUri == null || alertUri.isEmpty()) throw new IllegalArgumentException("alert uri null or empty");
 			if (newLabel == null || newLabel.isEmpty()) throw new IllegalArgumentException("new label null or empty");
