@@ -235,6 +235,21 @@ public class MetaOntology
 		return result;
 	}
 	
+	public static List<OWLOntologyChange> getRemoveIndividualObjectPropertyChanges (String individualID){
+		OWLOntology O = OWL.ontology();
+		String ontologyIri = Refs.defaultOntologyIRI.resolve();
+
+		if (O == null) {
+			throw new RuntimeException("Ontology not found: " + ontologyIri);
+		}
+		
+		OWLOntologyManager manager = OWL.manager();
+		OWLDataFactory factory = manager.getOWLDataFactory();
+		OWLIndividual individual = factory.getOWLNamedIndividual(fullIri(PREFIX + individualID)); 
+		
+		return getRemoveAllPropertiesIndividualChanges (O, individual);		
+	}
+	
 	/*
 	 * function creates a new named idividual using properties described on the json structure and attach it to the parent on property described by propertyID.
 	 * 
