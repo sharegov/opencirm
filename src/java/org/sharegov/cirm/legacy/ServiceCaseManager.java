@@ -23,6 +23,7 @@ import org.sharegov.cirm.owl.OwlRepo;
 import org.sharegov.cirm.rest.OWLIndividuals;
 import org.sharegov.cirm.rest.OntoAdmin;
 import org.sharegov.cirm.utils.GenUtils;
+import org.sharegov.cirm.utils.ServiceCaseManagerCache;
 
 /*
  * @author Sabbas, Hilpold, Chirino
@@ -128,6 +129,10 @@ public class ServiceCaseManager extends OntoAdmin {
 	}
 	
 	private Json getRequiredData (OWLNamedIndividual individual){
+		Json el = ServiceCaseManagerCache.getInstance().getElement(individual.getIRI().getFragment() + "-Admin");
+		
+		if (el != Json.nil()) return el;
+		
 		Json result = Json.object().set("iri", individual.getIRI().toString())
 								   .set("code", individual.getIRI().getFragment())
 								   .set("label", OWL.getEntityLabel(individual))
@@ -160,13 +165,15 @@ public class ServiceCaseManager extends OntoAdmin {
 			if (!result.has("division")) result.set("division", Json.nil());
 		}
 		
+		ServiceCaseManagerCache.getInstance().setElement(individual.getIRI().getFragment() + "-Admin", result);
+		
 		return result;
    }
 
 	public Json getAll() {
 		Set<OWLNamedIndividual> S = getAllIndividuals();
 		Json A = Json.array();
-		for (OWLNamedIndividual ind : S) {
+		for (OWLNamedIndividual ind : S) {			
 			A.add(getRequiredData(ind));
 		}
 
@@ -252,19 +259,21 @@ public class ServiceCaseManager extends OntoAdmin {
 	}
 	
 	private Json getSerializedIndividual (String individualID, String ontologyID){
-		try {
-	//		if (ontologyID.toLowerCase().contains("ontology")) ontologyID = "mdc";
-	//		else
-	//			if (ontologyID.toLowerCase().contains("legacy")) ontologyID = "legacy";
-	//			else throw new IllegalDataException("Connot find ontology prefix for: " + ontologyID + "#" + individualID);
-			
+		try {			
 			if (ontologyID.toLowerCase().contains("legacy")) ontologyID = "legacy";
 			else ontologyID = "mdc";
 			
+			String cacheKey = ontologyID + ":" + individualID;
+			
+			Json el = ServiceCaseManagerCache.getInstance().getElement(cacheKey);
+			
+			if (el != Json.nil()) return el;
+			
 			OWLIndividuals q = new OWLIndividuals();
-			Json S = q.doInternalQuery("{" + ontologyID + ":" + individualID + "}");
+			Json S = q.doInternalQuery("{" + cacheKey + "}");
 			
 			for (Json ind : S.asJsonList()){
+				ServiceCaseManagerCache.getInstance().setElement(cacheKey, ind);
 				return ind;
 			}
 		} catch (Exception e) {
