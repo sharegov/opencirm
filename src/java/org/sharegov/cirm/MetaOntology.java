@@ -267,6 +267,41 @@ public class MetaOntology
 		return result;
 	}
 	
+	/*
+	 * function creates a new named idividual using properties described on the newData json structure and replace it to the parent on property described by propertyID by removing the object represented by oldData.
+	 * 
+	 */
+	public static List<OWLOntologyChange> getAddreplaceIndividualObjectFromJsonChanges (String parentID, String propertyID,  Json newData, Json oldData){
+		OWLOntology O = OWL.ontology();
+		String ontologyIri = Refs.defaultOntologyIRI.resolve();
+
+		if (O == null) {
+			throw new RuntimeException("Ontology not found: " + ontologyIri);
+		}
+		
+		if (!newData.has("iri")){
+			throw new RuntimeException("root iri not found : " + newData.toString());
+		}
+
+		OWLOntologyManager manager = OWL.manager();
+		OWLDataFactory factory = manager.getOWLDataFactory();
+		OWLIndividual newInd = factory.getOWLNamedIndividual(fullIri(PREFIX + newData.at("iri").asString())); 
+		OWLIndividual oldInd = factory.getOWLNamedIndividual(fullIri(PREFIX + oldData.at("iri").asString())); 
+		
+		List<OWLOntologyChange> result = getRemoveAllPropertiesIndividualChanges (O, newInd);
+		
+		result.addAll(getRemoveAllPropertiesIndividualChanges (O, oldInd));
+		
+		result.addAll(makeObjectIndividual (newInd, newData, O, manager, factory));
+		
+		OWLIndividual parent = factory.getOWLNamedIndividual(fullIri(PREFIX + parentID));
+		OWLObjectProperty property =  factory.getOWLObjectProperty(fullIri(PREFIX + propertyID));
+		
+		result.add(new AddAxiom(O, factory.getOWLObjectPropertyAssertionAxiom(property, parent, newInd)));
+		
+		return result;
+	}
+	
 	protected static List<OWLOntologyChange> getRemoveAllPropertiesIndividualChanges (OWLOntology O, OWLIndividual individual){
 		List<OWLOntologyChange> L = new ArrayList<OWLOntologyChange>();
 		
