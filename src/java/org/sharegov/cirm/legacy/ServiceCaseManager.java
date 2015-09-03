@@ -10,7 +10,6 @@ import java.util.Set;
 
 import mjson.Json;
 
-import org.jdom.IllegalDataException;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLLiteral;
@@ -56,7 +55,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			if (p.at("hasParentAgency").isObject()){
 				if (p.at("hasParentAgency").has("iri")){
 					parentIri = (p.at("hasParentAgency").at("iri").asString());
-				} else throw new IllegalDataException("Cannot find IRI property for Individual: " + p.asString());
+				} else throw new IllegalParameterException("Cannot find IRI property for Individual: " + p.asString());
 			} else parentIri = p.at("hasParentAgency").asString();
 			
 			OWLNamedIndividual ind = OWL.individual(parentIri);
@@ -79,14 +78,14 @@ public class ServiceCaseManager extends OntoAdmin {
 		if (p.has("hasParentAgency")) p = p.at("hasParentAgency");
 		else 
 			if (p.has("Department")) p = p.at("Department");
-			else throw new IllegalDataException("Division: " + p.at("iri").asString() + " have no Parent Agency or Department assigned.");
+			else throw new IllegalParameterException("Division: " + p.at("iri").asString() + " have no Parent Agency or Department assigned.");
 		
 		
 		String iri;
 		if (p.isObject()){
 			if (p.has("iri")){
 				iri = (p.at("iri").asString());
-			} else throw new IllegalDataException("Cannot find IRI property for Individual: " + p.asString());
+			} else throw new IllegalParameterException("Cannot find IRI property for Individual: " + p.asString());
 		} else iri = p.asString();
 		
 
@@ -120,7 +119,7 @@ public class ServiceCaseManager extends OntoAdmin {
 				result.set("division", Json.object().set("Name", Json.nil()).set("Division_Code", Json.nil()));
 				result.set("department", Json.object().set("Name", np.has("Name") ? np.at("Name").asString(): Json.nil()).set("Type", np.has("type") ? np.at("type").asString(): Json.nil()));
 			}
-		} else throw new IllegalDataException("Cannot find IRI property for Individual: " + p.asString());
+		} else throw new IllegalParameterException("Cannot find IRI property for Individual: " + p.asString());
 		
 		
 		return result;
@@ -128,7 +127,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	
 	private Json findDepartmentDivision (Json srType){
 		if (srType.has("providedBy")) return resolveDepartmentDivision (srType.at("providedBy"));
-		else throw new IllegalDataException("Cannot find providedBy property for SR type: " +srType.at("iri").asString());
+		else throw new IllegalParameterException("Cannot find providedBy property for SR type: " +srType.at("iri").asString());
 	}
 	
 	private Json getRequiredData (OWLNamedIndividual individual){
@@ -149,15 +148,15 @@ public class ServiceCaseManager extends OntoAdmin {
 				jurisdiction = jIndividual.at("hasJurisdictionDescription").asString();
 			} else {
 				jurisdiction = findJusrisdiction(jIndividual);
-				if (jurisdiction == null || jurisdiction.isEmpty()) throw new IllegalDataException("Individual legacy:" +  individual.getIRI().getFragment() + " have no jurisdiction associated.");
+				if (jurisdiction == null || jurisdiction.isEmpty()) throw new IllegalParameterException("Individual legacy:" +  individual.getIRI().getFragment() + " have no jurisdiction associated.");
 				
 			}		
 			result.set("jurisdiction", jIndividual.at("hasJurisdictionDescription").asString());
 			
 			Json depdiv = findDepartmentDivision(jIndividual);
 			
-			if (!depdiv.has("department")) throw new IllegalDataException("Individual legacy:" +  individual.getIRI().getFragment() + " have no provider/owner associated.");
-			if (!depdiv.has("division")) throw new IllegalDataException("Cannot resolve division for Individual legacy:" +  individual.getIRI().getFragment());
+			if (!depdiv.has("department")) throw new IllegalParameterException("Individual legacy:" +  individual.getIRI().getFragment() + " have no provider/owner associated.");
+			if (!depdiv.has("division")) throw new IllegalParameterException("Cannot resolve division for Individual legacy:" +  individual.getIRI().getFragment());
 			
 			result.with(depdiv);
 		} catch (Exception e) {
