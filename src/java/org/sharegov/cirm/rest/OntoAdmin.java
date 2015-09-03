@@ -257,43 +257,47 @@ public class OntoAdmin extends RestService
 		}		
 	}
 
-	protected boolean commit(String ontologyIri, String userName, String comment, List <OWLOntologyChange> changes) throws RuntimeException
+	protected boolean commit(String userName, String comment, List <OWLOntologyChange> changes) throws RuntimeException
 	{		
 		VDHGDBOntologyRepository repo = repo();
 		try
 		{ 
 			Refs.owlRepo.resolve().ensurePeerStarted();
-			OWLOntology O = OWL.manager().getOntology(IRI.create(ontologyIri)); 
+			//OWLOntology O = OWL.manager().getOntology(IRI.create(ontologyIri)); 
 			
-			if (O == null) {
-				throw new RuntimeException ("Ontology not found: " + ontologyIri);
-			}
+//			if (O == null) {
+//				throw new RuntimeException ("Ontology not found: " + ontologyIri);
+//			}
 			
 			//OWL
 			OWLOntologyManager manager = OWL.manager();
 	
-			manager.applyChanges(changes);
-			
-			VersionedOntology vo = repo.getVersionControlledOntology(O);
-			
-			if (vo == null) {
-				throw new RuntimeException ("Ontology found, but not versioned: " + ontologyIri);
-			}
-			
-			
-			int nrOfCommittableChanges = vo.getNrOfCommittableChanges(); 
-			if (nrOfCommittableChanges == 0) {
-				int conflicts = vo.getWorkingSetConflicts().size(); 
-				if (conflicts > 0) {
-					throw new RuntimeException ("All " + conflicts + " pending changes in Ontology " + ontologyIri + " are conflicts, " 
-							+ "which will be removed automatically on commit, so there is no single change to commit..");			
-				} else {
-					return false;
+			manager.applyChanges(changes);			
+
+			int committedOntologyCount = 0;
+			for (OWLOntology o : OWL.ontologies()) {
+				VersionedOntology vo = repo.getVersionControlledOntology(o);
+				
+				if (vo == null) {
+					throw new RuntimeException ("Ontology found, but not versioned: " + o.getOntologyID());
 				}
-			} else {
-				vo.commit(userName, comment);
-				return true;
+				
+				int nrOfCommittableChanges = vo.getNrOfCommittableChanges(); 
+				if (nrOfCommittableChanges == 0) {
+					int conflicts = vo.getWorkingSetConflicts().size(); 
+					if (conflicts > 0) {
+						throw new RuntimeException ("All " + conflicts + " pending changes in Ontology " + o.getOntologyID() + " are conflicts, " 
+								+ "which will be removed automatically on commit, so there is no single change to commit..");			
+					} else {
+						//do nothing
+					}
+				} else {
+					vo.commit(userName, comment);
+					committedOntologyCount++;
+				}
 			}
+			
+			return committedOntologyCount > 0;
 		}
 		catch (Throwable t)
 		{

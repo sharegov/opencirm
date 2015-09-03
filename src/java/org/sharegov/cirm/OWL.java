@@ -166,6 +166,7 @@ public class OWL
 								StartUp.config.at("metaDatabaseLocation").asString(), 
 								new HashSet<IRI>(Arrays.asList(
 										IRI.create("http://www.miamidade.gov/ontology"),
+										IRI.create("http://www.miamidade.gov/cirm/legacy/exported"),
 										IRI.create("http://www.miamidade.gov/cirm/legacy"))));
 						}
 					}

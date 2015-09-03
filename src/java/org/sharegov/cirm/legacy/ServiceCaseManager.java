@@ -4,6 +4,7 @@ import static org.sharegov.cirm.OWL.owlClass;
 import static org.sharegov.cirm.OWL.reasoner;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -24,6 +25,8 @@ import org.sharegov.cirm.rest.OWLIndividuals;
 import org.sharegov.cirm.rest.OntoAdmin;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ServiceCaseManagerCache;
+
+import com.hp.hpl.jena.reasoner.IllegalParameterException;
 
 /*
  * @author Sabbas, Hilpold, Chirino
@@ -237,7 +240,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			changes.add(isDisabledCreateAddAxiom);
 
-			return Json.object().set("success", commit(Refs.defaultOntologyIRI.resolve(), userName, comment, changes));
+			return Json.object().set("success", commit(userName, comment, changes));
 		}
 	}
 
@@ -254,7 +257,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			changes.add(isDisabledCreateAddAxiom);
 
-			return Json.object().set("success", commit(Refs.defaultOntologyIRI.resolve(), userName, comment, changes));
+			return Json.object().set("success", commit(userName, comment, changes));
 		}
 	}
 	
@@ -315,11 +318,9 @@ public class ServiceCaseManager extends OntoAdmin {
 		synchronized (repo) {
 			repo.ensurePeerStarted();		 
 			
-			List<OWLOntologyChange> changes = MetaOntology.getReplaceObjectAnnotationChanges(individualID, newAnnotationContent);			
-
-			String ontologyIri = Refs.defaultOntologyIRI.resolve();	
+			List<OWLOntologyChange> changes = MetaOntology.getReplaceObjectAnnotationChanges(individualID, newAnnotationContent);	
 			
-			return Json.object().set("success", commit(ontologyIri, userName, comment, changes));
+			return Json.object().set("success", commit(userName, comment, changes));
 		}
 	}
 	
@@ -328,11 +329,9 @@ public class ServiceCaseManager extends OntoAdmin {
 		synchronized (repo) {
 			repo.ensurePeerStarted();		 
 			
-			List<OWLOntologyChange> changes = MetaOntology.getAddIndividualObjectFromJsonChanges(individualID, propertyID, data);		
-
-			String ontologyIri = Refs.defaultOntologyIRI.resolve();	
+			List<OWLOntologyChange> changes = MetaOntology.getAddIndividualObjectFromJsonChanges(individualID, propertyID, data);	
 			
-			return Json.object().set("success", commit(ontologyIri, userName, comment, changes));
+			return Json.object().set("success", commit(userName, comment, changes));
 		}
 	}
 	
@@ -341,6 +340,59 @@ public class ServiceCaseManager extends OntoAdmin {
 		String jenkingsEndpointRefreshOntosOnly = "https://api.miamidade.gov/jenkins/job/CIRM-ADMIN-TEST-REFRESH-ONTOS/build?token=1a85a585ef7c424191c7c58ee3c4a97d556eec91";
 
 		return GenUtils.httpPostWithBasicAuth(jenkingsEndpointRefreshOntosOnly, "cirm", "admin", "");
+	}
+	
+	public Json addNewAlertServiceCase (String individualID, Json data, String userName, String comment){
+		OwlRepo repo = getRepo();
+		synchronized (repo) {
+			repo.ensurePeerStarted();			
+			
+			String propertyID = "hasServiceCaseAlert";
+			
+			if(data.at("iri").isNull())
+			{
+				
+				Date now = new Date(); 
+				
+				String newIri = individualID + "_" + Long.toString(now.getTime());
+				data.set("iri", newIri); 
+			}
+			
+			
+			Json oldAlert = getServiceCaseAlert(individualID);
+			
+			List<OWLOntologyChange> changes;
+			
+			if (oldAlert != Json.nil()){
+				OWLNamedIndividual ind = OWL.individual(oldAlert.at("iri").asString());
+				oldAlert.set("iri", ind.getIRI().getFragment());
+				changes = MetaOntology.getAddReplaceIndividualObjectFromJsonChanges(individualID, propertyID, data, oldAlert);
+			} else {
+				changes = MetaOntology.getAddIndividualObjectFromJsonChanges(individualID, propertyID, data);
+			}
+			
+			return Json.object().set("success", commit(userName, comment, changes));
+				
+		}
+	}
+	
+	public Json deleteAlertServiceCase (String individualID, String userName, String comment){
+		OwlRepo repo = getRepo();
+		synchronized (repo) {
+			repo.ensurePeerStarted();						
+			
+			Json oldAlert = getServiceCaseAlert(individualID);
+			
+			List<OWLOntologyChange> changes;
+			
+			if (oldAlert != Json.nil()){
+				OWLNamedIndividual ind = OWL.individual(oldAlert.at("iri").asString());
+				changes = MetaOntology.getRemoveAllPropertiesIndividualChanges(ind);
+			} else throw new IllegalParameterException("No alert for individual " + PREFIX + individualID);
+			
+			return Json.object().set("success", commit(userName, comment, changes));
+				
+		}
 	}
 	
 	/*

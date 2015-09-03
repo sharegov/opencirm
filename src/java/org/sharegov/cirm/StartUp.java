@@ -92,7 +92,6 @@ public class StartUp extends ServerResource
 			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#LocalConfigSetXE")
 			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#LocalConfigSet")
 			.set("nameBase", "http://www.miamidade.gov/ontology" )
-			.set("customIRIMappingFile", "C:/work/mdcirm/customIRIMap.properties")
 			.set("stopExpansionConditionIRI", Json.array(
 					"http://www.miamidade.gov/cirm/legacy#providedBy",
 					"http://www.miamidade.gov/cirm/legacy#hasChoiceValue"

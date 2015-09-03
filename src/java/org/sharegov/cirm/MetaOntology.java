@@ -247,7 +247,7 @@ public class MetaOntology
 		OWLDataFactory factory = manager.getOWLDataFactory();
 		OWLIndividual individual = factory.getOWLNamedIndividual(fullIri(PREFIX + individualID)); 
 		
-		return getRemoveAllPropertiesIndividualChanges (O, individual);		
+		return getRemoveAllPropertiesIndividualChanges (individual);		
 	}
 	
 	/*
@@ -270,7 +270,7 @@ public class MetaOntology
 		OWLDataFactory factory = manager.getOWLDataFactory();
 		OWLIndividual newInd = factory.getOWLNamedIndividual(fullIri(PREFIX + data.at("iri").asString())); 
 		
-		List<OWLOntologyChange> result = getRemoveAllPropertiesIndividualChanges (O, newInd);
+		List<OWLOntologyChange> result = getRemoveAllPropertiesIndividualChanges (newInd);
 		
 		result.addAll(makeObjectIndividual (newInd, data, O, manager, factory));
 		
@@ -303,9 +303,9 @@ public class MetaOntology
 		OWLIndividual newInd = factory.getOWLNamedIndividual(fullIri(PREFIX + newData.at("iri").asString())); 
 		OWLIndividual oldInd = factory.getOWLNamedIndividual(fullIri(PREFIX + oldData.at("iri").asString())); 
 		
-		List<OWLOntologyChange> result = getRemoveAllPropertiesIndividualChanges (O, newInd);
+		List<OWLOntologyChange> result = getRemoveAllPropertiesIndividualChanges (newInd);
 		
-		result.addAll(getRemoveAllPropertiesIndividualChanges (O, oldInd));
+		result.addAll(getRemoveAllPropertiesIndividualChanges (oldInd));
 		
 		result.addAll(makeObjectIndividual (newInd, newData, O, manager, factory));
 		
@@ -317,13 +317,17 @@ public class MetaOntology
 		return result;
 	}
 	
-	protected static List<OWLOntologyChange> getRemoveAllPropertiesIndividualChanges (OWLOntology O, OWLIndividual individual){
+	public static List<OWLOntologyChange> getRemoveAllPropertiesIndividualChanges (OWLIndividual individual){
 		List<OWLOntologyChange> L = new ArrayList<OWLOntologyChange>();
 		
-		for (OWLAxiom a : O.getDataPropertyAssertionAxioms(individual)) L.add(new RemoveAxiom(O, a));
-		for (OWLAxiom a : O.getObjectPropertyAssertionAxioms(individual)) L.add(new RemoveAxiom(O, a));
-		for (OWLAxiom a : O.getAnnotationAssertionAxioms(((OWLEntity) individual).getIRI())) L.add(new RemoveAxiom(O, a));
-		for (OWLAxiom a : O.getClassAssertionAxioms(individual)) L.add(new RemoveAxiom(O, a));
+		for (OWLOntology O: OWL.ontologies()){		
+			for (OWLAxiom a : O.getDeclarationAxioms((OWLEntity)individual)) L.add(new RemoveAxiom(O, a));
+			for (OWLAxiom a : O.getReferencingAxioms((OWLEntity)individual)) L.add(new RemoveAxiom(O, a));			
+			for (OWLAxiom a : O.getDataPropertyAssertionAxioms(individual)) L.add(new RemoveAxiom(O, a));
+			for (OWLAxiom a : O.getObjectPropertyAssertionAxioms(individual)) L.add(new RemoveAxiom(O, a));
+			for (OWLAxiom a : O.getAnnotationAssertionAxioms(((OWLEntity) individual).getIRI())) L.add(new RemoveAxiom(O, a));
+			for (OWLAxiom a : O.getClassAssertionAxioms(individual)) L.add(new RemoveAxiom(O, a));
+		}
 		
 		return L;
 	}
@@ -434,7 +438,7 @@ public class MetaOntology
 	{
 		// Remove all data and object properties currently declared on the ontology.
 		List<OWLOntologyChange> L = new ArrayList<OWLOntologyChange>();
-		L.addAll(getRemoveAllPropertiesIndividualChanges(O, individual));		
+		L.addAll(getRemoveAllPropertiesIndividualChanges(individual));		
 		L.addAll(makeObjectIndividual(individual, properties, O, manager, factory));
 		
 		return L;

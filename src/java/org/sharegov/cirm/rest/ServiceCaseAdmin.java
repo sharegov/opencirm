@@ -2,6 +2,7 @@ package org.sharegov.cirm.rest;
 
 import java.util.Date;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -232,7 +233,7 @@ public class ServiceCaseAdmin extends RestService {
 			
 			Json result = scm.getServiceCaseAlert(srType);
 			
-			if (result == null) {
+			if (result == Json.nil()) {
 				return Response
 						.status(Status.NOT_FOUND)
 						.type(MediaType.APPLICATION_JSON).build();
@@ -255,17 +256,15 @@ public class ServiceCaseAdmin extends RestService {
 	{
 		
 		try
-		{ 
+		{			
+			if (!(aData.has("payload") && aData.at("payload").has("iri") && aData.at("payload").has("label"))) throw new IllegalArgumentException("Alert data null or empty"); 
 			
-			//Uer will be hardcoded for now
-			String userName = "TestUser";
-			String comment = "Alert update by CIRM Admin user " + userName; 
-			
-			String alertUri = aData.at("iri").asString();
-			String newLabel = aData.at("label").asString();
-			String type = aData.at("type").asString();
-			
-			
+			String userName = aData.at("userName").asString();
+			String alertUri = aData.at("payload").at("iri").asString();
+			String newLabel = aData.at("payload").at("label").asString();	
+			String comment = "Replace Alert Message by CIRM Admin user " + userName; 					
+
+			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
 			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
 			if (alertUri == null || alertUri.isEmpty()) throw new IllegalArgumentException("alert uri null or empty");
 			if (newLabel == null || newLabel.isEmpty()) throw new IllegalArgumentException("new label null or empty");
@@ -291,32 +290,45 @@ public class ServiceCaseAdmin extends RestService {
 		
 		try
 		{ 
-			String userName, objectIri, propertyIri, comment;
-			//if the iri is null or empty create a new iri
-			if(aData.at("iri").isNull())
-			{
-				
-				Date now = new Date(); 
-				
-				String newIri = srType + "_" + Long.toString(now.getTime());
-				aData.set("iri", newIri); 
-			}
+			if (!(aData.has("payload") && aData.at("payload").has("iri") && aData.at("payload").has("label")&& aData.at("payload").has("type"))) throw new IllegalArgumentException("Alert data null/empty/Incomplete"); 
 			
-			//sample PW16 
-			objectIri = srType; 	
-		
-			comment = "";  
-			propertyIri = "hasServiceCaseAlert";
-			userName= "testUser";
-			
-			if (objectIri == null || objectIri.isEmpty()) throw new IllegalArgumentException("object uri null or empty");
-			if (propertyIri == null || propertyIri.isEmpty()) throw new IllegalArgumentException("property uri null or empty");
-			
-			
+			String userName = aData.at("userName").asString();	
+			String comment = "Create/Replace Alert Message by CIRM Admin user " + userName;			
+
+			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
+			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");						
 			
 			ServiceCaseManager scm = new ServiceCaseManager();
 			
-			return Response.ok(scm.addIndividualObjectPropertyToIndividual(objectIri, propertyIri, aData, userName, comment), MediaType.APPLICATION_JSON).build();
+			return Response.ok(scm.addNewAlertServiceCase(srType, aData.at("payload"), userName, comment), MediaType.APPLICATION_JSON).build();
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+		
+	}
+	
+	@DELETE
+	@Path("{srType}/alert")
+	public Response deleteAlert(@PathParam("srType") String srType, Json aData)
+	{
+		
+		try
+		{						
+			String userName = aData.at("userName").asString();	
+			String comment = "Delete Alert Message by CIRM Admin user " + userName;			
+
+			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
+			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");						
+			
+			ServiceCaseManager scm = new ServiceCaseManager();
+			
+			return Response.ok(scm.deleteAlertServiceCase(srType, userName, comment), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
 			e.printStackTrace();
