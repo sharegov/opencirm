@@ -34,10 +34,8 @@ public class ServiceCaseAdmin extends RestService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getEnabledServiceCases() {
 		try
-		{
-			ServiceCaseManager scm = new ServiceCaseManager();
-			
-			return Response.ok(scm.getEnabled(), MediaType.APPLICATION_JSON).build();
+		{			
+			return Response.ok(ServiceCaseManager.getInstance().getEnabled(), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			return Response
 					.status(Status.INTERNAL_SERVER_ERROR)
@@ -52,10 +50,8 @@ public class ServiceCaseAdmin extends RestService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getDisabledServiceCases() {
 		try
-		{
-			ServiceCaseManager scm = new ServiceCaseManager();
-			
-			return Response.ok(scm.getDisabled(), MediaType.APPLICATION_JSON).build();
+		{			
+			return Response.ok(ServiceCaseManager.getInstance().getDisabled(), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			return Response
 					.status(Status.INTERNAL_SERVER_ERROR)
@@ -70,10 +66,8 @@ public class ServiceCaseAdmin extends RestService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAllServiceCases() {
 		try
-		{
-			ServiceCaseManager scm = new ServiceCaseManager();
-			
-			return Response.ok(scm.getAll(), MediaType.APPLICATION_JSON).build();
+		{			
+			return Response.ok(ServiceCaseManager.getInstance().getSRTypes(true, true), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			return Response
 					.status(Status.INTERNAL_SERVER_ERROR)
@@ -88,10 +82,8 @@ public class ServiceCaseAdmin extends RestService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response compareOntos(@PathParam("ontologyname") String ontologyName) {
 		try
-		{			
-			ServiceCaseManager scm = new ServiceCaseManager();
-			
-			return Response.ok(scm.compare(ontologyName), MediaType.APPLICATION_JSON).build();
+		{						
+			return Response.ok(ServiceCaseManager.getInstance().compare(ontologyName), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			return Response
 					.status(Status.INTERNAL_SERVER_ERROR)
@@ -112,10 +104,8 @@ public class ServiceCaseAdmin extends RestService {
 			String comment = "Disable Service Request "+PREFIX+srType;
 			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
 			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
-			
-			ServiceCaseManager scm = new ServiceCaseManager();
-			
-			return Response.ok(scm.disable(srType, userName, comment), MediaType.APPLICATION_JSON).build();
+						
+			return Response.ok(ServiceCaseManager.getInstance().disable(srType, userName, comment), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
 			return Response
@@ -136,10 +126,8 @@ public class ServiceCaseAdmin extends RestService {
 			String comment = "Enable Service Request "+PREFIX+srType;
 			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
 			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
-			
-			ServiceCaseManager scm = new ServiceCaseManager();
-			
-			return Response.ok(scm.enable(srType, userName, comment), MediaType.APPLICATION_JSON).build();
+						
+			return Response.ok(ServiceCaseManager.getInstance().enable(srType, userName, comment), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
 			return Response
@@ -155,9 +143,7 @@ public class ServiceCaseAdmin extends RestService {
 	public Response refresh(){
 		try
 		{			
-			ServiceCaseManager scm = new ServiceCaseManager();
-			
-			return Response.ok(scm.push(), MediaType.APPLICATION_JSON).build();
+			return Response.ok(ServiceCaseManager.getInstance().push(), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
 			return Response
@@ -178,9 +164,7 @@ public class ServiceCaseAdmin extends RestService {
 			if (key == null || key.isEmpty()) throw new IllegalArgumentException("key needed for this operation");
 			if (key.compareTo(KEY) != 0) throw new IllegalArgumentException("key is invalid");
 			
-			ServiceCaseManager scm = new ServiceCaseManager();
-			
-			return Response.ok(scm.refreshOnto(), MediaType.APPLICATION_JSON).build();
+			return Response.ok(ServiceCaseManager.getInstance().refreshOnto(), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
 			return Response
@@ -207,9 +191,7 @@ public class ServiceCaseAdmin extends RestService {
 			if (questionUri == null || questionUri.isEmpty()) throw new IllegalArgumentException("question uri null or empty");
 			if (newLabel == null || newLabel.isEmpty()) throw new IllegalArgumentException("new label null or empty");
 			
-			ServiceCaseManager scm = new ServiceCaseManager();
-			
-			return Response.ok(scm.replaceObjectAnnotation(questionUri, newLabel, userName, comment), MediaType.APPLICATION_JSON).build();
+			return Response.ok(ServiceCaseManager.getInstance().replaceObjectAnnotation(questionUri, newLabel, userName, comment), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
 			return Response
@@ -229,9 +211,7 @@ public class ServiceCaseAdmin extends RestService {
 		{ 
 			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");		     
 			
-			ServiceCaseManager scm = new ServiceCaseManager();
-			
-			Json result = scm.getServiceCaseAlert(srType);
+			Json result = ServiceCaseManager.getInstance().getServiceCaseAlert(srType);
 			
 			if (result == Json.nil()) {
 				return Response
@@ -261,18 +241,17 @@ public class ServiceCaseAdmin extends RestService {
 			
 			String userName = aData.at("userName").asString();
 			String alertUri = aData.at("payload").at("iri").asString();
-			String newLabel = aData.at("payload").at("label").asString();	
-			String comment = "Replace Alert Message by CIRM Admin user " + userName; 					
+			String newLabel = aData.at("payload").at("label").asString();						
 
 			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
 			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
 			if (alertUri == null || alertUri.isEmpty()) throw new IllegalArgumentException("alert uri null or empty");
 			if (newLabel == null || newLabel.isEmpty()) throw new IllegalArgumentException("new label null or empty");
+			
+
+			String comment = "Replace Alert Message for SR type: " + PREFIX + srType; 
 		     
-			
-			ServiceCaseManager scm = new ServiceCaseManager();
-			
-			return Response.ok(scm.replaceObjectAnnotation(alertUri, newLabel, userName, comment), MediaType.APPLICATION_JSON).build();
+			return Response.ok(ServiceCaseManager.getInstance().replaceObjectAnnotation(alertUri, newLabel, userName, comment), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
 			return Response
@@ -292,15 +271,14 @@ public class ServiceCaseAdmin extends RestService {
 		{ 
 			if (!(aData.has("payload") && aData.at("payload").has("iri") && aData.at("payload").has("label")&& aData.at("payload").has("type"))) throw new IllegalArgumentException("Alert data null/empty/Incomplete"); 
 			
-			String userName = aData.at("userName").asString();	
-			String comment = "Create/Replace Alert Message by CIRM Admin user " + userName;			
+			String userName = aData.at("userName").asString();			
 
 			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
-			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");						
+			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");			
+
+			String comment = "Create new Alert Message for SR "+ PREFIX + srType;	
 			
-			ServiceCaseManager scm = new ServiceCaseManager();
-			
-			return Response.ok(scm.addNewAlertServiceCase(srType, aData.at("payload"), userName, comment), MediaType.APPLICATION_JSON).build();
+			return Response.ok(ServiceCaseManager.getInstance().addNewAlertServiceCase(srType, aData.at("payload"), userName, comment), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
 			e.printStackTrace();
@@ -320,15 +298,14 @@ public class ServiceCaseAdmin extends RestService {
 		
 		try
 		{						
-			String userName = aData.at("userName").asString();	
-			String comment = "Delete Alert Message by CIRM Admin user " + userName;			
+			String userName = "Jorge Fiallega";//aData.at("userName").asString();				
 
 			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
-			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");						
+			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
 			
-			ServiceCaseManager scm = new ServiceCaseManager();
+			String comment = "Delete Alert Message for SR "+ PREFIX + srType;	
 			
-			return Response.ok(scm.deleteAlertServiceCase(srType, userName, comment), MediaType.APPLICATION_JSON).build();
+			return Response.ok(ServiceCaseManager.getInstance().deleteAlertServiceCase(srType, userName, comment), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
 			e.printStackTrace();
@@ -356,9 +333,7 @@ public class ServiceCaseAdmin extends RestService {
 			if (objectUri == null || objectUri.isEmpty()) throw new IllegalArgumentException("object uri null or empty");
 			if (propertyUri == null || propertyUri.isEmpty()) throw new IllegalArgumentException("property uri null or empty");
 		    			
-			ServiceCaseManager scm = new ServiceCaseManager();
-			
-			return Response.ok(scm.addIndividualObjectPropertyToIndividual(objectUri, propertyUri, aData.at("payload"), userName, comment), MediaType.APPLICATION_JSON).build();
+			return Response.ok(ServiceCaseManager.getInstance().addIndividualObjectPropertyToIndividual(objectUri, propertyUri, aData.at("payload"), userName, comment), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
 			return Response

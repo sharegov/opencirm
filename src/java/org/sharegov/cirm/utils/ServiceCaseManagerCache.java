@@ -30,10 +30,18 @@ public class ServiceCaseManagerCache {
 		}
 	}
 	
-	public boolean setElement (String aKey, Json aValue){
+	public synchronized boolean setElement (String aKey, Json aValue){
 		if (instance == null) return false;
 		
 		cache.put(aKey, aValue);
+		
+		return true;
+	}
+	
+	public synchronized boolean clear(){
+		if (instance == null) return false;
+		
+		cache.clear();
 		
 		return true;
 	}

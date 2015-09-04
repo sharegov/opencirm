@@ -64,6 +64,7 @@ import org.restlet.routing.Template;
 import org.restlet.service.EncoderService;
 import org.sharegov.cirm.legacy.ActivityManager;
 import org.sharegov.cirm.legacy.MessageManager;
+import org.sharegov.cirm.legacy.ServiceCaseManager;
 import org.sharegov.cirm.owl.CachedReasoner;
 import org.sharegov.cirm.rdb.RelationalOWLMapper;
 import org.sharegov.cirm.rest.MainRestApplication;
@@ -434,6 +435,8 @@ public class StartUp extends ServerResource
    			OntoAdmin oa = new OntoAdmin();
    			oa.cachedReasonerQ1Populate();
    		}
+   		
+   		ServiceCaseManager.getInstance();
 //   		OperationService.getPersister().addRDBListener(new BOChangeListener());
 	    server.start();	    
 	}

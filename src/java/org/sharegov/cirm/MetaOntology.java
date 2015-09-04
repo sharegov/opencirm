@@ -52,7 +52,10 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.RemoveAxiom;
+import org.semanticweb.owlapi.reasoner.BufferingMode;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
+import org.sharegov.cirm.event.ClearOWLEntityCache;
 import org.sharegov.cirm.utils.GenUtils;
 
 
@@ -553,6 +556,27 @@ public class MetaOntology
 			throw new RuntimeException(msg);
 		}
 		return result;
+	}
+	
+	/**
+	 * Clears caches, synchronizes the reasoner and always tests reasoner consistency.
+	 * Synchronization will be conducted only, if the reasoner is in buffering mode.
+	 * 
+	 * 
+	 * TODO hilpold find the right class for this method.
+	 * 
+	 */	
+	public static void clearCacheAndSynchronizeReasoner() {
+		synchronized (OWL.reasoner()) {
+			ClearOWLEntityCache c = new ClearOWLEntityCache();
+			c.apply(null, null, null);
+			OWLReasoner reasoner = OWL.reasoner();
+			if (reasoner.getBufferingMode().equals(BufferingMode.BUFFERING)) {
+				reasoner.flush();
+			}
+			if (!reasoner.isConsistent()) throw new IllegalStateException("Reasoner is not consistent. Axioms leading to inconsistency must have been applied since server start or the last call of this method.");
+		}
+		
 	}
 	
 	

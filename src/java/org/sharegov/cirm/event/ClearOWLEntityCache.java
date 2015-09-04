@@ -22,6 +22,7 @@ import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.owl.CachedReasoner;
 import org.sharegov.cirm.rdb.RelationalOWLMapper;
+import org.sharegov.cirm.utils.DLQueryParser;
 
 public class ClearOWLEntityCache implements EventTrigger
 {
@@ -42,7 +43,7 @@ public class ClearOWLEntityCache implements EventTrigger
 			}
 			Refs.owlJsonCache.resolve().clearAll();
 			RelationalOWLMapper.getInstance().clearCache();
-			Refs.ontologyTransformer.resolve().clearPredicateCache();
+			Refs.ontologyTransformer.resolve().clearPredicateCache();		
 		}
 	}
 }

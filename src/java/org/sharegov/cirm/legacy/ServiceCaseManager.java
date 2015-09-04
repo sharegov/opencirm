@@ -24,6 +24,7 @@ import org.sharegov.cirm.rest.OWLIndividuals;
 import org.sharegov.cirm.rest.OntoAdmin;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ServiceCaseManagerCache;
+import org.sharegov.cirm.utils.ServiceCaseManagerCacheInitializer;
 
 import com.hp.hpl.jena.reasoner.IllegalParameterException;
 
@@ -33,12 +34,28 @@ import com.hp.hpl.jena.reasoner.IllegalParameterException;
  * 
  */
 
-public class ServiceCaseManager extends OntoAdmin {
+public class ServiceCaseManager extends OntoAdmin {		
 
 	private static final String PREFIX = "legacy:";
+	private static ServiceCaseManager instance = null; 
 
+	private ServiceCaseManager() {
+		ServiceCaseManagerCacheInitializer.startCaching(this);
+	}
+	
+	public static ServiceCaseManager getInstance(){
+		if (instance == null){
+			instance = new ServiceCaseManager ();
+		}
+		return instance;
+	}
+	
 	private OwlRepo getRepo() {
 		return Refs.owlRepo.resolve();
+	}
+	
+	private synchronized void clearCache(){
+		ServiceCaseManagerCacheInitializer.forceRestartCaching(this,true);
 	}
 
 	public Json getEnabled() {
@@ -171,8 +188,13 @@ public class ServiceCaseManager extends OntoAdmin {
 		
 		return result;
    }
+	
+	public synchronized Json getSRTypes (boolean isAll, boolean isGetEnabled){
+		if (isAll) return getAll();
+		else return getServiceCasesByStatus (isGetEnabled);
+	}
 
-	public Json getAll() {
+	private Json getAll() {
 		Set<OWLNamedIndividual> S = getAllIndividuals();
 		Json A = Json.array();
 		for (OWLNamedIndividual ind : S) {			
@@ -238,8 +260,12 @@ public class ServiceCaseManager extends OntoAdmin {
 			AddAxiom isDisabledCreateAddAxiom = MetaOntology.getIndividualLiteralAddAxiom(srType, "isDisabledCreate", true);
 			
 			changes.add(isDisabledCreateAddAxiom);
-
-			return Json.object().set("success", commit(userName, comment, changes));
+			
+			boolean r = commit(userName, comment, changes);
+			
+			if (r) clearCache();
+			
+			return Json.object().set("success", r);
 		}
 	}
 
@@ -255,8 +281,12 @@ public class ServiceCaseManager extends OntoAdmin {
 			AddAxiom isDisabledCreateAddAxiom = MetaOntology.getIndividualLiteralAddAxiom(srType, "isDisabledCreate", false);
 			
 			changes.add(isDisabledCreateAddAxiom);
-
-			return Json.object().set("success", commit(userName, comment, changes));
+			
+			boolean r = commit(userName, comment, changes);
+			
+			if (r) clearCache();
+			
+			return Json.object().set("success", r);
 		}
 	}
 	
@@ -270,14 +300,18 @@ public class ServiceCaseManager extends OntoAdmin {
 			Json el = ServiceCaseManagerCache.getInstance().getElement(cacheKey);
 			
 			if (el != Json.nil()) return el;
-			
+					
+//			OWLNamedIndividual ind = individual(individualID);
+//			Json jInd = OWL.toJSON(ontology(), ind);
 			OWLIndividuals q = new OWLIndividuals();
+			
 			Json S = q.doInternalQuery("{" + cacheKey + "}");
 			
-			for (Json ind : S.asJsonList()){
+			for (Json ind: S.asJsonList()){
 				ServiceCaseManagerCache.getInstance().setElement(cacheKey, ind);
 				return ind;
 			}
+			
 		} catch (Exception e) {
 			System.out.println("Error while querying the Ontology for " + ontologyID + ":" + individualID);
 			e.printStackTrace();		
@@ -294,7 +328,9 @@ public class ServiceCaseManager extends OntoAdmin {
 		
 		Json sr = getMetaIndividual(srType);		
 		
-		if (sr.has("hasServiceCaseAlert")){			
+		if (sr.has("hasServiceCaseAlert")){
+			OWLNamedIndividual ind = OWL.individual(sr.at("hasServiceCaseAlert").at("iri").asString());
+			sr.at("hasServiceCaseAlert").set("iri",ind.getIRI().getFragment());
 			return sr.at("hasServiceCaseAlert");
 		} 
 	
@@ -319,7 +355,11 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			List<OWLOntologyChange> changes = MetaOntology.getReplaceObjectAnnotationChanges(individualID, newAnnotationContent);	
 			
-			return Json.object().set("success", commit(userName, comment, changes));
+			boolean r = commit(userName, comment, changes);
+			
+			if (r) clearCache();
+			
+			return Json.object().set("success", r);
 		}
 	}
 	
@@ -330,7 +370,11 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			List<OWLOntologyChange> changes = MetaOntology.getAddIndividualObjectFromJsonChanges(individualID, propertyID, data);	
 			
-			return Json.object().set("success", commit(userName, comment, changes));
+			boolean r = commit(userName, comment, changes);
+			
+			if (r) clearCache();
+			
+			return Json.object().set("success", r);
 		}
 	}
 	
@@ -370,7 +414,11 @@ public class ServiceCaseManager extends OntoAdmin {
 				changes = MetaOntology.getAddIndividualObjectFromJsonChanges(individualID, propertyID, data);
 			}
 			
-			return Json.object().set("success", commit(userName, comment, changes));
+			boolean r = commit(userName, comment, changes);
+			
+			if (r) clearCache();
+			
+			return Json.object().set("success", r);
 				
 		}
 	}
@@ -389,7 +437,11 @@ public class ServiceCaseManager extends OntoAdmin {
 				changes = MetaOntology.getRemoveAllPropertiesIndividualChanges(ind);
 			} else throw new IllegalParameterException("No alert for individual " + PREFIX + individualID);
 			
-			return Json.object().set("success", commit(userName, comment, changes));
+			boolean r = commit(userName, comment, changes);
+			
+			if (r) clearCache();
+			
+			return Json.object().set("success", r);
 				
 		}
 	}
