@@ -40,7 +40,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	private static ServiceCaseManager instance = null; 
 
 	private ServiceCaseManager() {
-		ServiceCaseManagerCacheInitializer.startCaching(this);
+//		ServiceCaseManagerCacheInitializer.startCaching(this);
 	}
 	
 	public static ServiceCaseManager getInstance(){
@@ -55,7 +55,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	}
 	
 	private synchronized void clearCache(){
-		ServiceCaseManagerCacheInitializer.forceRestartCaching(this,true);
+//		ServiceCaseManagerCacheInitializer.forceRestartCaching(this,true);
 	}
 
 	public Json getEnabled() {
@@ -328,13 +328,12 @@ public class ServiceCaseManager extends OntoAdmin {
 		
 		Json sr = getMetaIndividual(srType);		
 		
-		if (sr.has("hasServiceCaseAlert")){
+		if (sr.has("hasServiceCaseAlert") && sr.at("hasServiceCaseAlert").isObject()){
 			OWLNamedIndividual ind = OWL.individual(sr.at("hasServiceCaseAlert").at("iri").asString());
 			sr.at("hasServiceCaseAlert").set("iri",ind.getIRI().getFragment());
 			return sr.at("hasServiceCaseAlert");
-		} 
+		} else throw new IllegalParameterException ("Illegal data structure for property hasServiceCaseAlert on SR Type: " + srType);
 	
-		return Json.nil();
 	}
 
 	public Json push() {
