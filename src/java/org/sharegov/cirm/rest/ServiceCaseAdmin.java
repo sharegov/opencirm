@@ -18,6 +18,8 @@ import mjson.Json;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.sharegov.cirm.legacy.ServiceCaseManager;
 
+import com.hp.hpl.jena.reasoner.IllegalParameterException;
+
 @Path("sradmin")
 @Produces("application/json")
 public class ServiceCaseAdmin extends RestService {
@@ -85,6 +87,7 @@ public class ServiceCaseAdmin extends RestService {
 		{						
 			return Response.ok(ServiceCaseManager.getInstance().compare(ontologyName), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
+		    e.printStackTrace();
 			return Response
 					.status(Status.INTERNAL_SERVER_ERROR)
 					.type(MediaType.APPLICATION_JSON)
@@ -240,7 +243,7 @@ public class ServiceCaseAdmin extends RestService {
 			if (!(aData.has("payload") && aData.at("payload").has("iri") && aData.at("payload").has("label"))) throw new IllegalArgumentException("Alert data null or empty"); 
 			
 			String userName = aData.at("userName").asString();
-			String alertUri = aData.at("payload").at("iri").asString();
+			String alertUri = getIdFromUri(aData.at("payload").at("iri").asString());
 			String newLabel = aData.at("payload").at("label").asString();						
 
 			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
@@ -248,12 +251,16 @@ public class ServiceCaseAdmin extends RestService {
 			if (alertUri == null || alertUri.isEmpty()) throw new IllegalArgumentException("alert uri null or empty");
 			if (newLabel == null || newLabel.isEmpty()) throw new IllegalArgumentException("new label null or empty");
 			
-
+			String ontology = getOntologyFromUri(aData.at("payload").at("iri").asString());
+            
 			String comment = "Replace Alert Message for SR type: " + PREFIX + srType; 
 		     
 			return Response.ok(ServiceCaseManager.getInstance().replaceObjectAnnotation(alertUri, newLabel, userName, comment), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
+			
+			e.printStackTrace();
+			
 			return Response
 					.status(Status.INTERNAL_SERVER_ERROR)
 					.type(MediaType.APPLICATION_JSON)
@@ -354,6 +361,28 @@ public class ServiceCaseAdmin extends RestService {
 //			return ko("Access denied - protected resources could be returned, please split the query.");
 //		}
 		
+	}
+
+private String getOntologyFromUri(String uri){
+	String token = tokenizeUri(uri, "/", 5, 4); 
+	return tokenizeUri(token, "#", 2, 0);
+}
+	
+private String getIdFromUri(String uri)
+{
+	return tokenizeUri(uri, "#", 2, 1);
+}
+	
+private String tokenizeUri(String uri, String del, int expectedLength, int returnPosition){
+		
+		String tokens[]  = uri.split(del);
+		
+		if(tokens.length != expectedLength)
+			throw new IllegalParameterException("Invalid uri");
+		
+				
+		
+		return tokens[returnPosition];
 	}
 
 }

@@ -428,17 +428,17 @@ public class OntoAdmin extends RestService
 	}
 
 	
-	public Json compare(String ontologyName){
+	public synchronized Json compare(String ontologyName){
+		Refs.owlRepo.resolve().ensurePeerStarted();
 		VDHGDBOntologyRepository repo = repo();
 	//			VDHGDBOntologyRepository repo = owlRepo.repo();
 
 		Json json = Json.array(); 
 	    String iri = null;
-		if(ontologyName.equals("legacy"))
-		iri = "hgdb://www.miamidade.gov/cirm/legacy";
-		else if(ontologyName.equals("test"))
-		iri = " ";
-			
+		
+	
+		iri = "hgdb://www.miamidade.gov/cirm/" + ontologyName; 
+		
 		HGDBOntology activeOnto = repo().getOntologyByDocumentIRI(IRI.create(iri));
 		//HGDBOntology activeOnto = repo.getOntologyByDocumentIRI(OWL.fullIri("http://www.miamidade.gov/cirm/legacy"));
 					
@@ -451,6 +451,8 @@ public class OntoAdmin extends RestService
 		
 		server = centralO.getServerPeer(); 
 		
+		//if(server == null || distributedOnto == null || repo == null)
+		//	return json;
 		
 		VersionedOntologyComparisonResult result = repo.compareOntologyToRemote(distributedOnto, server, 180); 
 		

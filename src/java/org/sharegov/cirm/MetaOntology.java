@@ -69,10 +69,14 @@ import org.sharegov.cirm.utils.GenUtils;
 public class MetaOntology 
 {
 
-	private static final String PREFIX = "legacy:";
+	private static String PREFIX = "legacy:";
 	/*
 	 * Generic Ontology handling functions.
 	 */
+	
+	public static void setPrefix(String p){
+		PREFIX = p;
+	}
 	
 	public static List<OWLOntologyChange> getReplaceObjectAnnotationChanges (String individualID, String newAnnotationContent){
 		OWLOntology O = OWL.ontology();
