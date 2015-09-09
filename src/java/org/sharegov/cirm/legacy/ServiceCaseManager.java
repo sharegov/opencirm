@@ -24,7 +24,7 @@ import org.sharegov.cirm.rest.OWLIndividuals;
 import org.sharegov.cirm.rest.OntoAdmin;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ServiceCaseManagerCache;
-import org.sharegov.cirm.utils.ServiceCaseManagerCacheInitializer;
+import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
 import com.hp.hpl.jena.reasoner.IllegalParameterException;
 
@@ -41,6 +41,9 @@ public class ServiceCaseManager extends OntoAdmin {
 
 	private ServiceCaseManager() {
 //		ServiceCaseManagerCacheInitializer.startCaching(this);
+		ThreadLocalStopwatch.startTop("Started Service Case Admin Cache.");
+		getAll();
+		ThreadLocalStopwatch.now("End Service Case Admin Cache.");
 	}
 	
 	public static ServiceCaseManager getInstance(){
@@ -54,8 +57,20 @@ public class ServiceCaseManager extends OntoAdmin {
 		return Refs.owlRepo.resolve();
 	}
 	
-	private synchronized void clearCache(){
-//		ServiceCaseManagerCacheInitializer.forceRestartCaching(this,true);
+	private synchronized void clearCache (String aKey){
+		List<String> l = new ArrayList<String>();
+		
+		l.add(aKey);
+		
+		clearCache(l);
+	}
+	
+	private synchronized void clearCache(List<String> keys){
+		for (String key: keys){
+			ServiceCaseManagerCache.getInstance().deleteElement(key);
+			ServiceCaseManagerCache.getInstance().deleteElement(PREFIX + key);
+		}
+		MetaOntology.clearCacheAndSynchronizeReasoner();
 	}
 
 	public Json getEnabled() {
@@ -148,12 +163,14 @@ public class ServiceCaseManager extends OntoAdmin {
 	}
 	
 	private Json getRequiredData (OWLNamedIndividual individual){
-		Json el = ServiceCaseManagerCache.getInstance().getElement(individual.getIRI().getFragment() + "-Admin");
+		Json el = ServiceCaseManagerCache.getInstance().getElement(individual.getIRI().getFragment());
 		
 		if (el != Json.nil()) return el;
 		
-		Json result = Json.object().set("iri", individual.getIRI().toString())
-								   .set("code", individual.getIRI().getFragment())
+		String iri = individual.getIRI().toString();
+		
+		Json result = Json.object().set("iri", MetaOntology.getOntologyFromUri(iri) + ":" + individual.getIRI().getFragment())
+//								   .set("code", individual.getIRI().getFragment())
 								   .set("label", OWL.getEntityLabel(individual))
 								   .set("disabled", isSrDisabledOrDisabledCreate(individual));
 		
@@ -184,7 +201,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			if (!result.has("division")) result.set("division", Json.nil());
 		}
 		
-		ServiceCaseManagerCache.getInstance().setElement(individual.getIRI().getFragment() + "-Admin", result);
+		ServiceCaseManagerCache.getInstance().setElement(individual.getIRI().getFragment(), result);
 		
 		return result;
    }
@@ -249,6 +266,9 @@ public class ServiceCaseManager extends OntoAdmin {
 
 	public Json disable(String srType, String userName, String comment) {
 		OwlRepo repo = getRepo();
+		
+		if (srType.contains(":")) srType = MetaOntology.getIdFromIdentifier(srType);
+		else if (srType.contains("#")) srType = MetaOntology.getIdFromUri(srType);
 
 		synchronized (repo) {
 			repo.ensurePeerStarted();
@@ -263,7 +283,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			boolean r = commit(userName, comment, changes);
 			
-			if (r) clearCache();
+			if (r) clearCache(srType);
 			
 			return Json.object().set("success", r);
 		}
@@ -271,6 +291,10 @@ public class ServiceCaseManager extends OntoAdmin {
 
 	public Json enable(String srType, String userName, String comment) {
 		OwlRepo repo = getRepo();
+		
+		if (srType.contains(":")) srType = MetaOntology.getIdFromIdentifier(srType);
+		else if (srType.contains("#")) srType = MetaOntology.getIdFromUri(srType);
+		
 		synchronized (repo) {
 			repo.ensurePeerStarted();
 			
@@ -284,7 +308,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			boolean r = commit(userName, comment, changes);
 			
-			if (r) clearCache();
+			if (r) clearCache(PREFIX + srType);
 			
 			return Json.object().set("success", r);
 		}
@@ -324,15 +348,19 @@ public class ServiceCaseManager extends OntoAdmin {
 		return getSerializedIndividual(individualID, "legacy");						
 	}
 	
-	public Json getServiceCaseAlert (String srType){
+	public Json getServiceCaseAlert (String srType){		
+		
+		if (srType.contains(":")) srType = MetaOntology.getIdFromIdentifier(srType);
+		else if (srType.contains("#")) srType = MetaOntology.getIdFromUri(srType);
 		
 		Json sr = getMetaIndividual(srType);		
 		
 		if (sr.has("hasServiceCaseAlert") && sr.at("hasServiceCaseAlert").isObject()){
-			OWLNamedIndividual ind = OWL.individual(sr.at("hasServiceCaseAlert").at("iri").asString());
-			sr.at("hasServiceCaseAlert").set("iri",ind.getIRI().getFragment());
+			String iri = sr.at("hasServiceCaseAlert").at("iri").asString();
+			OWLNamedIndividual ind = OWL.individual(iri);
+			sr.at("hasServiceCaseAlert").set("iri", MetaOntology.getOntologyFromUri(ind.getIRI().toString()) + ":" + ind.getIRI().getFragment());
 			return sr.at("hasServiceCaseAlert");
-		} else throw new IllegalParameterException ("Illegal data structure for property hasServiceCaseAlert on SR Type: " + srType);
+		} else return Json.nil();
 	
 	}
 
@@ -348,6 +376,10 @@ public class ServiceCaseManager extends OntoAdmin {
 	}
 	
 	public Json replaceObjectAnnotation(String individualID, String newAnnotationContent, String userName, String comment){
+
+		if (individualID.contains(":")) individualID = MetaOntology.getIdFromIdentifier(individualID);
+		else if (individualID.contains("#")) individualID = MetaOntology.getIdFromUri(individualID);
+		
 		OwlRepo repo = getRepo();
 		synchronized (repo) {
 			repo.ensurePeerStarted();		 
@@ -356,13 +388,17 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			boolean r = commit(userName, comment, changes);
 			
-			if (r) clearCache();
+			if (r) clearCache(PREFIX + individualID);
 			
 			return Json.object().set("success", r);
 		}
 	}
 	
 	public Json addIndividualObjectPropertyToIndividual(String individualID, String propertyID, Json data, String userName, String comment){
+
+		if (individualID.contains(":")) individualID = MetaOntology.getIdFromIdentifier(individualID);
+		else if (individualID.contains("#")) individualID = MetaOntology.getIdFromUri(individualID);
+		
 		OwlRepo repo = getRepo();
 		synchronized (repo) {
 			repo.ensurePeerStarted();		 
@@ -371,7 +407,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			boolean r = commit(userName, comment, changes);
 			
-			if (r) clearCache();
+			if (r) clearCache(PREFIX + individualID);
 			
 			return Json.object().set("success", r);
 		}
@@ -385,6 +421,13 @@ public class ServiceCaseManager extends OntoAdmin {
 	}
 	
 	public Json addNewAlertServiceCase (String individualID, Json data, String userName, String comment){
+
+		if (individualID.contains(":")) individualID = MetaOntology.getIdFromIdentifier(individualID);
+		else if (individualID.contains("#")) individualID = MetaOntology.getIdFromUri(individualID);
+		
+		List<String> evictionList = new ArrayList<String>();
+		evictionList.add(individualID);
+		
 		OwlRepo repo = getRepo();
 		synchronized (repo) {
 			repo.ensurePeerStarted();			
@@ -408,6 +451,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			if (oldAlert != Json.nil()){
 				OWLNamedIndividual ind = OWL.individual(oldAlert.at("iri").asString());
 				oldAlert.set("iri", ind.getIRI().getFragment());
+				evictionList.add(ind.getIRI().getFragment());
 				changes = MetaOntology.getAddReplaceIndividualObjectFromJsonChanges(individualID, propertyID, data, oldAlert);
 			} else {
 				changes = MetaOntology.getAddIndividualObjectFromJsonChanges(individualID, propertyID, data);
@@ -415,7 +459,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			boolean r = commit(userName, comment, changes);
 			
-			if (r) clearCache();
+			if (r) clearCache(evictionList);
 			
 			return Json.object().set("success", r);
 				
@@ -423,6 +467,13 @@ public class ServiceCaseManager extends OntoAdmin {
 	}
 	
 	public Json deleteAlertServiceCase (String individualID, String userName, String comment){
+
+		if (individualID.contains(":")) individualID = MetaOntology.getIdFromIdentifier(individualID);
+		else if (individualID.contains("#")) individualID = MetaOntology.getIdFromUri(individualID);
+		
+		List<String> evictionList = new ArrayList<String>();
+		evictionList.add(individualID);
+		
 		OwlRepo repo = getRepo();
 		synchronized (repo) {
 			repo.ensurePeerStarted();						
@@ -433,12 +484,13 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			if (oldAlert != Json.nil()){
 				OWLNamedIndividual ind = OWL.individual(oldAlert.at("iri").asString());
+				evictionList.add(ind.getIRI().getFragment());
 				changes = MetaOntology.getRemoveAllPropertiesIndividualChanges(ind);
 			} else throw new IllegalParameterException("No alert for individual " + PREFIX + individualID);
 			
 			boolean r = commit(userName, comment, changes);
 			
-			if (r) clearCache();
+			if (r) clearCache(evictionList);
 			
 			return Json.object().set("success", r);
 				

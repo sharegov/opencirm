@@ -33,7 +33,15 @@ public class ServiceCaseManagerCache {
 	public synchronized boolean setElement (String aKey, Json aValue){
 		if (instance == null) return false;
 		
-		cache.put(aKey, aValue);
+		if (!cache.containsKey(aKey)) cache.put(aKey, aValue);
+		
+		return true;
+	}
+	
+	public synchronized boolean deleteElement (String aKey){
+		if (instance == null) return false;
+		
+		if (cache.containsKey(aKey)) cache.remove(aKey);
 		
 		return true;
 	}

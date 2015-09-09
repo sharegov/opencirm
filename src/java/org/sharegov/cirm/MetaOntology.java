@@ -57,6 +57,9 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.sharegov.cirm.event.ClearOWLEntityCache;
 import org.sharegov.cirm.utils.GenUtils;
+import org.sharegov.cirm.utils.ThreadLocalStopwatch;
+
+import com.hp.hpl.jena.reasoner.IllegalParameterException;
 
 
 /**
@@ -562,6 +565,36 @@ public class MetaOntology
 		return result;
 	}
 	
+	/*
+	 * Utility functions
+	 * 
+	 */
+	
+	public static String getOntologyFromUri(String uri){
+		String token = tokenizeUri(uri, "/", 5, 4); 
+		return tokenizeUri(token, "#", 2, 0);
+	}
+		
+	public static String getIdFromUri(String uri)
+	{
+		return tokenizeUri(uri, "#", 2, 1);
+	}
+	
+	public static String getIdFromIdentifier(String uri)
+	{
+		return tokenizeUri(uri, ":", 2, 1);
+	}
+		
+	private static String tokenizeUri(String uri, String del, int expectedLength, int returnPosition){
+			
+			String tokens[]  = uri.split(del);
+			
+			if(tokens.length != expectedLength)
+				throw new IllegalParameterException("Invalid uri");
+			
+			return tokens[returnPosition];
+	}
+	
 	/**
 	 * Clears caches, synchronizes the reasoner and always tests reasoner consistency.
 	 * Synchronization will be conducted only, if the reasoner is in buffering mode.
@@ -572,8 +605,31 @@ public class MetaOntology
 	 */	
 	public static void clearCacheAndSynchronizeReasoner() {
 		synchronized (OWL.reasoner()) {
+			ThreadLocalStopwatch.startTop("START clearCache");
+			clearCache();
+			ThreadLocalStopwatch.now("END clearCache");
+			ThreadLocalStopwatch.now("START syncReasoner");
+			synchronizeReasoner();
+			ThreadLocalStopwatch.now("END syncReasoner");
+		}		
+	}
+	
+	/**
+	 * Clears all underlying cache.
+	 */
+	public static void clearCache() {
+		synchronized (OWL.reasoner()) {
 			ClearOWLEntityCache c = new ClearOWLEntityCache();
 			c.apply(null, null, null);
+		}		
+	}
+	
+	/**
+	 * Synchronizes the reasoner.
+	 * Applies all changes since reasoner initialization to the reasoner.
+	 */
+	public static void synchronizeReasoner() {
+		synchronized (OWL.reasoner()) {
 			OWLReasoner reasoner = OWL.reasoner();
 			if (reasoner.getBufferingMode().equals(BufferingMode.BUFFERING)) {
 				reasoner.flush();
@@ -582,6 +638,6 @@ public class MetaOntology
 		}
 		
 	}
-	
+
 	
 }

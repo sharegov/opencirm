@@ -1,7 +1,5 @@
 package org.sharegov.cirm.rest;
 
-import java.util.Date;
-
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -17,8 +15,6 @@ import mjson.Json;
 
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.sharegov.cirm.legacy.ServiceCaseManager;
-
-import com.hp.hpl.jena.reasoner.IllegalParameterException;
 
 @Path("sradmin")
 @Produces("application/json")
@@ -103,6 +99,8 @@ public class ServiceCaseAdmin extends RestService {
 	{		
 		try
 		{ 
+			if (!(aData.has("userName"))) throw new IllegalArgumentException("User Name not found"); 
+			
 			String userName = aData.at("userName").asString();
 			String comment = "Disable Service Request "+PREFIX+srType;
 			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
@@ -125,6 +123,8 @@ public class ServiceCaseAdmin extends RestService {
 	{
 		try
 		{ 
+			if (!(aData.has("userName"))) throw new IllegalArgumentException("User Name not found"); 
+			
 			String userName = aData.at("userName").asString();
 			String comment = "Enable Service Request "+PREFIX+srType;
 			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
@@ -179,32 +179,6 @@ public class ServiceCaseAdmin extends RestService {
 		
 	}
 	
-	@PUT
-	@Path("{srType}/question")
-	public Response updateQuestion(@PathParam("srType") String srType, Json aData)
-	{
-		try
-		{ 
-			String userName = aData.at("userName").asString();
-			String questionUri = aData.at("questionUri").asString();
-			String newLabel = aData.at("newLabel").asString();
-			String comment = "Update Service Request Question "+PREFIX+srType;
-			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
-			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
-			if (questionUri == null || questionUri.isEmpty()) throw new IllegalArgumentException("question uri null or empty");
-			if (newLabel == null || newLabel.isEmpty()) throw new IllegalArgumentException("new label null or empty");
-			
-			return Response.ok(ServiceCaseManager.getInstance().replaceObjectAnnotation(questionUri, newLabel, userName, comment), MediaType.APPLICATION_JSON).build();
-		}
-		catch(Exception e){
-			return Response
-					.status(Status.INTERNAL_SERVER_ERROR)
-					.type(MediaType.APPLICATION_JSON)
-					.entity(Json.object().set("error", e.getClass().getName())
-							.set("message", e.getMessage())).build();
-		}
-	}
-	
 	@GET
 	@Path("{srType}/alert")
 	public Response getAlert(@PathParam("srType") String srType)
@@ -218,7 +192,7 @@ public class ServiceCaseAdmin extends RestService {
 			
 			if (result == Json.nil()) {
 				return Response
-						.status(Status.NOT_FOUND)
+						.status(Status.NO_CONTENT)
 						.type(MediaType.APPLICATION_JSON).build();
 			} else {			
 				return Response.ok(result, MediaType.APPLICATION_JSON).build();
@@ -240,18 +214,16 @@ public class ServiceCaseAdmin extends RestService {
 		
 		try
 		{			
-			if (!(aData.has("payload") && aData.at("payload").has("iri") && aData.at("payload").has("label"))) throw new IllegalArgumentException("Alert data null or empty"); 
+			if (!(aData.has("userName") && aData.has("payload") && aData.at("payload").has("iri") && aData.at("payload").has("label"))) throw new IllegalArgumentException("User Name or Alert data null or empty"); 
 			
 			String userName = aData.at("userName").asString();
-			String alertUri = getIdFromUri(aData.at("payload").at("iri").asString());
+			String alertUri = aData.at("payload").at("iri").asString();
 			String newLabel = aData.at("payload").at("label").asString();						
 
 			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
 			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
 			if (alertUri == null || alertUri.isEmpty()) throw new IllegalArgumentException("alert uri null or empty");
 			if (newLabel == null || newLabel.isEmpty()) throw new IllegalArgumentException("new label null or empty");
-			
-			String ontology = getOntologyFromUri(aData.at("payload").at("iri").asString());
             
 			String comment = "Replace Alert Message for SR type: " + PREFIX + srType; 
 		     
@@ -276,7 +248,7 @@ public class ServiceCaseAdmin extends RestService {
 		
 		try
 		{ 
-			if (!(aData.has("payload") && aData.at("payload").has("iri") && aData.at("payload").has("label")&& aData.at("payload").has("type"))) throw new IllegalArgumentException("Alert data null/empty/Incomplete"); 
+			if (!(aData.has("userName") && aData.has("payload") && aData.at("payload").has("iri") && aData.at("payload").has("label")&& aData.at("payload").has("type"))) throw new IllegalArgumentException("User Name or Alert data null/empty/Incomplete"); 
 			
 			String userName = aData.at("userName").asString();			
 
@@ -362,27 +334,7 @@ public class ServiceCaseAdmin extends RestService {
 //		}
 		
 	}
-
-private String getOntologyFromUri(String uri){
-	String token = tokenizeUri(uri, "/", 5, 4); 
-	return tokenizeUri(token, "#", 2, 0);
-}
 	
-private String getIdFromUri(String uri)
-{
-	return tokenizeUri(uri, "#", 2, 1);
 }
-	
-private String tokenizeUri(String uri, String del, int expectedLength, int returnPosition){
-		
-		String tokens[]  = uri.split(del);
-		
-		if(tokens.length != expectedLength)
-			throw new IllegalParameterException("Invalid uri");
-		
-				
-		
-		return tokens[returnPosition];
-	}
 
-}
+
