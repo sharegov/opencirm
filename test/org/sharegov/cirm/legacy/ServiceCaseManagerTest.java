@@ -14,6 +14,8 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.StartUp;
 
+import com.hp.hpl.jena.reasoner.IllegalParameterException;
+
 public class ServiceCaseManagerTest {
 
 	
@@ -84,24 +86,44 @@ public class ServiceCaseManagerTest {
 		assertFalse(result.at("success").asBoolean());
 		
 	}
-	
+	/***
+	 * Testing serialization with valid service request
+	 */
 	@Test
 	public void testSerialization(){
 		Json json = serviceCaseManager.getMetaIndividual("PW16"); 
 		String comment = json.at("comment").asString(); 
-		
 		assertTrue((!comment.isEmpty() && comment !=null));
-		
-		
-		
 	}
 	
+	
+	/***
+	 * Testing serialization with invalid parameter
+	 */
 	@Test(expected = RuntimeException.class)
 	public void testSerialization2(){
 		Json json = serviceCaseManager.getMetaIndividual("zzzzzz"); 
 	}
 	
-	
+
+	/***
+	 * Testing for valid service case with alert
+	 */
+    @Test
+    public void testGetServiceCaseAlert(){
+    	Json json = serviceCaseManager.getServiceCaseAlert("PW16"); 
+    	assertTrue((json.at("iri").asString() != null && !json.at("iri").asString().isEmpty()));	
+    }
+
+    /***
+     * Testing for a valid service case without alert
+     */
+    @Test(expected = IllegalParameterException.class)
+    public void testGetServiceCaseAlert2(){
+    	Json json = serviceCaseManager.getServiceCaseAlert("PW16"); 
+    	
+    	assertTrue((json.at("iri").asString() != null && !json.at("iri").asString().isEmpty()));	
+    }
 	
 	
 	
