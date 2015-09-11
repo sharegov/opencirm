@@ -65,7 +65,7 @@ public class ServiceCaseAdmin extends RestService {
 	public Response getAllServiceCases() {
 		try
 		{			
-			return Response.ok(ServiceCaseManager.getInstance().getSRTypes(true, true), MediaType.APPLICATION_JSON).build();
+			return Response.ok(ServiceCaseManager.getInstance().getAll(), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			return Response
 					.status(Status.INTERNAL_SERVER_ERROR)
@@ -102,11 +102,10 @@ public class ServiceCaseAdmin extends RestService {
 			if (!(aData.has("userName"))) throw new IllegalArgumentException("User Name not found"); 
 			
 			String userName = aData.at("userName").asString();
-			String comment = "Disable Service Request "+PREFIX+srType;
 			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
 			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
 						
-			return Response.ok(ServiceCaseManager.getInstance().disable(srType, userName, comment), MediaType.APPLICATION_JSON).build();
+			return Response.ok(ServiceCaseManager.getInstance().disable(srType, userName), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
 			return Response
@@ -126,11 +125,10 @@ public class ServiceCaseAdmin extends RestService {
 			if (!(aData.has("userName"))) throw new IllegalArgumentException("User Name not found"); 
 			
 			String userName = aData.at("userName").asString();
-			String comment = "Enable Service Request "+PREFIX+srType;
 			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
 			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
 						
-			return Response.ok(ServiceCaseManager.getInstance().enable(srType, userName, comment), MediaType.APPLICATION_JSON).build();
+			return Response.ok(ServiceCaseManager.getInstance().enable(srType, userName), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
 			return Response
@@ -224,10 +222,8 @@ public class ServiceCaseAdmin extends RestService {
 			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
 			if (alertUri == null || alertUri.isEmpty()) throw new IllegalArgumentException("alert uri null or empty");
 			if (newLabel == null || newLabel.isEmpty()) throw new IllegalArgumentException("new label null or empty");
-            
-			String comment = "Replace Alert Message for SR type: " + PREFIX + srType; 
 		     
-			return Response.ok(ServiceCaseManager.getInstance().replaceObjectAnnotation(alertUri, newLabel, userName, comment), MediaType.APPLICATION_JSON).build();
+			return Response.ok(ServiceCaseManager.getInstance().replaceAlertLabel(alertUri, newLabel, userName), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
 			
@@ -253,11 +249,9 @@ public class ServiceCaseAdmin extends RestService {
 			String userName = aData.at("userName").asString();			
 
 			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
-			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");			
-
-			String comment = "Create new Alert Message for SR "+ PREFIX + srType;	
+			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");	
 			
-			return Response.ok(ServiceCaseManager.getInstance().addNewAlertServiceCase(srType, aData.at("payload"), userName, comment), MediaType.APPLICATION_JSON).build();
+			return Response.ok(ServiceCaseManager.getInstance().addNewAlertServiceCase(srType, aData.at("payload"), userName), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
 			e.printStackTrace();
@@ -282,9 +276,7 @@ public class ServiceCaseAdmin extends RestService {
 			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
 			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
 			
-			String comment = "Delete Alert Message for SR "+ PREFIX + srType;	
-			
-			return Response.ok(ServiceCaseManager.getInstance().deleteAlertServiceCase(srType, userName, comment), MediaType.APPLICATION_JSON).build();
+			return Response.ok(ServiceCaseManager.getInstance().deleteAlertServiceCase(srType, userName), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
 			e.printStackTrace();

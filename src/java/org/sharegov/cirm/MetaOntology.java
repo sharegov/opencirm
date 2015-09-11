@@ -595,6 +595,13 @@ public class MetaOntology
 			return tokens[returnPosition];
 	}
 	
+	public static String getIndividualIdentifier(String id){
+		if (id.contains(":")) return getIdFromIdentifier(id);
+		else if (id.contains("#")) return getIdFromUri(id);
+		
+		return id;
+	}
+	
 	/**
 	 * Clears caches, synchronizes the reasoner and always tests reasoner consistency.
 	 * Synchronization will be conducted only, if the reasoner is in buffering mode.
