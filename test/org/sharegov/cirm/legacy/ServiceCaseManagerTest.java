@@ -99,12 +99,8 @@ public class ServiceCaseManagerTest {
 	@Test(expected = RuntimeException.class)
 	public void testSerialization2(){
 		Json json = serviceCaseManager.getMetaIndividual("zzzzzz"); 
-	}
-	
-	
-	
-	
-	
+	}		
+		
 	public static boolean isSRDisabled(String iri) {
 		OWLNamedIndividual srTypeInd = OWL.individual(iri);
 		Set<OWLLiteral> values = OWL.dataProperties(srTypeInd, "legacy:isDisabled");

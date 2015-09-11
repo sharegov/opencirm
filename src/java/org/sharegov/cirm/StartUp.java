@@ -77,7 +77,7 @@ import org.sharegov.cirm.utils.SslContextedSecureProtocolSocketFactory;
 public class StartUp extends ServerResource
 { 
 	public static boolean STRESS_TEST_CONFIG = false;
-
+	
 	public volatile static Json config = Json.object()
 			.set("workingDir", "C:/work/opencirm")
 			.set("mainApplication", "http://www.miamidade.gov/ontology#CIRMApplication") 
@@ -97,7 +97,7 @@ public class StartUp extends ServerResource
 					"http://www.miamidade.gov/cirm/legacy#providedBy",
 					"http://www.miamidade.gov/cirm/legacy#hasChoiceValue"
 					))
-			.set("metaDatabaseLocation", "c:/temp/testontodb")
+			.set("metaDatabaseLocation", "c:/temp/testontodbtest")
 			.set("allClientsExempt", true)
 			.set("network", Json.object(				
 					"user", "cirm-test",
@@ -438,7 +438,11 @@ public class StartUp extends ServerResource
    		
    		ServiceCaseManager.getInstance();
 //   		OperationService.getPersister().addRDBListener(new BOChangeListener());
-	    server.start();	    
+	    server.start();	   
+	}
+	
+	public static boolean isServerStarted() {
+		return server !=null && server.isStarted();
 	}
 	
 	static void commandLineStart(Component server)
