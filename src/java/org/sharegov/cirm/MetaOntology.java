@@ -59,12 +59,10 @@ import org.sharegov.cirm.event.ClearOWLEntityCache;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
-import com.hp.hpl.jena.reasoner.IllegalParameterException;
-
 
 /**
  *  
- * @author Chirino
+ * @author chirino, hilpold
  * 
  * Utility wrapper over Meta Ontology operations
  * 
@@ -590,7 +588,7 @@ public class MetaOntology
 			String tokens[]  = uri.split(del);
 			
 			if(tokens.length != expectedLength)
-				throw new IllegalParameterException("Invalid uri");
+				throw new IllegalArgumentException("Invalid uri");
 			
 			return tokens[returnPosition];
 	}

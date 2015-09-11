@@ -37,7 +37,7 @@ public class ServiceCaseManagerTest {
 		String srType = "PW16";
 		String userName = "automated test";
 		String comment = "test";
-		Json result = serviceCaseManager.disable(srType, userName, comment);
+		Json result = serviceCaseManager.disable(srType, userName);
 		
 		//We can't check against the reasoner for now
 		//assertTrue(isSRDisabled("legacy:PW16"));
@@ -51,7 +51,7 @@ public class ServiceCaseManagerTest {
 		String srType = "zzzz";
 		String userName = "automated test";
 		String comment = "test";
-		Json result = serviceCaseManager.disable(srType, userName, comment);
+		Json result = serviceCaseManager.disable(srType, userName);
 		
 		//We can't check against the reasoner for now
 		//assertTrue(isSRDisabled("legacy:PW16"));
@@ -65,7 +65,7 @@ public class ServiceCaseManagerTest {
 		String srType = null;
 		String userName = "automated test";
 		String comment = "test";
-		Json result = serviceCaseManager.disable(srType, userName, comment);
+		Json result = serviceCaseManager.disable(srType, userName);
 		
 		//We can't check against the reasoner for now
 		//assertTrue(isSRDisabled("legacy:PW16"));
@@ -79,7 +79,7 @@ public class ServiceCaseManagerTest {
 		String srType = null;
 		String userName = "automated test";
 		String comment = "test";
-		Json result = serviceCaseManager.enable(srType, userName, comment);
+		Json result = serviceCaseManager.enable(srType, userName);
 		
 		//We can't check against the reasoner for now
 		//assertTrue(isSRDisabled("legacy:PW16"));
@@ -103,7 +103,6 @@ public class ServiceCaseManagerTest {
 	@Test(expected = RuntimeException.class)
 	public void testSerialization2(){
 		Json json = serviceCaseManager.getMetaIndividual("zzzzzz"); 
-<<<<<<< HEAD
 	}
 	
 
@@ -126,12 +125,6 @@ public class ServiceCaseManagerTest {
     	assertTrue((json.at("iri").asString() != null && !json.at("iri").asString().isEmpty()));	
     }
 	
-	
-	
-=======
-	}		
-		
->>>>>>> b453c7ac27a8d1225e0889e80f0fdbe1db612c0a
 	public static boolean isSRDisabled(String iri) {
 		OWLNamedIndividual srTypeInd = OWL.individual(iri);
 		Set<OWLLiteral> values = OWL.dataProperties(srTypeInd, "legacy:isDisabled");

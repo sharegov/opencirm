@@ -27,12 +27,10 @@ import org.sharegov.cirm.rest.OntoAdmin;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
-import com.hp.hpl.jena.reasoner.IllegalParameterException;
-
 /**
  * Handles the User Cases for CIRM Admin Interface
  * 
- * @author chirino
+ * @author chirino, hilpold, dwong, sabbas
  */
 public class ServiceCaseManager extends OntoAdmin {		
 
@@ -55,7 +53,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	/**
 	 * Singleton instance getter. Synchronized to defeat multiple instantiation when instance == null
 	 *  
-	 * @return a unique instance of the class 
+	 * @return the same unique instance of the class 
 	 */
 	public synchronized static ServiceCaseManager getInstance(){
 		if (instance == null){
@@ -80,7 +78,9 @@ public class ServiceCaseManager extends OntoAdmin {
 	 */
 	private synchronized void clearCache (String aKey){
 		cache.remove(aKey);
-		cache.remove(PREFIX + aKey);		
+		cache.remove(PREFIX + aKey);	
+		
+		MetaOntology.clearCacheAndSynchronizeReasoner();
 	}
 	
 	/**
@@ -128,7 +128,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			if (p.at("hasParentAgency").isObject()){
 				if (p.at("hasParentAgency").has("iri")){
 					parentIri = (p.at("hasParentAgency").at("iri").asString());
-				} else throw new IllegalParameterException("Cannot find IRI property for Individual: " + p.asString());
+				} else throw new IllegalArgumentException("Cannot find IRI property for Individual: " + p.asString());
 			} else parentIri = p.at("hasParentAgency").asString();
 			
 			OWLNamedIndividual ind = OWL.individual(parentIri);
@@ -164,14 +164,14 @@ public class ServiceCaseManager extends OntoAdmin {
 		if (p.has("hasParentAgency")) p = p.at("hasParentAgency");
 		else 
 			if (p.has("Department")) p = p.at("Department");
-			else throw new IllegalParameterException("Division: " + p.at("iri").asString() + " have no Parent Agency or Department assigned.");
+			else throw new IllegalArgumentException("Division: " + p.at("iri").asString() + " have no Parent Agency or Department assigned.");
 		
 		
 		String iri;
 		if (p.isObject()){
 			if (p.has("iri")){
 				iri = (p.at("iri").asString());
-			} else throw new IllegalParameterException("Cannot find IRI property for Individual: " + p.asString());
+			} else throw new IllegalArgumentException("Cannot find IRI property for Individual: " + p.asString());
 		} else iri = p.asString();
 		
 
@@ -212,7 +212,7 @@ public class ServiceCaseManager extends OntoAdmin {
 				result.set("division", Json.object().set("Name", Json.nil()).set("Division_Code", Json.nil()));
 				result.set("department", Json.object().set("Name", np.has("Name") ? np.at("Name").asString(): Json.nil()).set("Type", np.has("type") ? np.at("type").asString(): Json.nil()));
 			}
-		} else throw new IllegalParameterException("Cannot find IRI property for Individual: " + p.asString());
+		} else throw new IllegalArgumentException("Cannot find IRI property for Individual: " + p.asString());
 		
 		
 		return result;
@@ -227,7 +227,19 @@ public class ServiceCaseManager extends OntoAdmin {
 	
 	private Json findDepartmentDivision (Json srType){
 		if (srType.has("providedBy")) return resolveDepartmentDivision (srType.at("providedBy"));
-		else throw new IllegalParameterException("Cannot find providedBy property for SR type: " +srType.at("iri").asString());
+		else throw new IllegalArgumentException("Cannot find providedBy property for SR type: " +srType.at("iri").asString());
+	}
+	
+	/**
+	 * 
+	 * @param srType
+	 * @return
+	 */
+	
+	private Json getServiceCaseFormated (String srType){
+		OWLNamedIndividual ind = OWL.individual(PREFIX + ":" + srType);
+		
+		return getRequiredData(ind);
 	}
 	
 	/**
@@ -257,15 +269,15 @@ public class ServiceCaseManager extends OntoAdmin {
 				jurisdiction = jIndividual.at("hasJurisdictionDescription").asString();
 			} else {
 				jurisdiction = findJusrisdiction(jIndividual);
-				if (jurisdiction == null || jurisdiction.isEmpty()) throw new IllegalParameterException("Individual legacy:" +  individual.getIRI().getFragment() + " have no jurisdiction associated.");
+				if (jurisdiction == null || jurisdiction.isEmpty()) throw new IllegalArgumentException("Individual legacy:" +  individual.getIRI().getFragment() + " have no jurisdiction associated.");
 				
 			}		
 			result.set("jurisdiction", jurisdiction);
 			
 			Json depdiv = findDepartmentDivision(jIndividual);
 			
-			if (!depdiv.has("department")) throw new IllegalParameterException("Individual legacy:" +  individual.getIRI().getFragment() + " have no provider/owner associated.");
-			if (!depdiv.has("division")) throw new IllegalParameterException("Cannot resolve division for Individual legacy:" +  individual.getIRI().getFragment());
+			if (!depdiv.has("department")) throw new IllegalArgumentException("Individual legacy:" +  individual.getIRI().getFragment() + " have no provider/owner associated.");
+			if (!depdiv.has("division")) throw new IllegalArgumentException("Cannot resolve division for Individual legacy:" +  individual.getIRI().getFragment());
 			
 			result.with(depdiv);
 		} catch (Exception e) {
@@ -378,9 +390,10 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			boolean r = commit(userName, comment, changes);
 			
-			if (r) clearCache(srType);
-			
-			return Json.object().set("success", r);
+			if (r) {
+				clearCache(srType);
+				return getServiceCaseFormated(srType);
+			} else throw new IllegalArgumentException("Unable to disable Service Case Type "+ PREFIX + ":" + srType);
 		}
 	}
 	
@@ -414,9 +427,10 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			boolean r = commit(userName, comment, changes);
 			
-			if (r) clearCache(PREFIX + srType);
-			
-			return Json.object().set("success", r);
+			if (r) {
+				clearCache(srType);
+				return getServiceCaseFormated(srType);
+			} else throw new IllegalArgumentException("Unable to disable Service Case Type "+ PREFIX + ":" + srType);
 		}
 	}
 	
@@ -467,6 +481,14 @@ public class ServiceCaseManager extends OntoAdmin {
 	
 	public Json getMetaIndividual (String individualID){
 		return getSerializedIndividual(individualID, "legacy");						
+	}
+	
+	public Json getMetaIndividualFormatedIri (String individualID){
+		Json result = getSerializedIndividual(individualID, "legacy");
+		
+		result.set("iri", PREFIX + ":" + MetaOntology.getIdFromUri(result.at("iri").asString()));
+		
+		return result;
 	}
 	
 	public Json getServiceCaseAlert (String srType){		
@@ -555,9 +577,11 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			boolean r = commit(userName, comment, changes);
 			
-			if (r) clearCache(PREFIX + individualID);
+			if (r){
+				clearCache(PREFIX + individualID);
+				return getMetaIndividualFormatedIri(individualID);
+			} else throw new IllegalArgumentException("Cannot update label to Service Case Type "+ PREFIX + ":" +  individualID);
 			
-			return Json.object().set("success", r);
 		}
 	}
 	
@@ -588,7 +612,7 @@ public class ServiceCaseManager extends OntoAdmin {
 				
 				Date now = new Date(); 
 				
-				String newIri = individualID + "_" + Long.toString(now.getTime());
+				String newIri = individualID + "_ALERT_" + Long.toString(now.getTime());
 				data.set("iri", newIri); 
 			}
 			
@@ -610,10 +634,11 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			boolean r = commit(userName, comment, changes);
 			
-			if (r) clearCache(evictionList);
-			
-			return Json.object().set("success", r);
-				
+			if (r){
+				clearCache(evictionList);
+				return getMetaIndividualFormatedIri(data.at("iri").asString());
+			} throw new IllegalArgumentException("Cannot update label to Service Case Type "+ PREFIX + ":" +  individualID);
+							
 		}
 	}
 	
@@ -644,7 +669,7 @@ public class ServiceCaseManager extends OntoAdmin {
 				OWLNamedIndividual ind = OWL.individual(oldAlert.at("iri").asString());
 				evictionList.add(ind.getIRI().getFragment());
 				changes = MetaOntology.getRemoveAllPropertiesIndividualChanges(ind);
-			} else throw new IllegalParameterException("No alert for individual " + PREFIX + individualID);
+			} else throw new IllegalArgumentException("No alert for individual " + PREFIX + individualID);
 			
 			String comment = "Delete Alert Message for SR "+ PREFIX + individualID;	
 			

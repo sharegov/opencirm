@@ -190,7 +190,7 @@ public class ServiceCaseAdmin extends RestService {
 			
 			if (result == Json.nil()) {
 				return Response
-						.status(Status.NO_CONTENT)
+						.status(Status.NOT_FOUND)
 						.type(MediaType.APPLICATION_JSON).build();
 			} else {			
 				return Response.ok(result, MediaType.APPLICATION_JSON).build();
@@ -266,7 +266,7 @@ public class ServiceCaseAdmin extends RestService {
 	
 	@DELETE
 	@Path("{srType}/alert")
-	public Response deleteAlert(@PathParam("srType") String srType, Json aData)
+	public Response deleteAlert(@PathParam("srType") String srType)
 	{
 		
 		try
