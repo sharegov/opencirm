@@ -142,49 +142,7 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
     	
     	//assertTrue((json.at("iri").asString() != null && !json.at("iri").asString().isEmpty()));	
     }
-    
-    /***
-     * Testing the replacement of and annotation
-     */
-    
-    /*
-     * public static List<OWLOntologyChange> getReplaceObjectAnnotationChanges (String individualID, String newAnnotationContent){
-		OWLOntology O = OWL.ontology();
-		//get the individual
-		OWLEntity entity = OWL.dataFactory().getOWLNamedIndividual(OWL.fullIri(PREFIX + individualID));
-		String existingLabel = OWL.getEntityLabel(entity);
-		//create existing annotation
-		OWLAnnotationAssertionAxiom toRemove = OWL.dataFactory().getOWLAnnotationAssertionAxiom(
-				entity.getIRI(), OWL.dataFactory().getOWLAnnotation(OWL.annotationProperty("http://www.w3.org/2000/01/rdf-schema#label"), OWL.dataFactory().getOWLLiteral(existingLabel)));
-		//create new annotation
-		OWLAnnotationAssertionAxiom toAdd = OWL.dataFactory().getOWLAnnotationAssertionAxiom(
-				entity.getIRI(), OWL.dataFactory().getOWLAnnotation(OWL.annotationProperty("http://www.w3.org/2000/01/rdf-schema#label"), OWL.dataFactory().getOWLLiteral(newAnnotationContent)));		
-		
-		RemoveAxiom removeAxiom = new RemoveAxiom(O, toRemove);			
-		AddAxiom addAxiom = new AddAxiom(O, toAdd); 
-		
-		List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
-		changes.add(removeAxiom);
-		changes.add(addAxiom);
-
-		return changes;			
-	}
-     */
-    
-    @Test
-    //@Ignore
-    public void testReplaceAnnotation(){
-    //String iri = "legacy:49173741";
-    //String content = "Hello from junit";
    
-    //Json result = serviceCaseManager.replaceObjectAnnotation(iri,content, "junit", "junit annotation test"); 	
-    //String label = getAnnotationLabel(iri); 
-    //System.out.println("this is the label " + label); 
-    
-    //assertTrue(label.equals(content));
-    }
-	
-	
 	
     public static String getAnnotationLabel(String iri){
     	OWLEntity entity = OWL.dataFactory().getOWLNamedIndividual(OWL.fullIri(iri)); 
