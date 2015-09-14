@@ -237,7 +237,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	 */
 	
 	private Json getServiceCaseFormated (String srType){
-		OWLNamedIndividual ind = OWL.individual(PREFIX + ":" + srType);
+		OWLNamedIndividual ind = OWL.individual(PREFIX + srType);
 		
 		return getRequiredData(ind);
 	}
@@ -393,7 +393,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			if (r) {
 				clearCache(srType);
 				return getServiceCaseFormated(srType);
-			} else throw new IllegalArgumentException("Unable to disable Service Case Type "+ PREFIX + ":" + srType);
+			} else throw new IllegalArgumentException("Unable to disable Service Case Type "+ PREFIX + srType);
 		}
 	}
 	
@@ -430,7 +430,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			if (r) {
 				clearCache(srType);
 				return getServiceCaseFormated(srType);
-			} else throw new IllegalArgumentException("Unable to disable Service Case Type "+ PREFIX + ":" + srType);
+			} else throw new IllegalArgumentException("Unable to disable Service Case Type "+ PREFIX + srType);
 		}
 	}
 	
@@ -486,7 +486,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	public Json getMetaIndividualFormatedIri (String individualID){
 		Json result = getSerializedIndividual(individualID, "legacy");
 		
-		result.set("iri", PREFIX + ":" + MetaOntology.getIdFromUri(result.at("iri").asString()));
+		result.set("iri", PREFIX + MetaOntology.getIdFromUri(result.at("iri").asString()));
 		
 		return result;
 	}
@@ -535,7 +535,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			boolean r = commit(userName, comment, changes);
 			
-			if (r) clearCache(PREFIX + individualID);
+			if (r) clearCache(individualID);
 			
 			return Json.object().set("success", r);
 		}
@@ -578,9 +578,9 @@ public class ServiceCaseManager extends OntoAdmin {
 			boolean r = commit(userName, comment, changes);
 			
 			if (r){
-				clearCache(PREFIX + individualID);
+				clearCache(individualID);
 				return getMetaIndividualFormatedIri(individualID);
-			} else throw new IllegalArgumentException("Cannot update label to Service Case Type "+ PREFIX + ":" +  individualID);
+			} else throw new IllegalArgumentException("Cannot update label to Service Case Type "+ PREFIX +  individualID);
 			
 		}
 	}
@@ -637,7 +637,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			if (r){
 				clearCache(evictionList);
 				return getMetaIndividualFormatedIri(data.at("iri").asString());
-			} throw new IllegalArgumentException("Cannot update label to Service Case Type "+ PREFIX + ":" +  individualID);
+			} throw new IllegalArgumentException("Cannot update label to Service Case Type "+ PREFIX +  individualID);
 							
 		}
 	}
