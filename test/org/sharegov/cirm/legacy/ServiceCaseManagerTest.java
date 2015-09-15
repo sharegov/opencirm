@@ -21,7 +21,9 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.RemoveAxiom;
+import org.sharegov.cirm.MetaOntology;
 import org.sharegov.cirm.OWL;
+import org.sharegov.cirm.owl.OwlRepo;
 import org.sharegov.cirm.test.OpenCirmTestBase;
 
 /**
@@ -48,7 +50,7 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
 	@Test
 	public void testDisable() {
 		
-		String srType = "PW16";
+		String srType = "legacy:PW16";
 		String userName = "automated test";
 		String comment = "test";
         //make sure the test is disabled
@@ -56,32 +58,36 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
 		assertTrue(isSRDisabled("legacy:PW16",false));
 	
 		Json result = serviceCaseManager.disable(srType, userName);
+		System.out.println("Hello from test2");
 		assertTrue(isSRDisabled("legacy:PW16",true));
-		assertTrue(result.at("success").asBoolean());
+		assertTrue(result.at("disabled").asBoolean());
 	}
 	/***
 	 * Testing disabling an SR Type by setting isDisabled to true with an invalid SR Type
 	 */
 	@Test
+	
 	public void testDisable2() {
 		
 		String srType = "zzzz";
 		String userName = "automated test";
 		String comment = "test";
 		Json result = serviceCaseManager.disable(srType, userName);
-		assertFalse(result.at("success").asBoolean());
+		
+		assertFalse(result.isNull());
 	}
 	/***
 	 * Testing disabling an SR Type by setting isDisabled to true with an invalid SR Type
 	 */
 	@Test
+	(expected = NullPointerException.class)
 	public void testDisable3() {
 		
 		String srType = null;
 		String userName = "automated test";
 		String comment = "test";
 		Json result = serviceCaseManager.disable(srType, userName);
-		assertFalse(result.at("success").asBoolean());
+		
 		
 	}
 	/***
@@ -91,14 +97,17 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
 	
 	public void testEnable() {
 		
-		String srType = null;
+		String srType = "legacy:PW16";
 		String userName = "automated test";
-		String comment = "test";
+		
+		serviceCaseManager.disable(srType, userName);
+		assertTrue(isSRDisabled("legacy:PW16",true));
+	
 		Json result = serviceCaseManager.enable(srType, userName);
 		
 		
 		assertTrue(isSRDisabled("legacy:PW16", false));
-		assertFalse(result.at("success").asBoolean());
+		assertFalse(result.at("disabled").asBoolean() == false);
 		
 	}
 	/***
@@ -117,7 +126,7 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
 	 * Testing serialization with invalid parameter
 	 */
 	@Test(expected = RuntimeException.class)
-	
+	@Ignore
 	public void testSerialization2(){
 		Json json = serviceCaseManager.getMetaIndividual("zzzzzz"); 
 	}
@@ -127,22 +136,108 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
 	 * Testing for valid service case with alert
 	 */
     @Test
+   
     public void testGetServiceCaseAlert(){
-    	Json json = serviceCaseManager.getServiceCaseAlert("PW16"); 
-    	assertTrue((json.at("iri").asString() != null && !json.at("iri").asString().isEmpty()));	
+    	 Json json = serviceCaseManager.getServiceCaseAlert("legacy:PW16"); 
+         System.out.println("get service case alert json " + json.toString());
+    	assertTrue(json.isNull() == false);	
+    }
+    
+    /**
+     * Get the alert for an SR that doesn't have one
+     */
+    @Test
+    public void testGetServiceCaseAlert2(){
+    	 String individual = "legacy:PW16"; 
+    	 
+    	serviceCaseManager.deleteAlertServiceCase(individual, "junit");
+    	 Json json = serviceCaseManager.getServiceCaseAlert(individual); 
+         System.out.println("get service case alert json " + json.toString());
+    	assertTrue(json.isNull());	
     }
 
+    
     /***
-     * Testing for a valid service case without alert
+     * Testing replacing an existing service case alert
+     */
+    @Test
+    public void testReplaceAlertLabel()
+    {
+    	String individual = "legacy:49173741"; 
+    	
+    	String newLabel = "test from junit"; 
+    	String user = "junit";
+    	String existingAnnotation = getAnnotationLabel(individual); 
+    	//System.out.println("existing annotation " + existingAnnotation); 
+    	Json json = serviceCaseManager.replaceAlertLabel(individual, newLabel, user); 
+    	//System.out.println("Hello from test");
+    	//System.out.println("json from replace " + json.toString());
+    	
+    	assertTrue(newLabel.equals(json.at("label")));
+    	
+    }
+    
+    
+    /***
+     * Test deleting a service case alert
+     */
+    @Test
+    @Ignore
+    public void testDeleteAlertServiceCase(){
+    	
+    	String individual = "legacy:PW16";
+    	String newLabel = "test from junit"; 
+    	String user = "junit"; 
+    	
+    	Json json = serviceCaseManager.deleteAlertServiceCase(individual, user); 
+    	String iri= ""; 
+    	assertTrue(annotationExist(iri));
+    	
+    	//Add the alert again
+    	//Json newAlert = Json.object().set("label", "This is a test from junit").set("iri", individual + "ALERT");
+    	//serviceCaseManager.addNewAlertServiceCase(individual, newAlert, user); 
+    	
+    }
+    
+    /***
+     * Test deleting a none existing alert
      */
     @Test(expected = IllegalArgumentException.class)
-    @Ignore 
-    public void testGetServiceCaseAlert2(){
-    	serviceCaseManager.getServiceCaseAlert("PW16"); 
+    public void testDeleteAlertServiceCase2(){
+    	//String individual = "legacy:49173741";
+    	String individual = "legacy:PW16";
+    	String newLabel = "test from junit"; 
+    	String user = "junit"; 
+    	//Delete
+    	Json json = serviceCaseManager.deleteAlertServiceCase(individual, user);
+    	//Then Delete again
+    	serviceCaseManager.deleteAlertServiceCase(individual, user);
     	
-    	//assertTrue((json.at("iri").asString() != null && !json.at("iri").asString().isEmpty()));	
     }
+    
+    
+    @Test
+    @Ignore
+    public void testDeleteAlertServiceCase3(){
+    	
+    	String individual = "zzzz";
+    	String newLabel = "test from junit"; 
+    	String user = "junit"; 
+    	
+    	Json json = serviceCaseManager.deleteAlertServiceCase(individual, user); 
+    	
+    	assertTrue(true);
+    }
+    
    
+
+
+    
+    
+    public static boolean annotationExist(String iri){
+    	OWLEntity entity = OWL.dataFactory().getOWLNamedIndividual(OWL.fullIri(iri));
+        return (entity != null);
+    }
 	
     public static String getAnnotationLabel(String iri){
     	OWLEntity entity = OWL.dataFactory().getOWLNamedIndividual(OWL.fullIri(iri)); 
@@ -157,9 +252,14 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
 		OWLNamedIndividual srTypeInd = OWL.individual(iri);
 		Set<OWLLiteral> values = OWL.dataProperties(srTypeInd, "legacy:isDisabledCreate");
 		
+		for(OWLLiteral value : values)
+			System.out.println(iri + " has value " + value.parseBoolean());
+		
 		return values.contains(OWL.dataFactory().getOWLLiteral(expected));
 
 	}
+	
+		
 	
 	
 
