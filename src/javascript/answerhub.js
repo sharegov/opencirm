@@ -750,6 +750,9 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 						                doc.ontology = [];
 						            }
 						    });
+		                    if(window.location.href.indexOf('.311.') > -1 ) {
+				                doc.url = doc.url.replace('kb.miamidade', 'kb.311.miamidade'); 						                   	 
+				            }
 						    console.log('results', r);
 						    self.totalResults(r.total);
 						    self.topics(r.docs);
