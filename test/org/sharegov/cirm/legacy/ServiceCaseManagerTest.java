@@ -4,16 +4,22 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import mjson.Json;
 
+import org.hypergraphdb.app.owl.versioning.RevisionID;
+import org.hypergraphdb.app.owl.versioning.VersionedOntology;
+import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.semanticweb.owlapi.model.AddAxiom;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLLiteral;
@@ -23,6 +29,7 @@ import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.sharegov.cirm.MetaOntology;
 import org.sharegov.cirm.OWL;
+import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.owl.OwlRepo;
 import org.sharegov.cirm.test.OpenCirmTestBase;
 
@@ -33,11 +40,62 @@ import org.sharegov.cirm.test.OpenCirmTestBase;
  */
 public class ServiceCaseManagerTest extends OpenCirmTestBase {
 
-	static ServiceCaseManager serviceCaseManager; 
+	static ServiceCaseManager serviceCaseManager;
+	static Map<VersionedOntology, RevisionID> vontos2headRevisionID = new HashMap<VersionedOntology, RevisionID>();
+	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		serviceCaseManager = ServiceCaseManager.getInstance();
+		serviceCaseManager = ServiceCaseManager.getInstance();	
 	}
+	
+	/**
+	 * Rolls back (removes) all pending changes of all versioned ontologies.
+	 */
+	protected static void rollbackAllOntoPendingChanges() {
+		VDHGDBOntologyRepository repo = Refs.owlRepo.resolve().repo();
+		for (VersionedOntology vo : repo.getVersionControlledOntologies()) {
+			if (!vo.getWorkingSetChanges().isEmpty()) {
+				IRI ontologyIri = vo.getRevisionData(vo.getHeadRevision()).getOntologyID().getOntologyIRI();
+				int nrOfPendingChanges = vo.getWorkingSetChanges().size();
+				System.out.println("Rolling back " + nrOfPendingChanges + " pending changes for ontology " + ontologyIri);
+				vo.rollback();
+			}
+		}		
+	}
+	/**
+	 * Saves the current ontology head revision id for each versioned ontology in the repository.
+	 */
+	protected static void saveAllOntoHeadRevisions() {
+		VDHGDBOntologyRepository repo = Refs.owlRepo.resolve().repo();
+		List<VersionedOntology> vontos = repo.getVersionControlledOntologies();
+		for (VersionedOntology vo : vontos) {
+			RevisionID originalHeadRevisionID = new RevisionID(vo.getHeadRevision().getOntologyUUID(),
+					vo.getHeadRevision().getRevision());
+			IRI ontologyIri = vo.getRevisionData(vo.getHeadRevision()).getOntologyID().getOntologyIRI();
+			System.out.println("Saving Versioned Ontology " + ontologyIri 
+					+ " Head Revision is " + originalHeadRevisionID.getRevision());
+			vontos2headRevisionID.put(vo, originalHeadRevisionID);
+		}
+	}
+	
+	/**
+	 * Reverts all ontologies to their saved head revision.
+	 * @see saveAllOntoHeadRevisions
+	 */
+	protected static void revertAllOntosToSavedHeadRevisions() {
+		for (Map.Entry<VersionedOntology, RevisionID> vonto2HeadRevisionIDEntry : vontos2headRevisionID.entrySet()) {
+			VersionedOntology vo = vonto2HeadRevisionIDEntry.getKey();
+			RevisionID rId = vonto2HeadRevisionIDEntry.getValue();
+			int currentHeadRevision = vo.getHeadRevision().getRevision();
+			//Check if we need to revert this versioned ontology to a previous revision
+			if (currentHeadRevision > rId.getRevision()) {
+				IRI ontologyIri = vo.getRevisionData(vo.getHeadRevision()).getOntologyID().getOntologyIRI();
+				System.out.println("Reverting Versioned Ontology " + ontologyIri + " from " + currentHeadRevision + " to " + rId.getRevision());
+				vo.revertHeadTo(rId);
+			}
+		}
+	}
+	
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
