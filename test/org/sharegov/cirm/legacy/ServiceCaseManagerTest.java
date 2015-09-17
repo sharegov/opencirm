@@ -41,66 +41,27 @@ import org.sharegov.cirm.test.OpenCirmTestBase;
 public class ServiceCaseManagerTest extends OpenCirmTestBase {
 
 	static ServiceCaseManager serviceCaseManager;
-	static Map<VersionedOntology, RevisionID> vontos2headRevisionID = new HashMap<VersionedOntology, RevisionID>();
+	
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		serviceCaseManager = ServiceCaseManager.getInstance();	
-	}
+		
+	} 
 	
-	/**
-	 * Rolls back (removes) all pending changes of all versioned ontologies.
-	 */
-	protected static void rollbackAllOntoPendingChanges() {
-		VDHGDBOntologyRepository repo = Refs.owlRepo.resolve().repo();
-		for (VersionedOntology vo : repo.getVersionControlledOntologies()) {
-			if (!vo.getWorkingSetChanges().isEmpty()) {
-				IRI ontologyIri = vo.getRevisionData(vo.getHeadRevision()).getOntologyID().getOntologyIRI();
-				int nrOfPendingChanges = vo.getWorkingSetChanges().size();
-				System.out.println("Rolling back " + nrOfPendingChanges + " pending changes for ontology " + ontologyIri);
-				vo.rollback();
-			}
-		}		
-	}
-	/**
-	 * Saves the current ontology head revision id for each versioned ontology in the repository.
-	 */
-	protected static void saveAllOntoHeadRevisions() {
-		VDHGDBOntologyRepository repo = Refs.owlRepo.resolve().repo();
-		List<VersionedOntology> vontos = repo.getVersionControlledOntologies();
-		for (VersionedOntology vo : vontos) {
-			RevisionID originalHeadRevisionID = new RevisionID(vo.getHeadRevision().getOntologyUUID(),
-					vo.getHeadRevision().getRevision());
-			IRI ontologyIri = vo.getRevisionData(vo.getHeadRevision()).getOntologyID().getOntologyIRI();
-			System.out.println("Saving Versioned Ontology " + ontologyIri 
-					+ " Head Revision is " + originalHeadRevisionID.getRevision());
-			vontos2headRevisionID.put(vo, originalHeadRevisionID);
-		}
-	}
-	
-	/**
-	 * Reverts all ontologies to their saved head revision.
-	 * @see saveAllOntoHeadRevisions
-	 */
-	protected static void revertAllOntosToSavedHeadRevisions() {
-		for (Map.Entry<VersionedOntology, RevisionID> vonto2HeadRevisionIDEntry : vontos2headRevisionID.entrySet()) {
-			VersionedOntology vo = vonto2HeadRevisionIDEntry.getKey();
-			RevisionID rId = vonto2HeadRevisionIDEntry.getValue();
-			int currentHeadRevision = vo.getHeadRevision().getRevision();
-			//Check if we need to revert this versioned ontology to a previous revision
-			if (currentHeadRevision > rId.getRevision()) {
-				IRI ontologyIri = vo.getRevisionData(vo.getHeadRevision()).getOntologyID().getOntologyIRI();
-				System.out.println("Reverting Versioned Ontology " + ontologyIri + " from " + currentHeadRevision + " to " + rId.getRevision());
-				vo.revertHeadTo(rId);
-			}
-		}
-	}
-	
-
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 		System.out.println("ServiceCaseManagerTest class completed.");
+		
 	}
+	
+	
+	
+	
+	
+	
+
+	
 
 	/***
 	 * Testing disabling an SR Type by setting isDisabled to true with a valid SR Type
@@ -124,7 +85,6 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
 	 * Testing disabling an SR Type by setting isDisabled to true with an invalid SR Type
 	 */
 	@Test
-	
 	public void testDisable2() {
 		
 		String srType = "zzzz";
@@ -137,8 +97,7 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
 	/***
 	 * Testing disabling an SR Type by setting isDisabled to true with an invalid SR Type
 	 */
-	@Test
-	(expected = NullPointerException.class)
+	@Test(expected = NullPointerException.class)
 	public void testDisable3() {
 		
 		String srType = null;
@@ -152,7 +111,6 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
 	 * Testing disabling an SR Type by setting isDisabled to false with an invalid SR Type
 	 */
 	@Test
-	
 	public void testEnable() {
 		
 		String srType = "legacy:PW16";
@@ -172,7 +130,6 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
 	 * Testing serialization with valid service request
 	 */
 	@Test
-	
 	public void testSerialization(){
 		Json json = serviceCaseManager.getMetaIndividual("PW16"); 
 		String comment = json.at("comment").asString(); 
@@ -184,7 +141,7 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
 	 * Testing serialization with invalid parameter
 	 */
 	@Test(expected = RuntimeException.class)
-	@Ignore
+	
 	public void testSerialization2(){
 		Json json = serviceCaseManager.getMetaIndividual("zzzzzz"); 
 	}
@@ -194,10 +151,9 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
 	 * Testing for valid service case with alert
 	 */
     @Test
-   
     public void testGetServiceCaseAlert(){
-    	 Json json = serviceCaseManager.getServiceCaseAlert("legacy:PW16"); 
-         System.out.println("get service case alert json " + json.toString());
+    	 String individual = "legacy:PW97";
+    	 Json json = serviceCaseManager.getServiceCaseAlert(individual); 
     	assertTrue(json.isNull() == false);	
     }
     
@@ -206,7 +162,7 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
      */
     @Test
     public void testGetServiceCaseAlert2(){
-    	 String individual = "legacy:PW16"; 
+    	 String individual = "legacy:PW131"; 
     	 
     	serviceCaseManager.deleteAlertServiceCase(individual, "junit");
     	 Json json = serviceCaseManager.getServiceCaseAlert(individual); 
@@ -219,6 +175,7 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
      * Testing replacing an existing service case alert
      */
     @Test
+    @Ignore
     public void testReplaceAlertLabel()
     {
     	String individual = "legacy:49173741"; 
@@ -226,10 +183,9 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
     	String newLabel = "test from junit"; 
     	String user = "junit";
     	String existingAnnotation = getAnnotationLabel(individual); 
-    	//System.out.println("existing annotation " + existingAnnotation); 
+    	
     	Json json = serviceCaseManager.replaceAlertLabel(individual, newLabel, user); 
-    	//System.out.println("Hello from test");
-    	//System.out.println("json from replace " + json.toString());
+    	
     	
     	assertTrue(newLabel.equals(json.at("label")));
     	
@@ -240,52 +196,23 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
      * Test deleting a service case alert
      */
     @Test
-    @Ignore
     public void testDeleteAlertServiceCase(){
     	
     	String individual = "legacy:PW16";
     	String newLabel = "test from junit"; 
     	String user = "junit"; 
     	
+    	assertTrue(annotationExist("legacy:49173741"));
     	Json json = serviceCaseManager.deleteAlertServiceCase(individual, user); 
-    	String iri= ""; 
-    	assertTrue(annotationExist(iri));
-    	
-    	//Add the alert again
-    	//Json newAlert = Json.object().set("label", "This is a test from junit").set("iri", individual + "ALERT");
-    	//serviceCaseManager.addNewAlertServiceCase(individual, newAlert, user); 
-    	
+       
+    	assertTrue(!annotationExist("legacy:49173741")); 
+    
     }
     
-    /***
-     * Test deleting a none existing alert
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void testDeleteAlertServiceCase2(){
-    	//String individual = "legacy:49173741";
-    	String individual = "legacy:PW16";
-    	String newLabel = "test from junit"; 
-    	String user = "junit"; 
-    	//Delete
-    	Json json = serviceCaseManager.deleteAlertServiceCase(individual, user);
-    	//Then Delete again
-    	serviceCaseManager.deleteAlertServiceCase(individual, user);
-    	
-    }
+   
     
     
-    @Test
-    @Ignore
-    public void testDeleteAlertServiceCase3(){
-    	
-    	String individual = "zzzz";
-    	String newLabel = "test from junit"; 
-    	String user = "junit"; 
-    	
-    	Json json = serviceCaseManager.deleteAlertServiceCase(individual, user); 
-    	
-    	assertTrue(true);
-    }
+   
     
    
 
@@ -294,7 +221,8 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
     
     public static boolean annotationExist(String iri){
     	OWLEntity entity = OWL.dataFactory().getOWLNamedIndividual(OWL.fullIri(iri));
-        return (entity != null);
+        //System.out.println("entity ...." + entity.toStringID());
+    	return (entity != null);
     }
 	
     public static String getAnnotationLabel(String iri){
