@@ -154,7 +154,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	}
 	
 	/**
-	 * Search for the department/office to whom the individual p belongs  
+	 * Recursive search of the department/office to whom the individual p belongs on the ontology  
 	 * 
 	 * @param p a serialized individual
 	 * @return Json representation of the attributes of the department/office 
@@ -233,7 +233,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	/**
 	 * 
 	 * @param srType
-	 * @return
+	 * @return a Json structure that contains the contracted SR Type data for the user interface  
 	 */
 	
 	private Json getServiceCaseFormated (String srType){
@@ -557,30 +557,35 @@ public class ServiceCaseManager extends OntoAdmin {
 	/**
 	 * 
 	 * @param individualID
-	 * @param newAnnotationContent
+	 * @param newLabelContent
 	 * @param userName
 	 * @param comment
 	 * @return
 	 */
 	
-	public Json replaceAlertLabel(String individualID, String newAnnotationContent, String userName){
+	public Json replaceAlertLabel(String srIndividualID, String alertIndividualID, String newLabelContent, String userName){
 
-		individualID = MetaOntology.getIndividualIdentifier(individualID);
+		srIndividualID = MetaOntology.getIndividualIdentifier(srIndividualID);
+		alertIndividualID = MetaOntology.getIndividualIdentifier(alertIndividualID);
+		
+		List<String> evictionList = new ArrayList<String>();
+		evictionList.add(srIndividualID);
+		evictionList.add(alertIndividualID);
 		
 		OwlRepo repo = getRepo();
 		synchronized (repo) {
 			repo.ensurePeerStarted();		 
 			
-			List<OWLOntologyChange> changes = MetaOntology.getReplaceObjectAnnotationChanges(individualID, newAnnotationContent);	
+			List<OWLOntologyChange> changes = MetaOntology.getReplaceObjectAnnotationChanges(alertIndividualID, newLabelContent);	
             
-			String comment = "Replace Alert Message for SR type: " + PREFIX + individualID; 
+			String comment = "Replace Alert Message for SR type: " + PREFIX + srIndividualID; 
 			
 			boolean r = commit(userName, comment, changes);
 			
 			if (r){
-				clearCache(individualID);
-				return getMetaIndividualFormatedIri(individualID);
-			} else throw new IllegalArgumentException("Cannot update label to Service Case Type "+ PREFIX +  individualID);
+				clearCache(evictionList);
+				return getMetaIndividualFormatedIri(alertIndividualID);
+			} else throw new IllegalArgumentException("Cannot update alert label to Service Case Type "+ PREFIX +  srIndividualID);
 			
 		}
 	}
