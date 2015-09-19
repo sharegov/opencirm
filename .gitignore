@@ -4,3 +4,5 @@ dist/
 /classes/
 
 *.iml
+/javadoc/
+export/*.jar

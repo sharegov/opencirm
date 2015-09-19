@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
+<jardesc>
+    <jar path="mdcirm/export/openmdcirmV1.0.32_src.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/mdcirm/export/openmdcirm_src.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <selectedElements exportClassFiles="false" exportJavaFiles="true" exportOutputFolder="false">
+        <javaElement handleIdentifier="=mdcirm/src\/java"/>
+        <javaElement handleIdentifier="=opencirm/src\/java"/>
+        <javaElement handleIdentifier="=opencirm/test"/>
+        <javaElement handleIdentifier="=mdcirm/test"/>
+    </selectedElements>
+</jardesc>
