@@ -178,13 +178,14 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
     @Ignore
     public void testReplaceAlertLabel()
     {
+    	String srType = "legacy:PW16";
     	String individual = "legacy:49173741"; 
     	
     	String newLabel = "test from junit"; 
     	String user = "junit";
     	String existingAnnotation = getAnnotationLabel(individual); 
     	
-    	Json json = serviceCaseManager.replaceAlertLabel(individual, newLabel, user); 
+    	Json json = serviceCaseManager.replaceAlertLabel(srType, individual, newLabel, user); 
     	
     	
     	assertTrue(newLabel.equals(json.at("label")));
