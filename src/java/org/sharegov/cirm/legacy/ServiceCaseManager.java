@@ -687,6 +687,24 @@ public class ServiceCaseManager extends OntoAdmin {
 		}
 	}
 	
+	/**
+	 * 
+	 * 
+	 */
+	public Json getServiceCaseQuestions (String srType){		
+
+		srType = MetaOntology.getIndividualIdentifier(srType);
+		
+		Json sr = getMetaIndividual(srType);		
+		
+		if (sr.has("hasServiceField")){
+			
+			return MetaOntology.resolveAllIris( sr.at("hasServiceField"));
+			
+		} else return Json.nil();
+	
+	}
+	
 	/*
 	 * Test by Syed
 	 * 

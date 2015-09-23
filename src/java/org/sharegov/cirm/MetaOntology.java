@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -71,6 +72,7 @@ public class MetaOntology
 {
 
 	private static String PREFIX = "legacy:";
+	public static final int RESOLVE_ALL_IRI_MAX_DEPTH = 5;
 	/*
 	 * Generic Ontology handling functions.
 	 */
@@ -642,6 +644,108 @@ public class MetaOntology
 			if (!reasoner.isConsistent()) throw new IllegalStateException("Reasoner is not consistent. Axioms leading to inconsistency must have been applied since server start or the last call of this method.");
 		}
 		
+	}
+	
+	/**
+	 * Resolves all fulliri strings in the owlSerialized json 
+	 * and modifies the json by replacing all fulliri strings with the resolved json objects.
+	 */
+	public static Json resolveAllIris(Json owlSerialized) {
+		resolveAllIris(owlSerialized, owlSerialized, RESOLVE_ALL_IRI_MAX_DEPTH);
+		
+		return owlSerialized;
+	}
+
+
+	/**
+	 * Resolves all fulliri strings starting at root in the context of owlSerialized  
+	 * and modifies the owlSerialized by replacing all fulliri strings with the resolved json objects.
+	 * Root must be within owlSerialized.
+	 */
+	public static void resolveAllIris(Json owlSerialized, Json root, int maxDepth) {
+		if (maxDepth == 0) return;
+		if (root.isObject()) {
+			Map<String,Json> properties = root.asJsonMap();
+			for (Map.Entry<String, Json> propKeyValue : properties.entrySet()) {
+				if (!propKeyValue.getKey().equals("iri") 
+						&& isFullIriString(propKeyValue.getValue())) {
+					//modify Json key to fully resolved json object
+					Json serializedOwlEntity = findByIri(owlSerialized, propKeyValue.getValue().asString());
+					if (serializedOwlEntity.isNull()) {
+						//ignore
+						//throw new IllegalArgumentException("parameter contains IRI for which no serialized object could be found: " + propKeyValue.getValue());
+					} else {
+						//replace key with full object instead of string IRI.
+						propKeyValue.setValue(serializedOwlEntity.dup());	
+					}
+				} 
+				resolveAllIris(owlSerialized, propKeyValue.getValue(), maxDepth - 1);
+			}
+		} else if (root.isArray()) {
+			ListIterator<Json> arrayIt = root.asJsonList().listIterator();
+			while(arrayIt.hasNext()) {
+				Json elem = arrayIt.next();
+				if (isFullIriString(elem)) {
+					Json serializedOwlEntity = findByIri(owlSerialized, elem.asString());
+					if (serializedOwlEntity.isNull()) {
+						//ignore now
+					} else {
+						//replace cur elem.
+						arrayIt.set(serializedOwlEntity.dup());
+						//needed so recursion continues with object not iri string.
+						elem = serializedOwlEntity;
+					}
+				} 
+				resolveAllIris(owlSerialized, elem, maxDepth - 1);
+			}
+		} else {
+			// nothing to do for primitives
+		}  				
+	}
+	
+	/**
+	 * Simple method to check if a Json is a fullIRI.
+	 * TODO This needs improvement.
+	 * @param iriCandidate
+	 * @return
+	 */
+	public static boolean isFullIriString(Json iriCandidate) {
+		return iriCandidate.isString() 
+				&& iriCandidate.asString().contains("#")
+			    && iriCandidate.asString().startsWith("http://");
+	}
+	
+	/**
+	 * Finds any object with an IRI attribute that's fully serialized.
+	 * Ignores fullIris that are Strings and not objects.
+	 * 
+	 * @param fullIRI
+	 * @return
+	 */
+	public static Json findByIri(Json owlSerialized, String fullIRI) {
+		if (owlSerialized.isObject()) {
+			if (owlSerialized.has("iri") && fullIRI.equals(owlSerialized.at("iri").asString()))
+				return owlSerialized;
+			else {
+				Map<String,Json> properties = owlSerialized.asJsonMap();
+				for (Json propValue : properties.values()) {
+					Json result = findByIri(propValue, fullIRI);
+					if (!result.isNull()) {
+						return result;
+					}
+				}
+				return Json.nil();
+			}
+		} else if (owlSerialized.isArray()) {
+			List<Json> array = owlSerialized.asJsonList();
+			for (Json elem : array) {
+				Json result = findByIri(elem, fullIRI);
+				if (!result.isNull()) {
+					return result;
+				}
+			}
+			return Json.nil();
+		} else return Json.nil();				
 	}
 
 	

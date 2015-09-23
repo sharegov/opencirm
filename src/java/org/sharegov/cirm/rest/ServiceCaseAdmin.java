@@ -15,6 +15,7 @@ import mjson.Json;
 
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.sharegov.cirm.legacy.ServiceCaseManager;
+import org.sharegov.cirm.utils.JsonSchemaHandler;
 
 @Path("sradmin")
 @Produces("application/json")
@@ -313,6 +314,41 @@ public class ServiceCaseAdmin extends RestService {
 					.entity(Json.object().set("error", e.getClass().getName())
 							.set("message", e.getMessage())).build();
 		}
+	}
+	
+	@GET
+	@Path("{srType}/questions")
+	public Response getQuestions(@PathParam("srType") String srType)
+	{
+		
+		try
+		{ 
+			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");		     
+			
+			Json result = ServiceCaseManager.getInstance().getServiceCaseQuestions(srType);
+			
+			if (result == Json.nil()) {
+				return Response
+						.status(Status.NOT_FOUND)
+						.type(MediaType.APPLICATION_JSON).build();
+			} else {			
+				return Response.ok(result, MediaType.APPLICATION_JSON).build();
+			}
+		}
+		catch(Exception e){
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
+	@POST
+	@Path("test")
+	public Response testEndPoint(Json aData)
+	{
+		return Response.ok (JsonSchemaHandler.getInstance().validate("http://localhost:8182/javascript/schemas/questions.json", aData), MediaType.APPLICATION_JSON).build();
 	}
 	
 	

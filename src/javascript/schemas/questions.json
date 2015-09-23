@@ -1,0 +1,13 @@
+{
+	"id":"/javascript/schemas/questions.json",
+	"type": "array",
+	"minItems": 1,
+	"items": { 
+				"type": "object",
+				"oneOf": [
+							{"$ref": "/javascript/schemas/service_note.json"},
+							{"$ref": "/javascript/schemas/service_question.json"}
+						 ]
+			 },
+	"uniqueItems": true
+}

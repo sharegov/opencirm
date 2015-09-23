@@ -71,6 +71,7 @@ import org.sharegov.cirm.rest.MainRestApplication;
 import org.sharegov.cirm.rest.OntoAdmin;
 import org.sharegov.cirm.utils.AdaptiveClassLoader;
 import org.sharegov.cirm.utils.GenUtils;
+import org.sharegov.cirm.utils.JsonSchemaHandler;
 import org.sharegov.cirm.utils.PhotoUploadResource;
 import org.sharegov.cirm.utils.SslContextedSecureProtocolSocketFactory;
 
@@ -434,7 +435,7 @@ public class StartUp extends ServerResource
    		{
    			OntoAdmin oa = new OntoAdmin();
    			oa.cachedReasonerQ1Populate();
-   		}
+   		}   		
    		
    		ServiceCaseManager.getInstance();
 //   		OperationService.getPersister().addRDBListener(new BOChangeListener());
