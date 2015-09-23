@@ -22,8 +22,14 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Vector;
 import java.util.logging.Level;
 
@@ -32,6 +38,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -84,6 +91,7 @@ public class StartUp extends ServerResource
 			.set("port", 8182)
 			.set("ignorePasswords", true)
 			.set("ssl-port", 8183)
+			.set("ssl", false)
 			.set("keystore", "cirm.jks")
 			.set("storePass", "password")
 			.set("keyPass", "password")
@@ -393,37 +401,7 @@ public class StartUp extends ServerResource
     	
         if (config.is("ssl", true))
         {
-        	URL url = selfUrl();
-            final int sslport = config.at("ssl-port").asInteger();            
-            final Server httpsServer = server.getServers().add(Protocol.HTTPS, sslport);
-            httpsServer.getContext().getParameters().add("hostname", selfUrl().getHost());
-            httpsServer.getContext().getParameters().add("keystorePath", 
-            				config.at("workingDir").asString() + "/conf/" + config.at("keystore").asString());            
-            httpsServer.getContext().getParameters().add("keystorePassword", config.at("storePass").asString());            
-            httpsServer.getContext().getParameters().add("keyPassword", config.at("keyPass").asString());            
-            
-            // setup HTTP redirect to HTTPS
-            server.getServers().add(Protocol.HTTP, config.at("port").asInteger());
-            final Redirector redirector = new Redirector(server.getContext().createChildContext(), 
-                                                   url.toString(), 
-                                                   Redirector.MODE_CLIENT_FOUND);            
-            server.getDefaultHost().attach(new Restlet() {                
-                @Override  
-                public void handle(Request request, Response response) 
-                {  
-//                    System.out.println("Redirect request protocol: " + request.getProtocol() 
-//                                       + ", " + Protocol.HTTP);
-                    if (request.getProtocol().equals(Protocol.HTTP))
-                    {
-//                        System.out.println("Redirect from HTTP");
-                        redirector.handle(request, response);
-//                        System.out.println("Redirect from HTTP done");
-                    }
-                    else
-                        topRestlet.handle(request, response);
-                }
-            });
-            disableCertificateValidation();
+        	configureSSLServerAndRedirect(topRestlet);
         }
         else
         {
@@ -437,7 +415,12 @@ public class StartUp extends ServerResource
    			oa.cachedReasonerQ1Populate();
    		}
 //   		OperationService.getPersister().addRDBListener(new BOChangeListener());
-	    server.start();	    
+	    try {
+	    	server.start();
+	    } catch (Exception e) {
+	    	System.err.println("ERROR ON STARTUP");
+	    	e.printStackTrace(); //TODO kill once Java 7 migration completed: throw new RuntimeException(e);
+	    }
 	}
 	
 	static void commandLineStart(Component server)
@@ -572,6 +555,120 @@ public class StartUp extends ServerResource
 		}
 		catch (Exception e)
 		{
+		}
+	}
+	
+	/** 
+	 * Configures the SSL server and HTTP > HTTPS redirector
+	 * 
+	 * @param topRestlet
+	 */
+	private static void configureSSLServerAndRedirect(final Restlet topRestlet) {
+    	URL url = selfUrl();
+        final int sslport = config.at("ssl-port").asInteger();            
+        final Server httpsServer = server.getServers().add(Protocol.HTTPS, sslport);
+        httpsServer.getContext().getParameters().add("hostname", selfUrl().getHost());
+        httpsServer.getContext().getParameters().add("keystorePath", 
+        				config.at("workingDir").asString() + "/conf/" + config.at("keystore").asString());            
+        httpsServer.getContext().getParameters().add("keystorePassword", config.at("storePass").asString());            
+        httpsServer.getContext().getParameters().add("keyPassword", config.at("keyPass").asString());            
+        configureSSLCipherSuites(httpsServer);
+        
+        // setup HTTP redirect to HTTPS
+        server.getServers().add(Protocol.HTTP, config.at("port").asInteger());
+        final Redirector redirector = new Redirector(server.getContext().createChildContext(), 
+                                               url.toString(), 
+                                               Redirector.MODE_CLIENT_FOUND);            
+        server.getDefaultHost().attach(new Restlet() {                
+            @Override  
+            public void handle(Request request, Response response) 
+            {  
+//                System.out.println("Redirect request protocol: " + request.getProtocol() 
+//                                   + ", " + Protocol.HTTP);
+                if (request.getProtocol().equals(Protocol.HTTP))
+                {
+//                    System.out.println("Redirect from HTTP");
+                    redirector.handle(request, response);
+//                    System.out.println("Redirect from HTTP done");
+                }
+                else
+                    topRestlet.handle(request, response);
+            }
+        });
+        disableCertificateValidation();
+
+	}
+
+	
+	private static void configureSSLCipherSuites(Server s) {
+		//printSSLCipherSuites();
+		Context ctx = s.getContext();
+//		ctx.getParameters().add("disabledCipherSuites", 
+//                "SSL_RSA_WITH_RC4_128_MD5 TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 TLS_RSA_WITH_AES_128_CBC_SHA TLS_RSA_WITH_AES_256_CBC_SHA ");
+		String strongCiphers = getStrongSSLCipherSuitesAsSpacedString();
+		System.out.println(strongCiphers);
+		ctx.getParameters().add("disabledCipherSuites", "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA");
+		ctx.getParameters().add("enabledCipherSuites", strongCiphers);
+		ctx.getParameters().add("enabledCipherSuites", strongCiphers);
+		
+		ctx.getAttributes();
+	}
+	
+	private static String getStrongSSLCipherSuitesAsSpacedString() {
+		StringBuffer strongCiphers = new StringBuffer(1000);
+		for (String c : getStrongSSLCipherSuites()) {
+			strongCiphers.append(c);
+			strongCiphers.append(" ");
+		}
+		return strongCiphers.toString();
+	}
+	
+	private static List<String> getStrongSSLCipherSuites() {
+		System.out.println("STRONG CIPHER SUITES: ");
+		List<String> strongCiphers = new LinkedList<>();
+		for (String cipher : getSupportedCipherSuites()) {
+			if (cipher.contains("256") && cipher.endsWith("384")) {
+				strongCiphers.add(cipher);
+				System.out.println(cipher);
+			}
+		}
+		System.out.println("STRONG CIPHER SUITES END");
+		return strongCiphers;
+	}
+		
+
+	private static SortedSet<String> getSupportedCipherSuites() {
+		SSLContext ctx;
+		try
+		{
+			ctx = SSLContext.getDefault();
+		} catch (NoSuchAlgorithmException e)
+		{
+			throw new RuntimeException(e);
+		}
+		SSLSocketFactory sf = ctx.getSocketFactory();
+		return new TreeSet<>(Arrays.asList(sf.getSupportedCipherSuites()));
+	}
+	
+	private static void printSSLCipherSuites() {
+		SSLContext ctx;
+		try
+		{
+			ctx = SSLContext.getDefault();
+		} catch (NoSuchAlgorithmException e)
+		{
+			throw new RuntimeException(e);
+		}
+		SSLSocketFactory sf = ctx.getSocketFactory();
+		SortedSet<String> defaultCiphers = new TreeSet<>(Arrays.asList(sf.getDefaultCipherSuites()));
+		SortedSet<String> supportedCiphers = new TreeSet<>(Arrays.asList(sf.getSupportedCipherSuites()));
+		System.out.println("DEFAULT CIPHERS");
+		for (String c : defaultCiphers) {
+			System.out.println(c);
+		}
+		System.out.println("SUPPORTED CIPHERS");
+		for (String c : supportedCiphers) {
+			System.out.println(c);
 		}
 	}
 }
