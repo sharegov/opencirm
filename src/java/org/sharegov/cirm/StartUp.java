@@ -22,34 +22,16 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.Vector;
 import java.util.logging.Level;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant.VariantListBuilder;
 import javax.ws.rs.ext.RuntimeDelegate;
 
-
 import mjson.Json;
 
-import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Context;
@@ -79,11 +61,22 @@ import org.sharegov.cirm.rest.OntoAdmin;
 import org.sharegov.cirm.utils.AdaptiveClassLoader;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.PhotoUploadResource;
-import org.sharegov.cirm.utils.SslContextedSecureProtocolSocketFactory;
 
+/**
+ * Starts up OpenCirm.
+ * 
+ * @author unknown, Thomas Hilpold
+ *
+ */
 public class StartUp extends ServerResource
 { 
+
+	/**
+	 * Switch for stress testing. If true, disables most external calls and dbg output.
+	 */
 	public static boolean STRESS_TEST_CONFIG = false;
+
+	public static Level LOGGING_LEVEL = Level.INFO;
 
 	public volatile static Json config = Json.object()
 			.set("workingDir", "C:/work/opencirm")
@@ -91,8 +84,8 @@ public class StartUp extends ServerResource
 			.set("port", 8182)
 			.set("ignorePasswords", true)
 			.set("ssl-port", 8183)
-			.set("ssl", false)
-			.set("keystore", "cirm.jks")
+			.set("ssl", true)
+			.set("keystore", "cirm84.jks")
 			.set("storePass", "password")
 			.set("keyPass", "password")
 			.set("defaultOntologyIRI", "http://www.miamidade.gov/cirm/legacy")
@@ -120,9 +113,11 @@ public class StartUp extends ServerResource
 					))
 			.set("cachedReasonerPopulate", false);
 	
-	public static Component server = null;
+	public static Component server = null; 
+	public static Component redirectServer = null;
 	public static PaddedJSONFilter jsonpFilter = null;
-	public static Encoder encoder = null;
+	public static Encoder encoder = null;	
+	
 	/**
 	 * Just for registration
 	 */
@@ -182,7 +177,7 @@ public class StartUp extends ServerResource
 	    EncoderService encoderService = new EncoderService();
 	    encoderService.setEnabled(true);
 	    //app.setEncoderService(encoderService);
-	    app.getLogger().setLevel(Level.WARNING);
+	    app.getLogger().setLevel(LOGGING_LEVEL);
 	    
 	    try
 	    {
@@ -240,6 +235,7 @@ public class StartUp extends ServerResource
 			throw new RuntimeException(ex);
 		}
 	}
+	
 	/**
 	 * Disable most external calls and dbg output during stresstesting.
 	 */
@@ -249,8 +245,8 @@ public class StartUp extends ServerResource
 		MessageManager.DISABLE_SEND = true;
 		// LegacyEmulator.SEND_BO_TO_INTERFACE = false; // this is triggered by events now, so the event should be removed from ontology
 		CachedReasoner.DBG_CACHE_MISS = false;
-//		GisClient.USE_GIS_SERVICE = false;
-//		GisClient.DBG = false;
+		// GisClient.USE_GIS_SERVICE = false;
+		// GisClient.DBG = false;
 	}
 
 	public static void main(String[] args) throws Exception
@@ -267,19 +263,8 @@ public class StartUp extends ServerResource
 		{
 			throw new RuntimeException(t);
 		}
-		server = new Component();		
-	    server.getServers().add(Protocol.HTTP, config.at("port").asInteger())
-	    	// this is Jetty configuration parameter to allow for very long
-	        // server processing (i.e. in debugging mode) with no timeout, otherwise
-	    	// the requests get retried 
-	    	.getContext().getParameters().add("ioMaxIdleTimeMs", "" + 24*60*60*1000);
-	    
-	    server.getClients().add(Protocol.HTTP);
-	    	// Apparently this is not needed for the HTTP client...
-	    	//.getContext().getParameters().add("ioMaxIdleTimeMs", "" + 24*60*60*1000);
-	    
-	    server.getClients().add(Protocol.FILE);
-	    server.getLogger().setLevel(Level.WARNING);
+		
+		configureServer();
 	    
 	    final Restlet restApplication = createRestServicesApp();
 	    
@@ -397,16 +382,8 @@ public class StartUp extends ServerResource
             }
         };
         
-    	disableCertificateValidation();
-    	
-        if (config.is("ssl", true))
-        {
-        	configureSSLServerAndRedirect(topRestlet);
-        }
-        else
-        {
-    	    server.getDefaultHost().attach(topRestlet);
-    	}
+        StartupUtils.disableCertificateValidation();
+        attachToServer(topRestlet);
 	    
    		RelationalOWLMapper.getInstance();
    		if (config.has("cachedReasonerPopulate") && config.is("cachedReasonerPopulate", true))
@@ -417,6 +394,7 @@ public class StartUp extends ServerResource
 //   		OperationService.getPersister().addRDBListener(new BOChangeListener());
 	    try {
 	    	server.start();
+	    	if (redirectServer != null) redirectServer.start();
 	    } catch (Exception e) {
 	    	System.err.println("ERROR ON STARTUP");
 	    	e.printStackTrace(); //TODO kill once Java 7 migration completed: throw new RuntimeException(e);
@@ -496,179 +474,100 @@ public class StartUp extends ServerResource
 			}	    	
 	    });		
 	}	
+
 	
-	public static void disableCertificateValidation()
+	private static void configureServer() 
 	{
-		// Create a trust manager that does not validate certificate chains
-		TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager()
-		{
-			public X509Certificate[] getAcceptedIssuers()
-			{
-				return new X509Certificate[0];
-			}
-
-			public void checkClientTrusted(X509Certificate[] certs,
-					String authType)
-			{
-				// System.out.println("Check client trusted");
-			}
-
-			public void checkServerTrusted(X509Certificate[] certs,
-					String authType)
-			{
-				// System.out.println("Check server trusted");
-
-			}
-		} };
-
-		// Ignore differences between given hostname and certificate hostname
-		HostnameVerifier hv = new HostnameVerifier()
-		{
-			@Override
-			public boolean verify(String hostname, SSLSession session)
-			{
-				// TODO Auto-generated method stub
-				return true;
-			}
-		};
-
-		// Install the all-trusting trust manager
-		try
-		{
-			// SSLContext sc = SSLContext.getInstance("SSL");
-			// sc.init(null, trustAllCerts, new SecureRandom());
-			SSLContext ctx = SSLContext.getInstance("TLS");
-			ctx.init(new KeyManager[0], trustAllCerts, new SecureRandom());
-			HttpsURLConnection.setDefaultSSLSocketFactory(ctx
-					.getSocketFactory());
-			HttpsURLConnection.setDefaultHostnameVerifier(hv);
-			// see:http://stackoverflow.com/questions/1828775/how-to-handle-invalid-ssl-certificates-with-apache-httpclient
-			// see:https://code.google.com/p/jsslutils/wiki/ApacheHttpClientUsage
-			org.apache.commons.httpclient.protocol.Protocol
-					.registerProtocol(
-							"https",
-							new org.apache.commons.httpclient.protocol.Protocol(
-									"https",
-									(ProtocolSocketFactory) new SslContextedSecureProtocolSocketFactory(
-											ctx, false), 443));
-			SSLContext.setDefault(ctx);
-		}
-		catch (Exception e)
-		{
-		}
+		server = new Component();
+        if (config.is("ssl", true)) {
+        	configureSSLServer(server);
+        	redirectServer = new Component();
+           	Server http = redirectServer.getServers().add(Protocol.HTTP, config.at("port").asInteger());
+           	http.getContext().getParameters().add("ioMaxIdleTimeMs", "" + 24*60*60*1000);
+        } else {
+           	Server http = server.getServers().add(Protocol.HTTP, config.at("port").asInteger());
+           	// this is Jetty configuration parameter to allow for very long
+           	// 	server processing (i.e. in debugging mode) with no timeout, otherwise
+           	// 	the requests get retried 
+           	http.getContext().getParameters().add("ioMaxIdleTimeMs", "" + 24*60*60*1000);
+        }
+       	// Configure client protocols
+       	server.getClients().add(Protocol.HTTP);
+       	server.getClients().add(Protocol.FILE);
+       	server.getLogger().setLevel(Level.WARNING); //WARNING
 	}
-	
+
+	private static void attachToServer(Restlet topRestlet) 
+	{	
+        if (config.is("ssl", true)) {
+        	configureRedirectToSSL(redirectServer, topRestlet);
+        }
+       	server.getDefaultHost().attach(topRestlet);
+	}
+
 	/** 
-	 * Configures the SSL server and HTTP > HTTPS redirector
+	 * Configures the SSL server.
 	 * 
-	 * @param topRestlet
 	 */
-	private static void configureSSLServerAndRedirect(final Restlet topRestlet) {
-    	URL url = selfUrl();
-        final int sslport = config.at("ssl-port").asInteger();            
-        final Server httpsServer = server.getServers().add(Protocol.HTTPS, sslport);
+	private static void configureSSLServer(Component sslServer) 
+	{
+		final int sslport = config.at("ssl-port").asInteger();            
+        final Server httpsServer = sslServer.getServers().add(Protocol.HTTPS, sslport);
         httpsServer.getContext().getParameters().add("hostname", selfUrl().getHost());
         httpsServer.getContext().getParameters().add("keystorePath", 
         				config.at("workingDir").asString() + "/conf/" + config.at("keystore").asString());            
         httpsServer.getContext().getParameters().add("keystorePassword", config.at("storePass").asString());            
-        httpsServer.getContext().getParameters().add("keyPassword", config.at("keyPass").asString());            
-        configureSSLCipherSuites(httpsServer);
-        
-        // setup HTTP redirect to HTTPS
-        server.getServers().add(Protocol.HTTP, config.at("port").asInteger());
-        final Redirector redirector = new Redirector(server.getContext().createChildContext(), 
-                                               url.toString(), 
-                                               Redirector.MODE_CLIENT_FOUND);            
-        server.getDefaultHost().attach(new Restlet() {                
-            @Override  
-            public void handle(Request request, Response response) 
-            {  
-//                System.out.println("Redirect request protocol: " + request.getProtocol() 
-//                                   + ", " + Protocol.HTTP);
-                if (request.getProtocol().equals(Protocol.HTTP))
-                {
-//                    System.out.println("Redirect from HTTP");
-                    redirector.handle(request, response);
-//                    System.out.println("Redirect from HTTP done");
-                }
-                else
-                    topRestlet.handle(request, response);
-            }
-        });
-        disableCertificateValidation();
+        httpsServer.getContext().getParameters().add("keyPassword", config.at("keyPass").asString()); 
+        httpsServer.getContext().getParameters().add("ioMaxIdleTimeMs", "" + 24*60*60*1000);
+        configureSSLCipherSuites(httpsServer);        
+        //hilpold server.getServers().add(Protocol.HTTP, config.at("port").asInteger());
+	}
+	
+	/**
+	 * Configures HTTP > HTTPS redirector.
+	 * 
+	 * @param topRestlet
+	 */
+	private static void configureRedirectToSSL(Component httpServer, final Restlet topRestlet) 
+	{
+    	URL url = selfUrl();
+        final Redirector redirector = new Redirector(httpServer.getContext().createChildContext(), 
+                url.toString(), 
+                Redirector.MODE_CLIENT_FOUND);            
 
+        httpServer.getDefaultHost().attach(new Restlet()
+		{
+			@Override
+			public void handle(Request request, Response response)
+			{
+				System.out.println("Redirect request protocol: " +
+				request.getProtocol()
+				 + ", " + Protocol.HTTP);
+				if (request.getProtocol().equals(Protocol.HTTP))
+				{
+					System.out.println("Redirect from HTTP");
+					redirector.handle(request, response);
+					System.out.println("Redirect from HTTP done");
+				} else
+					topRestlet.handle(request, response);
+			}
+		});
+		
 	}
 
-	
-	private static void configureSSLCipherSuites(Server s) {
+	/**
+	 * Enables strong and disables weak cipher suites for a restlet server.
+	 * 
+	 * @param s a restlet server.
+	 */
+	private static void configureSSLCipherSuites(Server s) 
+	{
 		//printSSLCipherSuites();
 		Context ctx = s.getContext();
-//		ctx.getParameters().add("disabledCipherSuites", 
-//                "SSL_RSA_WITH_RC4_128_MD5 TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 TLS_RSA_WITH_AES_128_CBC_SHA TLS_RSA_WITH_AES_256_CBC_SHA ");
-		String strongCiphers = getStrongSSLCipherSuitesAsSpacedString();
-		System.out.println(strongCiphers);
-		ctx.getParameters().add("disabledCipherSuites", "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA");
-		ctx.getParameters().add("enabledCipherSuites", strongCiphers);
-		ctx.getParameters().add("enabledCipherSuites", strongCiphers);
-		
-		ctx.getAttributes();
+		ctx.getParameters().add("disabledCipherSuites", 
+				StartupUtils.getWeakSSLCipherSuitesParamString());
+		ctx.getParameters().add("enabledCipherSuites", 
+				StartupUtils.getStrongSSLCipherSuitesParamString());
 	}
-	
-	private static String getStrongSSLCipherSuitesAsSpacedString() {
-		StringBuffer strongCiphers = new StringBuffer(1000);
-		for (String c : getStrongSSLCipherSuites()) {
-			strongCiphers.append(c);
-			strongCiphers.append(" ");
-		}
-		return strongCiphers.toString();
-	}
-	
-	private static List<String> getStrongSSLCipherSuites() {
-		System.out.println("STRONG CIPHER SUITES: ");
-		List<String> strongCiphers = new LinkedList<>();
-		for (String cipher : getSupportedCipherSuites()) {
-			if (cipher.contains("256") && cipher.endsWith("384")) {
-				strongCiphers.add(cipher);
-				System.out.println(cipher);
-			}
-		}
-		System.out.println("STRONG CIPHER SUITES END");
-		return strongCiphers;
-	}
-		
 
-	private static SortedSet<String> getSupportedCipherSuites() {
-		SSLContext ctx;
-		try
-		{
-			ctx = SSLContext.getDefault();
-		} catch (NoSuchAlgorithmException e)
-		{
-			throw new RuntimeException(e);
-		}
-		SSLSocketFactory sf = ctx.getSocketFactory();
-		return new TreeSet<>(Arrays.asList(sf.getSupportedCipherSuites()));
-	}
-	
-	private static void printSSLCipherSuites() {
-		SSLContext ctx;
-		try
-		{
-			ctx = SSLContext.getDefault();
-		} catch (NoSuchAlgorithmException e)
-		{
-			throw new RuntimeException(e);
-		}
-		SSLSocketFactory sf = ctx.getSocketFactory();
-		SortedSet<String> defaultCiphers = new TreeSet<>(Arrays.asList(sf.getDefaultCipherSuites()));
-		SortedSet<String> supportedCiphers = new TreeSet<>(Arrays.asList(sf.getSupportedCipherSuites()));
-		System.out.println("DEFAULT CIPHERS");
-		for (String c : defaultCiphers) {
-			System.out.println(c);
-		}
-		System.out.println("SUPPORTED CIPHERS");
-		for (String c : supportedCiphers) {
-			System.out.println(c);
-		}
-	}
 }

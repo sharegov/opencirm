@@ -214,7 +214,7 @@ public class RESTClient
 		try
 		{
 			System.out.println(data.toString());
-			System.out.println(post(url, data));
+			System.out.println("" + post(url, data));
 		}
 		catch (Throwable t)
 		{
