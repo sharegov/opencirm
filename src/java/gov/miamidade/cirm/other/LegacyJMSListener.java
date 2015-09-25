@@ -51,6 +51,7 @@ import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.RequestScopeFilter;
 import org.sharegov.cirm.StartUp;
+import org.sharegov.cirm.StartupUtils;
 import org.sharegov.cirm.legacy.CirmMessage;
 import org.sharegov.cirm.legacy.MessageManager;
 import org.sharegov.cirm.rest.LegacyEmulator;
@@ -939,7 +940,7 @@ public class LegacyJMSListener extends Thread
 		System.out.println("Starting JMS Listener");
 		if( (args.length > 0) )
 			StartUp.config = Json.read(GenUtils.readTextFile(new File(args[0])));
-		StartUp.disableCertificateValidation();
+		StartupUtils.disableCertificateValidation();
 		System.out.println("Using config " + StartUp.config.toString());
 		DepartmentListenerController ctrl = new DepartmentListenerController();
 		ctrl.traceMore();
