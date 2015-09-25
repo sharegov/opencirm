@@ -3,6 +3,7 @@ package org.sharegov.cirm.legacy;
 import static org.sharegov.cirm.OWL.owlClass;
 import static org.sharegov.cirm.OWL.reasoner;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -703,6 +704,82 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 		} else return Json.nil();
 	
+	}
+	
+	public Json addQuestionsServiceCase (String individualID, Json data, String userName){
+		
+		if (validateJson("http://localhost:8182/javascript/schemas/service_field.json", data)){
+
+			individualID = MetaOntology.getIndividualIdentifier(individualID);
+			
+			List<String> evictionList = new ArrayList<String>();
+			evictionList.add(individualID);
+			
+			OwlRepo repo = getRepo();
+			synchronized (repo) {
+				repo.ensurePeerStarted();			
+				
+				String propertyID = "hasServiceField";
+				
+				// TO-DO: Create IRIs				
+				
+				Json oldQuestions = getServiceCaseQuestions(individualID);
+				
+				List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+				
+				if (oldQuestions.isArray()){
+					for (Json qx: oldQuestions.asJsonList()){
+						String iri = "";
+						if (qx.isObject())
+							if (qx.has("iri")){
+								iri = qx.at("iri").asString();
+							} else new IllegalArgumentException("Cannot find iri property for question: "+ qx.asString());
+						else {
+							iri = qx.asString();
+						}
+						
+						iri = MetaOntology.getIdFromUri(iri);
+						
+						OWLNamedIndividual ind = OWL.individual(PREFIX + iri);
+						evictionList.add(ind.getIRI().getFragment());
+						changes.addAll(MetaOntology.getRemoveAllPropertiesIndividualChanges(ind));
+					}
+				} else {
+					// not so sure ask thomas
+					
+				}
+				
+				changes.addAll(MetaOntology.getAddIndividualObjectFromJsonChanges(individualID, propertyID, data));
+	
+				String comment = "Create/Replace questions for SR "+ PREFIX + individualID;	
+				
+				boolean r = commit(userName, comment, changes);
+				
+				if (r){
+					clearCache(evictionList);
+					return getServiceCaseQuestions(individualID);
+				} throw new IllegalArgumentException("Cannot update label to Service Case Type "+ PREFIX +  individualID);
+								
+			}
+		} else throw new IllegalArgumentException("Json object does not match questions schema: " + data.asString()); 
+	}
+	
+	public boolean validateJson (String schemaUri, Json o){	
+		try {
+			Json.Schema schema = Json.schema(new URI(schemaUri));		
+			Json errors = schema.validate(o);
+			
+			if (errors.has("errors"))	{	
+				for (Json error : errors.at("errors").asJsonList())  System.out.println("Validation error " + error.asString());
+				return false;
+			}
+		
+		} catch (Exception e) {
+			System.out.println("Error ocurred while validating JSON using Schema: " + schemaUri);
+			e.printStackTrace();
+		}		
+		
+		return true;		
 	}
 	
 	/*

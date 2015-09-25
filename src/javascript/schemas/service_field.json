@@ -1,0 +1,159 @@
+{
+    "id": "http://some.site.somewhere/entry-schema#",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "schema for an fstab entry",
+    "items": {
+        "type": "object",
+        "oneOf": [
+            {
+                "additionalProperties": false,
+                "properties": {
+                    "isDisabled": {
+                        "type": "boolean"
+                    },
+                    "hasBusinessCodes": {
+                        "pattern": "^NOUPDATE$",
+                        "type": "string"
+                    },
+                    "hasOrderBy": {
+                        "pattern": "^[-+]?[0-9]*.?[0-9]+$",
+                        "type": "string"
+                    },
+                    "label": {
+                        "type": "string"
+                    },
+                    "hasAllowableModules": {
+                        "pattern": "^,(((SREINTAK|SRERESAC|SREMASS|SRSNGLWO|SRSUMMRY|WEBINTAK|SRSUMMRY),)*)+$",
+                        "type": "string"
+                    },
+                    "type": {
+                        "pattern": "^ServiceNote$",
+                        "type": "string"
+                    },
+                    "hasDataType": {
+                        "pattern": "^CHAR$",
+                        "type": "string"
+                    },
+                    "iri": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "iri",
+                    "label",
+                    "hasAllowableModules",
+                    "hasBusinessCodes",
+                    "hasDataType",
+                    "hasOrderBy"
+                ],
+                "type": "object"
+            },
+            {
+                "additionalProperties": false,
+                "properties": {
+                    "isDisabled": {
+                        "type": "boolean"
+                    },
+                    "hasBusinessCodes": {
+                        "pattern": "^,(((NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR),)*)+$",
+                        "type": "string"
+                    },
+                    "hasOrderBy": {
+                        "pattern": "^[-+]?[0-9]*.?[0-9]+$",
+                        "type": "string"
+                    },
+                    "hasLegacyCode": {
+                        "type": "string"
+                    },
+                    "hasServiceFieldAlert": {
+                        "properties": {
+                            "label": {
+                                "type": "string"
+                            },
+                            "iri": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "label": {
+                        "type": "string"
+                    },
+                    "hasAllowableModules": {
+                        "pattern": "^,(((SREINTAK|SRERESAC|SREMASS|SRSNGLWO|SRSUMMRY|WEBINTAK|SRSUMMRY),)*)+$", 
+                        "type": "string"
+                    },
+                    "type": {
+                        "pattern": "^ServiceQuestion$",
+                        "type": "string"
+                    },
+                    "hasChoiceValueList": {
+						"type": "object",
+						"properties": {
+							"hasChoiceValue": {
+								"items": {
+									"type": "object",
+									"oneOf":[
+													{
+														"type": "object",
+														"additionalProperties": false,
+														"properties": {
+															"label": {
+																"type": "string"
+															},
+															"iri": {
+																"type": "string"
+															},
+															"hasLegacyCode": {
+																"type": "string"
+															},
+															"hasOrderBy": {
+																"pattern": "^[-+]?[0-9]*.?[0-9]+$",
+																"type": "string"
+															},
+															"isDisabled": {
+																"type": "boolean"
+															},
+															"type": {
+																"type": "string",
+																"pattern": "^ChoiceValue$"
+															}
+														}
+													}
+										]
+									},
+									"minItems": 1,
+									"type": "array"
+							}
+						}
+                    },
+                    "hasDataType": {
+                        "enum": [
+                            "CHAR",
+                            "DATE",
+                            "NUMBER",
+                            "CHARLIST",
+                            "CHARMULT",
+                            "CHAROPT",
+							"PHONENUM"
+                        ]
+                    },
+                    "iri": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "iri",
+                    "label",
+                    "hasAllowableModules",
+                    "hasDataType",
+                    "hasOrderBy"
+                ],
+                "type": "object"
+            }
+        ]
+    },
+    "minItems": 1,
+    "uniqueItems": true,
+    "type": "array"
+}

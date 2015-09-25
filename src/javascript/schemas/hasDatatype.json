@@ -1,5 +1,0 @@
-{
-	"id": "/javascript/schemas/hasDatatype.json",
-	"type": "string",
-	"oneOf": ["CHAR", "DATE", "NUMBER", "CHARLIST", "CHARMULT", "CHAROPT"]
-}

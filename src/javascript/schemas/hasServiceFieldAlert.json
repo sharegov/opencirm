@@ -1,8 +1,0 @@
-{
-	"id": "/javascript/schemas/hasServiceFieldAlert.json",
-	"type": "object",
-	"properties":{
-		"iri": {"$ref": "/javascript/schemas/iri.json"},
-		"label": {"$ref": "/javascript/schemas/label.json"}
-	}
-}

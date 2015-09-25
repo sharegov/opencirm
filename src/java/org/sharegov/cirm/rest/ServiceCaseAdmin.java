@@ -15,7 +15,6 @@ import mjson.Json;
 
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.sharegov.cirm.legacy.ServiceCaseManager;
-import org.sharegov.cirm.utils.JsonSchemaHandler;
 
 @Path("sradmin")
 @Produces("application/json")
@@ -290,32 +289,6 @@ public class ServiceCaseAdmin extends RestService {
 		
 	}
 	
-	@PUT
-	@Path("update/object")
-	public Response updateObjectProperty(Json aData)
-	{
-		
-		try
-		{ 
-			String userName = aData.at("userName").asString();
-			String objectUri = aData.at("objectUri").asString();
-			String propertyUri = aData.at("propertyUri").asString();
-			String comment = "Update Individial Object Property "+PREFIX+objectUri;
-			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
-			if (objectUri == null || objectUri.isEmpty()) throw new IllegalArgumentException("object uri null or empty");
-			if (propertyUri == null || propertyUri.isEmpty()) throw new IllegalArgumentException("property uri null or empty");
-		    			
-			return Response.ok(ServiceCaseManager.getInstance().addIndividualObjectPropertyToIndividual(objectUri, propertyUri, aData.at("payload"), userName, comment), MediaType.APPLICATION_JSON).build();
-		}
-		catch(Exception e){
-			return Response
-					.status(Status.INTERNAL_SERVER_ERROR)
-					.type(MediaType.APPLICATION_JSON)
-					.entity(Json.object().set("error", e.getClass().getName())
-							.set("message", e.getMessage())).build();
-		}
-	}
-	
 	@GET
 	@Path("{srType}/questions")
 	public Response getQuestions(@PathParam("srType") String srType)
@@ -345,10 +318,67 @@ public class ServiceCaseAdmin extends RestService {
 	}
 	
 	@POST
+	@Path("{srType}/questions")
+	public Response createQuestions(@PathParam("srType") String srType, Json aData)
+	{
+		
+		try
+		{ 
+			if (!(aData.has("userName") && aData.has("payload") && aData.at("payload").isArray())) throw new IllegalArgumentException("User Name or Question data null/empty/Incomplete"); 
+			
+			String userName = aData.at("userName").asString();			
+
+			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
+			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");	
+			
+			return Response.ok(ServiceCaseManager.getInstance().addQuestionsServiceCase(srType, aData.at("payload"), userName), MediaType.APPLICATION_JSON).build();
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+		
+	}
+	
+	// Experimental. Not in use for the UI
+	
+	@PUT
+	@Path("update/object")
+	public Response updateObjectProperty(Json aData)
+	{
+		
+		try
+		{ 
+			String userName = aData.at("userName").asString();
+			String objectUri = aData.at("objectUri").asString();
+			String propertyUri = aData.at("propertyUri").asString();
+			String comment = "Update Individial Object Property "+PREFIX+objectUri;
+			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
+			if (objectUri == null || objectUri.isEmpty()) throw new IllegalArgumentException("object uri null or empty");
+			if (propertyUri == null || propertyUri.isEmpty()) throw new IllegalArgumentException("property uri null or empty");
+		    			
+			return Response.ok(ServiceCaseManager.getInstance().addIndividualObjectPropertyToIndividual(objectUri, propertyUri, aData.at("payload"), userName, comment), MediaType.APPLICATION_JSON).build();
+		}
+		catch(Exception e){
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
+	
+	
+	@POST
 	@Path("test")
 	public Response testEndPoint(Json aData)
 	{
-		return Response.ok (JsonSchemaHandler.getInstance().validate("http://localhost:8182/javascript/schemas/questions.json", aData), MediaType.APPLICATION_JSON).build();
+		return Response.ok (Json.object().set("result", ServiceCaseManager.getInstance().validateJson("http://localhost:8182/javascript/schemas/service_field.json", aData)), MediaType.APPLICATION_JSON).build();
 	}
 	
 	

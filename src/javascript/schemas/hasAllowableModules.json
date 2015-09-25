@@ -1,5 +1,0 @@
-{
-	"id": "/javascript/schemas/hasAllowableModules.json",
-	"type": "string",
-	"combinationOf": ["SREINTAK", "SRERESAC", "SREMASS", "SRSNGLWO", "SRSUMMRY", "WEBINTAK"]
-}

@@ -1,5 +1,0 @@
-{
-	"id": "/javascript/schemas/hasBusinessCodes.json",
-	"type": "string",
-	"oneOf": ["NOUPDATE", "REQINTAK", "NOUPDATE,REQINTAK"]
-}

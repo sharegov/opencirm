@@ -270,24 +270,51 @@ public class MetaOntology
 
 		if (O == null) {
 			throw new RuntimeException("Ontology not found: " + ontologyIri);
-		}
+		}		
 		
-		if (!data.has("iri")){
-			throw new RuntimeException("root iri not found : " + data.toString());
-		}
-
 		OWLOntologyManager manager = OWL.manager();
 		OWLDataFactory factory = manager.getOWLDataFactory();
-		OWLIndividual newInd = factory.getOWLNamedIndividual(fullIri(PREFIX + data.at("iri").asString())); 
 		
-		List<OWLOntologyChange> result = getRemoveAllPropertiesIndividualChanges (newInd);
+		List<OWLOntologyChange> result = new ArrayList<OWLOntologyChange>();
 		
-		result.addAll(makeObjectIndividual (newInd, data, O, manager, factory));
+		if (data.isObject()){
+			if (!data.has("iri")){
+				throw new RuntimeException("root iri not found : " + data.toString());
+			}
+			OWLIndividual newInd = factory.getOWLNamedIndividual(fullIri(PREFIX + data.at("iri").asString())); 
+			
+			result.addAll(getRemoveAllPropertiesIndividualChanges (newInd));
+			
+			result.addAll(makeObjectIndividual (newInd, data, O, manager, factory));
+			
+			OWLIndividual parent = factory.getOWLNamedIndividual(fullIri(PREFIX + parentID));
+			OWLObjectProperty property =  factory.getOWLObjectProperty(fullIri(PREFIX + propertyID));
+			
+			result.add(new AddAxiom(O, factory.getOWLObjectPropertyAssertionAxiom(property, parent, newInd)));
+		}
 		
-		OWLIndividual parent = factory.getOWLNamedIndividual(fullIri(PREFIX + parentID));
-		OWLObjectProperty property =  factory.getOWLObjectProperty(fullIri(PREFIX + propertyID));
-		
-		result.add(new AddAxiom(O, factory.getOWLObjectPropertyAssertionAxiom(property, parent, newInd)));
+		if (data.isArray()){
+			for (Json e: data.asJsonList()){
+				String iri = "";
+				if (e.isObject())
+					if (e.has("iri")){
+						iri = e.at("iri").asString();
+					} else throw new IllegalArgumentException("Cannot find iri property for question: "+ e.asString());
+				else throw new IllegalArgumentException("element is not an object: "+ e.asString());
+				
+				iri = getIdFromUri(iri);
+				
+				OWLNamedIndividual newInd = OWL.individual(PREFIX + iri);
+				
+				result.addAll(getRemoveAllPropertiesIndividualChanges(newInd));				
+				result.addAll(makeObjectIndividual (newInd, e, O, manager, factory));
+				
+				OWLIndividual parent = factory.getOWLNamedIndividual(fullIri(PREFIX + parentID));
+				OWLObjectProperty property =  factory.getOWLObjectProperty(fullIri(PREFIX + propertyID));
+				
+				result.add(new AddAxiom(O, factory.getOWLObjectPropertyAssertionAxiom(property, parent, newInd)));
+			}
+		}					
 		
 		return result;
 	}
@@ -427,17 +454,20 @@ public class MetaOntology
 		if (value.isObject())
 		{
 			if (value.has("iri")){
+				if (value.at("iri").asString().contains("#")) value.set("iri", getIdFromUri(value.at("iri").asString()));
 				OWLNamedIndividual object = factory.getOWLNamedIndividual(fullIri(PREFIX + value.at("iri").asString()));
 				result.add(new AddAxiom(O, factory.getOWLObjectPropertyAssertionAxiom(prop, ind, object)));
 				result.addAll(setPropertiesFor(object, value, O, manager, factory));
 			}
 			else
-			{
+			{				
 				throw new RuntimeException("Missing iri on Object Property: " + value.asString());
 			}
 		}
 		else{
-			OWLNamedIndividual object = factory.getOWLNamedIndividual(fullIri(PREFIX + value.asString()));
+			OWLNamedIndividual object;
+			if (!value.asString().contains("#")) object = factory.getOWLNamedIndividual(fullIri(PREFIX + value.asString()));
+			else object = factory.getOWLNamedIndividual(fullIri(PREFIX + getIdFromUri(value.asString())));			
 			result.add(new AddAxiom(O, factory.getOWLObjectPropertyAssertionAxiom(prop, ind, object)));
 		}
 		
