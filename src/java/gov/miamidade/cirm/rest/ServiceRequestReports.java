@@ -84,7 +84,7 @@ import org.sharegov.cirm.rest.LegacyEmulator;
  * 
  * Previous fire time will be determined from the json data passed into POST /reports/bluecartReport.
  * 
- * @author Phani Upadrasta
+ * @author Phani Upadrasta, Thomas Hilpold
  *
  */
 @Path("reports")
@@ -92,6 +92,12 @@ public class ServiceRequestReports
 {
 	
 	public static final int FTP_MAX_ON_ERROR_RETRIES = 5;
+	
+	/**
+	 * New development might not have a recycling route defined, so this dummy route is used instead.
+	 * Agreement with MDC Recycling team in 2015.09.
+	 */
+	public static final String DUMMY_RECYCLING_ROUTE = "99Z99";
 	
 	private Map<String, Integer> blueCartColumnOrder = Collections.emptyMap();
 	private QueryTranslator qt = null;
@@ -103,6 +109,13 @@ public class ServiceRequestReports
 	private static String emailTo = "CIAO-CIRMTT@miamidade.gov";
 	private static String recyclingCartsFileName = "RecyclingCarts.txt";
 	
+	/**
+	 * Creates one blue cart report row as map, where keys reflect the order as specified in blueCartColumnOrder.
+	 *  
+	 * @param data service request json
+	 * @param gisAddrData gis address data json
+	 * @return map where integers indicate the order of columns in the report.
+	 */
 	private Map<Integer, String> addBlueCartRow(Json data, Json gisAddrData) {
 		Map<Integer, String> eachRow = new HashMap<Integer, String>();
 		Json atAddress = data.at("properties").at("atAddress");
@@ -129,8 +142,10 @@ public class ServiceRequestReports
 				formatRecyclingDate(props.at("hasDateCreated").asString()));
 		eachRow.put(blueCartColumnOrder.get("type"), data.at("type").asString());
 		eachRow.put(blueCartColumnOrder.get("recyclingRoute"),
-				gisAddrData != null ? !gisAddrData.at("recyclingRoute").isNull() ? gisAddrData
-						.at("recyclingRoute").asString() : blankField : blankField);
+				gisAddrData != null ? !gisAddrData.at("recyclingRoute").isNull() ? 
+					gisAddrData.at("recyclingRoute").asString() 
+					: DUMMY_RECYCLING_ROUTE 
+					: DUMMY_RECYCLING_ROUTE);
 		eachRow.put(blueCartColumnOrder.get("hasDetails"),
 				props.has("hasDetails") ? props.at("hasDetails").asString() : blankField);
 		eachRow.put(blueCartColumnOrder.get("hasStatus"), getLegacyCode(props, "hasStatus"));
