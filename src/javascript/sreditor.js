@@ -3082,15 +3082,23 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		};
 
 		self.imageCallBack = function(res) {
-			if(res.ok == true)
-				self.data().properties().hasImage.push(res.image);
+			if(res.ok == true){
+				//self.data().properties().hasImage.push(res.image);
+				self.s3data = {}; 
+			    self.s3data.key = res.key;
+			    console.log("response from s3"); 
+			    console.log(res);
+			}
 			else if(res.ok == false)
 				alertDialog(res.error);
 		};
 
 		self.uploadFiles = function(el) {
-			$('#fileUploader').upload('/upload', self.imageCallBack, 'json');
+			//$('#fileUploader').upload('/upload', self.imageCallBack, 'json');
+			$('#fileUploader').upload('http://localhost:6060/s3/upload', self.imageCallBack, 'json');
 			$('#fileUploader')[0].value = "";
+			console.log("yo this is my self"); 
+			console.log(self);
 		}
 
 		//self.getImageSource = function(data) {
