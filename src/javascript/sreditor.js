@@ -2022,7 +2022,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
             });    	    
     	};
     	
-    	self.updateExistingCase = function (jsondata, model) {
+    	  self.updateExistingCase = function (jsondata, model) {
           jsondata.properties.hasDateLastModified = self.getServerDateTime().asISODateString();
           jsondata.properties.isModifiedBy = cirm.user.username;
           var send = prefixMaker(jsondata);
@@ -3084,9 +3084,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		self.imageCallBack = function(res) {
 			if(res.ok == true){
 				//self.data().properties().hasImage.push(res.image);
-				self.s3data = {}; 
-			    self.s3data.key = res.key;
-			    console.log("response from s3"); 
+				self.data().properties().hasImage.push(res.key);
+				console.log("response from s3"); 
 			    console.log(res);
 			}
 			else if(res.ok == false)
@@ -3095,11 +3094,25 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 
 		self.uploadFiles = function(el) {
 			//$('#fileUploader').upload('/upload', self.imageCallBack, 'json');
-			$('#fileUploader').upload('http://localhost:6060/s3/upload', self.imageCallBack, 'json');
+			$('#fileUploader').upload('http://localhost:6060/s3/cirm/upload', self.imageCallBack, 'json');
 			$('#fileUploader')[0].value = "";
 			console.log("yo this is my self"); 
 			console.log(self);
-		}
+		};
+		
+		self.addMetaData = function(metadata){
+			for(i=0; i < self.data().properties().hasImage){
+				cirm.top.async().post("my url", metadata, function(data){
+					if(data.success == true){
+						console.log("added metadata to file");
+					}
+					else
+						{
+						console.log("failed add file metadata");
+						}
+				})
+			}
+		};
 
 		//self.getImageSource = function(data) {
 			//return "../uploaded/"+data;
