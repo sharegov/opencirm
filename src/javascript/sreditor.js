@@ -16,6 +16,12 @@
 define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../html/srmarkup.ht"], 
    function($, U, rest, ui, store, cirm, legacy, srmarkupText)   {
 	
+    
+    
+    function getMetadataUrl(){
+    	return 'http://localhost:6060/s3/metadata/update';
+    }
+	
     function AddressBluePrint() {
     	var self = this;
 		self.Street_Number = "";
@@ -1994,7 +2000,21 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		};
 
     	self.postNewCase = function (jsondata, model) {
-            jsondata.properties.hasDateCreated = self.getServerDateTime().asISODateString();
+            console.log("got here posting new case .....");
+            console.log("image array");
+            console.log(self.data().properties().hasImage); 
+            
+            var meta = []; 
+            meta.push(new metadata("sr","987654321"));
+            meta.push(new metadata("type","dogbyte"));
+            meta.push(new metadata("description", "there is dog poop in the floor")); 
+            
+            console.log("this is the metadata" ); 
+            console.log(meta);
+            
+            updateMetadata(meta, self.data().properties().hasImage); 
+            
+    		jsondata.properties.hasDateCreated = self.getServerDateTime().asISODateString();
             jsondata.properties.isCreatedBy = cirm.user.username;
             var send = prefixMaker(jsondata);
             console.log("send", send);
@@ -3082,6 +3102,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		};
 
 		self.imageCallBack = function(res) {
+			console.log("response from s3"); 
+		    console.log(res);
+			
 			if(res.ok == true){
 				//self.data().properties().hasImage.push(res.image);
 				self.data().properties().hasImage.push(res.key);
@@ -3091,18 +3114,38 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 			else if(res.ok == false)
 				alertDialog(res.error);
 		};
+		
+		
 
 		self.uploadFiles = function(el) {
-			//$('#fileUploader').upload('/upload', self.imageCallBack, 'json');
-			$('#fileUploader').upload('http://localhost:6060/s3/cirm/upload', self.imageCallBack, 'json');
+			
+		 
+			
+			
+			$('#fileUploader').upload("/upload", self.imageCallBack, 'json');
 			$('#fileUploader')[0].value = "";
 			console.log("yo this is my self"); 
 			console.log(self);
 		};
 		
-		self.addMetaData = function(metadata){
-			for(i=0; i < self.data().properties().hasImage){
-				cirm.top.async().post("my url", metadata, function(data){
+		
+		function metadata(key, value){
+			this.key = key;
+			this.value = value;
+			
+		}
+		
+		
+		
+		function updateMetadata(metadata, images){
+			
+			var url = getMetadataUrl(); 
+			//metadata = [{"key":"sr", "value": "123456"}];
+			
+			for(i=0; i < images.length; i++){
+			    url = url + "/" + images[i];
+				console.log("uploading metadata for " + url);
+			    cirm.top.async().post(url, metadata, function(data){
 					if(data.success == true){
 						console.log("added metadata to file");
 					}

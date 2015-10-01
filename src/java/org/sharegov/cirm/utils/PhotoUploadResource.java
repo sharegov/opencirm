@@ -31,7 +31,10 @@ import mjson.Json;
 
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
-import org.restlet.data.MediaType;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.restlet.data.Status;
 import org.restlet.ext.fileupload.RestletFileUpload;
 import org.restlet.representation.Representation;
@@ -40,25 +43,102 @@ import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.StartUp;
+//import org.restlet.data.MediaType;
 
 @Path("upload")
+
 public class PhotoUploadResource extends ServerResource
 {
     /**
      * Accepts and processes a representation posted to the resource. As
      * response, the content of the uploaded file is sent back the client.
      */
-    @Post
+    final String s3Url = "http://localhost:6060/s3/upload64encoded";
+	
+	@Post 
+	//@Path("/s3")
+	public Representation upload(Representation entity){
+		Json json = Json.object();
+		Json request = Json.object();
+		Json result; 
+		RestletFileUpload upload = new RestletFileUpload();
+		System.out.println("got here yoyoyoyoyoy");
+		Representation rep =  new StringRepresentation(GenUtils.ko("Unable to upload, bad request.").toString(),
+	        		org.restlet.data.MediaType.TEXT_HTML);
+		 
+		
+		
+		if(entity == null && org.restlet.data.MediaType.MULTIPART_FORM_DATA.equals(entity.getMediaType(),
+                true) == false)
+		{
+			return rep;
+		}
+		
+	
+		HttpClient client;
+		PostMethod post = new PostMethod(s3Url);
+		 try
+			{
+             FileItemIterator fit = upload.getItemIterator(entity);
+             while(fit.hasNext()) 
+             {
+             	FileItemStream stream = fit.next();
+             	if(stream.getFieldName().equals("uploadImage"))
+             	{
+             		String contentType = stream.getContentType();
+             		String extn = contentType.substring(contentType.indexOf("/")+1);
+             		byte[] file = GenUtils.getBytesFromStream(stream.openStream(), true);
+             		Base64 base64 = new Base64();
+             		String encoded = base64.encode(file,false);
+             		request.set("data", encoded);
+             		request.set("contentType", contentType);
+             		
+             		StringRequestEntity requestEntity = new StringRequestEntity(
+    					    request.toString(),
+    					    "application/json",
+    					    "UTF-8");
+             		client = new HttpClient();
+             		post.setRequestEntity(requestEntity);
+             		int statusCode = client.executeMethod(post);
+             		
+             		if (statusCode != HttpStatus.SC_OK)
+             		{
+             			json.set("ok", false);
+             		}
+             		else 
+             		{
+             			String responseString = post.getResponseBodyAsString();
+             			result = Json.read(responseString);
+             			json.set("ok", true);
+             			json.set("key", result.at("value").at("key").asString());
+             			
+             		}
+             		
+             		break;
+             	}
+             }
+			}
+		 catch (Exception e) {
+         	e.printStackTrace();
+			}
+		
+		
+		
+		 rep = new StringRepresentation(json.toString(), (org.restlet.data.MediaType)org.restlet.data.MediaType.TEXT_HTML);
+		 return rep;
+	}
+	
+	//@Post
     public Representation accept(Representation entity)
     {
     	// NOTE: the return media type here is TEXT_HTML because IE opens up a file download box
     	// if it's APPLICATION_JSON as we'd want it.
     	
         Representation rep =  new StringRepresentation(GenUtils.ko("Unable to upload, bad request.").toString(),
-        				MediaType.TEXT_HTML);
+        		org.restlet.data.MediaType.TEXT_HTML);
         if (entity != null)
         {
-            if (MediaType.MULTIPART_FORM_DATA.equals(entity.getMediaType(),
+            if (org.restlet.data.MediaType.MULTIPART_FORM_DATA.equals(entity.getMediaType(),
                                                      true))
             {
 
@@ -89,6 +169,7 @@ public class PhotoUploadResource extends ServerResource
 	                	if(stream.getFieldName().equals("uploadImage"))
 	                	{
 	                		String contentType = stream.getContentType();
+	                		
 	                		if(contentType.startsWith("image"))
 	                		{
 		                		String extn = contentType.substring(contentType.indexOf("/")+1);
@@ -137,11 +218,11 @@ public class PhotoUploadResource extends ServerResource
 
 						        Json j = GenUtils.ok().set("image", sb.toString());
 						        //Json j = GenUtils.ok().set("image", filename);
-						        rep = new StringRepresentation(j.toString(), (MediaType)MediaType.TEXT_HTML);
+						        rep = new StringRepresentation(j.toString(), (org.restlet.data.MediaType)org.restlet.data.MediaType.TEXT_HTML);
 	                		}
 	                		else {
 	                			rep = new StringRepresentation(GenUtils.ko("Please upload only Images.").toString(),
-	                    				MediaType.TEXT_HTML);
+	                					org.restlet.data.MediaType.TEXT_HTML);
 	                		}
 	                	}
 	                }
