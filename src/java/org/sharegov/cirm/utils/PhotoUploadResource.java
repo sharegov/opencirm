@@ -62,7 +62,7 @@ public class PhotoUploadResource extends ServerResource
 		Json request = Json.object();
 		Json result; 
 		RestletFileUpload upload = new RestletFileUpload();
-		System.out.println("got here yoyoyoyoyoy");
+		
 		Representation rep =  new StringRepresentation(GenUtils.ko("Unable to upload, bad request.").toString(),
 	        		org.restlet.data.MediaType.TEXT_HTML);
 		 
@@ -111,6 +111,7 @@ public class PhotoUploadResource extends ServerResource
              			result = Json.read(responseString);
              			json.set("ok", true);
              			json.set("key", result.at("value").at("key").asString());
+             			json.set("url", result.at("value").at("url").asString());
              			
              		}
              		

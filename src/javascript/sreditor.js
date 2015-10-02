@@ -21,6 +21,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
     function getMetadataUrl(){
     	return 'http://localhost:6060/s3/metadata/update';
     }
+    
+    
 	
     function AddressBluePrint() {
     	var self = this;
@@ -2000,19 +2002,11 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		};
 
     	self.postNewCase = function (jsondata, model) {
-            console.log("got here posting new case .....");
-            console.log("image array");
-            console.log(self.data().properties().hasImage); 
+           
             
-            var meta = []; 
-            meta.push(new metadata("sr","987654321"));
-            meta.push(new metadata("type","dogbyte"));
-            meta.push(new metadata("description", "there is dog poop in the floor")); 
             
-            console.log("this is the metadata" ); 
-            console.log(meta);
             
-            updateMetadata(meta, self.data().properties().hasImage); 
+            
             
     		jsondata.properties.hasDateCreated = self.getServerDateTime().asISODateString();
             jsondata.properties.isCreatedBy = cirm.user.username;
@@ -2026,6 +2020,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
                         ["SR Created", result.bo.type + ":" + result.bo.properties.hasCaseNumber]);
                     $("#sh_save_progress").dialog('close');
                     alertDialog("Successfully saved SR. The SR ID is "+result.bo.properties.hasCaseNumber);
+                    var srid = result.bo.properties.hasCaseNumber;
                     $('[name="SR Lookup"]').val(result.bo.properties.hasCaseNumber);
                     var type = result.bo.type;
                     if(type.indexOf("legacy:") == -1) { 
@@ -2034,12 +2029,24 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
                     }
                     self.removeDuplicates();
                     setModel(result.bo, model, model.srType(), type, true, false);
+               
+                    var meta = []; 
+                    meta.push(new metadata("sr",srid));
+                    meta.push(new metadata("type",type));
+                   
+                    updateMetadata(meta, self.data().properties().hasImage()); 
+                    console.log("this is the metadata" ); 
+                    console.log(meta);
+                
                 }
                 else if(result.ok == false) {
                     $("#sh_save_progress").dialog('close');
                   showErrorDialog("An error occurred while saving the Service Request : <br>"+result.error);
                 }
             });    	    
+    	
+            
+    	
     	};
     	
     	  self.updateExistingCase = function (jsondata, model) {
@@ -3102,17 +3109,19 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		};
 
 		self.imageCallBack = function(res) {
-			console.log("response from s3"); 
-		    console.log(res);
+			
 			
 			if(res.ok == true){
 				//self.data().properties().hasImage.push(res.image);
-				self.data().properties().hasImage.push(res.key);
+				//self.data().properties().hasImage.push(res.key);
+				self.data().properties().hasImage.push(res.url);
+				
 				console.log("response from s3"); 
 			    console.log(res);
+				
 			}
 			else if(res.ok == false)
-				alertDialog(res.error);
+				alertDialog("Error uploading file");
 		};
 		
 		
@@ -3141,11 +3150,13 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 			
 			var url = getMetadataUrl(); 
 			//metadata = [{"key":"sr", "value": "123456"}];
+			console.log("number of images " + images.length);
 			
 			for(i=0; i < images.length; i++){
 			    url = url + "/" + images[i];
 				console.log("uploading metadata for " + url);
-			    cirm.top.async().post(url, metadata, function(data){
+			    
+				/*cirm.top.async().post(url, metadata, function(data){
 					if(data.success == true){
 						console.log("added metadata to file");
 					}
@@ -3153,13 +3164,27 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 						{
 						console.log("failed add file metadata");
 						}
-				})
+				})*/
+				
+				$.ajax({
+					url:url,
+					type:"POST",
+					data:JSON.stringify(metadata), 
+					contentType:"json",
+					contentType: "application/json; charset=utf-8",
+					success:function(){
+						console.log("submitted metadat successfully");
+					}
+				});
+				
+				 
+				
 			}
 		};
 
-		//self.getImageSource = function(data) {
-			//return "../uploaded/"+data;
-		//};
+		/*self.getImageSource = function(data) {
+			return "../uploaded/"+data;
+		};*/
 		
 		self.removeImage = function(data) {
 			$("#sh_dialog_alert")[0].innerText = "Are you sure you want to delete this Image";
