@@ -503,6 +503,7 @@
 		</div>
 		
 		<div class="sr_aa" data-bind="foreach: data().properties().hasImage">
+			
 			<div class="grid_6 alpha">
 				<img data-bind="attr:{src : $data}" height="90" width="90"/>
 				<!-- <img data-bind="attr:{src : $root.getImageSource($data)}"/> -->

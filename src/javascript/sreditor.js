@@ -116,6 +116,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
         		hasServiceActivity:[],
         		hasServiceCaseActor:[],
         		hasImage:[],
+        		
         		hasRemovedImage:[],
         		hasStatus:{"iri":"", "label":""},
         		hasPriority:{"iri":"", "label":""},
@@ -703,6 +704,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		      P.hasServiceCaseActor.push({hasServiceActor:{iri:a.iri, label:a.label}});
 			});
 			P.hasImage = [];
+			
 			P.hasRemovedImage = [];
 			//P.Comments = '';
 			P.hasDetails = '';
@@ -3112,10 +3114,11 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 			
 			
 			if(res.ok == true){
+				
 				//self.data().properties().hasImage.push(res.image);
 				//self.data().properties().hasImage.push(res.key);
 				self.data().properties().hasImage.push(res.url);
-				
+				//self.data().properties().hasImage.push(res);
 				console.log("response from s3"); 
 			    console.log(res);
 				
@@ -3151,20 +3154,15 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 			var url = getMetadataUrl(); 
 			//metadata = [{"key":"sr", "value": "123456"}];
 			console.log("number of images " + images.length);
-			
+			var tokens; 
+			var image;
 			for(i=0; i < images.length; i++){
-			    url = url + "/" + images[i];
-				console.log("uploading metadata for " + url);
-			    
-				/*cirm.top.async().post(url, metadata, function(data){
-					if(data.success == true){
-						console.log("added metadata to file");
-					}
-					else
-						{
-						console.log("failed add file metadata");
-						}
-				})*/
+			    image = images[i];
+			    tokens = image.split("/");
+			    token = tokens[4];
+			    url = url + "/" + token;
+			    console.log("uploading metadata for " + url);
+				
 				
 				$.ajax({
 					url:url,

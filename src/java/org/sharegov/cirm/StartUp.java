@@ -110,7 +110,9 @@ public class StartUp extends ServerResource
 					"mdc:", "http://www.miamidade.gov/ontology#",
 					":", "http://www.miamidade.gov/ontology#"
 					))
-			.set("cachedReasonerPopulate", false);
+			.set("cachedReasonerPopulate", false)
+			.set("awsS3Url", "http://localhost:6060/s3/upload64encoded")
+			.set("awsS3MetadataUrl", "http://localhost:6060/s3/metadata/update");
 	
 	public static Component server = null;
 	public static PaddedJSONFilter jsonpFilter = null;
