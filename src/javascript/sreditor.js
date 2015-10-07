@@ -19,7 +19,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
     
     
     function getMetadataUrl(){
-    	return 'http://localhost:6060/s3/metadata/update';
+    	return 'https://api.miamidade.gov/s3ws/metadata/update';
     }
     
     
