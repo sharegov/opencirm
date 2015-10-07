@@ -7,3 +7,4 @@ src/java/org/sharegov/cirm/StartUp.java.orig
 *.iml
 .settings/org.eclipse.jdt.core.prefs
 javadoc/
+/bin/
