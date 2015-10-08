@@ -16,6 +16,14 @@
 define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "text!../html/srmarkup.ht"],
    function($, U, rest, ui, store, owl, cirm, legacy, srmarkupText)   {
 	
+    
+    
+    function getMetadataUrl(){
+    	return 'https://api.miamidade.gov/s3ws/metadata/update';
+    }
+    
+    
+	
     function AddressBluePrint() {
     	var self = this;
         $.extend(self, cirm.refs.defaultStreetAddress());
@@ -104,6 +112,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
         		hasServiceActivity:[],
         		hasServiceCaseActor:[],
         		hasImage:[],
+        		
         		hasRemovedImage:[],
         		hasStatus:{"iri":"", "label":""},
         		hasPriority:{"iri":"", "label":""},
@@ -688,6 +697,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
 		      P.hasServiceCaseActor.push({hasServiceActor:{iri:a.iri, label:a.label}});
 			});
 			P.hasImage = [];
+			
 			P.hasRemovedImage = [];
 			//P.Comments = '';
 			P.hasDetails = '';
@@ -1920,7 +1930,13 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
 		};
 
     	self.postNewCase = function (jsondata, model) {
-            jsondata.properties.hasDateCreated = self.getServerDateTime().asISODateString();
+           
+            
+            
+            
+            
+            
+    		jsondata.properties.hasDateCreated = self.getServerDateTime().asISODateString();
             jsondata.properties.isCreatedBy = cirm.user.username;
             var send = prefixMaker(jsondata);
             console.log("send", send);
@@ -1932,6 +1948,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
                         ["SR Created", result.bo.type + ":" + result.bo.properties.hasCaseNumber]);
                     $("#sh_save_progress").dialog('close');
                     alertDialog("Successfully saved SR. The SR ID is "+result.bo.properties.hasCaseNumber);
+                    var srid = result.bo.properties.hasCaseNumber;
                     $('[name="SR Lookup"]').val(result.bo.properties.hasCaseNumber);
                     var type = result.bo.type;
                     if(type.indexOf("legacy:") == -1) { 
@@ -1940,15 +1957,27 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
                     }
                     self.removeDuplicates();
                     setModel(result.bo, model, model.srType(), type, true, false);
+               
+                    var meta = []; 
+                    meta.push(new metadata("sr",srid));
+                    meta.push(new metadata("type",type));
+                   
+                    updateMetadata(meta, self.data().properties().hasImage()); 
+                    console.log("this is the metadata" ); 
+                    console.log(meta);
+                
                 }
                 else if(result.ok == false) {
                     $("#sh_save_progress").dialog('close');
                   showErrorDialog("An error occurred while saving the Service Request : <br>"+result.error);
                 }
             });    	    
+    	
+            
+    	
     	};
     	
-    	self.updateExistingCase = function (jsondata, model) {
+    	  self.updateExistingCase = function (jsondata, model) {
           jsondata.properties.hasDateLastModified = self.getServerDateTime().asISODateString();
           jsondata.properties.isModifiedBy = cirm.user.username;
           var send = prefixMaker(jsondata);
@@ -3014,20 +3043,78 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
 		};
 
 		self.imageCallBack = function(res) {
-			if(res.ok == true)
-				self.data().properties().hasImage.push(res.image);
+			
+			
+			if(res.ok == true){
+				
+				//self.data().properties().hasImage.push(res.image);
+				//self.data().properties().hasImage.push(res.key);
+				self.data().properties().hasImage.push(res.url);
+				//self.data().properties().hasImage.push(res);
+				console.log("response from s3"); 
+			    console.log(res);
+				
+			}
 			else if(res.ok == false)
-				alertDialog(res.error);
+				alertDialog("Error uploading file");
 		};
+		
+		
 
 		self.uploadFiles = function(el) {
-			$('#fileUploader').upload('/upload', self.imageCallBack, 'json');
+			
+		 
+			
+			
+			$('#fileUploader').upload("/upload", self.imageCallBack, 'json');
 			$('#fileUploader')[0].value = "";
+			console.log("yo this is my self"); 
+			console.log(self);
+		};
+		
+		
+		function metadata(key, value){
+			this.key = key;
+			this.value = value;
+			
 		}
+		
+		
+		
+		function updateMetadata(metadata, images){
+			
+			var url = getMetadataUrl(); 
+			//metadata = [{"key":"sr", "value": "123456"}];
+			console.log("number of images " + images.length);
+			var tokens; 
+			var image;
+			for(i=0; i < images.length; i++){
+			    image = images[i];
+			    tokens = image.split("/");
+			    token = tokens[4];
+			    url = url + "/" + token;
+			    console.log("uploading metadata for " + url);
+				
+				
+				$.ajax({
+					url:url,
+					type:"POST",
+					data:JSON.stringify(metadata), 
+					contentType:"json",
+					contentType: "application/json; charset=utf-8",
+					success:function(){
+						console.log("submitted metadat successfully");
+					}
+				});
+				
+				 
+				
+			}
+		};
 
-		//self.getImageSource = function(data) {
-			//return "../uploaded/"+data;
-		//};
+		/*self.getImageSource = function(data) {
+			return "../uploaded/"+data;
+		};*/
 		
 		self.removeImage = function(data) {
 			$("#sh_dialog_alert")[0].innerText = "Are you sure you want to delete this Image";
