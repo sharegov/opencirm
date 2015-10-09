@@ -1,0 +1,6 @@
+{
+	"oneOf":[
+				{"$ref": "#/definitions/hasServiceFieldAlertList"},
+				{"$ref": "#/definitions/ServiceFieldAlert"}
+			]
+}

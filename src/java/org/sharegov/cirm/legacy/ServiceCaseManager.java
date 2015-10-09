@@ -4,6 +4,7 @@ import static org.sharegov.cirm.OWL.owlClass;
 import static org.sharegov.cirm.OWL.reasoner;
 
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -631,7 +632,7 @@ public class ServiceCaseManager extends OntoAdmin {
 				OWLNamedIndividual ind = OWL.individual(oldAlert.at("iri").asString());
 				oldAlert.set("iri", ind.getIRI().getFragment());
 				evictionList.add(ind.getIRI().getFragment());
-				changes = MetaOntology.getAddReplaceIndividualObjectFromJsonChanges(individualID, propertyID, data, oldAlert);
+				changes = MetaOntology.getAddReplaceIndividualObjectPropertyFromJsonChanges(individualID, propertyID, data, oldAlert);
 			} else {
 				changes = MetaOntology.getAddIndividualObjectFromJsonChanges(individualID, propertyID, data);
 			}		
@@ -708,7 +709,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	
 	public Json addQuestionsServiceCase (String individualID, Json data, String userName){
 		
-		if (validateJson("http://localhost:8182/javascript/schemas/service_field.json", data)){
+		if (validateJson("http://localhost:8182/javascript/schemas/service_field_compact.json", data)){
 
 			individualID = MetaOntology.getIndividualIdentifier(individualID);
 			
@@ -733,7 +734,7 @@ public class ServiceCaseManager extends OntoAdmin {
 						if (qx.isObject())
 							if (qx.has("iri")){
 								iri = qx.at("iri").asString();
-							} else new IllegalArgumentException("Cannot find iri property for question: "+ qx.asString());
+							} else throw new IllegalArgumentException("Cannot find iri property for question: "+ qx.asString());
 						else {
 							iri = qx.asString();
 						}
@@ -758,7 +759,7 @@ public class ServiceCaseManager extends OntoAdmin {
 				if (r){
 					clearCache(evictionList);
 					return getServiceCaseQuestions(individualID);
-				} throw new IllegalArgumentException("Cannot update label to Service Case Type "+ PREFIX +  individualID);
+				} throw new IllegalArgumentException("Cannot update questions to Service Case Type "+ PREFIX +  individualID);
 								
 			}
 		} else throw new IllegalArgumentException("Json object does not match questions schema: " + data.asString()); 
@@ -777,10 +778,97 @@ public class ServiceCaseManager extends OntoAdmin {
 		} catch (Exception e) {
 			System.out.println("Error ocurred while validating JSON using Schema: " + schemaUri);
 			e.printStackTrace();
+			return false;
 		}		
 		
 		return true;		
 	}
+	
+	public Json getFullSchema (String schemaUri){
+		try {
+			URL url = new URL(schemaUri);	
+			
+			String host = url.getProtocol() + "://" + url.getHost() + ":" + Integer.toString(url.getPort());
+			String path = url.getPath();
+
+			return cleanSchema (buildFullSchema (host , path, Json.nil()));
+			
+		} catch (Exception e) {
+			System.out.println("Malformed JSON Schema URI:" + schemaUri);
+			e.printStackTrace();
+		}
+		
+		return Json.object();
+	}
+	
+	private Json buildFullSchema (String host, String path, Json fullSchema){
+		Json content = Json.nil();
+
+		if (!path.contains("#")) content = GenUtils.httpGetJson(host + path);
+		else content = getFromDefinitions(path, fullSchema);
+		
+		Json result = parseSchema (content, host, fullSchema.isNull() ? content: fullSchema);
+
+		return result;
+	}
+	
+	private Json parseSchema (Json o, String host, Json fullSchema){		
+		if (o.isArray()){
+			int i = 0;
+			for(Json e: o.asJsonList()){
+				String reference = getReference(e);
+				if (reference != null){
+					o.asJsonList().set(i, buildFullSchema(host, reference, fullSchema));
+				} else {
+					o.asJsonList().set(i, parseSchema(e, host, fullSchema));
+				}
+				i++;
+			}			
+		} else if (o.isObject()){
+			Map<String,Json> properties = o.asJsonMap();
+			for (Map.Entry<String, Json> propKeyValue : properties.entrySet()) {
+				if (propKeyValue.getKey().compareTo("definitions") != 0){
+					Json e = propKeyValue.getValue();
+					String reference = getReference(e);
+					if (reference != null){
+						o.set(propKeyValue.getKey(), buildFullSchema(host, reference, fullSchema));
+					} else {
+						o.set(propKeyValue.getKey(), parseSchema(e, host, fullSchema));
+					}
+				} 
+			}
+		}
+		
+		return o;		
+	}
+	
+	private Json cleanSchema (Json o){		
+		if (o.isArray()){
+			for(Json e: o.asJsonList()) cleanSchema(e);			
+		} else if (o.isObject()){
+			if (o.has("definitions")) o.delAt("definitions");
+			
+		}
+		
+		return o;		
+	}
+	
+	private String getReference (Json e){
+		return e.isObject() && e.has("$ref") ? e.at("$ref").asString() : null;
+	}
+	
+	private Json getFromDefinitions (String path, Json o){
+		path = path.replace("#", "");
+		String[] l = path.split("/");
+		
+		Json result = o;
+		for (String nodeName: l){
+			if (result.has(nodeName)) result = result.at(nodeName);
+			else if (!nodeName.isEmpty()) throw new IllegalArgumentException("Cannot find property for question: "+ nodeName + " on schema.");
+		}
+		
+		return result;
+	}		
 	
 	/*
 	 * Test by Syed

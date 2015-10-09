@@ -11,10 +11,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import mjson.Json;
 
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.sharegov.cirm.legacy.ServiceCaseManager;
+import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
 @Path("sradmin")
 @Produces("application/json")
@@ -22,11 +26,11 @@ public class ServiceCaseAdmin extends RestService {
 	
 	private static final String PREFIX = "legacy:";
 	private static final String KEY = "7ef54dc3a604a1514368e8707d8415";
+	private static Map<String, Json> cache = new ConcurrentHashMap<String, Json>();
 	/**
 	 * 
 	 *
-	 */
-	
+	 */	
 	@GET
 	@Path("/types/enabled")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -290,6 +294,25 @@ public class ServiceCaseAdmin extends RestService {
 	}
 	
 	@GET
+	@Path("schemas/questions")
+	public Response getFullQuestionSchema()
+	{
+		try {			
+			String host = java.net.InetAddress.getLocalHost().getHostAddress();
+			return Response.ok (Json.object().set("result", ServiceCaseManager.getInstance().getFullSchema("http://"+ host + ":8182/javascript/schemas/service_field_compact.json")), MediaType.APPLICATION_JSON).build();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+		
+	}
+	
+	@GET
 	@Path("{srType}/questions")
 	public Response getQuestions(@PathParam("srType") String srType)
 	{
@@ -319,27 +342,44 @@ public class ServiceCaseAdmin extends RestService {
 	
 	@POST
 	@Path("{srType}/questions")
-	public Response createQuestions(@PathParam("srType") String srType, Json aData)
-	{
-		
-		try
-		{ 
-			if (!(aData.has("userName") && aData.has("payload") && aData.at("payload").isArray())) throw new IllegalArgumentException("User Name or Question data null/empty/Incomplete"); 
+	public Response createQuestions(@PathParam("srType") String srType, String aJsonStr)
+	{		
+		synchronized (cache){
+			Json result = cache.get(aJsonStr);
 			
-			String userName = aData.at("userName").asString();			
-
-			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
-			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");	
+			if (result != null && !result.isNull()) return Response.ok(result, MediaType.APPLICATION_JSON).build();
+					
+			ThreadLocalStopwatch.startTop("Started Saving Questions.");
 			
-			return Response.ok(ServiceCaseManager.getInstance().addQuestionsServiceCase(srType, aData.at("payload"), userName), MediaType.APPLICATION_JSON).build();
-		}
-		catch(Exception e){
-			e.printStackTrace();
-			return Response
-					.status(Status.INTERNAL_SERVER_ERROR)
-					.type(MediaType.APPLICATION_JSON)
-					.entity(Json.object().set("error", e.getClass().getName())
-							.set("message", e.getMessage())).build();
+			Json aData = Json.read(aJsonStr);
+			
+			try
+			{ 
+				if (!(aData.has("userName") && aData.has("payload") && aData.at("payload").isArray())) throw new IllegalArgumentException("User Name or Question data null/empty/Incomplete"); 
+				
+				String userName = aData.at("userName").asString();			
+	
+				if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
+				if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");	
+				
+				result = ServiceCaseManager.getInstance().addQuestionsServiceCase(srType, aData.at("payload"), userName);			
+				
+				cache.put(aJsonStr, result);
+				
+				ThreadLocalStopwatch.now("End Saving Questions.");
+				
+				return Response.ok(result, MediaType.APPLICATION_JSON).build();
+			}
+			catch(Exception e){
+				ThreadLocalStopwatch.now("Error found Saving Questions.");
+				
+				e.printStackTrace();
+				return Response
+						.status(Status.INTERNAL_SERVER_ERROR)
+						.type(MediaType.APPLICATION_JSON)
+						.entity(Json.object().set("error", e.getClass().getName())
+								.set("message", e.getMessage())).build();
+			}
 		}
 		
 	}
@@ -374,11 +414,11 @@ public class ServiceCaseAdmin extends RestService {
 	
 	
 	
-	@POST
+	@GET
 	@Path("test")
-	public Response testEndPoint(Json aData)
+	public Response testEndPoint()
 	{
-		return Response.ok (Json.object().set("result", ServiceCaseManager.getInstance().validateJson("http://localhost:8182/javascript/schemas/service_field.json", aData)), MediaType.APPLICATION_JSON).build();
+		return Response.ok (Json.object().set("result", ServiceCaseManager.getInstance().getFullSchema("http://localhost:8182/javascript/schemas/service_field_compact.json")), MediaType.APPLICATION_JSON).build();
 	}
 	
 	

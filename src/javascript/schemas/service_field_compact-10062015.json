@@ -1,108 +1,79 @@
 {
-    "id": "https://311hub.miamidade.gov/javascript/schemas/service_field_compact.json",
     "$schema": "http://json-schema.org/draft-04/schema#",
     "description": "schema for an Service Case question list",
     "items": {
         "type": "object",
         "oneOf": [
-					{
-						"additionalProperties": false,
-						"properties": {
-							"isDisabled": {
-						"type": "string",
-						"pattern": "^(true|false)$"
-					  },
-							"hasBusinessCodes": {
-								"pattern": "^,(((NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR),)*)+$",
-								"type": "string"
-							},
-							"hasOrderBy": {
-						"pattern": "^[-+]?[0-9]*.?[0-9]+$",
-						"type": "string"
-					  },
-							"label": {
-					"type": "string"
-				},
-							"hasAllowableModules": {
-									"pattern": "^,(((SREINTAK|SRERESAC|SREMASS|SRSNGLWO|SRSUMMRY|WEBINTAK|SRSUMMRY|MD-WCSL),)*)+$",
-									"type": "string"
-								},
-							"type": {
-								"pattern": "^ServiceNote$",
-								"type": "string"
-							},
-							"hasDataType": {"$ref": "#/definitions/hasDataType"},
-							"iri": {
-				"type": "string"
-			},
-							"hasDataSource": {"$ref": "#/definitions/hasDataSource"},
-							"hasLegacyCode": {"$ref": "#/definitions/hasLegacyCode"},
-							"hasChoiceValueList": {"$ref": "#/definitions/hasChoiceValueList"}
-						},
-						"required": [
-							"iri",
-							"label",
-							"hasAllowableModules",
-							"hasBusinessCodes",
-							"hasDataType",
-							"hasOrderBy"
-						],
-						"type": "object"
-					},
-					{
-						"additionalProperties": false,
-						"properties": {
-							"isDisabled": {
-						"type": "string",
-						"pattern": "^(true|false)$"
-					  },
-							"hasBusinessCodes": {
-								"pattern": "^,(((NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR),)*)+$",
-								"type": "string"
-							},									
-							"hasOrderBy": {
-						"pattern": "^[-+]?[0-9]*.?[0-9]+$",
-						"type": "string"
-					  },
-							"hasLegacyCode": {"$ref": "#/definitions/hasLegacyCode"},
-							"hasServiceFieldAlert": {"$ref": "#/definitions/hasServiceFieldAlert"},
-							"label": {
-					"type": "string"
-				},									
-							"hasAllowableModules": {
-									"pattern": "^,(((SREINTAK|SRERESAC|SREMASS|SRSNGLWO|SRSUMMRY|WEBINTAK|SRSUMMRY|MD-WCSL),)*)+$",
-									"type": "string"
-								},
-							"hasDefaultIntakeMethod": {"$ref": "#/definitions/hasDefaultIntakeMethod"},
-							"type": {
-								"pattern": "^ServiceQuestion$",
-								"type": "string"
-							},
-							"hasChoiceValueList": {"$ref": "#/definitions/hasChoiceValueList"},
-							"hasDataType": {"$ref": "#/definitions/hasDataType"},
-							"iri": {"$ref": "#/definitions/iri"}
-						},
-						"required": [
-							"iri",
-							"label",
-							"hasAllowableModules",
-							"hasDataType",
-							"hasOrderBy"
-						],
-						"type": "object"
-					}
+			{"$ref": "#/definitions/ServiceNote"},
+			{"$ref": "#/definitions/ServiceQuestion"}                      
         ]
     },
     "minItems": 1,
     "uniqueItems": true,
     "type": "array",
 	"definitions":{
+		"ServiceNote": {
+							"additionalProperties": false,
+							"properties": {
+								"isDisabled": {"$ref": "#/definitions/isDisabled"},
+								"hasBusinessCodes": {"$ref": "#/definitions/hasBusinessCodes"},
+								"hasOrderBy": {"$ref": "#/definitions/hasOrderBy"},
+								"label": {"$ref": "#/definitions/label"},
+								"hasAllowableModules": {"$ref": "#/definitions/hasAllowableModules"},
+								"type": {
+									"pattern": "^ServiceNote$",
+									"type": "string"
+								},
+								"hasDataType": {"$ref": "#/definitions/hasDataType"},
+								"iri": {"$ref": "#/definitions/iri"},
+								"hasDataSource": {"$ref": "#/definitions/hasDataSource"},
+								"hasLegacyCode": {"$ref": "#/definitions/hasLegacyCode"},
+								"hasChoiceValueList": {"$ref": "#/definitions/hasChoiceValueList"}
+							},
+							"required": [
+								"iri",
+								"label",
+								"hasAllowableModules",
+								"hasBusinessCodes",
+								"hasDataType",
+								"hasOrderBy"
+							],
+							"type": "object"
+						},
+		"ServiceQuestion": {
+								"additionalProperties": false,
+								"properties": {
+									"isDisabled": {"$ref": "#/definitions/isDisabled"},
+									"hasBusinessCodes": {"$ref": "#/definitions/hasBusinessCodes"},									
+									"hasOrderBy": {"$ref": "#/definitions/hasOrderBy"},
+									"hasLegacyCode": {"$ref": "#/definitions/hasLegacyCode"},
+									"hasServiceFieldAlert": {"$ref": "#/definitions/hasServiceFieldAlert"},
+									"label": {"$ref": "#/definitions/label"},									
+									"hasAllowableModules": {"$ref": "#/definitions/hasAllowableModules"},
+									"hasDefaultIntakeMethod": {"$ref": "#/definitions/hasDefaultIntakeMethod"},
+									"type": {
+										"pattern": "^ServiceQuestion$",
+										"type": "string"
+									},
+									"hasChoiceValueList": {"$ref": "#/definitions/hasChoiceValueList"},
+									"hasDataType": {"$ref": "#/definitions/hasDataType"},
+									"iri": {"$ref": "#/definitions/iri"}
+								},
+								"required": [
+									"iri",
+									"label",
+									"hasAllowableModules",
+									"hasDataType",
+									"hasOrderBy"
+								],
+								"type": "object"
+							},
 		"isDisabled": {
 						"type": "string",
 						"pattern": "^(true|false)$"
 					  },
 		"hasBusinessCodes": {
-								"pattern": "^,(((NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR),)*)+$",
+								"pattern": "^,(((NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD),)*)+$",
 								"type": "string"
 							},
 		"hasOrderBy": {
@@ -113,7 +84,7 @@
 					"type": "string"
 				},
 		"hasAllowableModules": {
-									"pattern": "^,(((SREINTAK|SRERESAC|SREMASS|SRSNGLWO|SRSUMMRY|WEBINTAK|SRSUMMRY|MD-WCSL),)*)+$",
+									"pattern": "^,(((SREINTAK|SRERESAC|SREMASS|SRSNGLWO|SRSUMMRY|WEBINTAK|SRSUMMRY|MD-WCSL),)*)+$", 
 									"type": "string"
 								},
 		"iri": {
@@ -122,7 +93,7 @@
 		"hasLegacyCode": {
 							"type": "string"
 						},
-		"hasServiceFieldAlert":	{
+		"hasServiceFieldAlert":	{	
 									"oneOf":[
 												{"$ref": "#/definitions/hasServiceFieldAlertList"},
 												{"$ref": "#/definitions/ServiceFieldAlert"}
@@ -142,16 +113,12 @@
 								"properties": {
 									"hasLegacyEvent": {"$ref": "#/definitions/hasLegacyEvent"},
 									"hasAnswerObject": {"$ref": "#/definitions/hasAnswerObject"},
-									"label": {
-					"type": "string"
-				},
+									"label": {"$ref": "#/definitions/label"},
 									"type": {
 												"type": "string",
 												"pattern": "^QuestionTrigger$"
 											},
-									"iri": {
-				"type": "string"
-			}
+									"iri": {"$ref": "#/definitions/iri"}
 								},
 								"type": "object"
 							},
@@ -170,17 +137,13 @@
 									"type": "object",
 									"properties": {
 										"hasChoiceValue": {
-													"oneOf":[
-																{"$ref": "#/definitions/ChoiceValue"},
-																{"$ref": "#/definitions/ListOfChoiceValues"}
-															]
-										},
-										"label": {
-					"type": "string"
-				},
-										"iri": {
-				"type": "string"
-			},
+															"oneOf":[
+																		{"$ref": "#/definitions/ChoiceValue"},
+																		{"$ref": "#/definitions/ListOfChoiceValues"}
+																	]
+														},
+										"label": {"$ref": "#/definitions/label"},
+										"iri": {"$ref": "#/definitions/iri"},
 										"type": {
 											"type": "string",
 											"pattern": "^ChoiceValueList$"
@@ -188,6 +151,13 @@
 										
 									}
 								},
+		"hasChoiceValue": {
+							"type": "object",
+							"oneOf":[
+										{"$ref": "#/definitions/ChoiceValue"},
+										{"$ref": "#/definitions/ListOfChoiceValues"}
+									]
+						},
 		"ListOfChoiceValues": {
 								"items": {
 											"type": "object",
@@ -202,21 +172,11 @@
 							"type": "object",
 							"additionalProperties": false,
 							"properties": {
-								"label": {
-					"type": "string"
-				},
-								"iri": {
-				"type": "string"
-			},
+								"label": {"$ref": "#/definitions/label"},
+								"iri": {"$ref": "#/definitions/iri"},
 								"hasLegacyCode": {"$ref": "#/definitions/hasLegacyCode"},
-								"hasOrderBy": {
-						"pattern": "^[-+]?[0-9]*.?[0-9]+$",
-						"type": "string"
-					  },
-								"isDisabled": {
-						"type": "string",
-						"pattern": "^(true|false)$"
-					  },
+								"hasOrderBy": {"$ref": "#/definitions/hasOrderBy"},
+								"isDisabled": {"$ref": "#/definitions/isDisabled"},
 								"type": {
 									"type": "string",
 									"pattern": "^ChoiceValue$"
@@ -232,14 +192,9 @@
 		"hasDefaultIntakeMethod": {
 									"type": "object",
 									"properties": {
-										"hasOrderBy": {
-						"pattern": "^[-+]?[0-9]*.?[0-9]+$",
-						"type": "string"
-					  },
+										"hasOrderBy": {"$ref": "#/definitions/hasOrderBy"},
 										"hasLegacyCode": {"$ref": "#/definitions/hasLegacyCode"},
-										"label": {
-					"type": "string"
-				},
+										"label": {"$ref": "#/definitions/label"},
 										"isAlwaysPublic": {"$ref": "#/definitions/ynQuestion"},
 										"type": {
 													"type": "string",
@@ -258,64 +213,48 @@
 		"hasLegacyEvent": {
 							"type": "object",
 							"properties": {
-								"label": {
-					"type": "string"
-				},
+								"label": {"$ref": "#/definitions/label"},
 								"type": {
 											"type": "string",
 											"pattern": "^ServiceFieldAlert$"
 										},
-								"iri": {
-				"type": "string"
-			}
+								"iri": {"$ref": "#/definitions/iri"}
 							}
 						},
 		"hasAnswerObject": {
 								"type": "object",
 								"properties": {
 												  "hasLegacyCode": {"$ref": "#/definitions/hasLegacyCode"},
-												  "label": {
-					"type": "string"
-				},
+												  "label": {"$ref": "#/definitions/label"},
 												  "type": {
 															"type": "string",
 															"pattern": "^ChoiceValue$"
 														},
-												  "iri": {
-				"type": "string"
-			}
+												  "iri": {"$ref": "#/definitions/iri"}
 											}
             },
 		"hasDataSource": {
 							"type": "object",
 							"properties": {
 											  "providedBy": {"$ref": "#/definitions/providedBy"},
-											  "label": {
-					"type": "string"
-				},
+											  "label": {"$ref": "#/definitions/label"},
 											  "type": {
 														"type": "string",
 														"pattern": "^EventBasedDataSource$"
 													},
-											  "iri": {
-				"type": "string"
-			},
+											  "iri": {"$ref": "#/definitions/iri"},
 											  "hasPropertyName": {"$ref": "#/definitions/label"}
 										}
 						},
 		"providedBy": {
 						"type": "object",
 						"properties": {
-										"label": {
-					"type": "string"
-				},
+										"label": {"$ref": "#/definitions/label"},
 										"type": {
 													"type": "string",
 													"pattern": "^ClientSideEventType$"
 												},
-										"iri": {
-				"type": "string"
-			}
+										"iri": {"$ref": "#/definitions/iri"}
 						}
 					  }
 	}

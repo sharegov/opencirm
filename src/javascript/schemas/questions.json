@@ -1,0 +1,15 @@
+{
+    "id": "https://311hub.miamidade.gov/javascript/schemas/service_field_compact.json",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "schema for an Service Case question list",
+    "items": {
+        "type": "object",
+        "oneOf": [
+			{"$ref": "#/definitions/ServiceNote"},
+			{"$ref": "#/definitions/ServiceQuestion"}                      
+        ]
+    },
+    "minItems": 1,
+    "uniqueItems": true,
+    "type": "array",
+}
