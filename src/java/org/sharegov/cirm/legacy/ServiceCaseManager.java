@@ -728,6 +728,8 @@ public class ServiceCaseManager extends OntoAdmin {
 				
 				List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 				
+				ThreadLocalStopwatch.now("---- Started Removing Old Questions.");
+				
 				if (oldQuestions.isArray()){
 					for (Json qx: oldQuestions.asJsonList()){
 						String iri = "";
@@ -749,12 +751,19 @@ public class ServiceCaseManager extends OntoAdmin {
 					// not so sure ask thomas
 					
 				}
+				ThreadLocalStopwatch.now("---- Ended Removing Old Questions.");
+				ThreadLocalStopwatch.now("---- Start Creating New Questions.");
 				
 				changes.addAll(MetaOntology.getAddIndividualObjectFromJsonChanges(individualID, propertyID, data));
+				
+				ThreadLocalStopwatch.now("---- Ended Creating New Questions.");
 	
 				String comment = "Create/Replace questions for SR "+ PREFIX + individualID;	
+				ThreadLocalStopwatch.now("---- Start Commiting Changes.");
 				
 				boolean r = commit(userName, comment, changes);
+				
+				ThreadLocalStopwatch.now("---- Ended Commiting Changes.");
 				
 				if (r){
 					clearCache(evictionList);

@@ -377,20 +377,27 @@ public class MetaOntology
 		return L;
 	}
 	
-	protected static PropertyDescriptor findPropertyIri (String irifragment){
+	protected static PropertyDescriptor findPropertyIri(String irifragment) {
 		PropertyDescriptor result = new PropertyDescriptor();
-		Json prefixes = Json.array().add("legacy:").add("mdc:").add(":");
-		
-		for (Json prefix :  prefixes.asJsonList()){
+		Json prefixes = Json.array().add("legacy:").add("mdc:");
+		for (Json prefix : prefixes.asJsonList()) {
 			IRI propIri = fullIri(prefix.asString() + irifragment);
-			PropertyType type = OWL.getPropertyType(propIri);
-			if (type != PropertyType.UNKNOWN){
+			OWLOntology o = OWL.ontology();
+			if (o.containsObjectPropertyInSignature(propIri, true)) {
 				result.setIri(propIri);
-				result.setType(type);
+				result.setType(PropertyType.OBJECT);
 				return result;
-			}
+			} else if (o.containsDataPropertyInSignature(propIri, true)) {
+				result.setIri(propIri);
+				result.setType(PropertyType.DATA);
+				return result;
+			} else if (o.containsAnnotationPropertyInSignature(propIri, true)) {
+				result.setIri(propIri);
+				result.setType(PropertyType.ANNOTATION);
+				return result;
+			} // else try other prefix -
+			// FIX
 		}
-		
 		return null;
 	}
 	

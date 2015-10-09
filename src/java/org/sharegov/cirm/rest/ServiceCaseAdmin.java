@@ -1,5 +1,8 @@
 package org.sharegov.cirm.rest;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -10,9 +13,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import mjson.Json;
 
@@ -347,7 +347,11 @@ public class ServiceCaseAdmin extends RestService {
 		synchronized (cache){
 			Json result = cache.get(aJsonStr);
 			
-			if (result != null && !result.isNull()) return Response.ok(result, MediaType.APPLICATION_JSON).build();
+			if (result != null && !result.isNull()){
+				ThreadLocalStopwatch.now("Identical Request, cache results used as response. End Saving Questions.");
+				
+				return Response.ok(result, MediaType.APPLICATION_JSON).build();
+			}
 					
 			ThreadLocalStopwatch.startTop("Started Saving Questions.");
 			
