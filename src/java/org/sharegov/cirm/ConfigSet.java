@@ -46,11 +46,19 @@ public class ConfigSet
 		for (OWLNamedIndividual prop : reasoner.getObjectPropertyValues(activeInd, objectProperty("hasMember")).getFlattened())
 		{
 			String name = dataProperty(prop, "Name").getLiteral();//reasoner.getDataPropertyValues(prop, dataProperty("Name")).iterator().next().getLiteral();
-			OWLObject value = objectProperty(prop, "Value"); //reasoner.getObjectPropertyValues(prop, objectProperty("Value")).getFlattened();
-			if (value == null)
-				value = dataProperty(prop, "Value");
-			instance.params.put(name, value);
-		}
+            OWLObject value = objectProperty(prop, "ValueObj"); //reasoner.getObjectPropertyValues(prop, objectProperty("Value")).getFlattened();
+            //TODO remove next two lines (tolerance for old triple punning of Value 
+            if (value == null) {
+                value = objectProperty(prop, "Value");
+            }
+            if (value == null) {
+                value = dataProperty(prop, "Value");
+            }
+            if (value == null) throw new java.lang.IllegalStateException("NULL VALUE FOR property " + name 
+                    + " of configset " + activeInd.getIRI() 
+                    +  " found. Configuration not valid. Exiting.");
+            instance.params.put(name, value);
+        }
 	}
 	
 	public static synchronized ConfigSet getInstance()
