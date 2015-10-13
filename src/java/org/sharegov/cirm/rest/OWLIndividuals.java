@@ -21,13 +21,12 @@ import static org.sharegov.cirm.OWL.individual;
 import static org.sharegov.cirm.OWL.ontology;
 import static org.sharegov.cirm.OWL.owlClass;
 import static org.sharegov.cirm.OWL.reasoner;
-import static org.sharegov.cirm.utils.GenUtils.*;
+import static org.sharegov.cirm.utils.GenUtils.ko;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -35,7 +34,6 @@ import javax.ws.rs.QueryParam;
 
 import mjson.Json;
 
-import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -47,7 +45,6 @@ import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.StartUp;
 import org.sharegov.cirm.legacy.Permissions;
 import org.sharegov.cirm.owl.OWLSerialEntityCache;
-import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.TraceUtils;
 
 @Path("individuals")
@@ -107,16 +104,21 @@ public class OWLIndividuals extends RestService
 	 */
 	@GET
 	@Path("/predefined/configset")
-	public Json getSameAsIndividual() throws OWLException
+	public Json getConfigSet() throws OWLException
 	{
 		OWLNamedIndividual ind = individual(StartUp.config.at("ontologyConfigSet").asString());
 		try
 		{
 			Json el = OWL.toJSON(ontology(), ind);
 			Json result = Json.object();
-			GenUtils.ensureArray(el, "hasMember");
 			for (Json x : el.at("hasMember").asJsonList())
-				result.set(x.at("Name").asString(), x.at("Value"));				
+			{
+                if(x.has("Value")) {
+                    result.set(x.at("Name").asString(), x.at("Value"));
+                } else {
+                    result.set(x.at("Name").asString(), x.at("ValueObj"));
+                }
+			}
 			if (!isClientExempt() && 
 				reasoner().getTypes(ind, false).containsEntity(OWL.owlClass("Protected")) &&					
 				!!Permissions.check(individual("BO_View"), 
@@ -165,22 +167,6 @@ public class OWLIndividuals extends RestService
 			return Json.object();
 		}		
 	}	
-
-	@PUT
-	@Path("/{individual}")
-	@Produces("application/json")
-	public Json putOWLIndividual(@PathParam("individual") String individualName, Json data) throws OWLException
-	{
-		Json result = ok();
-		System.out.println("Saving metadata individual:");
-		System.out.println(data.toString());
-		Set<OWLAxiom> axioms = OWL.toOWL(data);
-		for (OWLAxiom ax : axioms)
-		{
-			System.out.println(ax);
-		}
-		return result;
-	}
 	
 	/**
 	 * <p>
@@ -234,6 +220,7 @@ public class OWLIndividuals extends RestService
 			for (OWLNamedIndividual ind : OWL.queryIndividuals(queryAsString))
 				if (allAllowed == null || allAllowed.contains(ind))
 					j.add(jsonEntities.individual(ind.getIRI()).resolve());
+			
 			//System.out.println("QUERY TIME for '" + queryAsString + "' -- " + (System.currentTimeMillis() - ss));
 			return j;
 //			for (OWLNamedIndividual ind : reasoner.getInstances(expr, false).getFlattened())
