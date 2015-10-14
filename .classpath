@@ -20,9 +20,7 @@
 	<classpathentry kind="lib" path="/opencirm/lib/itextpdf-5.3.0.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/je-5.0.34.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/jgrapht-jdk1.5.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/mail.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/mjson-1.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/org.apache.commons.fileupload.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/org.apache.commons.io.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/owlapi-bin.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/pellet-cli.jar"/>
@@ -54,33 +52,28 @@
 	<classpathentry kind="lib" path="/opencirm/lib/restlet/org.restlet.ext.fileupload.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/restlet/org.restlet.ext.jaxrs.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/restlet/org.restlet.ext.jetty.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/restlet/org.restlet.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/jetty-alpn-client-9.2.13.v20150730.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/jetty-alpn-server-9.2.13.v20150730.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/jetty-annotations-9.2.13.v20150730.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/jetty-cdi-9.2.13.v20150730.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/jetty-client-9.2.13.v20150730.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/jetty-continuation-9.2.13.v20150730.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/jetty-deploy-9.2.13.v20150730.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/jetty-http-9.2.13.v20150730.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/jetty-io-9.2.13.v20150730.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/jetty-jaas-9.2.13.v20150730.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/jetty-jaspi-9.2.13.v20150730.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/jetty-jmx-9.2.13.v20150730.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/jetty-jndi-9.2.13.v20150730.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/jetty-plus-9.2.13.v20150730.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/jetty-proxy-9.2.13.v20150730.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/jetty-quickstart-9.2.13.v20150730.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/jetty-rewrite-9.2.13.v20150730.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/jetty-schemas-3.1.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/jetty-security-9.2.13.v20150730.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/jetty-server-9.2.13.v20150730.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/jetty-servlet-9.2.13.v20150730.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/jetty-servlets-9.2.13.v20150730.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/jetty-util-9.2.13.v20150730.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/jetty-webapp-9.2.13.v20150730.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/jetty-xml-9.2.13.v20150730.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/servlet-api-3.1.jar"/>
+	<classpathentry kind="lib" path="/opencirm/lib/restlet/org.restlet.jar" sourcepath="C:/worklib/restlet-framework-java-2.3.4._src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/worklib/restlet-jse-2.3m4/docs/api/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="/opencirm/lib/restlet/javax.ws.rs.jar"/>
+	<classpathentry kind="lib" path="/opencirm/lib/jetty/org.eclipse.jetty.client.jar"/>
+	<classpathentry kind="lib" path="/opencirm/lib/jetty/org.eclipse.jetty.http.jar"/>
+	<classpathentry kind="lib" path="/opencirm/lib/jetty/org.eclipse.jetty.io.jar"/>
+	<classpathentry kind="lib" path="/opencirm/lib/jetty/org.eclipse.jetty.server.jar"/>
+	<classpathentry kind="lib" path="/opencirm/lib/jetty/org.eclipse.jetty.spdy.client.jar"/>
+	<classpathentry kind="lib" path="/opencirm/lib/jetty/org.eclipse.jetty.spdy.core.jar"/>
+	<classpathentry kind="lib" path="/opencirm/lib/jetty/org.eclipse.jetty.spdy.http.common.jar"/>
+	<classpathentry kind="lib" path="/opencirm/lib/jetty/org.eclipse.jetty.spdy.http.server.jar"/>
+	<classpathentry kind="lib" path="/opencirm/lib/jetty/org.eclipse.jetty.spdy.server.jar"/>
+	<classpathentry kind="lib" path="/opencirm/lib/jetty/org.eclipse.jetty.util.jar"/>
+	<classpathentry kind="lib" path="/opencirm/lib/restlet/com.sun.jaxb.jar"/>
+	<classpathentry kind="lib" path="/opencirm/lib/restlet/javax.mail.jar"/>
+	<classpathentry kind="lib" path="/opencirm/lib/restlet/org.apache.commons.fileupload.jar"/>
+	<classpathentry kind="lib" path="/opencirm/lib/restlet/org.apache.commons.lang.jar"/>
+	<classpathentry kind="lib" path="/opencirm/lib/restlet/org.json.jar"/>
+	<classpathentry kind="lib" path="/opencirm/lib/restlet/org.simpleframework.xml.jar"/>
+	<classpathentry kind="lib" path="/opencirm/lib/restlet/servlet-api-3.1.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
