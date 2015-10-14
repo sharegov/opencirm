@@ -100,7 +100,7 @@ public class StartUp extends ServerResource
 					"http://www.miamidade.gov/cirm/legacy#hasChoiceValue"
 					))
 			.set("metaDatabaseLocation", "c:/temp/testontodb")
-			.set("allClientsExempt", true)
+			.set("allClientsExempt", false)
 			.set("network", Json.object(				
 					"user", "bolerio-dev",
 					"password","password",
@@ -370,7 +370,7 @@ public class StartUp extends ServerResource
                 	request.getResourceRef().getPath().startsWith("/resources") ||
                 	request.getResourceRef().getPath().startsWith("/upload"))
                 {
-//                	System.out.println("FILE REQUEST : " + request.getResourceRef().getPath());
+                	System.out.println("FILE REQUEST : " + request);// + request.getResourceRef().getPath());
                     router.handle(request, response);
                 }
                 else 
@@ -551,8 +551,7 @@ public class StartUp extends ServerResource
 				} else
 					topRestlet.handle(request, response);
 			}
-		});
-		
+		});		
 	}
 
 	/**
