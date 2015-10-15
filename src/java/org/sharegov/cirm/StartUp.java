@@ -100,7 +100,7 @@ public class StartUp extends ServerResource
 					"http://www.miamidade.gov/cirm/legacy#hasChoiceValue"
 					))
 			.set("metaDatabaseLocation", "c:/temp/testontodb")
-			.set("allClientsExempt", false)
+			.set("allClientsExempt", true)
 			.set("network", Json.object(				
 					"user", "bolerio-dev",
 					"password","password",
@@ -111,7 +111,9 @@ public class StartUp extends ServerResource
 					"mdc:", "http://www.miamidade.gov/ontology#",
 					":", "http://www.miamidade.gov/ontology#"
 					))
-			.set("cachedReasonerPopulate", false);
+			.set("cachedReasonerPopulate", false)
+			.set("awsS3Url", "https://api.miamidade.gov/s3ws/upload64encoded");
+			
 	
 	public static Component server = null; 
 	public static Component redirectServer = null;

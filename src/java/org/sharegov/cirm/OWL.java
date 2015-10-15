@@ -135,7 +135,7 @@ public class OWL
 	private static volatile PrefixManager prefixManager = null;
 	private static volatile boolean initialized = false;
 	
-	private static void init()
+	private static synchronized void init()
 	{
 		if (!initialized) {
 			initChecked();
