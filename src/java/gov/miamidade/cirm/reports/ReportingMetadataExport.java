@@ -31,10 +31,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import javax.resource.spi.IllegalStateException;
+
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
@@ -245,8 +248,21 @@ public class ReportingMetadataExport
 			questionRow.add(questionFragment);
 			questionRow.add(OWL.getEntityLabel(question).replaceAll("\"", "\"\""));
 			questionRow.add(srType);
-			questionRow.add(OWL.dataProperty(question, "legacy:hasDataType").getLiteral());
-			questionRow.add(OWL.dataProperty(question, "legacy:hasOrderBy").getLiteral());
+			OWLLiteral questionDatatypeLiteral = OWL.dataProperty(question, "legacy:hasDataType");
+			if (questionDatatypeLiteral != null) {
+			    questionRow.add(questionDatatypeLiteral.getLiteral());
+			} else {
+			    System.err.println("CONFIG ERROR: No datatype set for question: " + question);
+			    questionRow.add("UNKNOWN");
+			}
+			OWLLiteral questionOrderByLiteral = OWL.dataProperty(question, "legacy:hasOrderBy"); 
+			if (questionDatatypeLiteral != null) {
+			    questionRow.add(questionOrderByLiteral.getLiteral());			
+			} else {
+			    System.err.println("CONFIG ERROR: No order by set for question: " + question);
+			    questionRow.add("0");
+			}
+			
 			srTypeQuestions.add(questionRow);
 			currentSRType = srType;
 		}
