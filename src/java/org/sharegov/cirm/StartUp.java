@@ -82,6 +82,7 @@ public class StartUp extends ServerResource
 			.set("workingDir", "C:/work/opencirm")
 			.set("mainApplication", "http://www.miamidade.gov/ontology#CIRMApplication") 
 			.set("port", 8182)
+			.set("ssl", true)
 			.set("ignorePasswords", true)
 			.set("ssl-port", 8183)
 			.set("ssl", true)
@@ -111,8 +112,7 @@ public class StartUp extends ServerResource
 					"mdc:", "http://www.miamidade.gov/ontology#",
 					":", "http://www.miamidade.gov/ontology#"
 					))
-			.set("cachedReasonerPopulate", false)
-			.set("awsS3Url", "https://api.miamidade.gov/s3ws/upload64encoded");
+			.set("cachedReasonerPopulate", false);
 			
 	
 	public static Component server = null; 

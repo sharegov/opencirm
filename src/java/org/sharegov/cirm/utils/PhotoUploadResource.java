@@ -30,14 +30,26 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
-import org.sharegov.cirm.StartUp;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.sharegov.cirm.ConfigSet;
+import org.sharegov.cirm.OWL;
 
 
 @Path("upload")
 public class PhotoUploadResource extends ServerResource
 {
-   
-   
+
+	/**
+	 * Gets the upload service URL from the Configset.
+	 * 
+	 * @return a full url or null if not configured.
+	 */
+	public synchronized String getUploadServiceUrl()
+	{
+		OWLNamedIndividual ind = ConfigSet.getInstance().get("UploadConfig");
+		return ind == null ? null : OWL.dataProperty(ind, "hasUrl").getLiteral(); 
+	}
+
 	/***
 	 * Uploads the given file AWS S3
 	 * @param entity
@@ -46,7 +58,7 @@ public class PhotoUploadResource extends ServerResource
 	@Post 
 	public Representation upload(Representation entity){
 		
-		String s3URl = StartUp.config.at("awsS3Url").asString();
+		String s3URl = getUploadServiceUrl();
 		Json json = Json.object();
 		Json request = Json.object();
 		Json result; 
