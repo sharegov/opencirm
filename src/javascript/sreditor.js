@@ -1962,9 +1962,10 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
                     meta.push(new metadata("sr",srid));
                     meta.push(new metadata("type",type));
                    
-                    updateMetadata(meta, self.data().properties().hasImage()); 
-                    console.log("this is the metadata" ); 
-                    console.log(meta);
+                    //2149 Optional Image upload - disabled meta until next week
+                    //updateMetadata(meta, self.data().properties().hasImage()); 
+                    //console.log("this is the metadata" ); 
+                    //console.log(meta);
                 
                 }
                 else if(result.ok == false) {
