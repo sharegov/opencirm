@@ -194,13 +194,6 @@ public class StartUp extends ServerResource
 	    {
 	    	throw new RuntimeException(ex);
 	    }
-//	    app.getContext().setDefaultVerifier(verifier);
-
-//	    ChallengeAuthenticator guard = new ChallengeAuthenticator(app.getContext(), ChallengeScheme.HTTP_BASIC, "Tutorial");
-//	    guard.setVerifier(verifier);	
-//	    guard.setNext(app);
-	    
-//	    server.getDefaultHost().attach(guard);
 	    
 	    // Set filters.
 	    HttpMethodOverrideFilter methodFilter = new HttpMethodOverrideFilter(app.getContext());
@@ -372,12 +365,12 @@ public class StartUp extends ServerResource
                 	request.getResourceRef().getPath().startsWith("/resources") ||
                 	request.getResourceRef().getPath().startsWith("/upload"))
                 {
-                	System.out.println("FILE REQUEST : " + request);// + request.getResourceRef().getPath());
+                	//System.out.println("FILE REQUEST : " + request);// + request.getResourceRef().getPath());
                     router.handle(request, response);
                 }
                 else 
                 {
-//                	System.out.println("REST SERVICE : " + request.getResourceRef().getPath());
+                	//System.out.println("REST SERVICE : " + request.getResourceRef().getPath());
                 	RequestScopeFilter.set("clientInfo", request.getClientInfo());
                     restApplication.handle(request, response);
                 }
@@ -393,13 +386,12 @@ public class StartUp extends ServerResource
    			OntoAdmin oa = new OntoAdmin();
    			oa.cachedReasonerQ1Populate();
    		}
-//   		OperationService.getPersister().addRDBListener(new BOChangeListener());
 	    try {
 	    	server.start();
 	    	if (redirectServer != null) redirectServer.start();
 	    } catch (Exception e) {
-	    	System.err.println("ERROR ON STARTUP");
-	    	e.printStackTrace(); //TODO kill once Java 7 migration completed: throw new RuntimeException(e);
+	    	System.err.println("ERROR ON STARTUP - EXITING");
+	    	throw new RuntimeException(e);
 	    }
 	}
 	
@@ -542,14 +534,9 @@ public class StartUp extends ServerResource
 			@Override
 			public void handle(Request request, Response response)
 			{
-				System.out.println("Redirect request protocol: " +
-				request.getProtocol()
-				 + ", " + Protocol.HTTP);
 				if (request.getProtocol().equals(Protocol.HTTP))
 				{
-					System.out.println("Redirect from HTTP");
 					redirector.handle(request, response);
-					System.out.println("Redirect from HTTP done");
 				} else
 					topRestlet.handle(request, response);
 			}
