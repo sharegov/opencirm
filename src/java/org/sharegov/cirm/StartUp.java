@@ -48,6 +48,7 @@ import org.restlet.ext.jaxrs.JaxRsApplication;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Directory;
 import org.restlet.resource.ServerResource;
+import org.restlet.routing.Filter;
 import org.restlet.routing.Redirector;
 import org.restlet.routing.Router;
 import org.restlet.routing.Template;
@@ -205,13 +206,16 @@ public class StartUp extends ServerResource
 //	    trafficMonitor.setNext(jsonpFilter);
 	    requestScopeFilter = new RequestScopeFilter(); 
 	    requestScopeFilter.setNext(jsonpFilter);
-	    //set the encoder as the last filter in the chain.
+	    
 	    encoder = new Encoder(app.getContext(), 
 	    		true,
 	    		true,
 	    		encoderService);
 	    encoder.setNext(requestScopeFilter);
-	    return encoder;
+	    //set the form param fix as the last filter in the chain.
+	    Filter formParamFix = new FormParamAdditionalDecodeFilter(app.getContext());
+	    formParamFix.setNext(encoder);
+	    return formParamFix;
 	}
 	
 	static URL selfUrl()
