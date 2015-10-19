@@ -83,7 +83,6 @@ public class StartUp extends ServerResource
 			.set("workingDir", "C:/work/opencirm")
 			.set("mainApplication", "http://www.miamidade.gov/ontology#CIRMApplication") 
 			.set("port", 8182)
-			.set("ssl", true)
 			.set("ignorePasswords", true)
 			.set("ssl-port", 8183)
 			.set("ssl", true)
@@ -128,12 +127,11 @@ public class StartUp extends ServerResource
 
 	public static class CirmServerResource extends DirectoryServerResource 
 	{
-	    @SuppressWarnings("deprecation")
-		public Representation handle() {
+	    public Representation handle() {
 	    	try
 	    	{
 	    		URI uri = new URI(this.getTargetUri());
-	    		String localFilename = URLDecoder.decode(uri.getRawPath());
+	    		String localFilename = URLDecoder.decode(uri.getRawPath(), "UTF-8");
 	    		File expectedParent = new File(config.at("workingDir").asString() + "/src");
 	    		File thefile = new File(localFilename).getCanonicalFile();
 	    		boolean grantaccess = false;
@@ -561,5 +559,4 @@ public class StartUp extends ServerResource
 		ctx.getParameters().add("enabledCipherSuites", 
 				StartupUtils.getStrongSSLCipherSuitesParamString());
 	}
-
 }

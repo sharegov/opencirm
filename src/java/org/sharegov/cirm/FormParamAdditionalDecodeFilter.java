@@ -41,9 +41,10 @@ import org.sharegov.cirm.utils.ThreadLocalStopwatch;
  * <br>
  * This class assumes that all client request form parameters are UTF-8 encoded.
  * <br>
- * This filter must be used AFTER gzip encoding.
+ * This filter must be used AFTER gzip decoding completed on a request.
  * <br>
- * A counter totalDecodings of actual decodings is available to track progress while web client.
+ * A counter totalDecodings of actual decodings is available to track progress while web client code adopts.<br>
+ * Once all double encoded form params are modified to normal encoding, this filter should be removed.
  * <br>
  * @author Thomas Hilpold
  *
@@ -54,7 +55,7 @@ public class FormParamAdditionalDecodeFilter extends Filter {
 	
 	public static final String DECODER_CHAR_SET = "UTF-8";
 	
-	public static final AtomicInteger totalDecodings = new AtomicInteger(0);
+	private static final AtomicInteger totalDecodings = new AtomicInteger(0);
 	
 	public FormParamAdditionalDecodeFilter(Context context) {
 		super(context);
