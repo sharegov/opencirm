@@ -101,6 +101,7 @@ public class FormParamAdditionalDecodeFilter extends Filter {
     					shouldBeDecodedValue = URLDecoder.decode(e.getValue(), DECODER_CHAR_SET);
     					totalDecodings.incrementAndGet();
     					if (DBG) {
+    						ThreadLocalStopwatch.now("DECODED " + request.getResourceRef());
     						ThreadLocalStopwatch.now("DECODED " + totalDecodings.get() 
     							+ " : " + e.getKey() + " - " + shouldBeDecodedValue);
     					}
@@ -121,7 +122,7 @@ public class FormParamAdditionalDecodeFilter extends Filter {
 	 * 
 	 * @return the total number of actual form value decodings, lower is better.
 	 */
-	public static int getTotaDecodings() {
+	public static int getTotalDecodings() {
 		return totalDecodings.get();
 	}
 }

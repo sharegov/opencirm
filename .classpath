@@ -69,7 +69,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="lib" path="lib/restlet/org.restlet.ext.fileupload.jar"/>
 	<classpathentry kind="lib" path="lib/restlet/org.restlet.ext.jaxrs.jar"/>
-	<classpathentry kind="lib" path="lib/restlet/org.restlet.ext.jetty.jar"/>
+	<classpathentry kind="lib" path="lib/restlet/org.restlet.ext.jetty.jar" sourcepath="C:/worklib/restlet-jse-2.3.5/src/org.restlet.ext.jetty"/>
 	<classpathentry kind="lib" path="lib/restlet/org.restlet.jar"/>
 	<classpathentry kind="lib" path="lib/restlet/javax.ws.rs.jar"/>
 	<classpathentry kind="lib" path="lib/jetty/org.eclipse.jetty.client.jar"/>
