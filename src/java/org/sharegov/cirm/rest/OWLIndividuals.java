@@ -104,7 +104,7 @@ public class OWLIndividuals extends RestService
 	 */
 	@GET
 	@Path("/predefined/configset")
-	public Json getConfigSet() throws OWLException
+	public Json getSameAsIndividual() throws OWLException
 	{
 		OWLNamedIndividual ind = individual(StartUp.config.at("ontologyConfigSet").asString());
 		try
@@ -113,11 +113,13 @@ public class OWLIndividuals extends RestService
 			Json result = Json.object();
 			for (Json x : el.at("hasMember").asJsonList())
 			{
-                if(x.has("Value")) {
-                    result.set(x.at("Name").asString(), x.at("Value"));
-                } else {
-                    result.set(x.at("Name").asString(), x.at("ValueObj"));
-                }
+				if(x.has("Value")) {
+				//System.out.println(x);
+						result.set(x.at("Name").asString(), x.at("Value"));
+				} else {
+					result.set(x.at("Name").asString(), x.at("ValueObj"));
+				}
+				
 			}
 			if (!isClientExempt() && 
 				reasoner().getTypes(ind, false).containsEntity(OWL.owlClass("Protected")) &&					

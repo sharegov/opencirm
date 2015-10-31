@@ -27,14 +27,14 @@ import org.sharegov.cirm.rdb.CirmTransactionException;
 import org.sharegov.cirm.rdb.RetryDetectedException;
 
 /**
- * Thread safe thread local Transaction class.
- * 
- * Initial state: NOTEXECUTED
- * State transitions:
- * NOTEXECUTED --> EXECUTING
- * EXECUTING --> EXECUTING_REQUESTING_RETRY | SUCCEEDED | FAILED
- * EXECUTING_REQUESTING_RETRY --> EXECUTING | SUCCEEDED | FAILED
- * 
+ * Thread safe thread local Transaction class.<br>
+ * <br>
+ * Initial state: NOTEXECUTED<br>
+ * State transitions:<br>
+ * NOTEXECUTED --> EXECUTING<br>
+ * EXECUTING --> EXECUTING_REQUESTING_RETRY | SUCCEEDED | FAILED<br>
+ * EXECUTING_REQUESTING_RETRY --> EXECUTING | SUCCEEDED | FAILED<br>
+ * <br> 
  * @author Thomas Hilpold
  * @param <V>
  *

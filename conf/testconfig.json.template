@@ -1,7 +1,12 @@
 {
     "workingDir":"c:/cirmservices",
     "port":80,
-    "ignorePasswords" : true,
+    "ssl":true,
+    "ssl-port":443,
+    "keystore", "cirm84.jks",
+    "storePass", "password",
+    "keyPass", "password",
+	"ignorePasswords" : true,
     "allClientsExempt":true,    
 	"defaultOntologyIRI":"http://www.miamidade.gov/cirm/legacy",
     "metaDatabaseLocation", "c:/cirmservices/db/",

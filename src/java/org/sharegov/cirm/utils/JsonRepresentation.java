@@ -15,22 +15,30 @@
  ******************************************************************************/
 package org.sharegov.cirm.utils;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
+import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.StandardCharsets;
 
 import mjson.Json;
 
-import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
-import org.restlet.engine.io.BioUtils;
 import org.restlet.representation.Representation;
 
+/**
+ * Json Representation for restlet using java NIO.
+ * 
+ * @author unknown, Thomas Hilpold
+ *
+ */
 public class JsonRepresentation extends Representation
 {
 	private Json json;
@@ -58,7 +66,7 @@ public class JsonRepresentation extends Representation
 
 	public ReadableByteChannel getChannel() throws IOException
 	{
-		return org.restlet.engine.io.NioUtils.getChannel(getStream());
+		return Channels.newChannel(getStream());
 	}
 
 	public Reader getReader() throws IOException
@@ -68,7 +76,7 @@ public class JsonRepresentation extends Representation
 
 	public InputStream getStream() throws IOException
 	{
-		return BioUtils.getInputStream(getReader(), CharacterSet.UTF_8);
+		return new ByteArrayInputStream(json.toString().getBytes(StandardCharsets.UTF_8));
 	}
 
 	public void write(Writer out) throws IOException
@@ -78,14 +86,14 @@ public class JsonRepresentation extends Representation
 
 	public void write(WritableByteChannel channel) throws IOException
 	{
-		OutputStream os = org.restlet.engine.io.NioUtils.getStream(channel);
-		write(os);
-		os.flush();
+		Writer writer = Channels.newWriter(channel, "UTF-9");
+		write(writer);
+		writer.flush();
 	}
 
 	public void write(OutputStream out) throws IOException
 	{
-		Writer writer = BioUtils.getWriter(out, CharacterSet.UTF_8);
+		Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
 		write(writer);
 		writer.flush();
 	}

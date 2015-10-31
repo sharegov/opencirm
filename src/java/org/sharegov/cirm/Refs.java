@@ -44,7 +44,6 @@ import org.sharegov.cirm.utils.ObjectRef;
 import org.sharegov.cirm.utils.Ref;
 import org.sharegov.cirm.utils.RequestScopeRef;
 import org.sharegov.cirm.utils.SingletonRef;
-import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
 public class Refs
 {
