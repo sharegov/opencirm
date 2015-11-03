@@ -49,13 +49,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.Encoded;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -109,7 +107,6 @@ import org.sharegov.cirm.legacy.MessageManager;
 import org.sharegov.cirm.legacy.Permissions;
 import org.sharegov.cirm.owl.Model;
 import org.sharegov.cirm.process.AddTxnListenerForNewSR;
-import org.sharegov.cirm.process.ApprovalException;
 import org.sharegov.cirm.process.ApprovalProcess;
 import org.sharegov.cirm.process.AttachSendEmailListener;
 import org.sharegov.cirm.process.CreateDefaultActivities;
@@ -896,8 +893,7 @@ public class LegacyEmulator extends RestService
 	{
 		try
 		{
-			if (DBG && false)
-				ThreadLocalStopwatch.getWatch().time("START lookupAdvancedSearch");
+			if (DBG) ThreadLocalStopwatch.getWatch().time("START lookupAdvancedSearch");
 			QueryTranslator qt = new QueryTranslator();
 			RelationalStore store = getPersister().getStore();
 			Json resultsArray = Json.array();
@@ -1032,8 +1028,7 @@ public class LegacyEmulator extends RestService
 			e.printStackTrace();
 			return ko(e.getMessage());
 		} finally {
-			if (DBG && false)
-				ThreadLocalStopwatch.getWatch().time("END lookupAdvancedSearch");
+			if (DBG) ThreadLocalStopwatch.getWatch().time("END lookupAdvancedSearch");
 			ThreadLocalStopwatch.dispose();
 		}
 	}
@@ -1055,7 +1050,7 @@ public class LegacyEmulator extends RestService
 	}
 
 	@POST
-	@Encoded
+	//@Encoded 2372 Java8 hilpold
 	@Path("update")
 	@Produces("application/json")
 	public Json updateServiceCase(@FormParam("data") final String formData)
@@ -1556,7 +1551,7 @@ public class LegacyEmulator extends RestService
 	 * @return : returns the Business Ontology which is persisted to db in Json format
 	 */
 	@POST
-	@Encoded
+	//@Encoded 2372 Java8 hilpold
 	@Path("kosubmit")
 	@Produces("application/json")
 	public Json createNewKOSR(@FormParam("data") final String formData)
@@ -1831,7 +1826,7 @@ public class LegacyEmulator extends RestService
 	 * @return : a status message if successful or not.
 	 */
 	@POST
-	@Encoded
+	//@Encoded  2372 Java8 hilpold
 	@Path("emailSR")
 	@Produces("application/json")
 	public Json emailServiceRequestTo(@FormParam("data") final String formData)
@@ -2745,14 +2740,6 @@ public class LegacyEmulator extends RestService
 			System.out.println("" + select.SQL());
 		return store.query(statement, 
 				Refs.tempOntoManager.resolve().getOWLDataFactory());
-	}
-	
-	public static void main(String args[])
-	{		
-		LegacyEmulator emulator = new LegacyEmulator();
-		String json = new Scanner(emulator.getClass().getResourceAsStream(
-				"test.json")).useDelimiter("\\A").next();
-		emulator.updateServiceCase(json);
 	}
 	
 

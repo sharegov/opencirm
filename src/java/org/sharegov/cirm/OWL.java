@@ -135,7 +135,7 @@ public class OWL
 	private static volatile PrefixManager prefixManager = null;
 	private static volatile boolean initialized = false;
 	
-	private static void init()
+	private static synchronized void init()
 	{
 		if (!initialized) {
 			initChecked();
@@ -1078,12 +1078,6 @@ public class OWL
 	public static String unescape(OWLLiteral literal){
 		String str = literal.getLiteral();
 		StringWriter out = new StringWriter(str.length() * 2);
-		if (out == null) {
-            throw new IllegalArgumentException("The Writer must not be null");
-        }
-        if (str == null) {
-            return str;
-        }
         int sz = str.length();
         StringBuffer unicode = new StringBuffer(4);
         boolean hadSlash = false;

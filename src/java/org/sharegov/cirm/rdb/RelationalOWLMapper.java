@@ -742,7 +742,7 @@ public class RelationalOWLMapper
 					classMapping.put(table, tableClasses);
 				}
 				tableClasses.add(mappedClass);
-				logger.info("Mapping " + mappedClass + " to table " + table);
+				//logger.info("Mapping " + mappedClass + " to table " + table);
 				tableMapping.put(mappedClass, table);
 			}
 			logger.info(tableMapping.size() + " table mappings.");
@@ -1206,7 +1206,7 @@ public class RelationalOWLMapper
 						tableColumns.put(table, columns);
 					}
 					columns.add(column);
-					System.out.println("Column: " + column + " for table " + table);
+					//System.out.println("Column: " + column + " for table " + table);
 				}
 		}
 		logger.info(tableColumns.size() + " tables with columns.");	

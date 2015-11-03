@@ -22,11 +22,11 @@ import java.util.List;
 import org.sharegov.cirm.CirmTransaction.STATE;
 
 /**
- * Support class for toplevel transaction events.
- * 
- * NOT THREAD SAFE, however, it's expected to be used with a single threads context. 
+ * Support class for toplevel transaction events.<br>
+ * <br>
+ * NOT THREAD SAFE, however, it's expected to be used with a single threads context.<br>
+ *  
  * @author Thomas Hilpold
- *
  */
 public class CirmTransactionEventSupport
 {

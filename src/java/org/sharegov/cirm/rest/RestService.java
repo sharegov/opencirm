@@ -16,6 +16,7 @@
 package org.sharegov.cirm.rest;
 
 
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
@@ -54,7 +55,7 @@ import org.sharegov.cirm.utils.ThreadLocalStopwatch;
  * This class offers facilities for dealing with currently logged in user and their permissions.
  * </p>
  * 
- * @author Borislav Iordanov
+ * @author Borislav Iordanov, Thomas Hilpold
  *
  */
 public class RestService
@@ -104,7 +105,6 @@ public class RestService
 			return "anonymous";
 	}
 	
-	@SuppressWarnings("deprecation")
 	public String [] getUserGroups()
 	{
 		if(httpHeaders == null) 
@@ -125,7 +125,11 @@ public class RestService
 			int versionIndex = cookieVal.indexOf(",$"); 
 			if (versionIndex > 0) 
 				cookieVal = cookieVal.substring(0, versionIndex);
-			return URLDecoder.decode(cookieVal).split(";");
+			try {
+				return URLDecoder.decode(cookieVal, "UTF-8").split(";");
+			} catch (UnsupportedEncodingException e) {
+				throw new RuntimeException(e);
+			}
 		}
 		else
 			return new String[0];		
@@ -220,11 +224,6 @@ public class RestService
 		}
 		else if (forceClientExempt.resolve())
 		{
-//TODO temporarily disabled			if(httpHeaders == null) 
-//			{
-//				ThreadLocalStopwatch.getWatch().time("forceClientExempt fix active and used: RestServicehttpHeaders were null. this indicates that this object: " + this + " was called without context. Trace(4): ");
-//				GenUtils.logStackTrace(Thread.currentThread().getStackTrace(), 4);
-//			}
 			return true;
 		} 
 		else if (Arrays.asList(getUserGroups()).contains(UserService.CIRM_ADMIN))

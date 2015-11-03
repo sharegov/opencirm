@@ -746,9 +746,17 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 							self.hideProgress("#ah_dialog_keywords_search");
 						if (r.ok) {
 						    $.each(r.docs, function(i,doc) {
-						            if (typeof doc.ontology == "undefined") {
-						                doc.ontology = [];
-						            }
+					            if (typeof doc.ontology == "undefined") {
+					                doc.ontology = [];
+					            }
+			                    if(window.location.href.indexOf('.311.') > -1 ) {
+					                doc.url = doc.url.replace('kb.miamidade', 'kb.311.miamidade');
+					                //Determine the article viewer for COM URL + ?
+					                var comViewer = doc.url.match("(.*/).*\.html$")[1] + "com_viewer/kb-viewer.html?";
+					                //Add the article number as query string e.g. ...?411231 
+					                var viewArticleURL = comViewer + doc.url.match(".*kbarticle_([0-9]+)\.html.*")[1];
+					                doc.url = viewArticleURL;
+			                    }
 						    });
 						    console.log('results', r);
 						    self.totalResults(r.total);
