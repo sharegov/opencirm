@@ -36,6 +36,12 @@ import org.sharegov.cirm.owl.SynchronizedReasoner;
 
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
+/**
+ * Loads ontologies from HGDB or File, instantiates reasoners and ensures synchronized wrapping of ontology managers and reasoner. 
+ *  
+ * @author Boris, Thomas Hilpold
+ *
+ */
 public class OntologyLoader
 {
 	public static boolean THREAD_SAFE_REASONERS = true;
@@ -218,6 +224,7 @@ public class OntologyLoader
 		if (reasoner == null)
 		{
 			reasoner =  reasonerFactory.createReasoner(ontology);
+			if (!reasoner.isConsistent()) throw new IllegalStateException("REASONER NOT CONSISTENT AFTER INIT");
 			if (THREAD_SAFE_REASONERS)
 			{
 				reasoner = SynchronizedReasoner.synchronizedReasoner(reasoner);

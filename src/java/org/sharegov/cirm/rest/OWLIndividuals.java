@@ -113,8 +113,12 @@ public class OWLIndividuals extends RestService
 			Json result = Json.object();
 			for (Json x : el.at("hasMember").asJsonList())
 			{
+				if(x.has("Value")) {
 				//System.out.println(x);
-				result.set(x.at("Name").asString(), x.at("Value"));
+						result.set(x.at("Name").asString(), x.at("Value"));
+				} else {
+					result.set(x.at("Name").asString(), x.at("ValueObj"));
+				}
 				
 			}
 			if (!isClientExempt() && 

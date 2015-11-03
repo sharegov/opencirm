@@ -19,36 +19,49 @@ import static org.sharegov.cirm.OWL.*;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
+/**
+ * Meta ontology based OpenCirm configuration singleton which loads the ontologyConfigSet that is set in Startup config.
+ * 
+ * @author Boris, Thomas Hilpold
+ *
+ */
 public class ConfigSet
 {
-	private static volatile ConfigSet activeInstance = null;
+	private static ConfigSet activeInstance = null;
 	
 	private Map<String, OWLObject> params = new HashMap<String, OWLObject>();
 	private OWLNamedIndividual theset = null;
 	
-	
+	/**
+	 * Loads a ConfigSet individual with all property members from the meta ontology.
+	 * 
+	 * @param instanceName
+	 * @param instance
+	 */
 	private static void loadInstance(String instanceName, ConfigSet instance)
 	{		 
-//		meta.getManager().applyChanges(meta.getManager().addAxiom(ontology(), 
-//				meta.getDataFactory().getOWLSameIndividualAxiom(individual(instanceName),individual("ActiveConfigSet"))));
 		OWLReasoner reasoner = reasoner(ontology());
 		OWLNamedIndividual activeInd = dataFactory().getOWLNamedIndividual(fullIri(instanceName));		
-//		Set<OWLNamedIndividual> S = reasoner.getSameIndividuals(activeInd).getEntitiesMinus(activeInd);
-//		if (!S.isEmpty())
-////			throw new RuntimeException("No active configuration available: " +
-////					"ActiveConfigSet individual must have a 'same' declaration with the actual configuration.");
-//			activeInd = S.iterator().next();
 		instance.theset = activeInd;
 		for (OWLNamedIndividual prop : reasoner.getObjectPropertyValues(activeInd, objectProperty("hasMember")).getFlattened())
 		{
 			String name = dataProperty(prop, "Name").getLiteral();//reasoner.getDataPropertyValues(prop, dataProperty("Name")).iterator().next().getLiteral();
-			OWLObject value = objectProperty(prop, "Value"); //reasoner.getObjectPropertyValues(prop, objectProperty("Value")).getFlattened();
-			if (value == null)
+			OWLObject value = objectProperty(prop, "ValueObj"); //reasoner.getObjectPropertyValues(prop, objectProperty("Value")).getFlattened();
+			//TODO remove next two lines (tolerance for old triple punning of Value 
+			if (value == null) {
+				value = objectProperty(prop, "Value");
+			}
+			if (value == null) {
 				value = dataProperty(prop, "Value");
+			}
+			if (value == null) throw new java.lang.IllegalStateException("NULL VALUE FOR property " + name 
+					+ " of configset " + activeInd.getIRI() 
+					+  " found. Configuration not valid. Exiting.");
 			instance.params.put(name, value);
 		}
 	}
@@ -57,10 +70,11 @@ public class ConfigSet
 	{
 		if (activeInstance == null)
 		{
-			activeInstance = new ConfigSet();
+		    	ConfigSet newConfigSet = new ConfigSet();
 			String instanceName = StartUp.config.at("ontologyConfigSet").asString();
-			
-			loadInstance(instanceName, activeInstance);
+			loadInstance(instanceName, newConfigSet);
+			//safe publication
+			activeInstance = newConfigSet;
 		}
 		return activeInstance;
 	}

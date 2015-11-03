@@ -629,7 +629,7 @@ public class OperationService
 	{
 		try
 		{
-			System.out.println("Fire rule " + ruleId + " on " + URLDecoder.decode(boiri));
+			System.out.println("Fire rule " + ruleId + " on " + URLDecoder.decode(boiri, "UTF-8"));
 			WorkflowExecutionContext context = WorkflowManager.getInstance().getWorkflowContext(IRI.create(boiri));
 			context.fireEventRule(ruleId);			
 		}

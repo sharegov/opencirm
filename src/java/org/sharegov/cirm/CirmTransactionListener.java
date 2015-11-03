@@ -18,10 +18,10 @@ package org.sharegov.cirm;
 import org.sharegov.cirm.CirmTransaction.STATE;
 
 /**
- * Listener interface for CirmTransaction.
- * Add listeners to CirmTransaction
+ * Listener interface for CirmTransaction.<br>
+ * Add listeners to CirmTransaction<br>
+ * <br>
  * @author Thomas Hilpold
- *
  */
 public interface CirmTransactionListener
 {
@@ -30,7 +30,7 @@ public interface CirmTransactionListener
 	/**
 	 * Notifies the listener that an event occured.
 	 * 
-	 * @param e
+	 * @param e transaciton event
 	 */
 	public void transactionStateChanged(final CirmTransactionEvent e); 
 	
