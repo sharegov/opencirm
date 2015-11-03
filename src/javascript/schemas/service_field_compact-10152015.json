@@ -21,7 +21,8 @@
 								"label": {"$ref": "#/definitions/label"},
 								"hasAllowableModules": {"$ref": "#/definitions/hasAllowableModules"},
 								"type": {
-									"enum": ["ServiceNote"]
+									"pattern": "^ServiceNote$",
+									"type": "string"
 								},
 								"hasDataType": {"$ref": "#/definitions/hasDataType"},
 								"iri": {"$ref": "#/definitions/iri"},
@@ -35,8 +36,7 @@
 								"hasAllowableModules",
 								"hasBusinessCodes",
 								"hasDataType",
-								"hasOrderBy",
-								"type"
+								"hasOrderBy"
 							],
 							"type": "object"
 						},
@@ -52,7 +52,8 @@
 									"hasAllowableModules": {"$ref": "#/definitions/hasAllowableModules"},
 									"hasDefaultIntakeMethod": {"$ref": "#/definitions/hasDefaultIntakeMethod"},
 									"type": {
-										"enum": ["ServiceQuestion"]
+										"pattern": "^ServiceQuestion$",
+										"type": "string"
 									},
 									"hasChoiceValueList": {"$ref": "#/definitions/hasChoiceValueList"},
 									"hasDataType": {"$ref": "#/definitions/hasDataType"},
@@ -63,8 +64,7 @@
 									"label",
 									"hasAllowableModules",
 									"hasDataType",
-									"hasOrderBy",
-									"type"
+									"hasOrderBy"
 								],
 								"type": "object"
 							},
@@ -114,7 +114,8 @@
 									"hasAnswerObject": {"$ref": "#/definitions/hasAnswerObject"},
 									"label": {"$ref": "#/definitions/label"},
 									"type": {
-												"enum": ["QuestionTrigger"]
+												"type": "string",
+												"pattern": "^QuestionTrigger$"
 											},
 									"iri": {"$ref": "#/definitions/iri"}
 								},
@@ -143,7 +144,8 @@
 										"label": {"$ref": "#/definitions/label"},
 										"iri": {"$ref": "#/definitions/iri"},
 										"type": {
-											"enum": ["ChoiceValueList"]
+											"type": "string",
+											"pattern": "^ChoiceValueList$"
 										}
 										
 									}
@@ -175,7 +177,8 @@
 								"hasOrderBy": {"$ref": "#/definitions/hasOrderBy"},
 								"isDisabled": {"$ref": "#/definitions/isDisabled"},
 								"type": {
-									"enum": ["ChoiceValue"]
+									"type": "string",
+									"pattern": "^ChoiceValue$"
 								}
 							}
 						},
@@ -193,7 +196,8 @@
 										"label": {"$ref": "#/definitions/label"},
 										"isAlwaysPublic": {"$ref": "#/definitions/ynQuestion"},
 										"type": {
-													"enum": ["IntakeMethod"]
+													"type": "string",
+													"pattern": "^IntakeMethod$"
 												},
 										"iri": {"$ref": "#/definitions/iri"}
 									  }
@@ -210,7 +214,8 @@
 							"properties": {
 								"label": {"$ref": "#/definitions/label"},
 								"type": {
-											"enum": ["ServiceFieldAlert"]
+											"type": "string",
+											"pattern": "^ServiceFieldAlert$"
 										},
 								"iri": {"$ref": "#/definitions/iri"}
 							}
@@ -221,7 +226,8 @@
 												  "hasLegacyCode": {"$ref": "#/definitions/hasLegacyCode"},
 												  "label": {"$ref": "#/definitions/label"},
 												  "type": {
-															"enum": ["ChoiceValue"]
+															"type": "string",
+															"pattern": "^ChoiceValue$"
 														},
 												  "iri": {"$ref": "#/definitions/iri"}
 											}
@@ -232,7 +238,8 @@
 											  "providedBy": {"$ref": "#/definitions/providedBy"},
 											  "label": {"$ref": "#/definitions/label"},
 											  "type": {
-														"enum": ["EventBasedDataSource"]
+														"type": "string",
+														"pattern": "^EventBasedDataSource$"
 													},
 											  "iri": {"$ref": "#/definitions/iri"},
 											  "hasPropertyName": {"$ref": "#/definitions/label"}
@@ -243,7 +250,8 @@
 						"properties": {
 										"label": {"$ref": "#/definitions/label"},
 										"type": {
-													"enum": ["ClientSideEventType"]
+													"type": "string",
+													"pattern": "^ClientSideEventType$"
 												},
 										"iri": {"$ref": "#/definitions/iri"}
 						}
