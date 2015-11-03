@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Workspace Type="CR-1" Version="0.2" xmlns:xl="http://www.w3.org/1999/xlink">
+	<Template xl:actuate="onLoad" xl:href="../templates/bmt/Cr1Model" xl:show="none" xl:title="CR1" xl:type="simple"/>
+	<ProjectID xl:actuate="onLoad" xl:href="project.cpf" xl:show="none" xl:type="simple"/>
+	<Model>
+		<Model_Data BmtRootLabel="1" xl:role="http://www.cognos.com/bmt/model" xl:title="Name" xl:type="extended">
+			<Model_Segment xl:href="model.xml" xl:label="1" xl:role="http://www.cognos.com/bmt/segment" xl:title="Name" xl:type="locator"/>
+		</Model_Data>
+		<Schema isRef="true" xl:actuate="onLoad" xl:href="BMTModelSpecification.xsd" xl:role="http://www.cognos.com/schema" xl:show="none" xl:title="Schema" xl:type="simple"/>
+		<Behavior isRef="true" xl:actuate="onLoad" xl:href="CR1 Behaviors.xml" xl:role="http://www.cognos.com/behavior" xl:show="none" xl:title="Behavior" xl:type="simple"/>
+		<Customdata isRef="true" xl:actuate="onLoad" xl:href="customdata.xml" xl:role="http://www.cognos.com/customdata" xl:show="none" xl:title="Custom Data" xl:type="simple"/>
+	</Model>
+	<Preferences xl:actuate="onLoad" xl:href="preferences.xml" xl:role="http://www.cognos.com/bmt/preferences" xl:show="none" xl:title="Preferences" xl:type="simple"/>
+</Workspace>

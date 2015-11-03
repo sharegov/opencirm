@@ -1214,7 +1214,7 @@ public class ScriptVerifyAndClose
      */
      public synchronized void clearOntologyManager(OWLOntology o) {
             OWLOntologyManager m = Refs.tempOntoManager.resolve();
-            //m is a SynchonizedOntoManager, so it’s thread save to remove an ontology 
+            //m is a SynchonizedOntoManager, so its thread save to remove an ontology 
             //that was just processed
             m.removeOntology(o);
      }

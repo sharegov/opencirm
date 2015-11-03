@@ -112,11 +112,11 @@ public class ReportRecyclingComplaintsXls
 {
 	public static final boolean EMAIL_TEST_MODE = false; //true overrides a MessageManager.isTestMode()==false, false respects MM setting.
 	public static final String EMAIL_TO1 = "mdcrecycling@worldwasteservices.com";
-	public static final String EMAIL_TO2 = "CS-MIAMIDADE-RECYCLI@WASTESERVICESINC.COM;oscar.diaz@progressivewaste.com;jacqueson.bernard@progressivewaste.com";
+	public static final String EMAIL_TO2 = "CS-MIAMIDADE-RECYCLI@WASTESERVICESINC.COM;Sametha.Lovett@progressivewaste.com;Gerardo.Cardona@progressivewaste.com;Joe.Ruiz@progressivewaste.com";
 	public static final String EMAIL_CC12 = "swmcsu@miamidade.gov;massaj@miamidade.gov";
-	public static final String EMAIL_BCC12 = "cirmtest@miamidade.gov;hilpold@miamidade.gov";
+	public static final String EMAIL_BCC12 = "cirmtest@miamidade.gov";
 	public static final String EMAIL_FROM12 = "cirm@miamidade.gov";
-	public static final String EMAIL_TEST_TO12 = "cirmtest@miamidade.gov;hilpold@miamidade.gov";
+	public static final String EMAIL_TEST_TO12 = "cirmtest@miamidade.gov";
 	public static final String EMAIL_TEST_FROM12 = "cirmtest@miamidade.gov";
 	public static final String EMAIL_SUBJECT1 = "MDC Dept of Solid Waste - Recycling Complaints Report Zone 1,2,4";
 	public static final String EMAIL_SUBJECT2 = "MDC Dept of Solid Waste - Recycling Complaints Report Zone 3";

@@ -152,8 +152,8 @@ public class QuickQuery {
 	//public static String[] PROPS = new String[] { "iri", "label", "hasEmailTemplate.iri", "hasEmailTemplate.hasTo", "hasEmailTemplate.hasSubject" };
 	
 	//17 Activities with autoAssing true, but no assignmentRule
-	public static String DLQUERY = "legacy:Activity and legacy:isAutoAssign value true ";
-	public static String[] PROPS = new String[] { "iri", "label", "hasAssignmentRule.iri", "hasAssignmentRule.hasUsername", "hasEmailTemplate.iri" };
+	public static String DLQUERY = "legacy:MessageVariable ";
+	public static String[] PROPS = new String[] { "iri", "label" };
 	
 	public static String[] VAR3 = new String[]
 	{

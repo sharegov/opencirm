@@ -27,7 +27,7 @@ import org.sharegov.cirm.StartUp;
  * @author SABBAS
  *
  */
-public class ReportingJob
+public abstract class ReportingJob
 {
 	public static boolean DISABLE_EXPORT_META_DATA = false;
 	public static boolean DISABLE_RUN_BATCH_JOB = false;
@@ -47,8 +47,9 @@ public class ReportingJob
 	
 	public static final ReportingJob TEST = new ReportingJob()
 	{
+		@Override
+		public void initConfig() 
 		{
-			
 			StartUp.config.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#TestConfigSet");
 			setBaseWorkingDirectory("C:/Work/cirmservices_etl_test");
 			setBatchJobCommand("ReportingJobControl_Test2Test_0.2/ReportingJobControl_Test2Test/ReportingJobControl_Test2Test_run.bat");
@@ -59,10 +60,12 @@ public class ReportingJob
 
 	public static final ReportingJob PROD = new ReportingJob()
 	{
+		@Override
+		public void initConfig()
 		{
 			StartUp.config.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#ProdConfigSet");
 			setBaseWorkingDirectory("C:/Work/cirmservices_etl_prod");
-			setBatchJobCommand("ReportingJobControl_Prod2Prod_0.2/ReportingJobControl_Prod2Prod/ReportingJobControl_Prod2Prod_run.bat");
+			setBatchJobCommand("ReportingJobControl_Prod2Prod/ReportingJobControl_Prod2Prod_run.bat");
 			setDeploymentEndpoint("https://311hub.miamidade.gov");
 		}
 	};
@@ -93,8 +96,14 @@ public class ReportingJob
 		
 	}
 	
+	/**
+	 * Initialized the OpenCirm configuration for the job (test or prod).
+	 */
+	public abstract void initConfig();
+	
 	public void run()
 	{
+	    	initConfig();
 		try
 		{
 			if(SYSOUT_TO_FILE)
