@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/java"/>
-	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="lib" path="lib/com.ibm.mq.jar"/>
 	<classpathentry kind="lib" path="lib/com.ibm.mqjms.jar"/>
 	<classpathentry kind="lib" path="lib/jms.jar"/>
@@ -23,7 +22,6 @@
 	<classpathentry kind="lib" path="/opencirm/lib/je-5.0.34.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/jgrapht-jdk1.5.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/mail.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/mjson-1.3-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/org.apache.commons.fileupload.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/org.apache.commons.io.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/org.eclipse.jetty.ajp.jar"/>
@@ -62,7 +60,8 @@
 	<classpathentry kind="lib" path="/opencirm/lib/rdb/sqljdbc4.jar"/>
 	<classpathentry kind="lib" path="lib/wrapper.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/opencirm"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.6.0_25"/>
+	<classpathentry kind="lib" path="/opencirm/lib/mjson-1.3.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
