@@ -1100,12 +1100,6 @@ public class OWL
 	public static String unescape(OWLLiteral literal){
 		String str = literal.getLiteral();
 		StringWriter out = new StringWriter(str.length() * 2);
-		if (out == null) {
-            throw new IllegalArgumentException("The Writer must not be null");
-        }
-        if (str == null) {
-            return str;
-        }
         int sz = str.length();
         StringBuffer unicode = new StringBuffer(4);
         boolean hadSlash = false;

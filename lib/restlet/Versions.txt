@@ -1,0 +1,35 @@
+All versions from restlet 2.3.5 distribution.
+
+Relevant Dependencies for 311hub used libraries for Restlet 2.3.5:
+org.restlet.ext.jetty (Restlet Extension - Jetty)
+---------------------
+ - org.eclipse.jetty.client_9.2
+ - org.eclipse.jetty.http_9.2
+ - org.eclipse.jetty.io_9.2
+ - org.eclipse.jetty.server_9.2
+ - org.eclipse.jetty.spdy.client_9.2 	no
+ - org.eclipse.jetty.spdy.core_9.2 		no
+ - org.eclipse.jetty.spdy.http.common_9.2 no
+ - org.eclipse.jetty.spdy.http.server_9.2 no
+ - org.eclipse.jetty.spdy.server_9.2
+ - org.eclipse.jetty.util_9.2
+ - javax.servlet_3.1
+
+ 
+ org.restlet.ext.jaxrs (Restlet Extension - JAX-RS)
+---------------------
+ - org.apache.commons.fileupload_1.3
+ - javax.mail_1.4
+ - com.sun.jaxb_2.1
+ - javax.ws.rs_2.0
+ - org.json_2.0
+ - org.apache.commons.lang_2.6
+ - javax.servlet_3.1
+ - org.simpleframework.xml_2.7
+ 
+ 
+ rg.restlet.ext.fileupload (Restlet Extension - FileUpload)
+--------------------------
+ - org.apache.commons.fileupload_1.3
+ - javax.servlet_3.1
+ 

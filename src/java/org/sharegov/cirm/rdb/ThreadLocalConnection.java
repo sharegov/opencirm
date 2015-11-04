@@ -32,6 +32,7 @@ import java.sql.Statement;
 import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 import oracle.jdbc.OracleConnection;
 
@@ -470,5 +471,38 @@ public class ThreadLocalConnection implements Connection
 	public Struct createStruct(String typeName, Object[] attributes) throws SQLException
 	{
 		return wrappedConnection.createStruct(typeName, attributes);
+	}
+
+	@Override
+	public void setSchema(String schema) throws SQLException
+	{
+		wrappedConnection.setSchema(schema);
+		
+	}
+
+	@Override
+	public String getSchema() throws SQLException
+	{		
+		return wrappedConnection.getSchema();
+	}
+
+	@Override
+	public void abort(Executor executor) throws SQLException
+	{
+		wrappedConnection.abort(executor);
+		
+	}
+
+	@Override
+	public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException
+	{
+		wrappedConnection.setNetworkTimeout(executor, milliseconds);
+		
+	}
+
+	@Override
+	public int getNetworkTimeout() throws SQLException
+	{
+		return wrappedConnection.getNetworkTimeout();
 	}
 }

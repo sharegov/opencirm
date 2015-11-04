@@ -21,12 +21,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.hypergraphdb.app.owl.HGDBOntologyManagerImpl;
 import org.hypergraphdb.app.owl.HGDBOntologyRepository;
 import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyIRIMapper;
@@ -37,6 +34,14 @@ import org.sharegov.cirm.owl.CachedReasoner;
 import org.sharegov.cirm.owl.SynchronizedOWLOntologyManager;
 import org.sharegov.cirm.owl.SynchronizedReasoner;
 
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
+
+/**
+ * Loads ontologies from HGDB or File, instantiates reasoners and ensures synchronized wrapping of ontology managers and reasoner. 
+ *  
+ * @author Boris, Thomas Hilpold
+ *
+ */
 public class OntologyLoader
 {
 	public static boolean THREAD_SAFE_REASONERS = true;
@@ -46,7 +51,8 @@ public class OntologyLoader
 	private Map<IRI, File> locations = new ConcurrentHashMap<IRI, File>();
 	private Map<IRI, OWLOntology> loaded = new ConcurrentHashMap<IRI, OWLOntology>(); 
 	private Map<IRI, Long> lastLoaded = new ConcurrentHashMap<IRI, Long>();
-	private OWLReasonerFactory reasonerFactory =  null;	
+	private OWLReasonerFactory reasonerFactory =  // new Reasoner.ReasonerFactory();
+			 PelletReasonerFactory.getInstance(); 	
 	private ConcurrentHashMap<IRI, OWLReasoner> reasoners = new ConcurrentHashMap<IRI, OWLReasoner>();	
 	private OWLOntologyIRIMapper iriMapper = null;
 	
@@ -59,44 +65,6 @@ public class OntologyLoader
     	return docIRI;
 	}
 	
-	private OWLReasonerFactory makeReasonerFactory(String className)
-	{
-		try 
-		{
-			@SuppressWarnings("unchecked")
-			Class<OWLReasonerFactory> cl = (Class<OWLReasonerFactory>)Class.forName(className);
-			if (className.equals("com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory"))
-				return (OWLReasonerFactory)cl.getMethod("getInstance", 
-													new Class[0]).invoke(null,  new Object[0]);
-			else // if (className.equals("org.semanticweb.HermiT.Reasoner$ReasonereFactory"))
-				// and everything else...
-				return cl.newInstance();
-		}
-		catch (Exception ex)
-		{
-			System.err.println("Warning: failed to instantiate implementation class " + 
-					"for OWLReasonerFactory");
-			return null;
-		}		
-	}
-	
-	private OWLReasonerFactory reasonerFactory()
-	{
-		if (reasonerFactory == null)
-		{
-			Set<OWLObjectPropertyAssertionAxiom> implementations = 
-				OWL.ontology().getObjectPropertyAssertionAxioms(OWL.individual(OWLReasonerFactory.class.getName()));
-			OWLObjectProperty prop = OWL.objectProperty("hasImplementation");
-			for (OWLObjectPropertyAssertionAxiom ax : implementations)				
-				if (ax.getProperty().equals(prop) && (reasonerFactory = makeReasonerFactory(
-						ax.getObject().asOWLNamedIndividual().getIRI().getFragment())) != null)
-					break;
-			if (reasonerFactory == null) 
-				reasonerFactory = makeReasonerFactory("com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory"); 			
-		}
-		return reasonerFactory;
-	}
-
 	public OntologyLoader(OWLOntologyManager manager)
 	{
 		// TODO: all this should be in customIRIMappings file only..
@@ -237,9 +205,10 @@ public class OntologyLoader
 	 */
 	public synchronized OWLReasoner getReasoner(OWLOntology ontology)
 	{
+		IRI iri = ontology.getOntologyID().getOntologyIRI();
 		if (OWL.isBusinessObjectOntology(ontology)) // for temporary "object" ontologies...
 		{
-			OWLReasoner reasoner = reasonerFactory().createReasoner(ontology);
+			OWLReasoner reasoner = reasonerFactory.createReasoner(ontology);
 			if (THREAD_SAFE_REASONERS)
 			{
 				reasoner = SynchronizedReasoner.synchronizedReasoner(reasoner);
@@ -249,12 +218,12 @@ public class OntologyLoader
 				}
 			}
 			return reasoner;
-		}		
-		IRI iri = ontology.getOntologyID().getOntologyIRI();
+		}
 		OWLReasoner reasoner = reasoners.get(iri);
 		if (reasoner == null)
 		{
-			reasoner =  reasonerFactory().createReasoner(ontology);
+			reasoner =  reasonerFactory.createReasoner(ontology);
+			if (!reasoner.isConsistent()) throw new IllegalStateException("REASONER NOT CONSISTENT AFTER INIT");
 			if (THREAD_SAFE_REASONERS)
 			{
 				reasoner = SynchronizedReasoner.synchronizedReasoner(reasoner);
