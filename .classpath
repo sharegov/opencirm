@@ -20,7 +20,6 @@
 	<classpathentry kind="lib" path="/opencirm/lib/itextpdf-5.3.0.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/je-5.0.34.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/jgrapht-jdk1.5.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/mjson-1.3-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/org.apache.commons.io.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/owlapi-bin.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/pellet-cli.jar"/>
@@ -75,5 +74,6 @@
 	<classpathentry kind="lib" path="/opencirm/lib/restlet/org.json.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/restlet/org.simpleframework.xml.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/restlet/servlet-api-3.1.jar"/>
+	<classpathentry kind="lib" path="/opencirm/lib/mjson-1.3.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
