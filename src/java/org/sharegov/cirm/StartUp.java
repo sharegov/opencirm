@@ -124,6 +124,17 @@ public class StartUp extends ServerResource
 	 * Just for registration
 	 */
 	private static volatile RequestScopeFilter requestScopeFilter = null;
+	
+
+    /**
+     * Returns true if and only if the http/s server is fully initialized and ready to serve requests.
+     *  
+     * @return true, or false if the server was not started or is initializing  
+     */
+    public static boolean isServerStarted() {
+        return server != null && server.isStarted();
+    }
+    
 
 	public static class CirmServerResource extends DirectoryServerResource 
 	{
