@@ -55,6 +55,7 @@ import org.restlet.routing.Template;
 import org.restlet.service.EncoderService;
 import org.sharegov.cirm.legacy.ActivityManager;
 import org.sharegov.cirm.legacy.MessageManager;
+import org.sharegov.cirm.legacy.ServiceCaseManager;
 import org.sharegov.cirm.owl.CachedReasoner;
 import org.sharegov.cirm.rdb.RelationalOWLMapper;
 import org.sharegov.cirm.rest.MainRestApplication;
@@ -95,7 +96,7 @@ public class StartUp extends ServerResource
 			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#LocalConfigSetXE")
 			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#LocalConfigSet")
 			.set("nameBase", "http://www.miamidade.gov/ontology" )
-			.set("customIRIMappingFile", "C:/work/mdcirm/customIRIMap.properties")
+//			.set("customIRIMappingFile", "C:/work/mdcirm/customIRIMap.properties")
 			.set("stopExpansionConditionIRI", Json.array(
 					"http://www.miamidade.gov/cirm/legacy#providedBy",
 					"http://www.miamidade.gov/cirm/legacy#hasChoiceValue"
@@ -400,6 +401,7 @@ public class StartUp extends ServerResource
    			oa.cachedReasonerQ1Populate();
    		}
 	    try {
+	    	ServiceCaseManager.getInstance();
 	    	server.start();
 	    	if (redirectServer != null) redirectServer.start();
 	    } catch (Exception e) {
