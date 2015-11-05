@@ -520,7 +520,7 @@ public class LDAPUserProvider implements UserProvider, AutoConfigurable
 		Json found = Json.nil();
 		if (user.has("userid"))
 			found = get(user.at("userid").asString());
-		if (found.isNull() && user.has("email"))
+		if (found.isNull() && user.has("email") && !user.at("email").isNull())
 		{
 			found = find("mail", user.at("email").asString());
 			found = found.asJsonList().isEmpty() ? Json.nil() : found.at(0);

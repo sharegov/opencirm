@@ -451,6 +451,7 @@ public class ServiceRequestReportUtil
 	    	while((str = br.readLine()) != null) {
 	    		boids.add(new Long(str));
 	    	}
+	    	br.close();
     	}
     	catch(Exception e)
     	{

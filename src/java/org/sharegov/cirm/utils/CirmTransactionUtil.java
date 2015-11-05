@@ -22,6 +22,12 @@ import java.util.Set;
 
 import org.sharegov.cirm.CirmTransaction;
 
+/**
+ * Utilities for CirmTransaction live analysis and Threads.
+ * 
+ * @author Thomas Hilpold
+ *
+ */
 public class CirmTransactionUtil
 {
 
@@ -62,7 +68,7 @@ public class CirmTransactionUtil
 	}
 
 	/**
-	 * Interrupts all threads by a given Id, if they are still alive at the time of the interrupt.
+	 * Kills all threads by a given Id, if they are still alive at the time of the interrupt.
 	 */
 	public static synchronized void stopExecutingThreads(Set<Long> threadIds)
 	{
