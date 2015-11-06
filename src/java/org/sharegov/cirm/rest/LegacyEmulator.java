@@ -68,10 +68,6 @@ import javax.xml.transform.stream.StreamSource;
 
 import mjson.Json;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.hypergraphdb.util.RefResolver;
 import org.restlet.Response;
 import org.restlet.data.MediaType;
@@ -100,7 +96,6 @@ import org.sharegov.cirm.BOntology;
 import org.sharegov.cirm.CirmTransaction;
 import org.sharegov.cirm.CirmTransactionEvent;
 import org.sharegov.cirm.CirmTransactionListener;
-import org.sharegov.cirm.ConfigSet;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.StartUp;
@@ -139,7 +134,6 @@ import org.sharegov.cirm.utils.SendEmailOnTxSuccessListener;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 import org.sharegov.cirm.workflows.WebServiceCallTask;
 
-import com.hp.hpl.jena.reasoner.rulesys.builtins.Remove;
 
 @Path("legacy")
 @Produces("application/json")
