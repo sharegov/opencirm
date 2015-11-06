@@ -68,6 +68,10 @@ import javax.xml.transform.stream.StreamSource;
 
 import mjson.Json;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.hypergraphdb.util.RefResolver;
 import org.restlet.Response;
 import org.restlet.data.MediaType;
@@ -96,6 +100,7 @@ import org.sharegov.cirm.BOntology;
 import org.sharegov.cirm.CirmTransaction;
 import org.sharegov.cirm.CirmTransactionEvent;
 import org.sharegov.cirm.CirmTransactionListener;
+import org.sharegov.cirm.ConfigSet;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.StartUp;
@@ -1467,16 +1472,44 @@ public class LegacyEmulator extends RestService
 	{
 		Json removedImages = legacyForm.at("properties").atDel(
 				"hasRemovedImage");
+		
+		OWLNamedIndividual ind = ConfigSet.getInstance().get("UploadConfig");
+		String url = OWL.dataProperty(ind, "hasUrl").getLiteral();  
+		
 		for (Json image : removedImages.asJsonList())
 		{
 			//File f = new File(StartUp.config.at("workingDir").asString()
 			//		+ "/src/uploaded", image.asString());
 			//boolean deleteStatus = f.delete();
-			File newF = new File(image.toString());
+			/*File newF = new File(image.toString());
 			boolean deleteStatus = newF.delete();
 			if (deleteStatus == false)
 				throw new RuntimeException("Unable to delete file '"
-						+ image.toString() + "' from Images folder.");
+						+ image.toString() + "' from Images folder.");*/
+			String[] tokens = image.toString().split("/");
+		   
+			String id = tokens[4]; 
+			id = id.replace("\"", "");
+			url = url + "delete" + "/" + id;
+			HttpClient client = new HttpClient();
+			DeleteMethod delete = new DeleteMethod(url);
+			
+			try {
+				int statusCode = client.executeMethod(delete);
+				
+				if (statusCode != HttpStatus.SC_OK)
+         		{
+					throw new RuntimeException("Unable to delete file '"
+							+ image.toString() + "' aws S3");
+         		}
+         		
+				
+			}catch(Exception ex){
+				throw new RuntimeException("Unable to delete file '"
+						+ image.toString() + "' aws S3");
+			}
+			
+			
 		}
 	}
 	
