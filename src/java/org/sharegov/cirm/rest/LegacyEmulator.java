@@ -134,9 +134,12 @@ import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.JsonUtil;
 import org.sharegov.cirm.utils.PDFExportUtil;
 import org.sharegov.cirm.utils.PDFViewReport;
+import org.sharegov.cirm.utils.RemoveImagesOnTxSuccessListener;
 import org.sharegov.cirm.utils.SendEmailOnTxSuccessListener;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 import org.sharegov.cirm.workflows.WebServiceCallTask;
+
+import com.hp.hpl.jena.reasoner.rulesys.builtins.Remove;
 
 @Path("legacy")
 @Produces("application/json")
@@ -1157,6 +1160,7 @@ public class LegacyEmulator extends RestService
 			updatedDate = getPersister().getStore().getStoreTime();
 		serviceCase.at("properties").set("hasDateLastModified", GenUtils.formatDate(updatedDate));
 		final Json actorEmails = serviceCase.at("properties").atDel("actorEmails");
+		final Json hasRemovedImage = serviceCase.at("properties").atDel("hasRemovedImage");
 		Long boid = serviceCase.at("boid").asLong();
 		if (serviceCase.at("properties").has("legacy:hasServiceActivity"))
 			for (Json a : serviceCase.at("properties").atDel("legacy:hasServiceActivity").asJsonList())
@@ -1168,8 +1172,7 @@ public class LegacyEmulator extends RestService
 		}
 		serviceCase.at("properties").set("legacy:hasServiceActivity", uiActs);
 		// delete any removed Images
-		if (serviceCase.at("properties").has("hasRemovedImage"))
-			deleteImages(serviceCase);
+		tryDeleteImages(hasRemovedImage);
 		//fetch DB Activities to compare/update against UI Activities
 		//T2
 		if(uiActs.asJsonList().size() > 0)
@@ -1468,48 +1471,20 @@ public class LegacyEmulator extends RestService
 		}
 	}
 
-	public void deleteImages(Json legacyForm)
-	{
-		Json removedImages = legacyForm.at("properties").atDel(
-				"hasRemovedImage");
-		
-		OWLNamedIndividual ind = ConfigSet.getInstance().get("UploadConfig");
-		String url = OWL.dataProperty(ind, "hasUrl").getLiteral();  
-		
-		for (Json image : removedImages.asJsonList())
-		{
-			//File f = new File(StartUp.config.at("workingDir").asString()
-			//		+ "/src/uploaded", image.asString());
-			//boolean deleteStatus = f.delete();
-			/*File newF = new File(image.toString());
-			boolean deleteStatus = newF.delete();
-			if (deleteStatus == false)
-				throw new RuntimeException("Unable to delete file '"
-						+ image.toString() + "' from Images folder.");*/
-			String[] tokens = image.toString().split("/");
-		   
-			String id = tokens[4]; 
-			id = id.replace("\"", "");
-			url = url + "delete" + "/" + id;
-			HttpClient client = new HttpClient();
-			DeleteMethod delete = new DeleteMethod(url);
-			
-			try {
-				int statusCode = client.executeMethod(delete);
-				
-				if (statusCode != HttpStatus.SC_OK)
-         		{
-					throw new RuntimeException("Unable to delete file '"
-							+ image.toString() + "' aws S3");
-         		}
-         		
-				
-			}catch(Exception ex){
-				throw new RuntimeException("Unable to delete file '"
-						+ image.toString() + "' aws S3");
+	/**
+	 * Try to delete images if serviceCase json has a hasRemovedImage property.<br>
+	 * Always called  inside of a transaction.
+	 * @param serviceCase
+	 */
+	public void tryDeleteImages(Json hasRemovedImage)
+	{	
+		if(hasRemovedImage != null && hasRemovedImage.isArray()) {
+			List<Json> hasRemovedImageList = hasRemovedImage.asJsonList();
+			if (hasRemovedImageList.size() >  0) {
+				CirmTransaction.get().addTopLevelEventListener(new RemoveImagesOnTxSuccessListener(hasRemovedImageList));
 			}
-			
-			
+		} else {
+			//programming error
 		}
 	}
 	
@@ -1595,6 +1570,7 @@ public class LegacyEmulator extends RestService
 		{
 			// System.out.println("new SR to save: " + legacyForm);
 			final Json actorEmails = legacyForm.at("properties").atDel("actorEmails");
+			final Json hasRemovedImage = legacyForm.at("properties").atDel("hasRemovedImage");
 			final String type = legacyForm.at("type").asString();
 			if (!isClientExempt()
 					&& !Permissions.check(individual("BO_New"),
@@ -1621,8 +1597,7 @@ public class LegacyEmulator extends RestService
 				@Override
 				public Json call() throws Exception
 				{
-					if (legacyForm.at("properties").has("hasRemovedImage"))
-						deleteImages(legacyForm);	
+					tryDeleteImages(hasRemovedImage);	
 					final BOntology bontology = BOntology.makeRuntimeBOntology(legacyForm);
 									
 					
