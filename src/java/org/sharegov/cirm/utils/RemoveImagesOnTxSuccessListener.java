@@ -15,9 +15,6 @@
  ******************************************************************************/
 package org.sharegov.cirm.utils;
 
-import java.io.File;
-import java.net.URL;
-import java.util.Collections;
 import java.util.List;
 
 import mjson.Json;
@@ -30,18 +27,16 @@ import org.sharegov.cirm.CirmTransactionEvent;
 import org.sharegov.cirm.CirmTransactionListener;
 import org.sharegov.cirm.ConfigSet;
 import org.sharegov.cirm.OWL;
-import org.sharegov.cirm.legacy.CirmMessage;
-import org.sharegov.cirm.legacy.MessageManager;
 
 /**
- * Transaction listener adapter that uses the MessageManager to send one or more emails on success of the toplevel transaction.
- * 
- * If a list is provided during construction, a reference to the life messages list is held, so it can be modified externally before execution.
- * Suggested usage:
- * Create and add one object of this class for every message created in the code where it is created.
- * (To avoid Lists of CirmMessages in many signatures)
- * 
- * @author Thomas Hilpold
+ * Transaction listener that removes images after a transaction success from AWS S3 (Also accepts but ignores legacy paths).<br>
+ * Legacy file based images are detected, will appear to the user to be successfully deleted, however, we don't actually delete the file from the server,
+ * but log a warning message instead. <br>
+ * <br>
+ * Suggested usage:<br>
+ * Create and add one object of this class if and only if hasRemovedImage json property coming in a service request json is a non empty array.<br>
+ * <br>
+ * @author David Wong, Thomas Hilpold
  *
  */
 public class RemoveImagesOnTxSuccessListener implements CirmTransactionListener
@@ -49,8 +44,7 @@ public class RemoveImagesOnTxSuccessListener implements CirmTransactionListener
 
 	final List<Json> hasRemovedImageList;
 	
-	public RemoveImagesOnTxSuccessListener(final List<Json> hasRemovedImageList) 
-	{
+	public RemoveImagesOnTxSuccessListener(final List<Json> hasRemovedImageList) {
 		if (hasRemovedImageList == null) throw new IllegalArgumentException("hasRemovedImages was null");
 		this.hasRemovedImageList = hasRemovedImageList;
 	}
@@ -59,71 +53,78 @@ public class RemoveImagesOnTxSuccessListener implements CirmTransactionListener
 	@Override
 	public void transactionStateChanged(CirmTransactionEvent e)
 	{
-		if (e.isSucceeded()) 
-		{
-			if (!hasRemovedImageList.isEmpty()) {
+		if (e.isSucceeded()) {
+			if (!hasRemovedImageList.isEmpty())	{
+				ThreadLocalStopwatch.now("START RemoveImagesOnTxSuccessListener removing " + hasRemovedImageList.size() + " images");
 				ThreadLocalStopwatch.getWatch().time("RemoveImagesOnTxSuccessListener removing " + hasRemovedImageList.size());
-				deleteImages();
+				try {
+					deleteImages();
+				} catch (Exception ex) {
+					ThreadLocalStopwatch.error("Error: RemoveImagesOnTxSuccessListener failed while deleting images. Stack trace to follow.");
+					ex.printStackTrace();
+				}
+				ThreadLocalStopwatch.now("END RemoveImagesOnTxSuccessListener removing " + hasRemovedImageList.size() + " images");
 			} 
 		}
 	}
 	
+	/**
+	 * Deletes all images given by hasRemovedImageList property from ASW, but also accepts legacy File paths.
+	 */
 	void deleteImages() {
 		String file; 
 		
-		for (Json image : hasRemovedImageList)
-		{
-			
+		for (Json image : hasRemovedImageList) {
 			file = image.toString();
-			
-			if(file.contains("aws") && file.contains("s3"))
+			if(file.contains("aws") && file.contains("s3")) {
 				deleteFromAWS(file); 
-			else
+			} else {
 				deleteFromFile(file);
-				
-				
+			}
 		}
 	}
 	
+	/**
+	 * Should delete a file from a location on disc, however this is not implemented.
+	 * We print a warning message instead.
+	 * 
+	 * @param filepath a local or remote windows file path
+	 */
 	void deleteFromFile(String filepath) {
-		
-		File newF = new File(filepath);
-		boolean deleteStatus = newF.delete();
-		if (deleteStatus == false)
-			throw new RuntimeException("Unable to delete file '"
-					+ filepath.toString() + "' from Images folder.");
-		
+		ThreadLocalStopwatch.error("WARNING: RemoveImagesOnTxSuccessListener: Deleting legacy image not implemented, but attempted with: " + filepath + " ");
+//		File newF = new File(filepath);
+//		boolean deleteStatus = newF.delete();
+//		if (deleteStatus == false) {
+//			throw new RuntimeException("Unable to delete file '"
+//					+ filepath.toString() + "' from Images folder.");
+//		}
 	}
 	
+	/**
+	 * Deletes a file using AWS S3 middleware services as specified in config property UploadConfig.
+	 * 
+	 * @param fileLocationUrl an AWS S3 location
+	 */
 	void deleteFromAWS(String fileLocationUrl) {
 		
 		OWLNamedIndividual ind = ConfigSet.getInstance().get("UploadConfig");
-		String url = OWL.dataProperty(ind, "hasUrl").getLiteral();   
-		
-		
-		String[] tokens = fileLocationUrl.split("/");
-		   
-		String id = tokens[4]; 
-		id = id.replace("\"", "");
-		url = url + "delete" + "/" + id;
-		HttpClient client = new HttpClient();
-		DeleteMethod delete = new DeleteMethod(url);
-		
+		String deleteServiceUrl = OWL.dataProperty(ind, "hasUrl").getLiteral();   
+		deleteServiceUrl = deleteServiceUrl + "delete" + "/";
+		String deleteFileUrl;
 		try {
+    		String[] tokens = fileLocationUrl.split("/");
+    		String id = tokens[4]; 
+    		id = id.replace("\"", "");
+    		deleteFileUrl = deleteServiceUrl  + id;
+    		HttpClient client = new HttpClient();
+    		DeleteMethod delete = new DeleteMethod(deleteFileUrl);
 			int statusCode = client.executeMethod(delete);
-			
-			if (statusCode != HttpStatus.SC_OK)
-     		{
-				throw new RuntimeException("Unable to delete file '"
-						+ fileLocationUrl.toString() + "' aws S3");
+			if (statusCode != HttpStatus.SC_OK)	{
+				throw new RuntimeException("Http response was not SC_OK, but: " + statusCode);
      		}
-     		
-			
-		}catch(Exception ex){
+		} catch(Exception ex){
 			throw new RuntimeException("Unable to delete file '"
-					+ fileLocationUrl.toString() + "' aws S3");
+					+ fileLocationUrl.toString() + "' from aws S3.", ex);
 		}			
-		
 	}
-	
 }
