@@ -54,7 +54,6 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.management.Notification;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -64,7 +63,6 @@ import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
-import org.sharegov.cirm.legacy.MessageManager;
 
 import mjson.Json;
 import oracle.jdbc.pool.OracleDataSource;
