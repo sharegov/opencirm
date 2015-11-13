@@ -5,6 +5,7 @@ import static org.sharegov.cirm.OWL.reasoner;
 
 import java.net.URI;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -707,9 +708,21 @@ public class ServiceCaseManager extends OntoAdmin {
 	
 	}
 	
+	private String getHostIpAddress (){
+		String host = "";
+		try {
+			 host = java.net.InetAddress.getLocalHost().getHostName();
+		} catch (Exception e) {
+			System.out.println("Cannot retreive IP address for localhost");
+			e.printStackTrace();
+		}
+		return host;
+	}
+	
 	public Json addQuestionsServiceCase (String individualID, Json data, String userName){
+		String host = getHostIpAddress();		
 		
-		if (validateJson("http://localhost:8182/javascript/schemas/service_field_compact.json", data)){
+		if (!host.isEmpty() && validateJson("https://"+ host + ":8183/javascript/schemas/service_field_compact.json", data)){
 
 			individualID = MetaOntology.getIndividualIdentifier(individualID);
 			

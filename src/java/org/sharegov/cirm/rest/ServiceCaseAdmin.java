@@ -294,12 +294,12 @@ public class ServiceCaseAdmin extends RestService {
 	}
 	
 	@GET
-	@Path("schemas/questions")
+	@Path("schemas/questionSchema")
 	public Response getFullQuestionSchema()
 	{
 		try {			
-			String host = java.net.InetAddress.getLocalHost().getHostAddress();
-			return Response.ok (Json.object().set("result", ServiceCaseManager.getInstance().getFullSchema("http://"+ host + ":8182/javascript/schemas/service_field_compact.json")), MediaType.APPLICATION_JSON).build();
+			String host = java.net.InetAddress.getLocalHost().getHostName();
+			return Response.ok (Json.object().set("result", ServiceCaseManager.getInstance().getFullSchema("https://"+ host + ":8183/javascript/schemas/service_field_compact.json")), MediaType.APPLICATION_JSON).build();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
