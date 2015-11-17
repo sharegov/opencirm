@@ -1,5 +1,6 @@
 package org.sharegov.cirm.legacy;
 
+import static org.sharegov.cirm.OWL.fullIri;
 import static org.sharegov.cirm.OWL.owlClass;
 import static org.sharegov.cirm.OWL.reasoner;
 
@@ -364,6 +365,11 @@ public class ServiceCaseManager extends OntoAdmin {
 				|| values.contains(OWL.dataFactory().getOWLLiteral(true));
 	}
 	
+	private String getIndividualLabel (String srType){
+		OWLNamedIndividual individual = OWL.individual(fullIri(PREFIX + srType));
+		return OWL.getEntityLabel(individual);
+	}
+	
 	/**
 	 * Disables a Service Case Type
 	 * 
@@ -389,7 +395,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			changes.add(isDisabledCreateAddAxiom);
 			
-			String comment = "Disable Service Request "+PREFIX+srType;
+			String comment = "Disable Service Request "+PREFIX+srType + " - " + getIndividualLabel(srType);
 			
 			boolean r = commit(userName, comment, changes);
 			
@@ -426,7 +432,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			changes.add(isDisabledCreateAddAxiom);
 			
-			String comment = "Enable Service Request "+PREFIX+srType;
+			String comment = "Enable Service Request "+PREFIX+srType + " - " + getIndividualLabel(srType);
 			
 			boolean r = commit(userName, comment, changes);
 			
@@ -581,7 +587,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			List<OWLOntologyChange> changes = MetaOntology.getReplaceObjectAnnotationChanges(alertIndividualID, newLabelContent);	
             
-			String comment = "Replace Alert Message for SR type: " + PREFIX + srIndividualID; 
+			String comment = "Replace Alert Message for SR type: " + PREFIX + srIndividualID + " - " + getIndividualLabel(srIndividualID); 
 			
 			boolean r = commit(userName, comment, changes);
 			
@@ -638,7 +644,7 @@ public class ServiceCaseManager extends OntoAdmin {
 				changes = MetaOntology.getAddIndividualObjectFromJsonChanges(individualID, propertyID, data);
 			}		
 
-			String comment = "Create new Alert Message for SR "+ PREFIX + individualID;	
+			String comment = "Create new Alert Message for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID);	
 			
 			boolean r = commit(userName, comment, changes);
 			
@@ -679,7 +685,7 @@ public class ServiceCaseManager extends OntoAdmin {
 				changes = MetaOntology.getRemoveAllPropertiesIndividualChanges(ind);
 			} else throw new IllegalArgumentException("No alert for individual " + PREFIX + individualID);
 			
-			String comment = "Delete Alert Message for SR "+ PREFIX + individualID;	
+			String comment = "Delete Alert Message for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID);	
 			
 			boolean r = commit(userName, comment, changes);
 			
@@ -771,7 +777,7 @@ public class ServiceCaseManager extends OntoAdmin {
 				
 				ThreadLocalStopwatch.now("---- Ended Creating New Questions.");
 	
-				String comment = "Create/Replace questions for SR "+ PREFIX + individualID;	
+				String comment = "Create/Replace questions for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID);	
 				ThreadLocalStopwatch.now("---- Start Commiting Changes.");
 				
 				boolean r = commit(userName, comment, changes);
