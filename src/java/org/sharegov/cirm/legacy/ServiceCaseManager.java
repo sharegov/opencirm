@@ -80,8 +80,8 @@ public class ServiceCaseManager extends OntoAdmin {
 	 * Takes Just the Code of what was changed and saves the date on the list
 	 * 
 	 */
-	private long registerChange (String srType){
-		return changes.put(PREFIX + srType, System.currentTimeMillis());
+	private void registerChange (String srType){
+		changes.put(PREFIX + srType, System.currentTimeMillis());
 	}
 	
 	/**
