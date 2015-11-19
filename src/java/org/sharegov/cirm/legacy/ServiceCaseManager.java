@@ -28,8 +28,6 @@ import org.sharegov.cirm.rest.OntoAdmin;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
-import com.clarkparsia.sparqlowl.parser.antlr.SparqlOwlParser.booleanLiteral_return;
-
 import mjson.Json;
 
 /**
