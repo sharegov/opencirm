@@ -811,6 +811,8 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 		}
 		
 		self.ontologyClick = function(data) {
+			//hilpold update refs here (only load SR given by data param)
+			cirm.refs.reloadServiceCaseTypeIfNeeded(data);
 		    if(cirm.refs.serviceCases[data].isDisabled != 'true')
 		    	$(document).trigger(legacy.InteractionEvents.ServiceRequestTypeClick, [data]);
 		    else {

@@ -111,6 +111,23 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
                  $.each(A, function (i,v) {x[v.label+' - '+v.hasJurisdictionCode]=v.hasLegacyCode});
                  return x;
             }},
+            //Map from SR iri to load time long value.
+            {"hasName": "serviceCaseLoadTime", "dependsOn":["serviceCases"], 
+                "map": function(A) { 
+                    var x = {};
+                    var loadTime;
+                    try { 
+                    	loadTime = top.get("/op/time").time;
+                    } catch (err) { 
+                    	console.log("serviceCaseLoadTime from server failed");
+                    }
+                    if (loadTime === undefined) {
+                    	loadTime = new Date().getTime();
+                    	console.log("refs.serviceCaseLoadTime uses client time as server time was not available");
+                    }
+                    $.each(A, function (i,v) {x[v.iri]=loadTime});
+                    return x;
+             }},
             {"hasName": "autoCompleteServiceCaseList", "dependsOn":["serviceCases"],
                 "map": function(A) {
                     var x = [];
@@ -171,6 +188,91 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
             });
         });
         self.clearCached = function () { self.cached= {} };
+        
+        // Service Case Specific functionality for CirmAdmin only
+        /**
+         * Reloads a service case type if it was modified on the server after the given timestamp.
+         * @param serviceCaseTypeIri a full IRI of a service case individual that currently exists in refs.serviceCases.
+         * @return true reload needed and success, false reload not needed
+         */
+        self.reloadServiceCaseTypeIfNeeded = function(serviceCaseTypeIri) {
+        	//1 check if IRI in list & get last load time
+        	var lastSRLoadTimeMs = self.serviceCaseLoadTime[serviceCaseTypeIri];
+        	//2 check server if modified after last load time
+        	var serviceCasePrefixedIri = "legacy:" + U.IRI.name(serviceCaseTypeIri);
+        	var modifiedAfter = top.get("/individuals/" 
+        			+ serviceCasePrefixedIri 
+        			+ "/modifiedAfter/" + lastSRLoadTimeMs).modifiedAfter;
+        	//3 reload and update cache
+        	if (modifiedAfter) {
+        		reloadServiceCaseType(serviceCaseTypeIri);
+        		console.log("reloadServiceCaseTypeIfNeeded " + serviceCasePrefixedIri + " reloaded.")
+        	} else {
+        		console.log("reloadServiceCaseTypeIfNeeded " + serviceCasePrefixedIri + " not reloaded.")
+        	}
+        	return modifiedAfter;
+        }
+        
+        /**
+         * Reloads a service case type and modifies all refs structures to replace the existing version. 
+         */
+        function reloadServiceCaseType(serviceCaseTypeIri) {
+        	var serviceCasePrefixedIri = "legacy:" + U.IRI.name(serviceCaseTypeIri);
+        	var serviceCase = top.get("/individuals/" + serviceCasePrefixedIri);
+        	var preparedSR = prepareServiceCaseTypeForUI(serviceCase);
+        	self.cached["serviceCases"][serviceCaseTypeIri] = preparedSR;
+        	//Clear dependent caches
+        	self.cached["serviceCaseList"] = null;
+        	self.cached["autoCompleteServiceCaseList"] = null;
+        	//Upate new last load time
+            var loadTime;
+            try { 
+            	loadTime = top.get("/op/time").time;
+            } catch (err) { 
+            	console.log("serviceCaseLoadTime from server failed");
+            }
+            if (loadTime === undefined) {
+            	loadTime = new Date().getTime();
+            	console.log("refs.serviceCaseLoadTime uses client time as server time was not available");
+            }
+        	self.cached["serviceCaseLoadTime"][serviceCaseTypeIri] = loadTime;
+        }
+        
+        /**
+         * Prepares a Service Case Type for 311Hub UI usage right after it was loaded from the server.
+         * (e.g. ensures arrays, sorts actors and activities, and resolves all IRIs)
+         * 
+         * @param serviceCase a serialized serviceCase individual as loaded from the server
+         * @returns a serviceCase ready for use by 311hub UI  
+         */
+        function prepareServiceCaseTypeForUI(serviceCase) {
+        	serviceCase.hasServiceField = U.ensureArray(serviceCase.hasServiceField);
+            $.each(serviceCase.hasServiceField, function(i,x) {
+                    x.hasServiceFieldAlert = U.ensureArray(x.hasServiceFieldAlert);
+            });                        
+            serviceCase.hasDataConstraint = U.ensureArray(serviceCase.hasDataConstraint);
+            serviceCase.hasServiceActor = U.ensureArray(serviceCase.hasServiceActor);
+            serviceCase.hasActivity = U.ensureArray(serviceCase.hasActivity);
+            serviceCase.hasAutoServiceActor = U.ensureArray(serviceCase.hasAutoServiceActor);
+            serviceCase.hasServiceActor.sort(function (a,b) {
+          		if(a.label && b.label)
+                    return a.label.toUpperCase().localeCompare(b.label.toUpperCase());
+                else
+                	return parseFloat(a.hasOrderBy) - parseFloat(b.hasOrderBy);
+            });
+            serviceCase.hasActivity.sort(function (a,b) {
+          		if(a.label && b.label)
+                    return a.label.toUpperCase().localeCompare(b.label.toUpperCase());
+                else
+                	return parseFloat(a.hasOrderBy) - parseFloat(b.hasOrderBy);
+            });             
+            U.resolveIris(serviceCase);  
+            return serviceCase;
+        } 
+        
+        
+        
+        
     }
 
     var meta = new MetaDataRefs();
@@ -192,7 +294,7 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
                     done(meta); 
                 });
         });
-    }
+    }   
     
     function load(name, req, done, config) {    
         //console.log('load', name, req, done, config);

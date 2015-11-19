@@ -57,6 +57,7 @@ import org.semanticweb.owlapi.reasoner.BufferingMode;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.sharegov.cirm.event.ClearOWLEntityCache;
+import org.sharegov.cirm.event.ClearOWLEntityCacheForSrTypeModification;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
@@ -671,7 +672,7 @@ public class MetaOntology
 	 */
 	public static void clearCache() {
 		synchronized (OWL.reasoner()) {
-			ClearOWLEntityCache c = new ClearOWLEntityCache();
+			ClearOWLEntityCacheForSrTypeModification c = new ClearOWLEntityCacheForSrTypeModification();
 			c.apply(null, null, null);
 		}		
 	}
