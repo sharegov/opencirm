@@ -44,7 +44,9 @@ import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.StartUp;
 import org.sharegov.cirm.legacy.Permissions;
+import org.sharegov.cirm.legacy.ServiceCaseManager;
 import org.sharegov.cirm.owl.OWLSerialEntityCache;
+import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.TraceUtils;
 
 @Path("individuals")
@@ -292,5 +294,12 @@ public class OWLIndividuals extends RestService
 			ex.printStackTrace();
 			return Json.object();
 		}
+	}
+	
+	@GET
+	@Path("/{individual}/modifiedAfter/{timeMs}")
+	@Produces("application/json")
+	public Json isOWLIndividualModifiedAfter(@PathParam("individual") String individualName, @PathParam("timeMs") String timeMs) throws OWLException {
+		return GenUtils.ok().set("modifiedAfter", ServiceCaseManager.getInstance().isInvididualModifiedAfter(individualName, Long.parseLong(timeMs)));
 	}
 }

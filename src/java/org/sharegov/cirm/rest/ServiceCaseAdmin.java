@@ -25,7 +25,7 @@ import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 public class ServiceCaseAdmin extends RestService {
 	
 	private static final String PREFIX = "legacy:";
-	private static final String KEY = "7ef54dc3a604a1514368e8707d8415";
+	private static final String KEY = "7ef54dc3a604a1514368e8707f8415";
 	private static Map<String, Json> cache = new ConcurrentHashMap<String, Json>();
 	/**
 	 * 

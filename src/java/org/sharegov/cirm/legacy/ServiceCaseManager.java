@@ -6,15 +6,12 @@ import static org.sharegov.cirm.OWL.reasoner;
 
 import java.net.URI;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import mjson.Json;
 
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -31,6 +28,10 @@ import org.sharegov.cirm.rest.OntoAdmin;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
+import com.clarkparsia.sparqlowl.parser.antlr.SparqlOwlParser.booleanLiteral_return;
+
+import mjson.Json;
+
 /**
  * Handles the User Cases for CIRM Admin Interface
  * 
@@ -41,6 +42,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	private static final String PREFIX = "legacy:";
 	private static ServiceCaseManager instance = null; 
 	private Map<String, Json> cache;
+	private Map<String, Long> changes;
 	
 	/**
 	 * private to defeat multiple instantiation
@@ -48,6 +50,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	 */
 	private ServiceCaseManager() {
 		cache = new ConcurrentHashMap<String, Json>();
+		changes = new ConcurrentHashMap<String, Long>();
 		
 		ThreadLocalStopwatch.startTop("Started Service Case Admin Cache.");
 		getAll();
@@ -73,6 +76,26 @@ public class ServiceCaseManager extends OntoAdmin {
 	 */
 	private OwlRepo getRepo() {
 		return Refs.owlRepo.resolve();
+	}
+	
+	/**
+	 * Takes Just the Code of what was changed and saves the date on the list
+	 * 
+	 */
+	private long registerChange (String srType){
+		return changes.put(PREFIX + srType, System.currentTimeMillis());
+	}
+	
+	/**
+	 * 
+	 * 
+	 */
+	public boolean isInvididualModifiedAfter (String individualID, long date){
+		Long lastChanged = changes.get(individualID);
+		
+		if (lastChanged != null) return lastChanged > date;
+		
+		return false;
 	}
 	
 	/**
@@ -400,6 +423,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			boolean r = commit(userName, comment, changes);
 			
 			if (r) {
+				registerChange(srType);
 				clearCache(srType);
 				return getServiceCaseFormated(srType);
 			} else throw new IllegalArgumentException("Unable to disable Service Case Type "+ PREFIX + srType);
@@ -437,6 +461,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			boolean r = commit(userName, comment, changes);
 			
 			if (r) {
+				registerChange(srType);
 				clearCache(srType);
 				return getServiceCaseFormated(srType);
 			} else throw new IllegalArgumentException("Unable to disable Service Case Type "+ PREFIX + srType);
@@ -592,6 +617,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			boolean r = commit(userName, comment, changes);
 			
 			if (r){
+				registerChange(srIndividualID);
 				clearCache(evictionList);
 				return getMetaIndividualFormatedIri(alertIndividualID);
 			} else throw new IllegalArgumentException("Cannot update alert label to Service Case Type "+ PREFIX +  srIndividualID);
@@ -649,6 +675,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			boolean r = commit(userName, comment, changes);
 			
 			if (r){
+				registerChange(individualID);
 				clearCache(evictionList);
 				return getMetaIndividualFormatedIri(data.at("iri").asString());
 			} throw new IllegalArgumentException("Cannot update label to Service Case Type "+ PREFIX +  individualID);
@@ -689,7 +716,10 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			boolean r = commit(userName, comment, changes);
 			
-			if (r) clearCache(evictionList);
+			if (r){
+				registerChange(individualID);
+				clearCache(evictionList);
+			}
 			
 			return Json.object().set("success", r);
 				
@@ -785,6 +815,7 @@ public class ServiceCaseManager extends OntoAdmin {
 				ThreadLocalStopwatch.now("---- Ended Commiting Changes.");
 				
 				if (r){
+					registerChange(individualID);
 					clearCache(evictionList);
 					return getServiceCaseQuestions(individualID);
 				} throw new IllegalArgumentException("Cannot update questions to Service Case Type "+ PREFIX +  individualID);
