@@ -101,7 +101,7 @@ public class StartUp extends ServerResource
 					"http://www.miamidade.gov/cirm/legacy#providedBy",
 					"http://www.miamidade.gov/cirm/legacy#hasChoiceValue"
 					))
-			.set("metaDatabaseLocation", "c:/temp/testontodb")
+			.set("metaDatabaseLocation", "c:/temp/testontodbADMIN")
 			.set("allClientsExempt", true)
 			.set("network", Json.object(				
 					"user", "cirm-test",
@@ -113,7 +113,8 @@ public class StartUp extends ServerResource
 					"mdc:", "http://www.miamidade.gov/ontology#",
 					":", "http://www.miamidade.gov/ontology#"
 					))
-			.set("cachedReasonerPopulate", false);
+			.set("cachedReasonerPopulate", false)
+			.set("isConfigServer", true);
 			
 	
 	public static Component server = null; 
@@ -136,6 +137,15 @@ public class StartUp extends ServerResource
         return server != null && server.isStarted();
     }
     
+    /**
+     * Returns true if and only if this server is a configuration server intended to allow 
+     * modifications of version managed ontologies and preview those changes in it's 311Hub UI (CirmAdmin project).
+     *  
+     * @return true, or false if this is a normal 311Hub production server
+     */
+    public static boolean isConfigServer() {
+        return config.has("isConfigServer") && config.at("isConfigServer").asBoolean(); 
+    }
 
 	public static class CirmServerResource extends DirectoryServerResource 
 	{

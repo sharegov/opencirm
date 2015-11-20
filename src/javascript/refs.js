@@ -77,28 +77,8 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
                     //A = [A];  
                     var m = {};
                     $.each(A, function(i,v) {
-                        v.hasServiceField = U.ensureArray(v.hasServiceField);
-                        $.each(v.hasServiceField, function(i,x) {
-                                x.hasServiceFieldAlert = U.ensureArray(x.hasServiceFieldAlert);
-                        });                        
-                        v.hasDataConstraint = U.ensureArray(v.hasDataConstraint);
-                        v.hasServiceActor = U.ensureArray(v.hasServiceActor);
-                        v.hasActivity = U.ensureArray(v.hasActivity);
-                        v.hasAutoServiceActor = U.ensureArray(v.hasAutoServiceActor);
-                        v.hasServiceActor.sort(function (a,b) {
-                      		if(a.label && b.label)
-                                return a.label.toUpperCase().localeCompare(b.label.toUpperCase());
-                            else
-                            	return parseFloat(a.hasOrderBy) - parseFloat(b.hasOrderBy);
-                        });
-                        v.hasActivity.sort(function (a,b) {
-                      		if(a.label && b.label)
-                                return a.label.toUpperCase().localeCompare(b.label.toUpperCase());
-                            else
-                            	return parseFloat(a.hasOrderBy) - parseFloat(b.hasOrderBy);
-                        });             
-                        U.resolveIris(v);                        
-                        m[v.iri] = v;
+                    	var serviceCase = prepareServiceCaseTypeForUI(v);
+                        m[v.iri] = prepareServiceCaseTypeForUI(serviceCase);
                     });
                     // May we could a 'get' method here the accept IRI fragments and prepends
                     // the rest, cause now the full IRI is scattered through the code hard-coded
@@ -196,16 +176,25 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
          * @return true reload needed and success, false reload not needed
          */
         self.reloadServiceCaseTypeIfNeeded = function(serviceCaseTypeIri) {
+        	var serviceCaseTypeFullIri = serviceCaseTypeIri;
+        	//Ensure valid full iri
+        	var prefixIdx = serviceCaseTypeFullIri.indexOf("legacy:");
+        	if (prefixIdx == 0) {
+        		serviceCaseTypeFullIri = serviceCaseTypeFullIri.slice("legacy:".length);
+        	}        	
+        	if (serviceCaseTypeFullIri.indexOf("http://") == -1) {
+        		serviceCaseTypeFullIri = "http://www.miamidade.gov/cirm/legacy#" + serviceCaseTypeFullIri;
+        	}
         	//1 check if IRI in list & get last load time
-        	var lastSRLoadTimeMs = self.serviceCaseLoadTime[serviceCaseTypeIri];
+        	var lastSRLoadTimeMs = self.serviceCaseLoadTime[serviceCaseTypeFullIri];
         	//2 check server if modified after last load time
-        	var serviceCasePrefixedIri = "legacy:" + U.IRI.name(serviceCaseTypeIri);
+        	var serviceCasePrefixedIri = "legacy:" + U.IRI.name(serviceCaseTypeFullIri);
         	var modifiedAfter = top.get("/individuals/" 
         			+ serviceCasePrefixedIri 
         			+ "/modifiedAfter/" + lastSRLoadTimeMs).modifiedAfter;
         	//3 reload and update cache
         	if (modifiedAfter) {
-        		reloadServiceCaseType(serviceCaseTypeIri);
+        		reloadServiceCaseType(serviceCaseTypeFullIri);
         		console.log("reloadServiceCaseTypeIfNeeded " + serviceCasePrefixedIri + " reloaded.")
         	} else {
         		console.log("reloadServiceCaseTypeIfNeeded " + serviceCasePrefixedIri + " not reloaded.")
