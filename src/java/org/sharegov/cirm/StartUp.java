@@ -95,7 +95,6 @@ public class StartUp extends ServerResource
 			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#LocalConfigSetXE")
 			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#LocalConfigSet")
 			.set("nameBase", "http://www.miamidade.gov/ontology" )
-			.set("customIRIMappingFile", "C:/work/mdcirm/customIRIMap.properties")
 			.set("stopExpansionConditionIRI", Json.array(
 					"http://www.miamidade.gov/cirm/legacy#providedBy",
 					"http://www.miamidade.gov/cirm/legacy#hasChoiceValue"
@@ -103,16 +102,17 @@ public class StartUp extends ServerResource
 			.set("metaDatabaseLocation", "c:/temp/testontodb")
 			.set("allClientsExempt", true)
 			.set("network", Json.object(				
-					"user", "bolerio-dev",
-					"password","password",
+					"user", "cirmservice_production",
+					"password","cirmsprod",
 					"serverUrl","s0141667",
-					"bff","cirmdevelopmentontology"))
+					"ontoServer","ontology_server_production"))
 			.set("ontologyPrefixes", Json.object(
 					"legacy:", "http://www.miamidade.gov/cirm/legacy#",
 					"mdc:", "http://www.miamidade.gov/ontology#",
 					":", "http://www.miamidade.gov/ontology#"
 					))
 			.set("cachedReasonerPopulate", false);
+			//.set("NOT IN USE SINCE 2442 customIRIMappingFile", "C:/work/mdcirm/customIRIMap.properties");
 			
 	
 	public static Component server = null; 
