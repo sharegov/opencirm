@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response.Status;
 import mjson.Json;
 
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.sharegov.cirm.StartUp;
 import org.sharegov.cirm.legacy.ServiceCaseManager;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
@@ -299,7 +300,10 @@ public class ServiceCaseAdmin extends RestService {
 	{
 		try {			
 			String host = java.net.InetAddress.getLocalHost().getHostName();
-			return Response.ok (Json.object().set("result", ServiceCaseManager.getInstance().getFullSchema("https://"+ host + ":8183/javascript/schemas/service_field_compact.json")), MediaType.APPLICATION_JSON).build();
+			String protocol = StartUp.config.at("ssl").asBoolean() ? "https://": "http://";
+			String port =  StartUp.config.at("ssl").asBoolean() ? StartUp.config.at("ssl-port").asInteger() != 443 ? ":" + StartUp.config.at("ssl-port").asString(): "": 
+																  StartUp.config.at("port").asInteger() != 80 ? ":" + StartUp.config.at("port").asString(): "";
+			return Response.ok (Json.object().set("result", ServiceCaseManager.getInstance().getFullSchema(protocol + host + port + "/javascript/schemas/service_field_compact.json")), MediaType.APPLICATION_JSON).build();
 			
 		} catch (Exception e) {
 			e.printStackTrace();

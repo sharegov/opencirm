@@ -22,6 +22,7 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.sharegov.cirm.MetaOntology;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
+import org.sharegov.cirm.StartUp;
 import org.sharegov.cirm.owl.OwlRepo;
 import org.sharegov.cirm.rest.OWLIndividuals;
 import org.sharegov.cirm.rest.OntoAdmin;
@@ -743,20 +744,25 @@ public class ServiceCaseManager extends OntoAdmin {
 	}
 	
 	private String getHostIpAddress (){
-		String host = "";
+		String host = "",
+			   protocol = "",
+			   port = "";
 		try {
-			 host = java.net.InetAddress.getLocalHost().getHostName();
+			host = java.net.InetAddress.getLocalHost().getHostName();
+			protocol = StartUp.config.at("ssl").asBoolean() ? "https://": "http://";
+			port =  StartUp.config.at("ssl").asBoolean() ? StartUp.config.at("ssl-port").asInteger() != 443 ? ":" + StartUp.config.at("ssl-port").asString(): "": 
+														   StartUp.config.at("port").asInteger() != 80 ? ":" + StartUp.config.at("port").asString(): "";
 		} catch (Exception e) {
 			System.out.println("Cannot retreive IP address for localhost");
 			e.printStackTrace();
 		}
-		return host;
+		return protocol + host + port;
 	}
 	
 	public Json addQuestionsServiceCase (String individualID, Json data, String userName){
 		String host = getHostIpAddress();		
 		
-		if (!host.isEmpty() && validateJson("https://"+ host + ":8183/javascript/schemas/service_field_compact.json", data)){
+		if (!host.isEmpty() && validateJson(host + "/javascript/schemas/service_field_compact.json", data)){
 
 			individualID = MetaOntology.getIndividualIdentifier(individualID);
 			
