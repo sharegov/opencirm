@@ -81,6 +81,7 @@ public class StartUp extends ServerResource
 	public static Level LOGGING_LEVEL = Level.INFO;
 
 	public volatile static Json config = Json.object()
+			.set("isConfigServer", true)
 			.set("workingDir", "C:/work/opencirm")
 			.set("mainApplication", "http://www.miamidade.gov/ontology#CIRMApplication") 
 			.set("port", 8182)
@@ -101,20 +102,19 @@ public class StartUp extends ServerResource
 					"http://www.miamidade.gov/cirm/legacy#providedBy",
 					"http://www.miamidade.gov/cirm/legacy#hasChoiceValue"
 					))
-			.set("metaDatabaseLocation", "c:/temp/testontodbADMIN")
+			.set("metaDatabaseLocation", "c:/temp/testdbConf")
 			.set("allClientsExempt", true)
 			.set("network", Json.object(				
-					"user", "cirm-test",
-					"password","12345",
+					"user", "cirmconfigservice_test",
+					"password","ccstest",
 					"serverUrl","s0141667",
-					"bff","ontology_server_test"))
+					"ontoServer","ontology_server_test"))
 			.set("ontologyPrefixes", Json.object(
 					"legacy:", "http://www.miamidade.gov/cirm/legacy#",
 					"mdc:", "http://www.miamidade.gov/ontology#",
 					":", "http://www.miamidade.gov/ontology#"
 					))
-			.set("cachedReasonerPopulate", false)
-			.set("isConfigServer", true);
+			.set("cachedReasonerPopulate", false);
 			
 	
 	public static Component server = null; 
