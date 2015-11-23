@@ -104,8 +104,8 @@ public class StartUp extends ServerResource
 			.set("metaDatabaseLocation", "c:/temp/testontodb")
 			.set("allClientsExempt", true)
 			.set("network", Json.object(				
-					"user", "cirm-test",
-					"password","12345",
+					"user", "cirmconfigservice_test",
+					"password","ccstest",
 					"serverUrl","s0141667",
 					"bff","ontology_server_test"))
 			.set("ontologyPrefixes", Json.object(
