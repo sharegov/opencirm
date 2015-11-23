@@ -58,7 +58,7 @@ public class PhotoUploadResource extends ServerResource
 	@Post 
 	public Representation upload(Representation entity){
 		
-		String s3URl = getUploadServiceUrl();
+		String s3URl = getUploadServiceUrl() + "upload64encoded";
 		Json json = Json.object();
 		Json request = Json.object();
 		Json result; 

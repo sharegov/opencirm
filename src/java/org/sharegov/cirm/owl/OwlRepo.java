@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import mjson.Json;
@@ -31,7 +30,6 @@ import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowseRepository
 import org.hypergraphdb.app.owl.versioning.distributed.activity.PullActivity;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowseRepositoryActivity.BrowseEntry;
 import org.hypergraphdb.peer.HGPeerIdentity;
-import org.hypergraphdb.peer.workflow.ActivityResult;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntologyID;
 import org.sharegov.cirm.StartUp;
@@ -40,13 +38,12 @@ import org.sharegov.cirm.StartUp;
  * Encapsulate the OWL repository and networking services with some
  * convenience operations needed by the application;
  * 
- * @author boris, thomas
+ * @author boris
  *
  */
 public class OwlRepo
 {
 	private static final OwlRepo instance = new OwlRepo();
-	public static final int REMOTE_ONTO_TIMEOUT_MINS = 15;
 	
 	/**
 	 * Prefer Refs.owlRepo.resolve() as the correct method to get a reference to the repo.
@@ -54,23 +51,23 @@ public class OwlRepo
 	public static OwlRepo getInstance() { return instance; }
 	
 	VDHGDBOntologyRepository repo; //= VDHGDBOntologyRepository.getInstance();
-	HGPeerIdentity bff = null;
+	HGPeerIdentity ontoServer = null;
 	
-	private void findBFF()
+	private void findOntoServer()
 	{
-		String bffname = StartUp.config.at("network").at("bff").asString();
+		String ontoServerName = StartUp.config.at("network").at("ontoServer").asString();
 		for (HGPeerIdentity id : repo.getPeer().getConnectedPeers())
 		{
 			String name = (String)repo.getPeer().getNetworkTarget(id);
-			if (name.startsWith(bffname))
+			if (name.startsWith(ontoServerName))
 			{
-				bff = id;
+				ontoServer = id;
 				return;
 			}
 		}
 	}
 	
-	private synchronized void ensureRepository() {
+	private void ensureRepository() {
 		if (repo == null) {
 			repo = VDHGDBOntologyRepository.getInstance();
 			if (repo.getOntologyManager() == null) {
@@ -81,7 +78,7 @@ public class OwlRepo
 	
 	public HGPeerIdentity getDefaultPeer()
 	{
-		return bff;
+		return ontoServer;
 	}
 	
 	public VDHGDBOntologyRepository repo() 
@@ -93,7 +90,7 @@ public class OwlRepo
 	public boolean ensurePeerStarted()
 	{
 		ensureRepository();
-		if (repo.getPeer() != null && repo.getPeer().getPeerInterface().isConnected() && bff != null)
+		if (repo.getPeer() != null && repo.getPeer().getPeerInterface().isConnected() && ontoServer != null)
 			return true;
 		synchronized (repo)
 		{
@@ -106,57 +103,26 @@ public class OwlRepo
 								   	 config.at("password").asString(), 
 								   	 config.at("serverUrl").asString());
 			}
-			if (bff == null)
+			if (ontoServer == null)
 			{
 				// Now, we need to wait for peers to connect
 				for (int i = 0; i < 5; i++)
 				{
-					findBFF();
+					findOntoServer();
 					try { Thread.sleep(1000); }
 					catch (Throwable t) { }
 				}
 			}
-			if (bff == null)
+			if (ontoServer == null)
 			{
-				ensurePeerStopped();
-				throw new RuntimeException("Best friend forever " + 
-						StartUp.config.at("network").at("bff").asString() +
-						" is offline, try again later.");
+				repo.getPeer().stop();
+				throw new RuntimeException("Ontology Server " + 
+						StartUp.config.at("network").at("ontoServer").asString() +
+						" is offline, please ensure server is started and try again.");
 			}
 			return true;
 		}
 	}	
-
-	/**
-	 * Checks if peer is not connected and stops peer, if necessary.
-	 * 
-	 */
-	public void ensurePeerStopped() 
-	{
-		ensureRepository();
-		if (repo.getPeer() != null && repo.getPeer().getPeerInterface().isConnected()) 
-		{
-			synchronized (repo)
-			{
-				repo.getPeer().getPeerInterface().stop();
-			}
-		}
-	}
-	
-	/**
-	 * Shuts down the current repository by stopping peer, networking and closing the graph db.	
-	 */
-	public void shutdownRepository() {
-		synchronized(repo) {
-			if (repo == null) throw new IllegalStateException("No repository to shut down.");
-			if (repo != null) { 
-				ensurePeerStopped();
-				repo.stopNetworking();
-				repo.dispose();	
-				repo = null;
-			}
-		}
-	}
 	
 	/**
 	 * Creates a local repository at the given location and downloads (pulls) ontologies from the default peer.
@@ -193,47 +159,26 @@ public class OwlRepo
 					}
 				}
 				ensurePeerStarted();
-				System.out.println("My best friend forever is " + getDefaultPeer());
-				BrowseRepositoryActivity browseAct = repo.browseRemote(bff);
+				System.out.println("Connected to Ontology Server " + getDefaultPeer());
+				BrowseRepositoryActivity browseAct = repo.browseRemote(ontoServer);
 				try
 				{
-					Future<ActivityResult> browseFuture = browseAct.getFuture(); 
-					ActivityResult browseResult = browseFuture.get(REMOTE_ONTO_TIMEOUT_MINS, TimeUnit.MINUTES);
-					
-					if (browseResult.getException() != null) throw browseResult.getException(); 
+					browseAct.getFuture().get(60, TimeUnit.SECONDS);
 					List<BrowseEntry> remoteEntries = findRemoteEntriesFor(ontologyIRIs, browseAct.getRepositoryBrowseEntries());
-					for(BrowseEntry remoteEntry : remoteEntries) 
-					{
+					for(BrowseEntry remoteEntry : remoteEntries) {
 						if (repo.getHyperGraph().get(remoteEntry.getUuid()) != null) {
 							throw new IllegalStateException("Cannot create ontology " + remoteEntry.getOwlOntologyIRI() + "in local repository with UUID " + remoteEntry.getUuid()+ " because it (the uuid) exists locally. \r\n ");
 						}
 					}
-					for(BrowseEntry remoteEntry : remoteEntries) 
-					{
+					for(BrowseEntry remoteEntry : remoteEntries) {
 						System.out.println("Pulling new ontology from remote: " + remoteEntry.getOwlOntologyIRI() + " (" + remoteEntry.getUuid() + ")" + " Mode: " + remoteEntry.getDistributionMode());
-						PullActivity pullActivity = repo.pullNew(remoteEntry.getUuid(), bff);
-						Future<ActivityResult> pullFuture = pullActivity.getFuture();
-						ActivityResult pullResult = pullFuture.get(REMOTE_ONTO_TIMEOUT_MINS, TimeUnit.MINUTES);
-						if (!pullFuture.isDone()) 
-						{	
-							throw new IllegalStateException("Error: Pulling ontology timed out after (" + REMOTE_ONTO_TIMEOUT_MINS + " mins) Delete /db directory and restart server.");
-						} 
-						else if (pullResult != null && pullResult.getException() != null)
-						{
-							throw pullResult.getException();
-						}
-						System.out.println("Pulling new completed: " + pullActivity.getCompletedMessage());
-					}
+						PullActivity a = repo.pullNew(remoteEntry.getUuid(), ontoServer);
+						a.getFuture().get(160, TimeUnit.SECONDS);
+						System.out.println("Pulling new completed: " + a.getCompletedMessage());
+					}					
 				}
-				catch (Throwable e)
+				catch (Exception e)
 				{
-					try {
-						System.out.println("Stopping networking and shutting down repo after failing to pull ontos.");
-						shutdownRepository();
-						System.out.println("Stopped.");
-					} catch (Exception ex){
-						System.err.println("During stopping peer: " + ex);
-					}
 					throw new RuntimeException(e);
 				}
 				return null;

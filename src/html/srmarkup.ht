@@ -505,10 +505,17 @@
 		<div class="sr_aa" data-bind="foreach: data().properties().hasImage">
 			
 			<div class="grid_6 alpha">
-				<img data-bind="attr:{src : $data}" height="90" width="90"/>
+				<a data-bind="attr:{href: $data, target: '_blank'}" >
+					<img data-bind="attr:{src : $data}" height="90" width="90"/>
+				</a>
 				<!-- <img data-bind="attr:{src : $root.getImageSource($data)}"/> -->
 			</div>
-			<div class="grid_1 omega"><a href="#" data-bind="click: $root.removeImage" >Remove</a></div>
+			
+			<div class="grid_1 omega"><a href="#" data-bind="click: $root.removeImage" >Remove</a>
+			<br/>
+			
+			<a data-bind="attr:{href: $data, target: '_blank'}" >View</a>
+			</div>
 			<div class="clear">&nbsp;</div>
 		</div>
 	</div>  <!-- sr_images -->

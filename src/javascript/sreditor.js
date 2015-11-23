@@ -3118,6 +3118,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
 		};*/
 		
 		self.removeImage = function(data) {
+			console.log("removing image "); 
+			console.log(data);
 			$("#sh_dialog_alert")[0].innerText = "Are you sure you want to delete this Image";
 			$("#sh_dialog_alert").dialog({ height: 150, width: 350, modal: true, buttons: {
 				"Delete" : function() {
