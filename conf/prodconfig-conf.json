@@ -1,0 +1,37 @@
+{
+	"isConfigServer", true,
+    "workingDir":"c:/cirmservices",
+    "port":80,
+    "ssl":true,
+    "ssl-port":443,
+    "keystore", "cirmsslcertificate.jks",
+    "storePass", "cirmservices",
+    "keyPass", "password",
+	"defaultOntologyIRI":"http://www.miamidade.gov/cirm/legacy",
+    "metaDatabaseLocation", "c:/cirmservices/dbConf/",
+    "mainApplication" : "http://www.miamidade.gov/ontology#CIRMApplication",    
+    "ontologyConfigSet":"http://www.miamidade.gov/ontology#TestConfigSet",    
+	"network" : { "user": "cirmconfigservice_production",
+				"password":"ccsprod",
+				"serverUrl":"s0141667",
+				"ontoServer":"ontology_server_production"},
+    "ontologyPrefixes": {
+    	"legacy:" : "http://www.miamidade.gov/cirm/legacy#",
+		"mdc:" : "http://www.miamidade.gov/ontology#",
+		":" : "http://www.miamidade.gov/ontology#" 
+     },
+     "cachedReasonerPopulate": false,
+     "ftpServer":"ftp.miamidade.gov",
+     "ftpCredentials":true,
+     "ftpUsername":"miamidade\\SW-report",
+     "ftpPassword":"P@$$w0rd1",
+     "ftpLocation":"swm\\data",
+     "changeset":"",
+     "version":"2.0.0",
+	 "nameBase" : "http://www.miamidade.gov/ontology",
+	 "stopExpansionConditionIRI" : [
+					"http://www.miamidade.gov/cirm/legacy#providedBy",
+					"http://www.miamidade.gov/cirm/legacy#hasChoiceValue"
+					]
+     
+}
