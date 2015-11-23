@@ -15,19 +15,19 @@
 		"ServiceNote": {
 							"additionalProperties": false,
 							"properties": {
-								"iri": {"$ref": "#/definitions/iri"},
+								"isDisabled": {"$ref": "#/definitions/isDisabled"},
+								"hasBusinessCodes": {"$ref": "#/definitions/hasBusinessCodes"},
+								"hasOrderBy": {"$ref": "#/definitions/hasOrderBy"},
 								"label": {"$ref": "#/definitions/label"},
 								"hasAllowableModules": {"$ref": "#/definitions/hasAllowableModules"},
-								"hasBusinessCodes": {"$ref": "#/definitions/hasBusinessCodes"},
-								"hasDataType": {"$ref": "#/definitions/hasDataType"},
-								"hasLegacyCode": {"$ref": "#/definitions/hasLegacyCode"},
-								"hasOrderBy": {"$ref": "#/definitions/hasOrderBy"},								
-								"hasChoiceValueList": {"$ref": "#/definitions/hasChoiceValueList"},
-								"hasDataSource": {"$ref": "#/definitions/hasDataSource"},
-								"isDisabled": {"$ref": "#/definitions/isDisabled"},
 								"type": {
 									"enum": ["ServiceNote"]
-								}
+								},
+								"hasDataType": {"$ref": "#/definitions/hasDataType"},
+								"iri": {"$ref": "#/definitions/iri"},
+								"hasDataSource": {"$ref": "#/definitions/hasDataSource"},
+								"hasLegacyCode": {"$ref": "#/definitions/hasLegacyCode"},
+								"hasChoiceValueList": {"$ref": "#/definitions/hasChoiceValueList"}
 							},
 							"required": [
 								"iri",
@@ -43,20 +43,20 @@
 		"ServiceQuestion": {
 								"additionalProperties": false,
 								"properties": {
-									"iri": {"$ref": "#/definitions/iri"},
-									"label": {"$ref": "#/definitions/label"},								
-									"hasAllowableModules": {"$ref": "#/definitions/hasAllowableModules"},
-									"hasBusinessCodes": {"$ref": "#/definitions/hasBusinessCodes"},
-									"hasDataType": {"$ref": "#/definitions/hasDataType"},
-									"hasLegacyCode": {"$ref": "#/definitions/hasLegacyCode"},								
+									"isDisabled": {"$ref": "#/definitions/isDisabled"},
+									"hasBusinessCodes": {"$ref": "#/definitions/hasBusinessCodes"},									
 									"hasOrderBy": {"$ref": "#/definitions/hasOrderBy"},
-									"hasChoiceValueList": {"$ref": "#/definitions/hasChoiceValueList"},
-									"hasServiceFieldAlert": {"$ref": "#/definitions/hasServiceFieldAlert"},	
-									"isDisabled": {"$ref": "#/definitions/isDisabled"},	
+									"hasLegacyCode": {"$ref": "#/definitions/hasLegacyCode"},
+									"hasServiceFieldAlert": {"$ref": "#/definitions/hasServiceFieldAlert"},
+									"label": {"$ref": "#/definitions/label"},									
+									"hasAllowableModules": {"$ref": "#/definitions/hasAllowableModules"},
 									"hasDefaultIntakeMethod": {"$ref": "#/definitions/hasDefaultIntakeMethod"},
 									"type": {
 										"enum": ["ServiceQuestion"]
 									},
+									"hasChoiceValueList": {"$ref": "#/definitions/hasChoiceValueList"},
+									"hasDataType": {"$ref": "#/definitions/hasDataType"},
+									"iri": {"$ref": "#/definitions/iri"}
 								},
 								"required": [
 									"iri",
