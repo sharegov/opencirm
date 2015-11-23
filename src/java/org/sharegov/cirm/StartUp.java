@@ -103,10 +103,10 @@ public class StartUp extends ServerResource
 			.set("metaDatabaseLocation", "c:/temp/testontodb")
 			.set("allClientsExempt", true)
 			.set("network", Json.object(				
-					"user", "bolerio-dev",
-					"password","password",
+					"user", "cirmservice_production",
+					"password","cirmsprod",
 					"serverUrl","s0141667",
-					"bff","cirmdevelopmentontology"))
+					"ontoServer","ontology_server_production"))
 			.set("ontologyPrefixes", Json.object(
 					"legacy:", "http://www.miamidade.gov/cirm/legacy#",
 					"mdc:", "http://www.miamidade.gov/ontology#",

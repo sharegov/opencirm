@@ -51,17 +51,17 @@ public class OwlRepo
 	public static OwlRepo getInstance() { return instance; }
 	
 	VDHGDBOntologyRepository repo; //= VDHGDBOntologyRepository.getInstance();
-	HGPeerIdentity bff = null;
+	HGPeerIdentity ontoServer = null;
 	
-	private void findBFF()
+	private void findOntoServer()
 	{
-		String bffname = StartUp.config.at("network").at("bff").asString();
+		String ontoServerName = StartUp.config.at("network").at("ontoServer").asString();
 		for (HGPeerIdentity id : repo.getPeer().getConnectedPeers())
 		{
 			String name = (String)repo.getPeer().getNetworkTarget(id);
-			if (name.startsWith(bffname))
+			if (name.startsWith(ontoServerName))
 			{
-				bff = id;
+				ontoServer = id;
 				return;
 			}
 		}
@@ -78,7 +78,7 @@ public class OwlRepo
 	
 	public HGPeerIdentity getDefaultPeer()
 	{
-		return bff;
+		return ontoServer;
 	}
 	
 	public VDHGDBOntologyRepository repo() 
@@ -90,7 +90,7 @@ public class OwlRepo
 	public boolean ensurePeerStarted()
 	{
 		ensureRepository();
-		if (repo.getPeer() != null && repo.getPeer().getPeerInterface().isConnected() && bff != null)
+		if (repo.getPeer() != null && repo.getPeer().getPeerInterface().isConnected() && ontoServer != null)
 			return true;
 		synchronized (repo)
 		{
@@ -103,22 +103,22 @@ public class OwlRepo
 								   	 config.at("password").asString(), 
 								   	 config.at("serverUrl").asString());
 			}
-			if (bff == null)
+			if (ontoServer == null)
 			{
 				// Now, we need to wait for peers to connect
 				for (int i = 0; i < 5; i++)
 				{
-					findBFF();
+					findOntoServer();
 					try { Thread.sleep(1000); }
 					catch (Throwable t) { }
 				}
 			}
-			if (bff == null)
+			if (ontoServer == null)
 			{
 				repo.getPeer().stop();
-				throw new RuntimeException("Best friend forever " + 
-						StartUp.config.at("network").at("bff").asString() +
-						" is offline, try again later.");
+				throw new RuntimeException("Ontology Server " + 
+						StartUp.config.at("network").at("ontoServer").asString() +
+						" is offline, please ensure server is started and try again.");
 			}
 			return true;
 		}
@@ -159,8 +159,8 @@ public class OwlRepo
 					}
 				}
 				ensurePeerStarted();
-				System.out.println("My best friend forever is " + getDefaultPeer());
-				BrowseRepositoryActivity browseAct = repo.browseRemote(bff);
+				System.out.println("Connected to Ontology Server " + getDefaultPeer());
+				BrowseRepositoryActivity browseAct = repo.browseRemote(ontoServer);
 				try
 				{
 					browseAct.getFuture().get(60, TimeUnit.SECONDS);
@@ -172,7 +172,7 @@ public class OwlRepo
 					}
 					for(BrowseEntry remoteEntry : remoteEntries) {
 						System.out.println("Pulling new ontology from remote: " + remoteEntry.getOwlOntologyIRI() + " (" + remoteEntry.getUuid() + ")" + " Mode: " + remoteEntry.getDistributionMode());
-						PullActivity a = repo.pullNew(remoteEntry.getUuid(), bff);
+						PullActivity a = repo.pullNew(remoteEntry.getUuid(), ontoServer);
 						a.getFuture().get(160, TimeUnit.SECONDS);
 						System.out.println("Pulling new completed: " + a.getCompletedMessage());
 					}					

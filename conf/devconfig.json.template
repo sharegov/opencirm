@@ -12,9 +12,9 @@
        ":":"http://www.miamidade.gov/ontology#",
        "mdc:":"http://www.miamidade.gov/ontology#"},
    "network":{
-       "bff":"cirmdevelopmentontology",
-       "password":"password",
-       "user":"bolerio-dev",
+       "ontoServer":"ontology_server_test",
+       "password":"N/A",
+       "user":"cirmservice_test",
        "serverUrl":"s0141667"},
    "keystore":"cirm.jks",
    "storePass":"password",
