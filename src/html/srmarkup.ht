@@ -492,9 +492,9 @@
 		</div>
 		<div style="margin-bottom:10px;" data-bind="if: srType().label">
 			<div data-bind="template: {name: $root.getAddrSRTypeTemplate}"></div>
-			<h5> Please upload any pictures related to the current Service Request. </h5>
+			<h5> Please upload any files related to the current Service Request. </h5>
 			<div class="grid_5 alpha">
-				<input id="fileUploader" type="file" name="uploadImage" accept="image/*"/>
+				<input id="fileUploader" type="file" name="uploadAttachment" accept="*"/>
 			</div>
 			<div class="grid_2 omega">
             	<input name="Upload File" type="button" value="Upload File" data-bind="event: {click: uploadFiles}">
@@ -502,11 +502,15 @@
 			<div class="clear">&nbsp;</div>
 		</div>
 		
+		<div id="attachmentSection">
+		<p> Last name: <strong data-bind="text: message"></strong></p>
+		</div>
+		
 		<div class="sr_aa" data-bind="foreach: data().properties().hasImage">
 			
 			<div class="grid_6 alpha">
 				<a data-bind="attr:{href: $data, target: '_blank'}" >
-					<img data-bind="attr:{src : $data}" height="90" width="90"/>
+				<!--	<img data-bind="attr:{src : $data}" height="90" width="90"/> -->
 				</a>
 				<!-- <img data-bind="attr:{src : $root.getImageSource($data)}"/> -->
 			</div>

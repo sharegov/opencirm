@@ -3767,6 +3767,10 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		
     }
     
+    function attachment(){
+    	this.message = "Hello From photo resource";
+    }
+    
     /**
      * sr: The service request
      */
@@ -3774,7 +3778,10 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
         var self = {};
         self.markup = $(srmarkupText);
         self.model = new RequestModel(addressModel);
+        console.log("section"); 
+        console.log(self.markup[0]);
         ko.applyBindings(self.model, self.markup[0]);
+        ko.applyBindings(new attachment(), document.getElementById('attachmentSection'))
 /*
         var obj = legacy.metadata.LegacyServiceCaseListInput;
         //cirm.top.get("/legacy?q=LegacyServiceCaseListInput");

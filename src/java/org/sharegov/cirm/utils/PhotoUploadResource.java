@@ -87,7 +87,7 @@ public class PhotoUploadResource extends ServerResource
              	if(stream.getFieldName().equals("uploadImage"))
              	{
              		String contentType = stream.getContentType();
-             		if(contentType.startsWith("image")){
+             		
              		String extn = contentType.substring(contentType.indexOf("/")+1);
              		byte[] file = GenUtils.getBytesFromStream(stream.openStream(), true);
              		Base64 base64 = new Base64();
@@ -118,7 +118,7 @@ public class PhotoUploadResource extends ServerResource
              		}
              		rep = new StringRepresentation(json.toString(), (org.restlet.data.MediaType)org.restlet.data.MediaType.TEXT_HTML);
              		break;
-             		}
+             		
              	}
              }
 			}
