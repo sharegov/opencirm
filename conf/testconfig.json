@@ -12,7 +12,7 @@
     "metaDatabaseLocation", "c:/cirmservices/db/",
 	"mainApplication" : "http://www.miamidade.gov/ontology#CIRMApplication",
     "ontologyConfigSet":"http://www.miamidade.gov/ontology#TestConfigSet",    
-	"network" : { "user", "cirmservice_production,
+	"network" : { "user", "cirmservice_production",
 				"password","cirmsprod",
 				"serverUrl","s0141667",
 				"ontoServer","ontology_server_production"},
