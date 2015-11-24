@@ -170,15 +170,20 @@ public class CirmStatistics
 	private StatsKey getAggregateKeyFor(StatsKey filterKey, StatsKey curAggregateKey, StatsKey statsKey)
 	{
 		StatsKey result = curAggregateKey;
-		boolean newComponentEach = (EACH.equals(filterKey.getComponent()) && !curAggregateKey.getComponent().equals(statsKey.getComponent()));
-		boolean newActionEach = (EACH.equals(filterKey.getAction()) && !curAggregateKey.getAction().equals(statsKey.getAction()));
-		boolean newTypeEach = (EACH.equals(filterKey.gettype()) && !curAggregateKey.gettype().equals(statsKey.gettype()));
+		boolean componentEach = EACH.equals(filterKey.getComponent());
+		boolean actionEach = EACH.equals(filterKey.getAction());
+		boolean typeEach = EACH.equals(filterKey.gettype());
+		
+        boolean newComponentEach = (componentEach && !curAggregateKey.getComponent().equals(statsKey.getComponent()));
+		boolean newActionEach = (actionEach && !curAggregateKey.getAction().equals(statsKey.getAction()));
+		boolean newTypeEach = (typeEach && !curAggregateKey.gettype().equals(statsKey.gettype()));
 		if (newComponentEach || newActionEach || newTypeEach) 
-		{
-			result = new StatsKey(
-					newComponentEach? statsKey.getComponent() : filterKey.getComponent()
-					,newActionEach? statsKey.getAction() : filterKey.getAction()
-				    ,newTypeEach? statsKey.gettype() : filterKey.gettype());
+		{       
+                    //new key object necessary
+                    String component = componentEach? statsKey.getComponent() : curAggregateKey.getComponent();
+                    String action = actionEach? statsKey.getAction(): curAggregateKey.getAction();
+                    String type = typeEach? statsKey.gettype(): curAggregateKey.gettype();
+                    result = new StatsKey(component, action, type);
 		}
 		return result;
 	}
@@ -418,7 +423,7 @@ public class CirmStatistics
 		public synchronized Json toJson() 
 		{
 			Json result = Json.object();
-			result.set("firstEntryTime", GenUtils.formatDate(getFirstEntryTime()));
+			result.set("firstEntryTime", getFirstEntryTime() != null ? GenUtils.formatDate(getFirstEntryTime()) : null);
 			result.set("successCount", getSuccessCount());
 			result.set("lastSuccessTime", getLastSuccessTime() != null ? GenUtils.formatDate(getLastSuccessTime()) : null);
 			result.set("lastSuccessId", getLastSuccessId());

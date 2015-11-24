@@ -731,7 +731,10 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 	    };
 	    
 	    self.startNewServiceRequest = function(type) {
-			//hilpold Update refs with type from server
+			if (cirm.user.isConfigAllowed()) {
+				//hilpold Check server for new version of SR type 
+				cirm.refs.reloadServiceCaseTypeIfNeeded(type);
+			}
 	    	self.enableValidationForSrType(type);
 			var callback = function cb()
 			{
@@ -770,10 +773,15 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 			var type = cirm.refs.serviceCaseList[srTypeID];
 			//TODO Trigger type change event
 			$(document).trigger(legacy.InteractionEvents.SrTypeSelection, [type]);
+			
+			//TODO hilpold - Refactor and simplify below code  
 			if(!U.isEmptyString(self.data().type()))
 			{
 				if(!U.isEmptyString(type)){
-					//hilpold Update refs with type from server
+					if (cirm.user.isConfigAllowed()) {
+						//hilpold Check server for new version of SR type 
+						cirm.refs.reloadServiceCaseTypeIfNeeded(type);
+					}
 					if(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + type].isDisabled == 'true')
 						alertDialog("Cannot create a disabled Service Request Type");
 					else
@@ -785,14 +793,20 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 			else
 			{
 				if(!U.isEmptyString(type)){
-					//hilpold Update refs with type from server
+					if (cirm.user.isConfigAllowed()) {
+						//hilpold Check server for new version of SR type 
+						cirm.refs.reloadServiceCaseTypeIfNeeded(type);
+					}
 					if(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + type].isDisabled == 'true')
 						alertDialog("Cannot create a disabled Service Request Type");
 					else
 						self.startNewServiceRequest(type);
 				}
 				else if(!U.isEmptyString(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + srTypeID])){
-					//hilpold Update refs with type from server
+					if (cirm.user.isConfigAllowed()) {
+						//hilpold Check server for new version of SR type 
+						cirm.refs.reloadServiceCaseTypeIfNeeded(type);
+					}
 					if(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + srTypeID].isDisabled == 'true')
 						alertDialog("Cannot create a disabled Service Request Type");
 					else
@@ -801,6 +815,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 				else
 					alertDialog("Please select a valid Service Request Type");
 			}
+			//TODO hilpold - Refactor and simplify above code  
 		};
 		
     	self.srLookupOnEnter = function(data, event) {
@@ -809,7 +824,6 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
     		}
     		return true;
     	};
-    	
     	
     	//jquery related functions
         
@@ -3190,6 +3204,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		};*/
 		
 		self.removeImage = function(data) {
+			console.log("removing image "); 
+			console.log(data);
 			$("#sh_dialog_alert")[0].innerText = "Are you sure you want to delete this Image";
 			$("#sh_dialog_alert").dialog({ height: 150, width: 350, modal: true, buttons: {
 				"Delete" : function() {

@@ -86,15 +86,20 @@ public class ServiceCaseManager extends OntoAdmin {
 	}
 	
 	/**
-	 * 
-	 * 
+	 * Determines if a local change for the given individual exists that was committed after the given date.
+	 * TODO currently only works for SR type individuals
+	 * @param individualID prefixed IRI (e.g. legacy:311DUMP)
+	 * @param date timestamp in milliseconds
+	 * @return false, if no change after date or no change found since server startup.
 	 */
 	public boolean isInvididualModifiedAfter (String individualID, long date){
 		Long lastChanged = changes.get(individualID);
 		
-		if (lastChanged != null) return lastChanged > date;
-		
-		return false;
+		if (lastChanged != null) {
+			return lastChanged > date;
+		} else {		
+			return false;
+		}
 	}
 	
 	/**

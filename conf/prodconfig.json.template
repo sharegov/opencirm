@@ -11,10 +11,10 @@
 	"_____customIRIMappingFile" : "C:/cirmservices/customIRIMap.properties",
     "mainApplication" : "http://www.miamidade.gov/ontology#CIRMApplication",    
     "ontologyConfigSet":"http://www.miamidade.gov/ontology#ProdConfigSet",    
-	"network" : { "user": "bolerio-dev",
-				"password":"password",
+	"network" : { "user": "cirmservice_production",
+				"password":"N/A",
 				"serverUrl":"s0141667",
-				"bff":"cirmdevelopmentontology"},
+				"ontoServer":"ontology_server_production"},
     "ontologyPrefixes": {
     	"legacy:" : "http://www.miamidade.gov/cirm/legacy#",
 		"mdc:" : "http://www.miamidade.gov/ontology#",

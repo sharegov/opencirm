@@ -173,6 +173,28 @@ public class OWLIndividuals extends RestService
 	}	
 	
 	/**
+	 * Determines if an OWL individual was modified after a specified time.
+	 * 
+	 * This currently works for service case types, but not yet for other individuals.
+	 * Also, currently only local changes that were applied to an sr type after the server was started 
+	 * are considered in determining modifiedAfter.
+	 * TODO consider changes in persisted managed ontology history
+	 *  
+	 * @param indPrefixedIri the prefixed IRI of the individual (format "legacy:xxx")
+	 * @param timeMs specified time in milliseconds
+	 * @return ok with a boolean modifiedAfter property; false means not modified or individual changes not found.
+	 * @throws OWLException
+	 */
+	@GET
+	@Path("/{individual}/modifiedAfter/{timeMs}")
+	@Produces("application/json")
+	public Json isOWLIndividualModifiedAfter(@PathParam("individual") String indPrefixedIri, @PathParam("timeMs") Long timeMs) throws OWLException {
+		if (timeMs == null) return GenUtils.ko("timeMs parameter was null");
+		if (indPrefixedIri == null || indPrefixedIri.isEmpty()) return  GenUtils.ko("indPrefixedIri was null or empty");
+		return GenUtils.ok().set("modifiedAfter", ServiceCaseManager.getInstance().isInvididualModifiedAfter(indPrefixedIri, timeMs));
+	}
+	
+	/**
 	 * <p>
 	 * Perform a query for individuals in the ontology using a DL class expression. 
 	 * </p>
@@ -295,11 +317,5 @@ public class OWLIndividuals extends RestService
 			return Json.object();
 		}
 	}
-	
-	@GET
-	@Path("/{individual}/modifiedAfter/{timeMs}")
-	@Produces("application/json")
-	public Json isOWLIndividualModifiedAfter(@PathParam("individual") String individualName, @PathParam("timeMs") String timeMs) throws OWLException {
-		return GenUtils.ok().set("modifiedAfter", ServiceCaseManager.getInstance().isInvididualModifiedAfter(individualName, Long.parseLong(timeMs)));
-	}
+
 }
