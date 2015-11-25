@@ -27,8 +27,8 @@
      "ftpUsername":"miamidade\\alvarga",
      "ftpPassword":"Allen2010",
      "ftpLocation":"test\\phani",
-     "changeset":"dc242f682cee",
-     "version":"1.0",
+     "changeset":"",
+     "version":"2.0.3b",
 	 "nameBase" : "http://www.miamidade.gov/ontology",
  	 "stopExpansionConditionIRI" : [
 					"http://www.miamidade.gov/cirm/legacy#providedBy",
