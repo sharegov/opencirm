@@ -87,9 +87,10 @@
     <target name="make-dist" depends="compile" description="Create distribution deployment.">
         <mkdir dir="${dist}"/>
         <mkdir dir="${dist}/logs"/>
-        <!--
-        <mkdir dir="${dist}/hotdeploy/org/sharegov/cirm"/>
-        -->
+        <mkdir dir="${dist}/db"/>
+        <mkdir dir="${dist}/temp"/>
+        <mkdir dir="${dist}/hotdeploy"/>
+        <mkdir dir="${dist}/RecyclingReports"/>
         <copy todir="${dist}/bin"><fileset dir="${opencirm}/bin"/></copy>
         <copy todir="${dist}/bin"><fileset dir="bin"/></copy>
         <copy todir="${dist}/conf">
