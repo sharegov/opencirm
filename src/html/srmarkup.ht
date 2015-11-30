@@ -494,7 +494,7 @@
 			<div data-bind="template: {name: $root.getAddrSRTypeTemplate}"></div>
 			<h5> Please upload any files related to the current Service Request. </h5>
 			<div class="grid_5 alpha">
-				<input id="fileUploader" type="file" name="uploadAttachment" accept="*"/>
+				<input id="fileUploader" type="file" name="uploadAttachment"/>
 			</div>
 			<div class="grid_2 omega">
             	<input name="Upload File" type="button" value="Upload File" data-bind="event: {click: uploadFiles}">
@@ -502,25 +502,23 @@
 			<div class="clear">&nbsp;</div>
 		</div>
 		
-		<div id="attachmentSection">
-		<p> Last name: <strong data-bind="text: message"></strong></p>
-		</div>
 		
-		<div class="sr_aa" data-bind="foreach: data().properties().hasImage">
+		
+		<div class="sr_aa" data-bind="foreach: data().properties().hasAttachment">
 			
-			<div class="grid_6 alpha">
-				<a data-bind="attr:{href: $data, target: '_blank'}" >
-				<!--	<img data-bind="attr:{src : $data}" height="90" width="90"/> -->
-				</a>
-				<!-- <img data-bind="attr:{src : $root.getImageSource($data)}"/> -->
+			<div class="grid_6 alpha" data-bind= "visible: !$root.getFileInfo($data).isImage">
+			 <a data-bind="attr:{href: $data, target: '_blank'}, text: $root.getFileInfo($data).name" >View File</a>
 			</div>
 			
-			<div class="grid_1 omega"><a href="#" data-bind="click: $root.removeImage" >Remove</a>
-			<br/>
-			
-			<a data-bind="attr:{href: $data, target: '_blank'}" >View</a>
+			<div class="grid_6 alpha" data-bind= "visible: $root.getFileInfo($data).isImage">
+			  <a data-bind="attr:{href: $data, target: '_blank'}" ><img data-bind="attr:{src : $data}"  height="90" width="90"/></a>
 			</div>
+			
+			<div class="grid_1 omega"><a href="#" data-bind="click: $root.removeImage" >Remove</a></div>
 			<div class="clear">&nbsp;</div>
+			
+			<br/>
+			<hr/>
 		</div>
 	</div>  <!-- sr_images -->
 	

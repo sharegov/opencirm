@@ -115,8 +115,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
         		atAddress: new AddressBluePrint(),
         		hasServiceActivity:[],
         		hasServiceCaseActor:[],
-        		hasImage:[],
-        		
+        		hasImage:[], 
+        		hasAttachment:[],
+        		hasRemovedAttachment:[],
         		hasRemovedImage:[],
         		hasStatus:{"iri":"", "label":""},
         		hasPriority:{"iri":"", "label":""},
@@ -704,8 +705,12 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		      P.hasServiceCaseActor.push({hasServiceActor:{iri:a.iri, label:a.label}});
 			});
 			P.hasImage = [];
+			P.hasAttachment = [];
 			
 			P.hasRemovedImage = [];
+			
+			
+    		
 			//P.Comments = '';
 			P.hasDetails = '';
 			P.hasXCoordinate = "";
@@ -3111,15 +3116,14 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 				return U.isEmptyString(tempEL) == true ? "" : new Date(Date.parse(tempEL)).format("mm/dd/yyyy HH:MM:ss");
 		};
 
-		self.imageCallBack = function(res) {
+		self.attachmentCallBack = function(res) {
 			
 			
 			if(res.ok == true){
 				
-				//self.data().properties().hasImage.push(res.image);
-				//self.data().properties().hasImage.push(res.key);
-				self.data().properties().hasImage.push(res.url);
-				//self.data().properties().hasImage.push(res);
+				
+				//self.data().properties().hasImage.push(res.url);
+				self.data().properties().hasAttachment.push(res.url);
 				console.log("response from s3"); 
 			    console.log(res);
 				
@@ -3135,9 +3139,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		 
 			
 			
-			$('#fileUploader').upload("/upload", self.imageCallBack, 'json');
+			$('#fileUploader').upload("/upload", self.attachmentCallBack, 'json');
 			$('#fileUploader')[0].value = "";
-			console.log("yo this is my self"); 
+			
 			console.log(self);
 		};
 		
@@ -3487,6 +3491,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 	    //if no images, then add the property for images
 	    bo.properties.hasImage = U.ensureArray(bo.properties.hasImage);
     	bo.properties.hasRemovedImage = U.ensureArray(bo.properties.hasRemovedImage);
+    	
+    	
+    	
     	bo.properties.hasServiceAnswer = U.ensureArray(bo.properties.hasServiceAnswer);
 
         if(srType.hasServiceField && bo.properties.hasServiceAnswer.length != srType.hasServiceField.length) {
@@ -3767,9 +3774,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		
     }
     
-    function attachment(){
-    	this.message = "Hello From photo resource";
-    }
+   
+    
     
     /**
      * sr: The service request
@@ -3778,10 +3784,53 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
         var self = {};
         self.markup = $(srmarkupText);
         self.model = new RequestModel(addressModel);
-        console.log("section"); 
-        console.log(self.markup[0]);
+       
+       
+        self.model.getFileInfo = function(url){
+        	
+        	 var obj = {}; 
+             obj.isImage = false;
+             var imageTypes = ['jpg', 'png', 'gif', 'tif','jpeg'];
+             
+        	var tokens; 
+        	var name;
+        	var ext; 
+        	tokens = url.split("/");
+        	
+        	if(tokens.length < 5)
+        		{
+        		console.log("error tokenizing url"); 
+        		obj.name = file;
+        		return obj; 
+        		}
+        	
+        	name = tokens[4]; 
+        	
+        	tokens = name.split("_");
+        	tokens = tokens[1].split("-")
+        	name = tokens[0]; 
+        	tokens = name.split(".");
+        	ext = tokens[1];
+        	
+        	for(var i = 0; i < imageTypes.length; i++){
+        		if(imageTypes[i] == ext)
+        			{
+        			console.log("is image " + ext + " = " + imageTypes[i]);
+        			obj.isImage = true; 
+        			}
+        	}
+        	
+        	
+        	
+        	
+        	obj.name = name;
+        	
+        	return obj;
+        }
+        
+       
         ko.applyBindings(self.model, self.markup[0]);
-        ko.applyBindings(new attachment(), document.getElementById('attachmentSection'))
+      
 /*
         var obj = legacy.metadata.LegacyServiceCaseListInput;
         //cirm.top.get("/legacy?q=LegacyServiceCaseListInput");
