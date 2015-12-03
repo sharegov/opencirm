@@ -95,11 +95,13 @@ public class PhotoUploadResource extends ServerResource
              		contentType = stream.getContentType();
              		name = stream.getName();
              		name = name.replaceAll("\\s+","");
-             		/*tokens = contentType.split("/");
+             		tokens = name.split("\\.");
+             		name = "";
+             		
              		for(String token : tokens)
              		{
-             			type = type +token + "-"; 
-             		}*/
+             			name = name +token + "-"; 
+             		}
              		
              		
              		String extn = contentType.substring(contentType.indexOf("/")+1);

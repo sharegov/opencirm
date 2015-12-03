@@ -4,10 +4,14 @@
 
     <div id="sr_details_left">
     
-   	  <ul class="arrow_list" data-bind="foreach: sections">
+   	  <ul class="arrow_list" >
+   	     <div data-bind="foreach: sections">
    	     <li><a href='#' data-bind="text: $data.title, 
                css: { arrow_on: $data == $root.currentSection() },
                click: $root.goToSection"></a></li>
+         </div>     
+               
+          <li><a href='#' data-bind="text: 'Attachments (' +data().properties().hasAttachment().length + ')', click: $root.goToAttachments", css: { arrow_on: $root.currentSection().title == 'Attachments'}></a> </li>
         </ul>
     
     	<div class="button_group left_buttons">
