@@ -146,10 +146,14 @@ public class ServiceCaseAdmin extends RestService {
 	
 	@POST	
 	@Path("/push")
-	public Response refresh(){
+	public Response pushToRepo(Json aData){
 		try
-		{			
-			return Response.ok(ServiceCaseManager.getInstance().push(), MediaType.APPLICATION_JSON).build();
+		{		
+			if (!aData.has("userName")) throw new IllegalArgumentException("User Name or Alert data null or empty"); 
+			
+			String userName = aData.at("userName").asString();
+			
+			return Response.ok(ServiceCaseManager.getInstance().pushToRepo(userName), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
 			return Response
@@ -161,23 +165,40 @@ public class ServiceCaseAdmin extends RestService {
 	}
 	
 	@POST	
-	@Path("/refresh/now")
-	public Response refresh(Json aKey)
+	@Path("/deploy/{target}")
+	public Response deploy(@PathParam("target") String target, String aJsonString)
 	{
-		try
-		{
-			String key = aKey.at("key").asString();
-			if (key == null || key.isEmpty()) throw new IllegalArgumentException("key needed for this operation");
-			if (key.compareTo(KEY) != 0) throw new IllegalArgumentException("key is invalid");
+		synchronized (cache){		
+			Json result = cache.get(target + ":" + aJsonString);
 			
-			return Response.ok(ServiceCaseManager.getInstance().refreshOnto(), MediaType.APPLICATION_JSON).build();
-		}
-		catch(Exception e){
-			return Response
-					.status(Status.INTERNAL_SERVER_ERROR)
-					.type(MediaType.APPLICATION_JSON)
-					.entity(Json.object().set("error", e.getClass().getName())
-							.set("message", e.getMessage())).build();
+			if (result != null && !result.isNull()){
+				ThreadLocalStopwatch.now("Identical Request, cached results used as response. End sending deploy signals.");
+				
+				return Response.ok(result, MediaType.APPLICATION_JSON).build();
+			}
+			
+			Json aData = Json.read(aJsonString);
+			
+			try
+			{
+				String key = aData.at("key").asString();
+				String date = aData.has("date") ? aData.at("date").asString(): "0";
+				if (key == null || key.isEmpty()) throw new IllegalArgumentException("key needed for this operation");
+				if (key.compareTo(KEY) != 0) throw new IllegalArgumentException("key is invalid");
+				
+				result = ServiceCaseManager.getInstance().refreshOnto(target, date, key);
+				
+				cache.put(target + ":" + aJsonString, result);
+				
+				return Response.ok(result, MediaType.APPLICATION_JSON).build();
+			}
+			catch(Exception e){
+				return Response
+						.status(Status.INTERNAL_SERVER_ERROR)
+						.type(MediaType.APPLICATION_JSON)
+						.entity(Json.object().set("error", e.getClass().getName())
+								.set("message", e.getMessage())).build();
+			}
 		}
 		
 	}

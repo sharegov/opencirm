@@ -39,6 +39,8 @@ import mjson.Json;
 public class ServiceCaseManager extends OntoAdmin {		
 
 	private static final String PREFIX = "legacy:";
+	private static String jenkingsEndpointRefreshOntosOnlyTest = "https://api.miamidade.gov/jenkins/job/CIRM-ADMIN-TEST-REFRESH-ONTOS/build?token=1a85a585ef7c424191c7c58ee3c4a97d556eec91";
+	private static String jenkingsEndpointRefreshOntosOnlyProduction = "https://api.miamidade.gov/jenkins/job/CIRM-ADMIN-PRODUCTION-REFRESH-ONTOS/build?token=1a85a585ef7c424191c7c58ee3c4a97d556ffc91";
 	private static ServiceCaseManager instance = null; 
 	private Map<String, Json> cache;
 	private Map<String, Long> changes;
@@ -550,7 +552,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	 * @return whether the changes were successfully pushed or not 
 	 */
 
-	public Json push() {
+	public Json pushToRepo(String Username) {
 		OwlRepo repo = getRepo();
 		synchronized (repo) {
 			repo.ensurePeerStarted();
@@ -582,14 +584,49 @@ public class ServiceCaseManager extends OntoAdmin {
 	/**
 	 * Sends Jenkins the signal to start the job that restart servers with fresh ontologies
 	 *  
-	 * @return whether Jenkins acknowledge the signal or not
+	 * @return whether Jenkins or Time Machines acknowledge the signal or not
 	 */
 	
-	public Json refreshOnto() {
-		// String jenkingsEndpointFullDeploy = "https://api.miamidade.gov/jenkins/job/CIRM-ADMIN-TEST-CI-JOB-OPENCIRM/build?token=7ef54dc3a604a1514368e8707d8415";
-		String jenkingsEndpointRefreshOntosOnly = "https://api.miamidade.gov/jenkins/job/CIRM-ADMIN-TEST-REFRESH-ONTOS/build?token=1a85a585ef7c424191c7c58ee3c4a97d556eec91";
-
-		return GenUtils.httpPostWithBasicAuth(jenkingsEndpointRefreshOntosOnly, "cirm", "admin", "");
+	@SuppressWarnings("deprecation")
+	public Json refreshOnto(String target, String date, String key) {
+		switch (target) {
+			case "production":
+				// add this post call to the time machine.
+				if (date == "0") return GenUtils.httpPostWithBasicAuth(jenkingsEndpointRefreshOntosOnlyTest, "cirm", "admin", "");
+				else {
+					String host = getHostIpAddress();
+					Json jsonContent = Json.object().set("key", key);
+					Json jsonRestCall = Json.object().set("url", host + "/sradmin/deploy/production")
+													 .set("method", "POST")
+													 .set("content", jsonContent);
+					
+					Date time = new java.util.Date(Long.parseLong(date));
+					
+					Json jsonDate = Json.object().set("second", "0")
+							                     .set("minute", time.getMinutes())
+							                     .set("hour", time.getHours())
+							                     .set("day_of_month", time.getDate())
+							                     .set("month", time.getMonth() + 1)
+							                     .set("year", 1900 + time.getYear());
+					
+					Json tmJson = Json.object().set("name", "CIRM Admin Deployment")
+											   .set("group", "cirm_admin_tasks")
+											   .set("scheduleType", "SIMPLE")
+											   .set("scheduleData", Json.object())
+											   .set("startTime", jsonDate)
+											   .set("endTime", "")
+											   .set("state", "NORMAL")
+											   .set("description", "Delayed CIRM production ontology only deployment")
+											   .set("restCall", jsonRestCall);
+					
+					return GenUtils.httpPostJson("http://s0141670:9192/timemachine-0.1/task", tmJson);
+				}
+				
+			case "test":
+				return GenUtils.httpPostWithBasicAuth(jenkingsEndpointRefreshOntosOnlyTest, "cirm", "admin", "");
+		}
+		
+		throw new IllegalArgumentException("Not a valid target value was passed to the refresh ontologies method.");		
 	}
 	
 	/**
