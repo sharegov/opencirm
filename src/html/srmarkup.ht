@@ -11,7 +11,8 @@
                click: $root.goToSection"></a></li>
          </div>     
                
-          <li><a href='#' data-bind="text: 'Attachments (' +data().properties().hasAttachment().length + ')', click: $root.goToAttachments", css: { arrow_on: $root.currentSection().title == 'Attachments'}></a> </li>
+          <li data-bind="visible: data().properties().hasAttachment().length > 0"><a href='#' data-bind="text: 'Attachments (' +data().properties().hasAttachment().length + ')', click: $root.goToAttachments", css: { arrow_on: $root.currentSection().title == 'Attachments'}></a> </li>
+           <li data-bind="visible: data().properties().hasAttachment().length <= 0"><a href='#' data-bind="text: 'Attachments', click: $root.goToAttachments", css: { arrow_on: $root.currentSection().title == 'Attachments'}></a> </li>
         </ul>
     
     	<div class="button_group left_buttons">
