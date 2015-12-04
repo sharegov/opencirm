@@ -3819,21 +3819,13 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
         	ext = tokens[1];
         	console.log('name and ext ' + name + ext); 
         	name = name + '.' +ext;
-        	
-        	
         	for(var i = 0; i < imageTypes.length; i++){
         		if(imageTypes[i] == ext)
         			{
-        			
         			obj.isImage = true; 
         			}
         	}
-        	
-        	
-        	
-        	
         	obj.name = name;
-        	
         	return obj;
         }
         

@@ -36,7 +36,7 @@ import org.sharegov.cirm.OWL;
 
 
 @Path("upload")
-public class PhotoUploadResource extends ServerResource
+public class UploadToCloudServerResource extends ServerResource
 {
 
 	/**
@@ -58,8 +58,8 @@ public class PhotoUploadResource extends ServerResource
 	@Post 
 	public Representation upload(Representation entity){
 		
-		//String s3URl = getUploadServiceUrl() + "upload64encoded?prefix=cirm_";
-		String s3URl = "http://10.9.25.144:6060/s3/upload64encoded?prefix=cirm_";
+		String s3URl = getUploadServiceUrl() + "upload64encoded?prefix=cirm_";
+		//String s3URl = "http://10.9.25.144:6060/s3/upload64encoded?prefix=cirm_";
 		Json json = Json.object();
 		Json request = Json.object();
 		Json result; 
@@ -95,14 +95,10 @@ public class PhotoUploadResource extends ServerResource
              		contentType = stream.getContentType();
              		name = stream.getName();
              		name = name.replaceAll("\\s+","");
-             		tokens = name.split("\\.");
-             		name = "";
-             		
-             		for(String token : tokens)
-             		{
-             			name = name +token + "-"; 
-             		}
-             		
+             		name = name.replaceAll("_","");
+             		name = name.replaceAll("-","");
+             		name = name.replaceAll("\\.","-");
+             		name = name + "-";
              		
              		String extn = contentType.substring(contentType.indexOf("/")+1);
              		byte[] file = GenUtils.getBytesFromStream(stream.openStream(), true);
