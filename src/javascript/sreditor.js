@@ -3141,12 +3141,13 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 
 		self.uploadFiles = function(el) {
 			
-		 
+		   
 			
-			
+			if($('#fileUploader').val())
+			{
 			$('#fileUploader').upload("/upload", self.attachmentCallBack, 'json');
 			$('#fileUploader')[0].value = "";
-			
+			}
 			console.log(self);
 		};
 		
