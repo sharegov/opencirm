@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." name="CiRM Configuration Server (CirmAdmin Project)" default="make-dist">
+	<description>CiRM Configuration Server (CirmAdmin Project) Build and Deployment File</description>
+	<property name="opencirm" value="../../CIRM-ADMIN-TEST-CI-JOB-OPENCIRM/workspace"/>
+	<property name="build" value="classes"/>
+	<property name="dist" value="dist"/>
+	<property name="backup" value="backup"/>
+	<property name="javadoc" value="javadoc"/>
+	<property name="jars" value="lib"/>
+	<property name="debug" value="on"/>
+	<property name="maxwaitstart" value="4800"/>
+	<property file="build_info.properties"/>
+	<property name="build.number" value="${variant}${majorVersion}.${minorVersion}.${revisionNumber}"/>
+	<!-- classpath for compiling-->
+	<path id="compile-classpath">
+		<fileset dir="lib">
+			<include name="**/*.jar"/>
+		</fileset>
+		<fileset dir="${opencirm}/lib">
+			<include name="**/*.jar"/>
+		</fileset>
+		<pathelement location="${opencirm}/classes"/>
+		<pathelement path="${java.class.path}"/>
+	</path>
+	<!-- Test User Targets -->
+	<target name="update-test-conf-plus-fresh-ontodb" depends="clean, deploy-test-conf, restart-test-conf-with-fresh-ontodb" description="Clean, then build and deploy latest release to production config server, then restart with fresh ontos."/>
+	<target name="update-test-conf" depends="clean, deploy-test-conf, restart-test-conf" description="Clean, then build and deploy latest release to production config server, then restart."/>
+	<target name="restart-test-conf-with-fresh-ontodb" description="Restart test configuration server after deleting its ontologies local DBs (which forces a clean reload of onto data)">
+		<antcall target="restart-conf-with-fresh-ontodb">
+			<param name="server" value="s0144654"/>
+		</antcall>
+	</target>
+	<!-- Test User Targets END -->
+	<!-- Production User Targets -->
+	<target name="update-prod-conf-plus-fresh-ontodb" depends="clean, deploy-prod-conf, restart-prod-conf-with-fresh-ontodb" description="Clean, then build and deploy latest release to production config server, then restart with fresh ontos."/>
+	<target name="update-prod-conf" depends="clean, deploy-prod-conf, restart-prod-conf" description="Clean, then build and deploy latest release to production config server, then restart."/>
+	<target name="restart-prod-conf-with-fresh-ontodb" description="Restart configuration server after deleting its ontologies local DBs (which forces a clean reload of onto data)">
+		<antcall target="restart-conf-with-fresh-ontodb">
+			<param name="server" value="s0144549"/>
+		</antcall>
+	</target>
+	<!-- Production User Targets END -->
+	<target name="clean" description="Delete are temporary build files as well as the distribution directory.">
+		<delete dir="${build}"/>
+		<delete dir="${dist}"/>
+		<delete dir="${javadoc}"/>
+	</target>
+	<target name="restart-conf-with-fresh-ontodb" depends="stop, wipeonto-conf, start" description="Restarts one server deleting /db, needs -Dserver=hostname parameter."/>
+	<target name="show classpath">
+		<echo>Classpath is ${toString:compile-classpath}</echo>
+	</target>
+	<target name="init" description="Create build directories, cleanup old build files.">
+		<mkdir dir="${build}"/>
+		<delete includeemptydirs="true">
+			<fileset dir="${build}" includes="**/*"/>
+			<fileset dir="${opencirm}/${build}" includes="**/*"/>
+		</delete>
+		<mkdir dir="${javadoc}"/>
+		<delete includeemptydirs="true">
+			<fileset dir="${javadoc}" includes="**/*"/>
+			<fileset dir="${opencirm}/${javadoc}" includes="**/*"/>
+		</delete>
+	</target>
+	<target name="current-number" description="Show current build number.">
+		<echo>Current build number:${build.number}</echo>
+	</target>
+	<target name="version-increment" description="Increment to next build number in the build_info.properties file.">
+		<propertyfile file="build_info.properties">
+			<entry key="variant" type="string" operation="=" value="C."/>
+			<entry key="revisionNumber" type="int" operation="+" value="1"/>
+		</propertyfile>
+	</target>
+	<target name="compile" depends="init" description="Compile all OpenCiRM classes in build directory.">
+		<ant antfile="${opencirm}/buildOPENCIRM.xml" useNativeBasedir="true" target="compile"/>
+		<javac classpathref="compile-classpath" debug="${debug}" destdir="${build}" srcdir="src/java"/>
+		<copy todir="${build}">
+			<fileset dir="src/java">
+				<include name="**/*.sparql"/>
+			</fileset>
+		</copy>
+	</target>
+	<target name="docgen" depends="init" description="Generate JavaDocs for CiRM Serevices">
+		<javadoc sourcepath="src/java" destdir="${javadoc}" classpathref="compile-classpath"/>
+	</target>
+	<!--
+    To construct the distribution folder, we collect files from both opencirm
+    and mdcirm. The order of copy is important here so that MDC specific files
+    overwrite OpenCiRM files! Otherwise, since the two projects have a similar
+    structure, basically every task is repeated twice: once for opencirm files
+    and then for the mdcirm files. Whenever a given folder should really be
+    disjoint in both projects (i.e. no common files), we use a single copy task
+    with multiple filesets inside.
+	-->
+	<target name="make-dist" depends="compile" description="Create distribution deployment.">
+		<mkdir dir="${dist}"/>
+		<mkdir dir="${dist}/logs"/>
+		<mkdir dir="${dist}/hotdeploy"/>
+		<copy todir="${dist}/bin">
+			<fileset dir="${opencirm}/bin"/>
+		</copy>
+		<copy todir="${dist}/bin">
+			<fileset dir="bin"/>
+		</copy>
+		<copy todir="${dist}/conf">
+			<fileset dir="${opencirm}/conf">
+				<exclude name="wrapper.conf"/>
+				<exclude name="prodconfig.json"/>
+				<exclude name="prodconfig.json.template"/>
+				<exclude name="testconfig.json"/>
+				<exclude name="testconfig.json.template"/>
+			</fileset>
+		</copy>
+		<copy todir="${dist}/conf">
+			<fileset dir="conf">
+				<exclude name="wrapper.conf"/>
+				<exclude name="prodconfig.json"/>
+				<exclude name="prodconfig.json.template"/>
+				<exclude name="testconfig.json"/>
+				<exclude name="testconfig.json.template"/>
+			</fileset>
+		</copy>
+		<sync todir="${dist}/lib" verbose="true">
+			<fileset dir="${opencirm}/lib"/>
+			<fileset dir="lib"/>
+		</sync>
+		<sync todir="${dist}/classes" verbose="true">
+			<fileset dir="${opencirm}/classes"/>
+			<fileset dir="classes"/>
+		</sync>
+		<copy todir="${dist}/src">
+			<fileset dir="${opencirm}/src">
+				<include name="html/**"/>
+				<include name="javascript/**"/>
+				<include name="resources/**"/>
+				<include name="ontology/srgeoinfo.csv"/>
+			</fileset>
+		</copy>
+		<copy todir="${dist}/src">
+			<fileset dir="src">
+				<include name="html/**"/>
+				<include name="javascript/**"/>
+				<include name="resources/**"/>
+				<include name="ontology/srgeoinfo.csv"/>
+			</fileset>
+		</copy>
+	</target>
+	<macrodef name="deploy" description="Deploy to server specified in the 'server' parameter">
+		<attribute name="server"/>
+		<sequential>
+			<antcall target="backup-deployment">
+				<param name="server" value="@{server}"/>
+			</antcall>
+			<delete dir="\\@{server}\cirmservices\classes"/>
+			<mkdir dir="\\@{server}\cirmservices\classes"/>
+			<delete dir="\\@{server}\cirmservices\hotdeploy"/>
+			<mkdir dir="\\@{server}\cirmservices\hotdeploy"/>
+			<copy todir="\\@{server}\cirmservices">
+				<fileset dir="${dist}">
+					<exclude name="bin\wrapper.exe"/>
+					<exclude name="bin\wrapper.dll"/>
+				</fileset>
+			</copy>
+		</sequential>
+	</macrodef>
+	<target name="backup-deployment" if="backupDeployment" description="Backs up cirm on a given deployment 'server'">
+		<tstamp>
+			<format property="backupDateTime" pattern="yyyy-MM-dd-HH-mm-ss"/>
+		</tstamp>
+		<echo>Creating BackupFile: "\\${server}\${backup}\${backupDateTime}-Cirmservices.zip"</echo>
+		<zip destfile="\\${server}\${backup}\${backupDateTime}-Cirmservices.zip">
+			<zipfileset dir="\\${server}\cirmservices">
+				<exclude name="db\*.*"/>
+			</zipfileset>
+		</zip>
+		<echo>Backup completed.</echo>
+	</target>
+	<macrodef name="restart" description="Restarts a server, fills ServiceCase cache and sends a client update event to all its clients.">
+		<attribute name="server"/>
+		<sequential>
+			<echo message="Stopping cirmservices at @{server}"/>
+			<exec executable="sc.exe">
+				<arg value="\\@{server}"/>
+				<arg value="stop"/>
+				<arg value="cirmservices"/>
+			</exec>
+			<echo message="Wait 1 minutes for it to stop."/>
+			<sleep seconds="15"/>
+			<echo message="Starting cirmservices at @{server}"/>
+			<exec executable="sc.exe">
+				<arg value="\\@{server}"/>
+				<arg value="start"/>
+				<arg value="cirmservices"/>
+			</exec>
+			<echo message="Wait until home page shows...${maxwaitstart} seconds"/>
+			<waitfor maxwait="${maxwaitstart}" maxwaitunit="second">
+				<http url="http://@{server}/individuals?q=legacy:ServiceCase"/>
+			</waitfor>
+			<updateClients server="@{server}"/>
+		</sequential>
+	</macrodef>
+	<target name="deploy-test-conf" depends="make-dist" description="Deploy to test server, does not autorestart.">
+		<echo message="Deploying ${changesetid} to test..."/>
+		<deploy server="s0144654"/>
+	</target>
+	<target name="restart-test-conf" description="Restart the test configuration server (s0144654).">
+		<restart server="s0144654"/>
+	</target>
+	<target name="prepare-conf-release" depends="make-dist, version-increment, save-version" description="Compile, revision tag, make config server distribution ready for deployment."/>
+	<target name="deploy-prod-conf" depends="prepare-conf-release" description="Deploy to production server, does not autorestart.">
+		<echo message="Deploying ${changesetid} to production..."/>
+		<deploy server="s0144549"/>
+	</target>
+	<target name="restart-prod-conf" description="Restart the production configuration server (s0144549).">
+		<restart server="s0144549"/>
+	</target>
+	<target name="wipeonto-conf" description="Delete ontology DB at specified 'server'">
+		<echo message="Delete ontology DB at ${server}"/>
+		<delete dir="\\${server}\cirmservices\dbConf"/>
+		<mkdir dir="\\${server}\cirmservices\dbConf"/>
+	</target>
+	<target name="take-offline" description="Rename healthcheck.htm file to take server offline (use -Dserver=servername)">
+		<move file="\\${server}\cirmservices\src\html\healthcheck.htm" tofile="\\${server}\cirmservices\src\html\healthcheck.offline.htm"/>
+	</target>
+	<target name="take-online" description="Rename healthcheck.htm file to take server offline (use -Dserver=servername)">
+		<move file="\\${server}\cirmservices\src\html\healthcheck.offline.htm" tofile="\\${server}\cirmservices\src\html\healthcheck.htm"/>
+	</target>
+	<target name="stop" description="Stop server specified with -Dserver=hostname parameter.">
+		<echo message="Stopping ${server}"/>
+		<exec executable="sc.exe">
+			<arg value="\\${server}"/>
+			<arg value="stop"/>
+			<arg value="cirmservices"/>
+		</exec>
+		<sleep seconds="60"/>
+	</target>
+	<target name="start" description="Start server specified with -Dserver=hostname parameter.">
+		<echo message="Starting ${server}"/>
+		<exec executable="sc.exe">
+			<arg value="\\${server}"/>
+			<arg value="start"/>
+			<arg value="cirmservices"/>
+		</exec>
+	</target>
+	<target name="restart-now" depends="stop, start" description="Restarts one server specified with -Dserver=hostname parameter."/>
+	<target name="save-version" description="Save the version number in dist config json files.">
+		<echo message="Storing version number v${build.number} in configuration files."/>
+		<copy file="${dist}/conf/testconfig-conf.json.template" tofile="${dist}/conf/testconfig-conf.json" overwrite="true"/>
+		<replace file="${dist}/conf/testconfig-conf.json" token="@version@" value="v${build.number}b"/>
+		<copy file="${dist}/conf/prodconfig-conf.json.template" tofile="${dist}/conf/prodconfig-conf.json" overwrite="true"/>
+		<echo message="copied file"/>
+		<replace file="${dist}/conf/prodconfig-conf.json" token="@version@" value="v${build.number}"/>
+	</target>
+</project>

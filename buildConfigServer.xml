@@ -23,8 +23,23 @@
 		<pathelement location="${opencirm}/classes"/>		
 		<pathelement path="${java.class.path}" />
 	</path>
+	
+	<!-- Test User Targets --> 
+	<target name="update-test-conf-plus-fresh-ontodb" depends="clean, deploy-test-conf, restart-test-conf-with-fresh-ontodb" 
+		description="Clean, then build and deploy latest release to production config server, then restart with fresh ontos."
+	/>	
 
-	<!-- User Targets --> 
+	<target name="update-test-conf" depends="clean, deploy-test-conf, restart-test-conf" 
+		description="Clean, then build and deploy latest release to production config server, then restart."
+	/>	
+
+	<target name="restart-test-conf-with-fresh-ontodb" description="Restart test configuration server after deleting its ontologies local DBs (which forces a clean reload of onto data)">
+	   	<antcall target="restart-conf-with-fresh-ontodb">
+	        <param name="server" value="s0144654"/>
+	    </antcall>
+   </target>
+	<!-- Test User Targets END --> 
+	<!-- Production User Targets --> 
 	<target name="update-prod-conf-plus-fresh-ontodb" depends="clean, deploy-prod-conf, restart-prod-conf-with-fresh-ontodb" 
 		description="Clean, then build and deploy latest release to production config server, then restart with fresh ontos."
 	/>	
@@ -38,7 +53,7 @@
 	        <param name="server" value="s0144549"/>
 	    </antcall>
    </target>
-	<!-- User Targets END --> 
+	<!-- Production User Targets END --> 
 
 	<target name="clean" description="Delete are temporary build files as well as the distribution directory.">
 	    <delete dir="${build}" />
@@ -207,10 +222,21 @@
      </sequential>
   </macrodef>
 
+   <target name="deploy-test-conf" depends="make-dist" description="Deploy to test server, does not autorestart.">
+    <echo message="Deploying ${changesetid} to test..."/>     
+     <deploy server="s0144654"/>
+   </target>
+	
+   <target name="restart-test-conf" description="Restart the test configuration server (s0144654).">
+     <restart server="s0144654"/>
+   </target>
+
+	
     <target name="prepare-conf-release"   
               depends="make-dist, version-increment, save-version" 
               description="Compile, revision tag, make config server distribution ready for deployment."/> 
-              
+
+
    <target name="deploy-prod-conf" depends="prepare-conf-release" description="Deploy to production server, does not autorestart.">
     <echo message="Deploying ${changesetid} to production..."/>     
      <deploy server="s0144549"/>

@@ -1,6 +1,11 @@
 {
     "workingDir":"c:/cirmservices",
     "port":80,
+	"ssl":true,
+    "ssl-port":443,
+    "keystore", "cirm.jks",
+    "storePass", "password",
+    "keyPass", "password",
     "ignorePasswords" : true,
     "allClientsExempt":true,    
 	"defaultOntologyIRI":"http://www.miamidade.gov/cirm/legacy",
