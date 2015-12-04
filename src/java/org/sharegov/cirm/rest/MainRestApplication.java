@@ -2,7 +2,9 @@ package org.sharegov.cirm.rest;
 
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.ws.rs.core.Application;
+
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.sharegov.cirm.OWL;
 
@@ -26,8 +28,19 @@ public class MainRestApplication extends Application
 		try
 		{
 			Set<Class<?>> S = new HashSet<Class<?>>();
-			for (String name : classNames)
-				S.add(loader == null ? Class.forName(name) : loader.loadClass(name));
+			for (String name : classNames) {
+				Class<?> clazz = null;
+				try {
+					if (loader == null) {
+						clazz = Class.forName(name);
+					} else {
+						clazz = loader.loadClass(name);
+					}
+					S.add(clazz);
+				} catch(ClassNotFoundException e) {
+					System.err.println("MainRestApplicaton failed to find class : " + name + " on classpath. Continuing.");
+				}
+			}
 			return S;
 		}
 		catch (Exception ex)
