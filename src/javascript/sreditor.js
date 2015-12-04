@@ -115,11 +115,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
         		atAddress: new AddressBluePrint(),
         		hasServiceActivity:[],
         		hasServiceCaseActor:[],
-        		hasImage:[], 
-        		//hasAttachment:[],
-        		hasAttachment: ko.observableArray(),
+        		hasAttachment: [],
         		hasRemovedAttachment:[],
-        		hasRemovedImage:[],
         		hasStatus:{"iri":"", "label":""},
         		hasPriority:{"iri":"", "label":""},
         		hasIntakeMethod:{"iri":"", "label":""},
@@ -705,10 +702,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 			  a = $.grep(type.hasServiceActor, function(x){return x.iri == a.iri; })[0];
 		      P.hasServiceCaseActor.push({hasServiceActor:{iri:a.iri, label:a.label}});
 			});
-			P.hasImage = [];
-			//P.hasAttachment = [];
-			P.hasAttachment = ko.observableArray();
-			P.hasRemovedImage = [];
+			P.hasAttachment = [];
+			P.hasRemovedAttachment = [];
 			
 			
     		
@@ -2043,10 +2038,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
                     meta.push(new metadata("type",type));
                    
                     //2149 Optional Image upload - disabled meta until next week
-                    //updateMetadata(meta, self.data().properties().hasImage()); 
-                    //console.log("this is the metadata" ); 
-                    //console.log(meta);
-                
+                    //Enabled again
+                    updateMetadata(meta, self.data().properties().hasAttachment()); 
                 }
                 else if(result.ok == false) {
                     $("#sh_save_progress").dialog('close');
@@ -3135,14 +3128,10 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 			
 			
 			if(res.ok == true){
-				
-				
-				//self.data().properties().hasImage.push(res.url);
 				self.data().properties().hasAttachment.push(res.url);
 				console.log();
 				console.log("response from s3"); 
 			    console.log(res);
-				
 			}
 			else if(res.ok == false)
 				alertDialog("Error uploading file");
@@ -3211,12 +3200,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 			$("#sh_dialog_alert")[0].innerText = "Are you sure you want to delete this Image";
 			$("#sh_dialog_alert").dialog({ height: 150, width: 350, modal: true, buttons: {
 				"Delete" : function() {
-					//self.data().properties().hasImage.remove(data);
-					//self.data().properties().hasRemovedImage.push(data);
-					
 	        		self.data().properties().hasAttachment.remove(data);
 					self.data().properties().hasRemovedAttachment.push(data);
-	        		
 					$("#sh_dialog_alert").dialog('close');
 				},
 				"Cancel": function() {
@@ -3509,8 +3494,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 	    	model.isLockedStatus(false);
 
 	    //if no images, then add the property for images
-	    bo.properties.hasImage = U.ensureArray(bo.properties.hasImage);
-    	bo.properties.hasRemovedImage = U.ensureArray(bo.properties.hasRemovedImage);
+    	bo.properties.hasAttachment = U.ensureArray(bo.properties.hasAttachment);
+    	bo.properties.hasRemovedAttachment = U.ensureArray(bo.properties.hasRemovedAttachment);
     	
     	
     	
