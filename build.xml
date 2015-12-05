@@ -97,7 +97,7 @@
             <fileset dir="${opencirm}/conf">
             </fileset>
         </copy>
-        <copy todir="${dist}/conf">
+        <copy todir="${dist}/conf" overwrite="true">
             <fileset dir="conf">
                 <exclude name="wrapper.conf"/>
             </fileset>
