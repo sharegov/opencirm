@@ -109,8 +109,8 @@ define([ 'rest', 'U', 'store!' ],function(rest, U, store) {
             }
           });
         });
-        P.hasImage = [];
-        P.hasRemovedImage = [];
+        P.hasAttachment = [];
+        P.hasRemovedAttachment =[];
         // P.Comments = '';
         P.hasDetails = '';
         P.hasXCoordinate = "";

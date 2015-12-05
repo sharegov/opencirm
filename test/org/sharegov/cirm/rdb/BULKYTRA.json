@@ -1,7 +1,7 @@
 {
   "boid": "",
   "properties": {
-    "hasImage": [
+    "hasAttachment": [
       
     ],
     "legacy:hasServiceCaseActor": [
@@ -184,7 +184,7 @@
       "iri": "http://www.miamidade.gov/cirm/legacy#PHONE"
     },
     "hasXCoordinate": 918287.9998626001,
-    "hasRemovedImage": [
+    "hasRemovedAttachment": [
       
     ],
     "atAddress": {

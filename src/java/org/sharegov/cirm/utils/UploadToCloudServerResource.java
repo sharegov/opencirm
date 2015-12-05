@@ -36,7 +36,7 @@ import org.sharegov.cirm.OWL;
 
 
 @Path("upload")
-public class PhotoUploadResource extends ServerResource
+public class UploadToCloudServerResource extends ServerResource
 {
 
 	/**
@@ -58,7 +58,8 @@ public class PhotoUploadResource extends ServerResource
 	@Post 
 	public Representation upload(Representation entity){
 		
-		String s3URl = getUploadServiceUrl() + "upload64encoded";
+		String s3URl = getUploadServiceUrl() + "upload64encoded?prefix=cirm_";
+		//String s3URl = "http://10.9.25.144:6060/s3/upload64encoded?prefix=cirm_";
 		Json json = Json.object();
 		Json request = Json.object();
 		Json result; 
@@ -78,23 +79,34 @@ public class PhotoUploadResource extends ServerResource
 	
 		HttpClient client;
 		PostMethod post = new PostMethod(s3URl);
-		 try
+		
+		String contentType, type, name;
+		String [] tokens; 
+		
+		try
 			{
              FileItemIterator fit = upload.getItemIterator(entity);
              while(fit.hasNext()) 
              {
              	FileItemStream stream = fit.next();
-             	if(stream.getFieldName().equals("uploadImage"))
+             	if(stream.getFieldName().equals("uploadAttachment"))
              	{
-             		String contentType = stream.getContentType();
-             		if(contentType.startsWith("image")){
+             		type = "";
+             		contentType = stream.getContentType();
+             		name = stream.getName();
+             		name = name.replaceAll("\\s+","");
+             		name = name.replaceAll("_","");
+             		name = name.replaceAll("-","");
+             		name = name.replaceAll("\\.","-");
+             		name = name + "-";
+             		
              		String extn = contentType.substring(contentType.indexOf("/")+1);
              		byte[] file = GenUtils.getBytesFromStream(stream.openStream(), true);
              		Base64 base64 = new Base64();
              		String encoded = base64.encode(file,false);
              		request.set("data", encoded);
              		request.set("contentType", contentType);
-             		
+             		request.set("name", name);
              		StringRequestEntity requestEntity = new StringRequestEntity(
     					    request.toString(),
     					    "application/json",
@@ -118,7 +130,7 @@ public class PhotoUploadResource extends ServerResource
              		}
              		rep = new StringRepresentation(json.toString(), (org.restlet.data.MediaType)org.restlet.data.MediaType.TEXT_HTML);
              		break;
-             		}
+             		
              	}
              }
 			}
