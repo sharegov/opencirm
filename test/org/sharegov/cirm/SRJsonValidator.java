@@ -55,8 +55,8 @@ public class SRJsonValidator
 			Assert.assertTrue(srUpdateJson.at("properties").at("hasXCoordinate").isNumber());
 		}
 //		Assert.assertTrue(srUpdateJson.at("properties").at("hasDateCreated").asString().endsWith("-05:00"));
-//		Assert.assertTrue(srUpdateJson.at("properties").at("hasImage").isArray());
-//		Assert.assertTrue(srUpdateJson.at("properties").at("hasRemovedImage").isArray());
+//		Assert.assertTrue(srUpdateJson.at("properties").at("hasAttachment").isArray());
+//		Assert.assertTrue(srUpdateJson.at("properties").at("hasRemovedAttachment").isArray());
 //		Assert.assertTrue(srUpdateJson.at("properties").at("hasDateLastModified").asString().endsWith("-05:00"));
 //		Assert.assertTrue(srUpdateJson.at("properties").at("isModifiedBy").isString());
 //		Assert.assertTrue(srUpdateJson.at("properties").at("legacy:hasServiceCaseActor").isArray());
