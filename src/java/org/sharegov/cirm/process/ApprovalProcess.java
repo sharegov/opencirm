@@ -179,7 +179,7 @@ public class ApprovalProcess
 	{
 		Json bo = sr.has("bo")? sr.at("bo"): sr;
 		bo.at("properties").atDel("actorEmails");
-		bo.at("properties").atDel("hasRemovedImage");
+		bo.at("properties").atDel("hasRemovedAttachment");
 	}
 
 
