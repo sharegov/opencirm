@@ -592,10 +592,10 @@ public class ServiceCaseManager extends OntoAdmin {
 		switch (target) {
 			case "production":
 				// add this post call to the time machine.
-				if (date == "0") return GenUtils.httpPostWithBasicAuth(jenkingsEndpointRefreshOntosOnlyTest, "cirm", "admin", "");
+				if (date == "0") return GenUtils.httpPostWithBasicAuth(jenkingsEndpointRefreshOntosOnlyProduction, "cirm", "admin", "");
 				else {
 					String host = getHostIpAddress();
-					Json jsonContent = Json.object().set("key", key);
+					Json jsonContent = Json.object().set("key", key).set("timeStamp", System.currentTimeMillis());
 					Json jsonRestCall = Json.object().set("url", host + "/sradmin/deploy/production")
 													 .set("method", "POST")
 													 .set("content", jsonContent);
