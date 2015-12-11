@@ -242,13 +242,17 @@ public class OntoAdmin extends RestService
 		try
 		{ 
 			Refs.owlRepo.resolve().ensurePeerStarted();
-			OWLOntology O = OWL.manager().getOntology(IRI.create(iri)); 
-			if (O == null)
-				return ko("Ontology not found: " + iri);
-			DistributedOntology vo = repo.getDistributedOntology(O); 
-			PushActivity push = repo.push(vo, Refs.owlRepo.resolve().getDefaultPeer());
-			push.getFuture().get();
-			return ok().set("message", push.getCompletedMessage());
+//			OWLOntology O = OWL.manager().getOntology(IRI.create(iri)); 
+//			if (O == null)
+//				return ko("Ontology not found: " + iri);
+			String messages = "";
+			for (OWLOntology o : OWL.ontologies()) {
+				DistributedOntology vo = repo.getDistributedOntology(o); 
+				PushActivity push = repo.push(vo, Refs.owlRepo.resolve().getDefaultPeer());
+				push.getFuture().get();
+				messages += push.getCompletedMessage() + ", ";
+			}
+			return ok().set("message", messages); 
 		}
 		catch (Throwable t)
 		{
