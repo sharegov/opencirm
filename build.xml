@@ -234,7 +234,7 @@
    </target>
 
     <target name="prepare-release"   
-              depends="version-increment, save-version, make-dist" 
+              depends="make-dist, version-increment, save-version" 
               description="Compile, revision tag, make distribution ready for deployment."/> 
               
    <target name="deploy-prod" depends="prepare-release" description="Deploy to production server, does not autorestart.">
