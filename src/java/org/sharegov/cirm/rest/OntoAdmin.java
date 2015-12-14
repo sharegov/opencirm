@@ -23,7 +23,9 @@ import static org.sharegov.cirm.utils.GenUtils.ok;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -33,8 +35,10 @@ import javax.ws.rs.Produces;
 
 import mjson.Json;
 
+import org.hypergraphdb.HGPersistentHandle;
 import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.versioning.Revision;
+import org.hypergraphdb.app.owl.versioning.RevisionID;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.hypergraphdb.app.owl.versioning.VersionedOntologyComparator.RevisionCompareOutcome;
 import org.hypergraphdb.app.owl.versioning.VersionedOntologyComparator.RevisionComparisonResult;
@@ -45,6 +49,7 @@ import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.PullActivity;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.PushActivity;
 import org.hypergraphdb.peer.HGPeerIdentity;
+import org.hypergraphdb.peer.workflow.ActivityResult;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -52,12 +57,14 @@ import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.sharegov.cirm.OWL;
+import org.sharegov.cirm.OntologyChangesRepo;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.StartUp;
 import org.sharegov.cirm.event.EventDispatcher;
 import org.sharegov.cirm.owl.CachedReasoner;
 import org.sharegov.cirm.owl.SynchronizedOWLOntologyManager;
 import org.sharegov.cirm.utils.GenUtils;
+import org.sharegov.cirm.utils.OntologyCommit;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLOntologyManagerImpl;
 
@@ -67,8 +74,11 @@ import uk.ac.manchester.cs.owl.owlapi.OWLOntologyManagerImpl;
 @Produces("application/json")
 public class OntoAdmin extends RestService
 {
+	public enum REPOACTION {PULL, REVERT, NOTHING};
+	
 	public final String CACHED_REASONER_RESDIR = "/src/resources/cachedReasoner/";
 	public final String CACHED_REASONER_POPULATE_GET_INSTANCES_CACHE_FILE = CACHED_REASONER_RESDIR + "populateGetInstancesCache.json";
+	public static int ACTIVITY_TIMEOUT_SECS = 180;
 	
 	
 	protected VDHGDBOntologyRepository repo()
@@ -247,8 +257,27 @@ public class OntoAdmin extends RestService
 //				return ko("Ontology not found: " + iri);
 			String messages = "";
 			for (OWLOntology o : OWL.ontologies()) {
-				DistributedOntology vo = repo.getDistributedOntology(o); 
-				PushActivity push = repo.push(vo, Refs.owlRepo.resolve().getDefaultPeer());
+				VersionedOntology vo = repo.getVersionControlledOntology(o);
+				DistributedOntology dOnto = repo.getDistributedOntology(o);
+				HGPeerIdentity server = Refs.owlRepo.resolve().getDefaultPeer();
+				
+				switch (getBeforeCommitPushAction(dOnto, server)) {
+					case REVERT:
+						int lastMatchingRevision = revertToLastMatch (vo, dOnto, server);
+						pullFromserver(dOnto, server);
+						applyChangesSinceRevision (o, lastMatchingRevision);
+						break;
+					case PULL:
+						pullFromserver(dOnto, server);							
+						break;
+					case NOTHING:
+						break;
+
+					default:
+						throw new RuntimeException ("Cannot commit this time.");
+				}			
+				
+				PushActivity push = repo.push(dOnto, server);
 				push.getFuture().get();
 				messages += push.getCompletedMessage() + ", ";
 			}
@@ -260,28 +289,21 @@ public class OntoAdmin extends RestService
 			return ko(t.toString());
 		}		
 	}
-
+	
 	protected boolean commit(String userName, String comment, List <OWLOntologyChange> changes) throws RuntimeException
 	{		
 		VDHGDBOntologyRepository repo = repo();
 		try
 		{ 
 			Refs.owlRepo.resolve().ensurePeerStarted();
-			//OWLOntology O = OWL.manager().getOntology(IRI.create(ontologyIri)); 
 			
-//			if (O == null) {
-//				throw new RuntimeException ("Ontology not found: " + ontologyIri);
-//			}
-			
-			//OWL
-			OWLOntologyManager manager = OWL.manager();
-	
+			OWLOntologyManager manager = OWL.manager();	
 			manager.applyChanges(changes);			
 
 			int committedOntologyCount = 0;
 			for (OWLOntology o : OWL.ontologies()) {
 				VersionedOntology vo = repo.getVersionControlledOntology(o);
-				
+				//vo.revertHeadTo();
 				if (vo == null) {
 					throw new RuntimeException ("Ontology found, but not versioned: " + o.getOntologyID());
 				}
@@ -296,8 +318,30 @@ public class OntoAdmin extends RestService
 						//do nothing
 					}
 				} else {
+					DistributedOntology dOnto = repo.getDistributedOntology(o); 
+					HGPeerIdentity server = Refs.owlRepo.resolve().getDefaultPeer();
+					
+					switch (getBeforeCommitPushAction(dOnto, server)) {
+						case REVERT:
+							int lastMatchingRevision = revertToLastMatch (vo, dOnto, server);
+							pullFromserver(dOnto, server);
+							applyChangesSinceRevision (o, lastMatchingRevision);
+							manager.applyChanges(changes);	
+							break;
+						case PULL:
+							pullFromserver(dOnto, server);							
+							break;
+						case NOTHING:
+							break;
+	
+						default:
+							throw new RuntimeException ("Cannot commit this time.");
+					}
+					
 					vo.commit(userName, comment);
 					committedOntologyCount++;
+					int revision = vo.getHeadRevision().getRevision();
+					OntologyChangesRepo.getInstance().setOntoRevisionChanges(o.getOntologyID().toString(), revision, userName, comment, changes);
 				}
 			}
 			
@@ -308,6 +352,39 @@ public class OntoAdmin extends RestService
 			t.printStackTrace(System.err);
 			throw new RuntimeException(t.toString());
 		}				
+	}
+	
+	private int revertToLastMatch (VersionedOntology vo, DistributedOntology dOnto, HGPeerIdentity server){
+		VersionedOntologyComparisonResult compare = null;
+		try {
+			compare = repo().compareOntologyToRemote(dOnto, server, ACTIVITY_TIMEOUT_SECS);
+		} catch (Throwable t) {
+			throw new RuntimeException("System error while comparing to remote");
+		}
+		int result = compare.getRevisionResults().get(compare.getLastMatchingRevisionIndex()).getTarget().getRevision();
+		vo.revertHeadTo(new RevisionID((HGPersistentHandle) dOnto, result));
+		
+		return result;
+	}
+	
+	private void applyChangesSinceRevision (OWLOntology o, int revision){
+		Map<Integer, OntologyCommit> changes = OntologyChangesRepo.getInstance().getAllRevisionChangesForOnto(o.getOntologyID().toString());
+		
+		VersionedOntology vo = repo().getVersionControlledOntology(o);
+		
+		if (vo == null) {
+			throw new RuntimeException ("Ontology found, but not versioned: " + o.getOntologyID());
+		}
+		
+		for (Map.Entry<Integer, OntologyCommit> rx: changes.entrySet()){
+			if (rx.getKey().intValue() > revision){
+				OWL.manager().applyChanges(rx.getValue().getChanges());
+				vo.commit(rx.getValue().getUserName(), rx.getValue().getComment());
+				int newRevision = vo.getHeadRevision().getRevision();
+				OntologyChangesRepo.getInstance().deleteOntoRevisionChanges(o.getOntologyID().toString(), rx.getKey().intValue());
+				OntologyChangesRepo.getInstance().setOntoRevisionChanges(o.getOntologyID().toString(), newRevision, rx.getValue());
+			}
+		}
 	}
 
 	
@@ -535,4 +612,51 @@ public class OntoAdmin extends RestService
 			admin.repo().getPeer().stop();
 		}
 	}
+	
+	/**
+	 * Checks if local pending changes may be committed and sent to the server based on a comparison.
+	 * Will open explanatory dialogs if a reason is found that would prevent a commit.
+	 * 
+	 * @param dOnto
+	 * @param server
+	 * @return
+	 */
+	public REPOACTION getBeforeCommitPushAction(DistributedOntology dOnto, HGPeerIdentity server) {
+		VersionedOntologyComparisonResult result = null;
+		try {
+			result = repo().compareOntologyToRemote(dOnto, server, ACTIVITY_TIMEOUT_SECS);
+		} catch (Throwable t) {
+			throw new RuntimeException("System error while comparing to remote");
+		}
+		if (result != null) {
+			if (result.isConflict()) {
+				return REPOACTION.REVERT;
+			} else if (result.isTargetNewer()) {
+				return REPOACTION.PULL;							
+			} else {
+				return REPOACTION.NOTHING;
+			}
+		} else {
+			throw new RuntimeException("Cannot commit: There was a problem comparing the local history to the server's ontology. This might mean that the server was not available or a timeout occured. ");
+		}
+	}
+	
+	/**
+	 * pull from repo
+	 * 
+	 */
+	
+	public boolean pullFromserver (DistributedOntology dOnto, HGPeerIdentity server){
+		PullActivity pa = repo().pull(dOnto, server);
+		try {
+			ActivityResult paa = pa.getFuture().get(ACTIVITY_TIMEOUT_SECS, TimeUnit.SECONDS);
+			if (paa.getException() != null) {						
+				throw new RuntimeException(paa.getException().getMessage());
+			}
+		} catch (Throwable e) {
+			throw new RuntimeException("Transaction timed out while pulling from the server."); 	
+		}
+		return true;
+	}
+
 }

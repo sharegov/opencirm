@@ -350,6 +350,36 @@ public class MetaOntology
 		return result;
 	}
 	
+	private static List<Json> getInventory (String path, String parentID, String propertyID, Json data){
+		if (data.isArray()) return crawlArray(path, parentID, propertyID, data);
+		else if (data.isObject()) return crawlObject(path, parentID, propertyID, data);
+		else return crawlLiterak(path, parentID, propertyID, data);
+	}
+	
+	private static List<Json> crawlArray(String path, String parentID, String propertyID, Json data){
+		List<Json> result = new ArrayList<>();
+		for (Json nx: data.asJsonList()){
+			Json ix = Json.object().set("path", path+"/"+parentID+":"+propertyID)
+								   .set("parent", parentID)
+								   .set("property", propertyID);
+			if (data.has("iri")) ix.set("id", data.at("iri").asString());
+			
+		}
+		return result;
+	}
+	
+	private static List<Json> crawlObject(String path, String parentID, String propertyID, Json data){
+		List<Json> result = new ArrayList<>();
+		
+		return result;
+	}
+	
+	private static List<Json> crawlLiterak(String path, String parentID, String propertyID, Json data){
+		List<Json> result = new ArrayList<>();
+		
+		return result;
+	}
+	
 	public static List<OWLOntologyChange> getRemoveAllPropertiesIndividualChanges (OWLIndividual individual){
 		List<OWLOntologyChange> L = new ArrayList<OWLOntologyChange>();
 		
