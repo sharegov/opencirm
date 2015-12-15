@@ -68,4 +68,8 @@ public class OntologyChangesRepo {
 		
 		ontoChangesMap.get(onto).remove(revision);
 	}
+	
+	public void clearAll (){
+		ontoChangesMap.clear();
+	}
 }

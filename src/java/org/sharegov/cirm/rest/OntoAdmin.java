@@ -252,9 +252,7 @@ public class OntoAdmin extends RestService
 		try
 		{ 
 			Refs.owlRepo.resolve().ensurePeerStarted();
-//			OWLOntology O = OWL.manager().getOntology(IRI.create(iri)); 
-//			if (O == null)
-//				return ko("Ontology not found: " + iri);
+			
 			String messages = "";
 			for (OWLOntology o : OWL.ontologies()) {
 				VersionedOntology vo = repo.getVersionControlledOntology(o);
@@ -264,11 +262,11 @@ public class OntoAdmin extends RestService
 				switch (getBeforeCommitPushAction(dOnto, server)) {
 					case REVERT:
 						int lastMatchingRevision = revertToLastMatch (vo, dOnto, server);
-						pullFromserver(dOnto, server);
+						pullFromServer(dOnto, server);
 						applyChangesSinceRevision (o, lastMatchingRevision);
 						break;
 					case PULL:
-						pullFromserver(dOnto, server);							
+						pullFromServer(dOnto, server);							
 						break;
 					case NOTHING:
 						break;
@@ -279,8 +277,9 @@ public class OntoAdmin extends RestService
 				
 				PushActivity push = repo.push(dOnto, server);
 				push.getFuture().get();
-				messages += push.getCompletedMessage() + ", ";
+				messages += push.getCompletedMessage() + ", ";				
 			}
+			OntologyChangesRepo.getInstance().clearAll();
 			return ok().set("message", messages); 
 		}
 		catch (Throwable t)
@@ -324,12 +323,12 @@ public class OntoAdmin extends RestService
 					switch (getBeforeCommitPushAction(dOnto, server)) {
 						case REVERT:
 							int lastMatchingRevision = revertToLastMatch (vo, dOnto, server);
-							pullFromserver(dOnto, server);
+							pullFromServer(dOnto, server);
 							applyChangesSinceRevision (o, lastMatchingRevision);
 							manager.applyChanges(changes);	
 							break;
 						case PULL:
-							pullFromserver(dOnto, server);							
+							pullFromServer(dOnto, server);							
 							break;
 						case NOTHING:
 							break;
@@ -646,7 +645,7 @@ public class OntoAdmin extends RestService
 	 * 
 	 */
 	
-	public boolean pullFromserver (DistributedOntology dOnto, HGPeerIdentity server){
+	public boolean pullFromServer (DistributedOntology dOnto, HGPeerIdentity server){
 		PullActivity pa = repo().pull(dOnto, server);
 		try {
 			ActivityResult paa = pa.getFuture().get(ACTIVITY_TIMEOUT_SECS, TimeUnit.SECONDS);
