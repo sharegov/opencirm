@@ -250,10 +250,34 @@ public class OntoAdmin extends RestService
 	{
 		VDHGDBOntologyRepository repo = repo();
 		try
+		{
+			Refs.owlRepo.resolve().ensurePeerStarted();
+			OWLOntology O = OWL.manager().getOntology(IRI.create(iri)); 
+			if (O == null)
+				return ko("Ontology not found: " + iri);
+			DistributedOntology vo = repo.getDistributedOntology(O); 
+			PullActivity pull = repo.pull(vo, Refs.owlRepo.resolve().getDefaultPeer());
+			pull.getFuture().get();
+			OWL.reasoner().flush();
+			notifyOntoChange(iri);		
+			return ok().set("message", pull.getCompletedMessage());
+		}
+		catch (Throwable t)
+		{
+			t.printStackTrace(System.err);
+			return ko(t.toString());
+		}				
+	}
+	
+	public Json pushALL()
+	{
+		VDHGDBOntologyRepository repo = repo();
+		try
 		{ 
 			Refs.owlRepo.resolve().ensurePeerStarted();
 			
 			String messages = "";
+			System.out.println("Checking for Conflicts/Updates before commiting.");
 			for (OWLOntology o : OWL.ontologies()) {
 				VersionedOntology vo = repo.getVersionControlledOntology(o);
 				DistributedOntology dOnto = repo.getDistributedOntology(o);
@@ -261,14 +285,25 @@ public class OntoAdmin extends RestService
 				
 				switch (getBeforeCommitPushAction(dOnto, server)) {
 					case REVERT:
+						System.out.println("Server revision conflicts with local.");
+						System.out.println("We must revert...");
 						int lastMatchingRevision = revertToLastMatch (vo, dOnto, server);
+						System.out.println("Done reverting.");
+						System.out.println("Pulling last revision...");
 						pullFromServer(dOnto, server);
+						System.out.println("Done pulling.");
+						System.out.println("Re-Applying previuos changes...");
 						applyChangesSinceRevision (o, lastMatchingRevision);
+						System.out.println("Done re-applying changes.");
 						break;
 					case PULL:
-						pullFromServer(dOnto, server);							
+						System.out.println("Server revision is newer.");
+						System.out.println("Pulling last revision...");
+						pullFromServer(dOnto, server);
+						System.out.println("Done pulling.");						
 						break;
 					case NOTHING:
+						System.out.println("Server revision is identical, Nothing to do.");
 						break;
 
 					default:
@@ -297,12 +332,51 @@ public class OntoAdmin extends RestService
 			Refs.owlRepo.resolve().ensurePeerStarted();
 			
 			OWLOntologyManager manager = OWL.manager();	
+			
+			// resolve conflicts before commit
+			for (OWLOntology o : OWL.ontologies()) {
+				VersionedOntology vo = repo.getVersionControlledOntology(o);
+				DistributedOntology dOnto = repo.getDistributedOntology(o); 
+				HGPeerIdentity server = Refs.owlRepo.resolve().getDefaultPeer();
+				
+				if (vo == null || dOnto == null) {
+					throw new RuntimeException ("Ontology found, but not versioned or distributed: " + o.getOntologyID());
+				}
+				
+				switch (getBeforeCommitPushAction(dOnto, server)) {
+					case REVERT:
+						System.out.println("Server revision conflicts with local.");
+						System.out.println("We must revert...");
+						int lastMatchingRevision = revertToLastMatch (vo, dOnto, server);
+						System.out.println("Done reverting.");
+						System.out.println("Pulling last revision...");
+						pullFromServer(dOnto, server);
+						System.out.println("Done pulling.");
+						System.out.println("Re-Applying previuos changes...");
+						applyChangesSinceRevision (o, lastMatchingRevision);
+						System.out.println("Done re-applying changes.");
+						break;
+					case PULL:
+						System.out.println("Server revision is newer.");
+						System.out.println("Pulling last revision...");
+						pullFromServer(dOnto, server);
+						System.out.println("Done pulling.");						
+						break;
+					case NOTHING:
+						System.out.println("Server revision is identical, Nothing to do.");
+						break;
+	
+					default:
+						throw new RuntimeException ("Cannot commit this time.");
+				}								
+			}
+			
 			manager.applyChanges(changes);			
 
 			int committedOntologyCount = 0;
 			for (OWLOntology o : OWL.ontologies()) {
 				VersionedOntology vo = repo.getVersionControlledOntology(o);
-				//vo.revertHeadTo();
+								
 				if (vo == null) {
 					throw new RuntimeException ("Ontology found, but not versioned: " + o.getOntologyID());
 				}
@@ -316,27 +390,7 @@ public class OntoAdmin extends RestService
 					} else {
 						//do nothing
 					}
-				} else {
-					DistributedOntology dOnto = repo.getDistributedOntology(o); 
-					HGPeerIdentity server = Refs.owlRepo.resolve().getDefaultPeer();
-					
-					switch (getBeforeCommitPushAction(dOnto, server)) {
-						case REVERT:
-							int lastMatchingRevision = revertToLastMatch (vo, dOnto, server);
-							pullFromServer(dOnto, server);
-							applyChangesSinceRevision (o, lastMatchingRevision);
-							manager.applyChanges(changes);	
-							break;
-						case PULL:
-							pullFromServer(dOnto, server);							
-							break;
-						case NOTHING:
-							break;
-	
-						default:
-							throw new RuntimeException ("Cannot commit this time.");
-					}
-					
+				} else {									
 					vo.commit(userName, comment);
 					committedOntologyCount++;
 					int revision = vo.getHeadRevision().getRevision();
@@ -360,8 +414,12 @@ public class OntoAdmin extends RestService
 		} catch (Throwable t) {
 			throw new RuntimeException("System error while comparing to remote");
 		}
-		int result = compare.getRevisionResults().get(compare.getLastMatchingRevisionIndex()).getTarget().getRevision();
-		vo.revertHeadTo(new RevisionID((HGPersistentHandle) dOnto, result));
+		
+		int result = compare.getRevisionResults().get(compare.getLastMatchingRevisionIndex()).getTarget().getRevision();		
+		RevisionID rID = new RevisionID(repo().getOntologyUUID(vo.getWorkingSetData()), result);		
+		vo.revertHeadTo(rID, true);
+		
+		OWL.reasoner().flush();
 		
 		return result;
 	}
@@ -369,21 +427,24 @@ public class OntoAdmin extends RestService
 	private void applyChangesSinceRevision (OWLOntology o, int revision){
 		Map<Integer, OntologyCommit> changes = OntologyChangesRepo.getInstance().getAllRevisionChangesForOnto(o.getOntologyID().toString());
 		
-		VersionedOntology vo = repo().getVersionControlledOntology(o);
+		if (changes != null && !changes.isEmpty()) {
 		
-		if (vo == null) {
-			throw new RuntimeException ("Ontology found, but not versioned: " + o.getOntologyID());
-		}
-		
-		for (Map.Entry<Integer, OntologyCommit> rx: changes.entrySet()){
-			if (rx.getKey().intValue() > revision){
-				OWL.manager().applyChanges(rx.getValue().getChanges());
-				vo.commit(rx.getValue().getUserName(), rx.getValue().getComment());
-				int newRevision = vo.getHeadRevision().getRevision();
-				OntologyChangesRepo.getInstance().deleteOntoRevisionChanges(o.getOntologyID().toString(), rx.getKey().intValue());
-				OntologyChangesRepo.getInstance().setOntoRevisionChanges(o.getOntologyID().toString(), newRevision, rx.getValue());
+			VersionedOntology vo = repo().getVersionControlledOntology(o);
+			
+			if (vo == null) {
+				throw new RuntimeException ("Ontology found, but not versioned: " + o.getOntologyID());
 			}
-		}
+			
+			for (Map.Entry<Integer, OntologyCommit> rx: changes.entrySet()){
+				if (rx.getKey().intValue() > revision){
+					OWL.manager().applyChanges(rx.getValue().getChanges());
+					vo.commit(rx.getValue().getUserName(), rx.getValue().getComment());
+					int newRevision = vo.getHeadRevision().getRevision();
+					OntologyChangesRepo.getInstance().deleteOntoRevisionChanges(o.getOntologyID().toString(), rx.getKey().intValue());
+					OntologyChangesRepo.getInstance().setOntoRevisionChanges(o.getOntologyID().toString(), newRevision, rx.getValue());
+				}
+			}
+		} else System.out.println("No previous changes saved for: " + o.getOntologyID().toString());
 	}
 
 	
@@ -655,6 +716,7 @@ public class OntoAdmin extends RestService
 		} catch (Throwable e) {
 			throw new RuntimeException("Transaction timed out while pulling from the server."); 	
 		}
+		OWL.reasoner().flush();
 		return true;
 	}
 

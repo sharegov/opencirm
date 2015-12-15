@@ -556,10 +556,7 @@ public class ServiceCaseManager extends OntoAdmin {
 		OwlRepo repo = getRepo();
 		synchronized (repo) {
 			repo.ensurePeerStarted();
-			
-			String ontologyIri = Refs.defaultOntologyIRI.resolve();
-
-			return push(ontologyIri);
+			return pushALL();
 		}
 	}
 		
