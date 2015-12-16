@@ -61,6 +61,8 @@ import org.sharegov.cirm.event.ClearOWLEntityCacheForSrTypeModification;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
+import com.clarkparsia.sparqlowl.parser.antlr.SparqlOwlParser.booleanLiteral_return;
+
 
 /**
  *  
@@ -312,7 +314,7 @@ public class MetaOntology
 				
 				result.add(new AddAxiom(O, factory.getOWLObjectPropertyAssertionAxiom(property, parent, newInd)));
 			}
-		}					
+		}	
 		
 		return result;
 	}
@@ -350,32 +352,29 @@ public class MetaOntology
 		return result;
 	}
 	
-	private static List<Json> getInventory (String path, String parentID, String propertyID, Json data){
-		if (data.isArray()) return crawlArray(path, parentID, propertyID, data);
-		else if (data.isObject()) return crawlObject(path, parentID, propertyID, data);
-		else return crawlLiterak(path, parentID, propertyID, data);
+	private static boolean isIdenticalOppositeAxion (OWLOntologyChange a, OWLOntologyChange b){
+		return (a.getAxiom().equals(b.getAxiom()) && a.getClass() != b.getClass());			
 	}
 	
-	private static List<Json> crawlArray(String path, String parentID, String propertyID, Json data){
-		List<Json> result = new ArrayList<>();
-		for (Json nx: data.asJsonList()){
-			Json ix = Json.object().set("path", path+"/"+parentID+":"+propertyID)
-								   .set("parent", parentID)
-								   .set("property", propertyID);
-			if (data.has("iri")) ix.set("id", data.at("iri").asString());
+	public static List<OWLOntologyChange> clearChanges (List<OWLOntologyChange> changes){
+		List<OWLOntologyChange> result = new ArrayList<>();
+		
+		int lim = changes.size();
+		for (int i=0; i<lim; i++){
+			boolean found = false;
+			for (int j=0;j<lim; j++)
+				if (i!=j){
+					if (isIdenticalOppositeAxion(changes.get(i), changes.get(j))){
+					found = true;
+					continue;
+				}
+			}
+			
+			if (!found){
+				result.add(changes.get(i));
+			}
 			
 		}
-		return result;
-	}
-	
-	private static List<Json> crawlObject(String path, String parentID, String propertyID, Json data){
-		List<Json> result = new ArrayList<>();
-		
-		return result;
-	}
-	
-	private static List<Json> crawlLiterak(String path, String parentID, String propertyID, Json data){
-		List<Json> result = new ArrayList<>();
 		
 		return result;
 	}

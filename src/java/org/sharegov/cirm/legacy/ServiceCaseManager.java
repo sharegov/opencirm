@@ -848,6 +848,8 @@ public class ServiceCaseManager extends OntoAdmin {
 				
 				changes.addAll(MetaOntology.getAddIndividualObjectFromJsonChanges(individualID, propertyID, data));
 				
+				changes = MetaOntology.clearChanges(changes);
+				
 				ThreadLocalStopwatch.now("---- Ended Creating New Questions.");
 	
 				String comment = "Create/Replace questions for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID);	
