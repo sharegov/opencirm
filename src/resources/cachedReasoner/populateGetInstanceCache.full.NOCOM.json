@@ -29,7 +29,7 @@
   },
   {
     "direct": false,
-    "classExpression": " inverse (mdc:hasAction) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:Cirm311Supervisor)\n     or (mdc:hasActor value mdc:CirmAdmin)\n     or (mdc:hasActor value mdc:Community_Information_and_Outreach))\n     and (mdc:hasObject value legacy:ServiceCase))"
+    "classExpression": " inverse (mdc:hasAction) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:Cirm311Supervisor)\n     or (mdc:hasActor value mdc:CirmAdmin)\n     or (mdc:hasActor value mdc:Communications_Department))\n     and (mdc:hasObject value legacy:ServiceCase))"
   },
   {
     "direct": false,
@@ -209,7 +209,7 @@
   },
   {
     "direct": false,
-    "classExpression": " inverse (mdc:hasAction) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:Community_Information_and_Outreach))\n     and (mdc:hasObject value legacy:ServiceCase))"
+    "classExpression": " inverse (mdc:hasAction) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:Communications_Department))\n     and (mdc:hasObject value legacy:ServiceCase))"
   },
   {
     "direct": false,
@@ -293,11 +293,11 @@
   },
   {
     "direct": false,
-    "classExpression": "legacy:ServiceCase\n and ( inverse (mdc:hasObject) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:Cirm311Supervisor)\n     or (mdc:hasActor value mdc:CirmAdmin)\n     or (mdc:hasActor value mdc:Community_Information_and_Outreach))))"
+    "classExpression": "legacy:ServiceCase\n and ( inverse (mdc:hasObject) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:Cirm311Supervisor)\n     or (mdc:hasActor value mdc:CirmAdmin)\n     or (mdc:hasActor value mdc:Communications_Department))))"
   },
   {
     "direct": false,
-    "classExpression": "legacy:ServiceCase\n and ( inverse (mdc:hasObject) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:Cirm311Supervisor)\n     or (mdc:hasActor value mdc:Community_Information_and_Outreach))))"
+    "classExpression": "legacy:ServiceCase\n and ( inverse (mdc:hasObject) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:Cirm311Supervisor)\n     or (mdc:hasActor value mdc:Communications_Department))))"
   },
   {
     "direct": false,
@@ -381,11 +381,11 @@
   },
   {
     "direct": false,
-    "classExpression": " inverse (mdc:hasAction) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:Cirm311Supervisor)\n     or (mdc:hasActor value mdc:Community_Information_and_Outreach))\n     and (mdc:hasObject value legacy:ServiceCase))"
+    "classExpression": " inverse (mdc:hasAction) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:Cirm311Supervisor)\n     or (mdc:hasActor value mdc:Communications_Department))\n     and (mdc:hasObject value legacy:ServiceCase))"
   },
   {
     "direct": false,
-    "classExpression": "legacy:ServiceCase\n and ( inverse (mdc:hasObject) some \n    (mdc:AccessPolicy\n     and (mdc:hasActor value mdc:Community_Information_and_Outreach)))"
+    "classExpression": "legacy:ServiceCase\n and ( inverse (mdc:hasObject) some \n    (mdc:AccessPolicy\n     and (mdc:hasActor value mdc:Communications_Department)))"
   },
   {
 	"direct": false,
