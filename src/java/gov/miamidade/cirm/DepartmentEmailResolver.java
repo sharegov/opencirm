@@ -16,7 +16,6 @@
 package gov.miamidade.cirm;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
@@ -28,6 +27,11 @@ import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.legacy.VariableResolver;
 import org.sharegov.cirm.rest.UserService;
 
+/**
+ * DepartmentEmailResolver has capabilities to resolve message variables SELECTED_DEPARTMENTS, SELECTED_DEPT_DEP_MAYOR_EMAIL and SELECTED_DEPT_DEP_MAYOR_SALUTATION.
+ * 
+ * @author Thomas Hilpold
+ */
 public class DepartmentEmailResolver implements VariableResolver
 {
 	public static boolean DBG = false;
@@ -38,7 +42,7 @@ public class DepartmentEmailResolver implements VariableResolver
 	public static final String HAS_EMAIL_ADDRESS_IRI = "http://www.miamidade.gov/ontology#hasEmailAddress";
 	
 	/**
-	 * DLQ: EmailAddress and inverse hasEmailAddress some (Deputy_Mayor and inverse hasDeputyMayor value Community_Information_and_Outreach)
+	 * DLQ: EmailAddress and inverse hasEmailAddress some (Deputy_Mayor and inverse hasDeputyMayor value Communications_Department)
 	 * 		@Override
 	 * @param sr: sr.at("hasServiceAnswer") expected 
  	 */
@@ -136,7 +140,7 @@ public class DepartmentEmailResolver implements VariableResolver
 	}
 
 	/**
-	 * DLQ: EmailAddress and inverse hasEmailAddress some (Deputy_Mayor and inverse hasDeputyMayor value Community_Information_and_Outreach)
+	 * DLQ: EmailAddress and inverse hasEmailAddress some (Deputy_Mayor and inverse hasDeputyMayor value Communications_Department)
 	 * 		@Override
 	 * @param sr: sr.at("hasServiceAnswer") expected 
  	 */
@@ -161,7 +165,6 @@ public class DepartmentEmailResolver implements VariableResolver
 			else
 			{
 			    Json user = L.at(0);
-				//dbgPrintUser(user);
 				//curSalutation.append(user.get("title") + " ");  
 				curSalutation.append("Deputy Mayor ");
 				curSalutation.append(user.at("givenName").asString() + " ");
@@ -178,13 +181,6 @@ public class DepartmentEmailResolver implements VariableResolver
 		return result.toString(); 
 	}
 	
-	private void dbgPrintUser(Map<String, Object> user) 
-	{
-		if (user == null) return;
-		for (Map.Entry<String, Object> entry : user.entrySet()) 
-			System.out.println(entry.getKey() + " = " + entry.getValue());
-	}
-
 	private String resolveVAR_DEPARTMENTS(Json sr, Properties properties) 
 	{
 		String result = "";
