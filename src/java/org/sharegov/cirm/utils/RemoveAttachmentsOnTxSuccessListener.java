@@ -29,24 +29,24 @@ import org.sharegov.cirm.ConfigSet;
 import org.sharegov.cirm.OWL;
 
 /**
- * Transaction listener that removes images after a transaction success from AWS S3 (Also accepts but ignores legacy paths).<br>
- * Legacy file based images are detected, will appear to the user to be successfully deleted, however, we don't actually delete the file from the server,
+ * Transaction listener that removes attachments (files or images) after a transaction success from AWS S3 (Also accepts but ignores legacy paths).<br>
+ * Legacy file based attachments are detected, will appear to the user to be successfully deleted, however, we don't actually delete the file from the server,
  * but log a warning message instead. <br>
  * <br>
  * Suggested usage:<br>
- * Create and add one object of this class if and only if hasRemovedImage json property coming in a service request json is a non empty array.<br>
+ * Create and add one object of this class if and only if hasRemovedAttachment json property coming in a service request json is a non empty array.<br>
  * <br>
  * @author David Wong, Thomas Hilpold
  *
  */
-public class RemoveImagesOnTxSuccessListener implements CirmTransactionListener
+public class RemoveAttachmentsOnTxSuccessListener implements CirmTransactionListener
 {
 
-	final List<Json> hasRemovedImageList;
+	final List<Json> hasRemovedAttachmentList;
 	
-	public RemoveImagesOnTxSuccessListener(final List<Json> hasRemovedImageList) {
-		if (hasRemovedImageList == null) throw new IllegalArgumentException("hasRemovedImages was null");
-		this.hasRemovedImageList = hasRemovedImageList;
+	public RemoveAttachmentsOnTxSuccessListener(final List<Json> hasRemovedAttachmentList) {
+		if (hasRemovedAttachmentList == null) throw new IllegalArgumentException("hasRemovedAttachmentList was null");
+		this.hasRemovedAttachmentList = hasRemovedAttachmentList;
 	}
 
 	
@@ -54,28 +54,28 @@ public class RemoveImagesOnTxSuccessListener implements CirmTransactionListener
 	public void transactionStateChanged(CirmTransactionEvent e)
 	{
 		if (e.isSucceeded()) {
-			if (!hasRemovedImageList.isEmpty())	{
-				ThreadLocalStopwatch.now("START RemoveImagesOnTxSuccessListener removing " + hasRemovedImageList.size() + " images");
-				ThreadLocalStopwatch.getWatch().time("RemoveImagesOnTxSuccessListener removing " + hasRemovedImageList.size());
+			if (!hasRemovedAttachmentList.isEmpty())	{
+				ThreadLocalStopwatch.now("START RemoveAttachmentsOnTxSuccessListener removing " + hasRemovedAttachmentList.size() + " attachments");
+				ThreadLocalStopwatch.getWatch().time("RemoveAttachmentsOnTxSuccessListener removing " + hasRemovedAttachmentList.size());
 				try {
-					deleteImages();
+					deleteAttachments();
 				} catch (Exception ex) {
-					ThreadLocalStopwatch.error("Error: RemoveImagesOnTxSuccessListener failed while deleting images. Stack trace to follow.");
+					ThreadLocalStopwatch.error("Error: RemoveAttachmentsOnTxSuccessListener failed while deleting attachments. Stack trace to follow.");
 					ex.printStackTrace();
 				}
-				ThreadLocalStopwatch.now("END RemoveImagesOnTxSuccessListener removing " + hasRemovedImageList.size() + " images");
+				ThreadLocalStopwatch.now("END RemoveAttachmentsOnTxSuccessListener removing " + hasRemovedAttachmentList.size() + " attachments");
 			} 
 		}
 	}
 	
 	/**
-	 * Deletes all images given by hasRemovedImageList property from ASW, but also accepts legacy File paths.
+	 * Deletes all images given by hasRemovedAttachmentList property from ASW, but also accepts legacy File paths.
 	 */
-	void deleteImages() {
+	void deleteAttachments() {
 		String file; 
 		
-		for (Json image : hasRemovedImageList) {
-			file = image.toString();
+		for (Json attachment : hasRemovedAttachmentList) {
+			file = attachment.toString();
 			if(file.contains("aws") && file.contains("s3")) {
 				deleteFromAWS(file); 
 			} else {
@@ -91,7 +91,7 @@ public class RemoveImagesOnTxSuccessListener implements CirmTransactionListener
 	 * @param filepath a local or remote windows file path
 	 */
 	void deleteFromFile(String filepath) {
-		ThreadLocalStopwatch.error("WARNING: RemoveImagesOnTxSuccessListener: Deleting legacy image not implemented, but attempted with: " + filepath + " ");
+		ThreadLocalStopwatch.error("WARNING: RemoveAttachmentsOnTxSuccessListener: Deleting legacy image not implemented, but attempted with: " + filepath + " ");
 //		File newF = new File(filepath);
 //		boolean deleteStatus = newF.delete();
 //		if (deleteStatus == false) {

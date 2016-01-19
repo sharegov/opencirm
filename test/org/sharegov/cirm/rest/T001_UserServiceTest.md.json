@@ -1,7 +1,7 @@
 [
 	{
 		"ecKey" : "e309888", 
-		"groups" : [ "CirmAdmin", "Community_Information_and_Outreach"],
+		"groups" : [ "CirmAdmin", "Communications_Department"],
 		"FirstName" : "Thomas",
 		"LastName" : "Hilpold",
 		"email" : "hilpold@miamidade.gov",
@@ -12,7 +12,7 @@
 	},
 	{
 		"ecKey" : "e160616", 
-		"groups" : [ "Community_Information_and_Outreach"],
+		"groups" : [ "Communications_Department"],
 		"FirstName" : "Syed",
 		"LastName" : "Abbas",
 		"email" : "sabbas@miamidade.gov",
@@ -23,7 +23,7 @@
 	},
 	{
 		"ecKey" : "e196895", 
-		"groups" : [ "Cirm311Supervisor", "CirmCOM_CEExternal", "Community_Information_and_Outreach"],
+		"groups" : [ "Cirm311Supervisor", "CirmCOM_CEExternal", "Communications_Department"],
 		"FirstName" : "Elizabeth",
 		"LastName" : "Silva",
 		"email" : "liz.silva@miamidade.gov",

@@ -129,7 +129,7 @@ import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.JsonUtil;
 import org.sharegov.cirm.utils.PDFExportUtil;
 import org.sharegov.cirm.utils.PDFViewReport;
-import org.sharegov.cirm.utils.RemoveImagesOnTxSuccessListener;
+import org.sharegov.cirm.utils.RemoveAttachmentsOnTxSuccessListener;
 import org.sharegov.cirm.utils.SendEmailOnTxSuccessListener;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 import org.sharegov.cirm.workflows.WebServiceCallTask;
@@ -1154,7 +1154,7 @@ public class LegacyEmulator extends RestService
 			updatedDate = getPersister().getStore().getStoreTime();
 		serviceCase.at("properties").set("hasDateLastModified", GenUtils.formatDate(updatedDate));
 		final Json actorEmails = serviceCase.at("properties").atDel("actorEmails");
-		final Json hasRemovedImage = serviceCase.at("properties").atDel("hasRemovedImage");
+		final Json hasRemovedAttachment = serviceCase.at("properties").atDel("hasRemovedAttachment");
 		Long boid = serviceCase.at("boid").asLong();
 		if (serviceCase.at("properties").has("legacy:hasServiceActivity"))
 			for (Json a : serviceCase.at("properties").atDel("legacy:hasServiceActivity").asJsonList())
@@ -1166,7 +1166,7 @@ public class LegacyEmulator extends RestService
 		}
 		serviceCase.at("properties").set("legacy:hasServiceActivity", uiActs);
 		// delete any removed Images
-		tryDeleteImages(hasRemovedImage);
+		tryDeleteAttachments(hasRemovedAttachment);
 		//fetch DB Activities to compare/update against UI Activities
 		//T2
 		if(uiActs.asJsonList().size() > 0)
@@ -1466,16 +1466,16 @@ public class LegacyEmulator extends RestService
 	}
 
 	/**
-	 * Try to delete images if serviceCase json has a hasRemovedImage property.<br>
+	 * Try to delete attachments (files and images) if serviceCase json has a hasRemovedAttachment property.<br>
 	 * Always called  inside of a transaction.
 	 * @param serviceCase
 	 */
-	public void tryDeleteImages(Json hasRemovedImage)
+	public void tryDeleteAttachments(Json hasRemovedAttachment)
 	{	
-		if(hasRemovedImage != null && hasRemovedImage.isArray()) {
-			List<Json> hasRemovedImageList = hasRemovedImage.asJsonList();
-			if (hasRemovedImageList.size() >  0) {
-				CirmTransaction.get().addTopLevelEventListener(new RemoveImagesOnTxSuccessListener(hasRemovedImageList));
+		if(hasRemovedAttachment != null && hasRemovedAttachment.isArray()) {
+			List<Json> hasRemovedAttachmentList = hasRemovedAttachment.asJsonList();
+			if (hasRemovedAttachmentList.size() >  0) {
+				CirmTransaction.get().addTopLevelEventListener(new RemoveAttachmentsOnTxSuccessListener(hasRemovedAttachmentList));
 			}
 		} else {
 			//programming error
@@ -1564,7 +1564,7 @@ public class LegacyEmulator extends RestService
 		{
 			// System.out.println("new SR to save: " + legacyForm);
 			final Json actorEmails = legacyForm.at("properties").atDel("actorEmails");
-			final Json hasRemovedImage = legacyForm.at("properties").atDel("hasRemovedImage");
+			final Json hasRemovedAttachment = legacyForm.at("properties").atDel("hasRemovedAttachment");
 			final String type = legacyForm.at("type").asString();
 			if (!isClientExempt()
 					&& !Permissions.check(individual("BO_New"),
@@ -1591,7 +1591,7 @@ public class LegacyEmulator extends RestService
 				@Override
 				public Json call() throws Exception
 				{
-					tryDeleteImages(hasRemovedImage);	
+					tryDeleteAttachments(hasRemovedAttachment);	
 					final BOntology bontology = BOntology.makeRuntimeBOntology(legacyForm);
 									
 					

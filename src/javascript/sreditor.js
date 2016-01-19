@@ -111,9 +111,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
         		atAddress: new AddressBluePrint(),
         		hasServiceActivity:[],
         		hasServiceCaseActor:[],
-        		hasImage:[],
-        		
-        		hasRemovedImage:[],
+        		hasAttachment: [],
+        		hasRemovedAttachment:[],
         		hasStatus:{"iri":"", "label":""},
         		hasPriority:{"iri":"", "label":""},
         		hasIntakeMethod:{"iri":"", "label":""},
@@ -696,9 +695,11 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
 			  a = $.grep(type.hasServiceActor, function(x){return x.iri == a.iri; })[0];
 		      P.hasServiceCaseActor.push({hasServiceActor:{iri:a.iri, label:a.label}});
 			});
-			P.hasImage = [];
+			P.hasAttachment = [];
+			P.hasRemovedAttachment = [];
 			
-			P.hasRemovedImage = [];
+			
+    		
 			//P.Comments = '';
 			P.hasDetails = '';
 			P.hasXCoordinate = "";
@@ -1963,10 +1964,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
                     meta.push(new metadata("type",type));
                    
                     //2149 Optional Image upload - disabled meta until next week
-                    //updateMetadata(meta, self.data().properties().hasImage()); 
-                    //console.log("this is the metadata" ); 
-                    //console.log(meta);
-                
+                    //Enabled again
+                    updateMetadata(meta, self.data().properties().hasAttachment()); 
                 }
                 else if(result.ok == false) {
                     $("#sh_save_progress").dialog('close');
@@ -2868,18 +2867,32 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
 			self.clearEmail();
 		});
 
-        // Detail sections
+		
+		
+		// Detail sections
 		self.sections = [
 		    {title:'SR Main', div:'sr_details'}, 
 		    {title:'SR Customers', div:'sr_actors'}, 
 		    {title:'SR Activities', div:'sr_activities'}, 
 		    //{title:'SR Info', div:'sr_info'}, 
 		    {title:'Geo Info', div:'sr_geo_info'}, 
-		    {title:'Photos / Images', div:'sr_images'}];
+		    //{title:'Attachments', div:'sr_images'}
+		    
+		    ];
+		
+		
 		self.currentSection = ko.observable(self.sections[0]);
+		
+	
+		
+		self.goToAttachments = function(){
+			self.currentSection({title:'Attachments', div:'sr_images'});
+		} 
 		self.goToSection = function(section) {
 		        self.currentSection(section);
 		};
+		
+	
 		
 		self.launchMap = function()
 		{
@@ -3043,18 +3056,14 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
 				return U.isEmptyString(tempEL) == true ? "" : new Date(Date.parse(tempEL)).format("mm/dd/yyyy HH:MM:ss");
 		};
 
-		self.imageCallBack = function(res) {
+		self.attachmentCallBack = function(res) {
 			
 			
 			if(res.ok == true){
-				
-				//self.data().properties().hasImage.push(res.image);
-				//self.data().properties().hasImage.push(res.key);
-				self.data().properties().hasImage.push(res.url);
-				//self.data().properties().hasImage.push(res);
+				self.data().properties().hasAttachment.push(res.url);
+				console.log();
 				console.log("response from s3"); 
 			    console.log(res);
-				
 			}
 			else if(res.ok == false)
 				alertDialog("Error uploading file");
@@ -3064,12 +3073,13 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
 
 		self.uploadFiles = function(el) {
 			
-		 
+		   
 			
-			
-			$('#fileUploader').upload("/upload", self.imageCallBack, 'json');
+			if($('#fileUploader').val())
+			{
+			$('#fileUploader').upload("/upload", self.attachmentCallBack, 'json');
 			$('#fileUploader')[0].value = "";
-			console.log("yo this is my self"); 
+			}
 			console.log(self);
 		};
 		
@@ -3123,8 +3133,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
 			$("#sh_dialog_alert")[0].innerText = "Are you sure you want to delete this Image";
 			$("#sh_dialog_alert").dialog({ height: 150, width: 350, modal: true, buttons: {
 				"Delete" : function() {
-					self.data().properties().hasImage.remove(data);
-					self.data().properties().hasRemovedImage.push(data);
+	        		self.data().properties().hasAttachment.remove(data);
+					self.data().properties().hasRemovedAttachment.push(data);
 					$("#sh_dialog_alert").dialog('close');
 				},
 				"Cancel": function() {
@@ -3417,8 +3427,11 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
 	    	model.isLockedStatus(false);
 
 	    //if no images, then add the property for images
-	    bo.properties.hasImage = U.ensureArray(bo.properties.hasImage);
-    	bo.properties.hasRemovedImage = U.ensureArray(bo.properties.hasRemovedImage);
+    	bo.properties.hasAttachment = U.ensureArray(bo.properties.hasAttachment);
+    	bo.properties.hasRemovedAttachment = U.ensureArray(bo.properties.hasRemovedAttachment);
+    	
+    	
+    	
     	bo.properties.hasServiceAnswer = U.ensureArray(bo.properties.hasServiceAnswer);
 
         if(srType.hasServiceField && bo.properties.hasServiceAnswer.length != srType.hasServiceField.length) {
@@ -3699,6 +3712,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
 		
     }
     
+   
+    
+    
     /**
      * sr: The service request
      */
@@ -3706,7 +3722,48 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
         var self = {};
         self.markup = $(srmarkupText);
         self.model = new RequestModel(addressModel);
+       
+       
+        self.model.getFileInfo = function(url){
+        	
+        	 var obj = {}; 
+             obj.isImage = false;
+             var imageTypes = ['jpg', 'png', 'gif', 'tif','jpeg'];
+             
+        	var tokens; 
+        	var name;
+        	var ext; 
+        	tokens = url.split("/");
+        	
+        	if(tokens.length < 5)
+        		{
+        		console.log("error tokenizing url"); 
+        		obj.name = file;
+        		return obj; 
+        		}
+        	
+        	name = tokens[4]; 
+        	
+        	tokens = name.split("_");
+        	tokens = tokens[1].split("-")
+        	name = tokens[0]; 
+        	//tokens = name.split(".");
+        	ext = tokens[1];
+        	console.log('name and ext ' + name + ext); 
+        	name = name + '.' +ext;
+        	for(var i = 0; i < imageTypes.length; i++){
+        		if(imageTypes[i] == ext)
+        			{
+        			obj.isImage = true; 
+        			}
+        	}
+        	obj.name = name;
+        	return obj;
+        }
+        
+       
         ko.applyBindings(self.model, self.markup[0]);
+      
 /*
         var obj = legacy.metadata.LegacyServiceCaseListInput;
         //cirm.top.get("/legacy?q=LegacyServiceCaseListInput");
