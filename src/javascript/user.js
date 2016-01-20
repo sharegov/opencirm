@@ -184,7 +184,7 @@ define(['jquery', 'rest', 'U','store!'], function($, rest, U, store) {
                 profile =  (cookievalue) ? JSON.parse(cookievalue) : null;
             }
             if (profile == null) return null;
-            if ($.grep(profile.groups, function(x){return x.indexOf("Community_Information_and_Outreach") > -1 }).length == 0)
+            if ($.grep(profile.groups, function(x){return x.indexOf("Communications_Department") > -1 }).length == 0)
                 profile = null;
             profile.access = users.postObject('/accesspolicies', profile.groups);
             return profile;
