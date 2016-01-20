@@ -94,13 +94,18 @@ import org.sharegov.cirm.utils.ThreadLocalStopwatch;
  * TO:
  * mdcrecycling@worldwasteservices.com
  * CC:
- * Customer Service Unit (PWWM);Jeanmarie Massa;Gayle Love
- * swmcsu@miamidade.gov;massaj@miamidade.gov;loveg@miamidade.gov;mete@miamidade.gov
+ * Customer Service Unit (PWWM);Jeanmarie Massa;
+ * swmcsu@miamidade.gov;massaj@miamidade.gov;
  *
  *
  * The Recycling Complaints Z3 go to:
  * TO:
- * oscar.diaz@progressivewaste.com
+ * CS-MIAMIDADE-RECYCLI@WASTESERVICESINC.COM;  
+ * Sametha.Lovett@progressivewaste.com;
+ * Gerardo.Cardona@progressivewaste.com; 
+ * Jacqueson.Bernard@progressivewaste.com;
+ * Kimberly.Diljohn@progressivewaste.com; 
+ * Joe.Ruiz@progressivewaste.com
  * CC: same
  * 
  * To email to cirmtest@miamidade.gov, set MessageManager Test mode or set EMAIL_TESTMODE = true;
@@ -112,7 +117,12 @@ public class ReportRecyclingComplaintsXls
 {
 	public static final boolean EMAIL_TEST_MODE = false; //true overrides a MessageManager.isTestMode()==false, false respects MM setting.
 	public static final String EMAIL_TO1 = "mdcrecycling@worldwasteservices.com";
-	public static final String EMAIL_TO2 = "CS-MIAMIDADE-RECYCLI@WASTESERVICESINC.COM;Sametha.Lovett@progressivewaste.com;Gerardo.Cardona@progressivewaste.com;Joe.Ruiz@progressivewaste.com";
+	public static final String EMAIL_TO2 = "CS-MIAMIDADE-RECYCLI@WASTESERVICESINC.COM;"  
+						+ "Sametha.Lovett@progressivewaste.com;" 
+						+ "Gerardo.Cardona@progressivewaste.com;" 
+						+ "Jacqueson.Bernard@progressivewaste.com;" 
+						+ "Kimberly.Diljohn@progressivewaste.com;" 
+						+ "Joe.Ruiz@progressivewaste.com";
 	public static final String EMAIL_CC12 = "swmcsu@miamidade.gov;massaj@miamidade.gov";
 	public static final String EMAIL_BCC12 = "cirmtest@miamidade.gov";
 	public static final String EMAIL_FROM12 = "cirm@miamidade.gov";

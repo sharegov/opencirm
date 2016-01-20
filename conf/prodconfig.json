@@ -26,7 +26,7 @@
      "ftpPassword":"P@$$w0rd1",
      "ftpLocation":"swm\\data",
      "changeset":"",
-     "version":"2.0.0",
+     "version":"2.0.3b",
 	 "nameBase" : "http://www.miamidade.gov/ontology",
 	 "stopExpansionConditionIRI" : [
 					"http://www.miamidade.gov/cirm/legacy#providedBy",
