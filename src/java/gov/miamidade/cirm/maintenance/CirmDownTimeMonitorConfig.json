@@ -51,7 +51,7 @@
 	"ID" : "50 TFail",
 	"TYPE" : "URL",
 	"URL" : "https://s2030050.miamidade.gov/monitor/transactionInfo",
-	"REGEX" : ".*\"NrOfFailedTransactions\":([\\d]+),\""
+	"REGEX" : ".*\"NrOfFailedTransactions\":([\\d]+)"
 },
 {
 	"ID" : "51 Version",
@@ -69,7 +69,7 @@
 	"ID" : "51 TFail",
 	"TYPE" : "URL",
 	"URL" : "https://s2030051.miamidade.gov/monitor/transactionInfo",
-	"REGEX" : ".*\"NrOfFailedTransactions\":([\\d]+),\""
+	"REGEX" : ".*\"NrOfFailedTransactions\":([\\d]+)"
 },
 {
 	"ID" : "57 Version",
@@ -87,7 +87,7 @@
 	"ID" : "57 TFail",
 	"TYPE" : "URL",
 	"URL" : "https://s2030057.miamidade.gov/monitor/transactionInfo",
-	"REGEX" : ".*\"NrOfFailedTransactions\":([\\d]+),\""
+	"REGEX" : ".*\"NrOfFailedTransactions\":([\\d]+)"
 },
 {
 	"ID" : "59 Version",
@@ -105,13 +105,13 @@
 	"ID" : "59 TFail",
 	"TYPE" : "URL",
 	"URL" : "https://s2030059.miamidade.gov/monitor/transactionInfo",
-	"REGEX" : ".*\"NrOfFailedTransactions\":([\\d]+),\""
+	"REGEX" : ".*\"NrOfFailedTransactions\":([\\d]+)"
 },
 {
 	"ID" : "60 Version",
 	"TYPE" : "URL",
 	"URL" : "https://s2030060.miamidade.gov/manage/sysinfo",
-	"REGEX" : ".*\"version\":\"([\\w|.]+)\","
+	"REGEX" : ".*\"version\":\"([\\w|.|\\+]+)\","
 },
 {
 	"ID" : "60 Trans",
@@ -123,6 +123,6 @@
 	"ID" : "60 TFail",
 	"TYPE" : "URL",
 	"URL" : "https://s2030060.miamidade.gov/monitor/transactionInfo",
-	"REGEX" : ".*\"NrOfFailedTransactions\":([\\d]+),\""
+	"REGEX" : ".*\"NrOfFailedTransactions\":([\\d]+)"
 }
 ]	
