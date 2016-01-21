@@ -2011,6 +2011,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
           }
           else if(model.isPendingApproval && send.properties['legacy:hasStatus'].iri.indexOf('O-OPEN') > -1)
           {
+        	  console.log("validating addresss");
+        	  self.searchAddress();
+        	  
         	  cirm.top.async().postObject('/legacy/sr/approve', send, upcontinuation);
           }
           else
