@@ -1,0 +1,24 @@
+This document explains the new ontology infrastructure, in which all ontologies are version managed
+
+A. Introduction 
+B. Network and Machines
+C. 311Hub production/test server configuration
+D. Protege configuration
+
+Hilpold 2015.11.25 valid for mdCirm/OpenCirm v2.0.3b+ and CirmAdmin vC2.0.2+ (C...Configuration server)
+---------------------------------------------------------------------------------------------------------
+A. Introduction
+ 
+---------------------------------------------------------------------------------------------------------
+B. Network and Machines
+
+---------------------------------------------------------------------------------------------------------
+C. 311Hub production/test server configuration
+Ontology server XMPP users, 311hub user
+
+prodconfig.json
+testconfig.json
+---------------------------------------------------------------------------------------------------------
+D. Protege configuration
+
+---------------------------------------------------------------------------------------------------------

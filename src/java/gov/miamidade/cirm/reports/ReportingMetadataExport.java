@@ -27,17 +27,15 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-
-import javax.resource.spi.IllegalStateException;
 
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
@@ -86,6 +84,7 @@ public class ReportingMetadataExport
 		dumpUserOrgUnit();
 		dumpObservedHolidays();
 		dumpMetaIndividuals();
+
 		//dumpOfficialOrgUnit();
 		//dumpStreetAliases();
 	}
@@ -200,50 +199,21 @@ public class ReportingMetadataExport
 		});
 		String currentSRType = null;
 		List<List<String>> srTypeQuestions = new ArrayList<List<String>>();
-		for(OWLNamedIndividual  question : questionsIndividuals)
+		ListIterator<OWLNamedIndividual> questionIterator = questionsIndividuals.listIterator();
+		while(questionIterator.hasNext())
 		{
+			OWLNamedIndividual question = questionIterator.next(); 
 			String questionFragment = question.getIRI().getFragment();
 			String srType = questionFragment.substring(0, questionFragment.indexOf('_'));
 			if(currentSRType == null)
 			{
 				currentSRType = srType;
-			} else if(!currentSRType.equals(srType))
+			} else 	if(!currentSRType.equals(srType))
 			{
-				Collections.sort(srTypeQuestions, new Comparator<List<String>>()
-				{
-					public int compare(List<String> o1, List<String> o2) {
-						Double d1 = 0.0;
-						Double d2 = 0.0;
-						String s1 = o1.get(4);
-						String s2 = o2.get(4);
-						try
-						{
-							
-							d1 = Double.parseDouble(s1);
-							d2 = Double.parseDouble(s2);
-							
-						}catch(NumberFormatException nfe )
-						{
-							System.out.println("Number format exception when comparing hasOrderBy " + s1 + " = " + s2);
-							return s1.compareTo(s2);
-						}
-						return d1.compareTo(d2);
-					};
-				});
-				//sort questions by the hasOrderBY entry.
-				//put in table.
+				prepareSrTypeQuestionsOneType(srTypeQuestions);
 				questionsTable.addAll(srTypeQuestions);
-				//System.out.println("Question Table size: " + questionsTable.size());
-				//clear srTypeQuestions
-				int questionIndex = 0;
-				for(List<String> row : srTypeQuestions)
-				{
-					row.add(questionIndex+"");
-					questionIndex++;
-				}
 				srTypeQuestions.clear();
-	
-			}
+			}				
 			List<String> questionRow = new ArrayList<String>();
 			questionRow.add(questionFragment);
 			questionRow.add(OWL.getEntityLabel(question).replaceAll("\"", "\"\""));
@@ -262,16 +232,52 @@ public class ReportingMetadataExport
 			    System.err.println("CONFIG ERROR: No order by set for question: " + question);
 			    questionRow.add("0");
 			}
-			
 			srTypeQuestions.add(questionRow);
 			currentSRType = srType;
+			if (!questionIterator.hasNext()){
+				prepareSrTypeQuestionsOneType(srTypeQuestions);
+				questionsTable.addAll(srTypeQuestions);
+				srTypeQuestions.clear();
+			}				
 		}
+		//assert srTypeQuestions.isEmpty()
 		return questionsTable;
+	}	
+		
+	private void prepareSrTypeQuestionsOneType(List<List<String>> srTypeQuestions) {
+		Collections.sort(srTypeQuestions, new Comparator<List<String>>()
+		{
+			public int compare(List<String> o1, List<String> o2) {
+				Double d1 = 0.0;
+				Double d2 = 0.0;
+				String s1 = o1.get(4);
+				String s2 = o2.get(4);
+				try
+				{
+					
+					d1 = Double.parseDouble(s1);
+					d2 = Double.parseDouble(s2);
+					
+				}catch(NumberFormatException nfe )
+				{
+					System.out.println("Number format exception when comparing hasOrderBy " + s1 + " = " + s2);
+					return s1.compareTo(s2);
+				}
+				return d1.compareTo(d2);
+			};
+		});
+		//sort questions by the hasOrderBY entry, if available.
+		int questionIndex = 0;
+		for(List<String> row : srTypeQuestions)
+		{
+			row.add(questionIndex+"");
+			questionIndex++;
+		}		
 	}
 	
 	private List<List<String>> getChoiceValuesAsSortedList()
 	{
-		List<List<String>> questionsTable = new ArrayList<List<String>>();
+		List<List<String>> choiceValueTable = new ArrayList<List<String>>();
 		List<OWLNamedIndividual> questionsIndividuals = new ArrayList<OWLNamedIndividual>();
 		
 		for(OWLNamedIndividual serviceField : reasoner().getInstances(OWL.owlClass("legacy:ServiceField"), false).getFlattened())
@@ -291,9 +297,11 @@ public class ReportingMetadataExport
 			
 		});
 		String currentSRType = null;
-		List<List<String>> srTypeQuestions = new ArrayList<List<String>>();
-		for(OWLNamedIndividual  question : questionsIndividuals)
+		List<List<String>> srTypeChoiceValues = new ArrayList<List<String>>();
+		ListIterator<OWLNamedIndividual> questionIterator = questionsIndividuals.listIterator();
+		while (questionIterator.hasNext())
 		{
+			OWLNamedIndividual  question = questionIterator.next();
 			String questionFragment = question.getIRI().getFragment();
 			String srType = questionFragment.substring(0, questionFragment.indexOf('_'));
 			if(currentSRType == null)
@@ -301,28 +309,9 @@ public class ReportingMetadataExport
 				currentSRType = srType;
 			} else if(!currentSRType.equals(srType))
 			{
-				Collections.sort(srTypeQuestions, new Comparator<List<String>>()
-				{
-					public int compare(List<String> o1, List<String> o2) {
-						String s1 = o1.get(0);
-						String s2 = o2.get(0);
-						return s1.compareTo(s2);
-						
-					};
-				});
-				//sort questions by the hasOrderBY entry.
-				//put in table.
-				questionsTable.addAll(srTypeQuestions);
-				//System.out.println("Question Table size: " + questionsTable.size());
-				//clear srTypeQuestions
-				int questionIndex = 0;
-				for(List<String> row : srTypeQuestions)
-				{
-					row.add(questionIndex+"");
-					questionIndex++;
-				}
-				srTypeQuestions.clear();
-	
+				prepareSrTypeChoiceValuesOneType(srTypeChoiceValues);
+				choiceValueTable.addAll(srTypeChoiceValues);
+				srTypeChoiceValues.clear();
 			}
 			OWLNamedIndividual choiceValueList =  OWL.objectProperty(question, "legacy:hasChoiceValueList");
 			Set<OWLNamedIndividual>  choiceValues = OWL.objectProperties(choiceValueList, "legacy:hasChoiceValue");
@@ -339,13 +328,37 @@ public class ReportingMetadataExport
 				}
 				choiceValueRow.add(id==null?"":id+"");
 				choiceValueRow.add(OWL.getEntityLabel(choiceValue));
-				srTypeQuestions.add(choiceValueRow);
+				srTypeChoiceValues.add(choiceValueRow);
 			}
 			currentSRType = srType;
+			if(!questionIterator.hasNext())
+			{
+				prepareSrTypeChoiceValuesOneType(srTypeChoiceValues);
+				choiceValueTable.addAll(srTypeChoiceValues);
+				srTypeChoiceValues.clear();
+			}
 		}
-		return questionsTable;
+		return choiceValueTable;
 	}
 
+	private void prepareSrTypeChoiceValuesOneType(List<List<String>> srTypeChoiceValues) {
+		Collections.sort(srTypeChoiceValues, new Comparator<List<String>>()
+		{
+			public int compare(List<String> o1, List<String> o2) {
+				String s1 = o1.get(0);
+				String s2 = o2.get(0);
+				return s1.compareTo(s2);
+				
+			};
+		});
+		int choiceValueIndex = 0;
+		for(List<String> row : srTypeChoiceValues)
+		{
+			row.add(choiceValueIndex+"");
+			choiceValueIndex++;
+		}
+	}
+	
 	private void dumpAnnotationLabels()
 	{
 		List<List<String>> iriLabels = new ArrayList<List<String>>();

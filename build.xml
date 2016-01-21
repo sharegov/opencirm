@@ -87,16 +87,17 @@
     <target name="make-dist" depends="compile" description="Create distribution deployment.">
         <mkdir dir="${dist}"/>
         <mkdir dir="${dist}/logs"/>
-        <!--
-        <mkdir dir="${dist}/hotdeploy/org/sharegov/cirm"/>
-        -->
+        <mkdir dir="${dist}/db"/>
+        <mkdir dir="${dist}/temp"/>
+        <mkdir dir="${dist}/hotdeploy"/>
+        <mkdir dir="${dist}/RecyclingReports"/>
         <copy todir="${dist}/bin"><fileset dir="${opencirm}/bin"/></copy>
         <copy todir="${dist}/bin"><fileset dir="bin"/></copy>
         <copy todir="${dist}/conf">
             <fileset dir="${opencirm}/conf">
             </fileset>
         </copy>
-        <copy todir="${dist}/conf">
+        <copy todir="${dist}/conf" overwrite="true">
             <fileset dir="conf">
                 <exclude name="wrapper.conf"/>
             </fileset>
@@ -233,7 +234,7 @@
    </target>
 
     <target name="prepare-release"   
-              depends="version-increment, save-version, make-dist" 
+              depends="make-dist, version-increment, save-version" 
               description="Compile, revision tag, make distribution ready for deployment."/> 
               
    <target name="deploy-prod" depends="prepare-release" description="Deploy to production server, does not autorestart.">
