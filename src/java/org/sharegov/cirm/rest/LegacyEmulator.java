@@ -2149,6 +2149,7 @@ public class LegacyEmulator extends RestService
 	@Produces("application/json")
 	public Json callWS(@PathParam("type") String type, @QueryParam("arg") String[] arguments)
 	{
+		ThreadLocalStopwatch.startTop("Callws: " + type);		
 		try
 		{
 			OWLNamedIndividual typeInd = (OWLNamedIndividual) Refs.configSet.resolve().get(type);
@@ -2159,7 +2160,9 @@ public class LegacyEmulator extends RestService
 			// args.add(factory.getSWRLLiteralArgument(factory.getOWLLiteral(type)));
 			for (String arg : arguments)
 			{
-				args.add(factory.getSWRLLiteralArgument(factory.getOWLLiteral(arg)));
+				SWRLDArgument argSwrld = factory.getSWRLLiteralArgument(factory.getOWLLiteral(arg)); 
+				args.add(argSwrld);
+				ThreadLocalStopwatch.now("Callws arg: " + arg + " swrld: " + argSwrld);
 			}
 
 			args.add(factory.getSWRLVariable(OWL.fullIri("document")));
@@ -2187,13 +2190,19 @@ public class LegacyEmulator extends RestService
 			Transformer transformer = tFactory.newTransformer(xsl);
 			StringWriter writer = new StringWriter();
 			StreamResult literal = new StreamResult(writer);
-			transformer.transform(xml, literal);
+			try {
+				transformer.transform(xml, literal);
+			} catch (Exception e) {
+				throw e;
+			}
 			Json result = Json.read(literal.getWriter().toString());
+			ThreadLocalStopwatch.stop("Callws: " + type + " Success.");		
 			return ok().set("result", result);
 		}
 		catch (Throwable e)
 		{
 			e.printStackTrace(System.err);
+			ThreadLocalStopwatch.error("ERROR: Callws: " + type);		
 			return ko(e.getMessage());
 		}
 	}
