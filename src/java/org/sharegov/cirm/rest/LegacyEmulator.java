@@ -142,6 +142,8 @@ public class LegacyEmulator extends RestService
 	public static boolean DBG = true;
 	public static boolean DBGSQL = false;
 
+	public static final int MAX_CALLWS_ATTEMPTS = 3;
+	
 	private static Logger logger = Logger.getLogger("org.sharegov.cirm");
 
 	private static Map<String, IRI> hasTypeMappingToXSD;
@@ -2144,12 +2146,44 @@ public class LegacyEmulator extends RestService
            }
     }
 
+	/**
+	 * Calls a web service (retries up to MAX_CALLWS_ATTEMPS == 3)
+	 * @param type the type of web service to call (see ontologies)
+	 * @param arguments string array of arguments
+	 * @return ok or ko
+	 */
 	@GET
 	@Path("/ws/{type}")
 	@Produces("application/json")
-	public Json callWS(@PathParam("type") String type, @QueryParam("arg") String[] arguments)
+	public Json callWS(@PathParam("type") String type, @QueryParam("arg") String[] arguments) {
+		boolean failed;
+		Json result; 
+		int attempt = 0;
+		ThreadLocalStopwatch.startTop("START CallWS: " + type);		
+		do {
+			attempt ++;
+			failed = false;
+			result = callWsImpl(type, arguments);
+			if (result.is("ok", false)) {
+				//Any Exception is fully caught and printed in callWsImpl
+				failed = true;
+				try {
+					// sleep min 0.1, avg 0.3, max 0.5s secs
+					Thread.sleep(((long)(100 + Math.random() * 400)));
+				} catch (InterruptedException ie) {}
+			}
+		} while (failed && attempt < MAX_CALLWS_ATTEMPTS);
+		if (result.is("ok", true)) {
+			ThreadLocalStopwatch.stop("END CallWS: Success after " + attempt + " attempt(s).");
+		} else {
+			ThreadLocalStopwatch.fail("ERROR CallWS: All 3 attempts failed, responding ko");
+		}
+		return result;
+	}
+	
+	public Json callWsImpl(String type, String[] arguments)
 	{
-		ThreadLocalStopwatch.startTop("Callws: " + type);		
+		ThreadLocalStopwatch.start("START CallWsImpl: " + type);		
 		try
 		{
 			OWLNamedIndividual typeInd = (OWLNamedIndividual) Refs.configSet.resolve().get(type);
@@ -2162,7 +2196,7 @@ public class LegacyEmulator extends RestService
 			{
 				SWRLDArgument argSwrld = factory.getSWRLLiteralArgument(factory.getOWLLiteral(arg)); 
 				args.add(argSwrld);
-				ThreadLocalStopwatch.now("Callws arg: " + arg + " swrld: " + argSwrld);
+				ThreadLocalStopwatch.now("NOW CallWsImpl arg: " + arg + " swrld: " + argSwrld);
 			}
 
 			args.add(factory.getSWRLVariable(OWL.fullIri("document")));
@@ -2196,13 +2230,13 @@ public class LegacyEmulator extends RestService
 				throw e;
 			}
 			Json result = Json.read(literal.getWriter().toString());
-			ThreadLocalStopwatch.stop("Callws: " + type + " Success.");		
+			ThreadLocalStopwatch.stop("END CallWsImpl: " + type + " Success.");		
 			return ok().set("result", result);
 		}
 		catch (Throwable e)
 		{
 			e.printStackTrace(System.err);
-			ThreadLocalStopwatch.error("ERROR: Callws: " + type);		
+			ThreadLocalStopwatch.error("ERROR CallWsImpl: " + type + " " + e);		
 			return ko(e.getMessage());
 		}
 	}
@@ -2295,7 +2329,7 @@ public class LegacyEmulator extends RestService
 	@Produces("application/json")
 	public Json duplicateCheckService(@FormParam("data") String formData)
 	{
-		if (DBG) ThreadLocalStopwatch.getWatch().time("START DuplicateCheck");
+		if (DBG) ThreadLocalStopwatch.startTop("START DuplicateCheck");
 		List<Map<String, Object>> duplicates;
 		Json result = ok();
 		Json json = Json.read(formData);
@@ -2613,7 +2647,7 @@ public class LegacyEmulator extends RestService
 	@Produces("application/json")
 	public Json relatedCasesCheckService(@FormParam("data") String formData)
 	{
-		if(DBG) ThreadLocalStopwatch.getWatch().time("START relatedCases");
+		if(DBG) ThreadLocalStopwatch.startTop("START relatedCases");
 		Json json = Json.read(formData);
 		String boid = json.has("boid") ? json.at("boid").asString() : null;
 		String hasCaseNumber = json.has("hasCaseNumber") ? 
