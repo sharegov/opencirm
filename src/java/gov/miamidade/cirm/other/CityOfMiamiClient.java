@@ -54,17 +54,16 @@ import org.w3c.dom.NodeList;
 
 /**
  * <p>
- * City of Miami, a.k.a. COM, interface. All integration with COM is implemented in here:
+ * City of Miami, a.k.a. COM, CityView interface client. All integration with COM is implemented in here.
  * </p>
- * Supported Operations:
- * 1. Retrieve Activities from COM and update CiRM SRs with them.
- * 2. Send new cases to COM
- * <ol>
- * <li></li>
- * <li></li>
- * <li></li>
- * <li></li> 
- * </ol>
+ * Supported Operations: <br>
+ * 1. Retrieve Activities from COM and update CiRM SRs with them.<br>
+ * 2. Send new cases to COM<br>
+ * <br>
+ * 2016.11.22 hilpold<br>
+ * Case updates received from COM for cases that could not be found AND the case was created prior to CASE_NOT_FOUND_CUTOFF_YEAR (2009),
+ * will pe acknowledged as if the update was applied succesfully (Y) to prevent resource consuming infinite loops with CitiView.<rb>
+ * A special tag "Historic Data" will be sent with our response, so COM staff can report on these updates in their system.
  * 
  * @author boris, Thomas Hilpold
  */
@@ -73,6 +72,9 @@ import org.w3c.dom.NodeList;
 @Consumes("application/json")
 public class CityOfMiamiClient extends RestService
 {
+	public static final int CASE_NOT_FOUND_CUTOFF_YEAR = 2009;
+	public static final String CASE_NOT_FOUND_TAG = "Case prior " + CASE_NOT_FOUND_CUTOFF_YEAR + " was not available";
+
 	Json serviceDescription = OWL.toJSON((OWLNamedIndividual)Refs.configSet.resolve().get("COMWebService"));	
 	LegacyEmulator emulator = new LegacyEmulator();
 	
@@ -197,8 +199,6 @@ public class CityOfMiamiClient extends RestService
 	 */
 	public Json acknowledgeUpdate(Json update, String YN, String msg)
 	{
-//		if (1 > 0)
-//			return ok();
 		String header = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" 
 			+ "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">"
 			+ "<soap:Body>"
@@ -329,7 +329,7 @@ public class CityOfMiamiClient extends RestService
 	/**
 	 * <p>
 	 * Get the multiple updates from COM to apply them to existing SRs in CiRM.
-	 * COM updates lead to up to 3 NEW ACTIVITIES for an SR in CiRM and s
+	 * COM updates lead to up to 3 NEW ACTIVITIES for an SR in CiRM
 	 * 
 	 * Possible failures:
 	 * An update node does not contain a case number
@@ -362,7 +362,7 @@ public class CityOfMiamiClient extends RestService
 			Document rdoc = XMLU.parse(topdoc.getElementsByTagName("strGetServiceRequestReadyResult").item(0).getTextContent());
 			NodeList updateNodes = rdoc.getElementsByTagName("tblCECases");
 			Json result = Json.array();
-			ThreadLocalStopwatch.now("CityOfMiamiClient /retrieveUpdates updateNodes.length() " + updateNodes.getLength());			
+			ThreadLocalStopwatch.now("NOW CityOfMiamiClient /retrieveUpdates updateNodes.length() " + updateNodes.getLength());			
 			for (int i = 0; i < updateNodes.getLength(); i++)
 			{
 				Element n = (Element)updateNodes.item(i);
@@ -382,18 +382,29 @@ public class CityOfMiamiClient extends RestService
 				}
 				try
 				{
-					Json upResult = applyUpdate(update);
+					Json updateResult = applyUpdate(update);
 					// TODO : if the update failed somehow, we need to log it somewhere for auditing purpose
 					// nowhere else for now, but stdout
-					if (upResult.is("ok", false))
+					if (updateResult.is("ok", false))
 					{
-						ThreadLocalStopwatch.error("COM UPDATE " + i + " FAILED: " + update + "\nCOM UPDATED RESULT: " + upResult);
+						if (isUpdateForPreCutoffCase(update)) {
+							ThreadLocalStopwatch.error("COM UPDATE FOR PRE " 
+									+ CASE_NOT_FOUND_CUTOFF_YEAR 
+									+ "  case " + i 
+									+ " FAILED: " + update.at("CaseNumber") + " result: " + updateResult 
+									+ ", responding Y " + CASE_NOT_FOUND_TAG);
+							//respond as if update was applied, but provide special message.
+							acknowledgeUpdate(update, "Y", CASE_NOT_FOUND_TAG);							
+						} else {
+							//do not acknowledge, CitiView will resend
+							ThreadLocalStopwatch.error("ERROR: COM UPDATE " + i + " FAILED: " + update + "\nCOM UPDATED RESULT: " + updateResult);
+						}
 					}
-					result.add(upResult);	
+					result.add(updateResult);	
 				}
 				catch (Throwable t)
 				{
-					ThreadLocalStopwatch.error("COM UPDATE " + i + " FAILED unexpectedly: " + update + "\n exception " + t);
+					ThreadLocalStopwatch.error("ERROR: COM UPDATE " + i + " FAILED unexpectedly: " + update + "\n exception " + t);
 					result.add(ko(t));
 				}
 			}
@@ -405,6 +416,21 @@ public class CityOfMiamiClient extends RestService
 			ThreadLocalStopwatch.fail("FAILED CityOfMiamiClient /retrieveUpdates with" + t);
 	    	return ko(t);
 	    }
+	}
+	
+	/**
+	 * Checks if casenumber year in an update received from COM is pre cutoff.
+	 * @param update
+	 * @return false, if could not determine or not.
+	 */
+	private boolean isUpdateForPreCutoffCase(Json update) {
+		if (ServiceCaseJsonHelper.isCaseNumberString(update.at("CaseNumber"))) {
+			String caseNum = update.at("CaseNumber").asString().trim();
+			int updateCaseYear4 = ServiceCaseJsonHelper.getCaseNumberYear(caseNum);
+			return updateCaseYear4 < CASE_NOT_FOUND_CUTOFF_YEAR;
+		} else {
+			return false;
+		}
 	}
 	
 	private String makeNewCaseBody(Json sr)
