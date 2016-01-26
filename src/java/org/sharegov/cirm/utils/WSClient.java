@@ -19,8 +19,6 @@ package org.sharegov.cirm.utils;
 import java.net.MalformedURLException;
 
 import java.net.URL;
-import java.util.Collections;
-
 import javax.xml.namespace.QName;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPBody;
@@ -34,13 +32,9 @@ import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Dispatch;
 import javax.xml.ws.Service;
 import javax.xml.ws.WebServiceException;
-import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.soap.SOAPBinding;
 
 import org.w3c.dom.Document;
-
-
-
 
 /**
  * 
@@ -51,7 +45,7 @@ import org.w3c.dom.Document;
  */
 public class WSClient
 {
-	
+	public static boolean DBG = false;
 	private String wsdlUrl;
 	private String portName;
 	private String namespace;
@@ -81,8 +75,17 @@ public class WSClient
 		this.password = password;
 	}
 
+	public String toString() {
+		return "WSClient: wsdlUrl " + wsdlUrl + " endpoint: " + endpoint + " soapAction: " + soapAction; 
+	}
+	
+	public void printDbgInfo() {
+		ThreadLocalStopwatch.now("DBG " + toString());
+	}
+	
 	public Document invoke(Document request)
 	{
+		if (DBG) printDbgInfo();
 		Document response = null;
 		QName svc = new QName(namespace, serviceName);
 		QName port = new QName(namespace, portName);
@@ -113,7 +116,10 @@ public class WSClient
 			reply = dispatch.invoke(message);
 			body = reply.getSOAPBody();
 			response =  body.extractContentAsDocument();
-			//write(response);
+			if (DBG) { 
+				ThreadLocalStopwatch.now("Nodes in WS response: " + response.getChildNodes().getLength());
+				write(response);
+			}
 		}
 		catch (MalformedURLException e)
 		{
