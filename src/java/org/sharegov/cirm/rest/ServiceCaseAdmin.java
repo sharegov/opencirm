@@ -10,16 +10,17 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
-import mjson.Json;
 
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.sharegov.cirm.StartUp;
 import org.sharegov.cirm.legacy.ServiceCaseManager;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
+
+import mjson.Json;
 
 @Path("sradmin")
 @Produces("application/json")
@@ -292,12 +293,11 @@ public class ServiceCaseAdmin extends RestService {
 	
 	@DELETE
 	@Path("{srType}/alert")
-	public Response deleteAlert(@PathParam("srType") String srType)
+	public Response deleteAlert(@PathParam("srType") String srType, @QueryParam ("userName") String userName)
 	{
 		
 		try
-		{						
-			String userName = "Jorge Fiallega";//aData.at("userName").asString();				
+		{					
 
 			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
 			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");

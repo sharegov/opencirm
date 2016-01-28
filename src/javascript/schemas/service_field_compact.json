@@ -56,7 +56,7 @@
 									"hasDefaultIntakeMethod": {"$ref": "#/definitions/hasDefaultIntakeMethod"},
 									"type": {
 										"enum": ["ServiceQuestion"]
-									},
+									}
 								},
 								"required": [
 									"iri",
@@ -118,6 +118,13 @@
 											},
 									"iri": {"$ref": "#/definitions/iri"}
 								},
+								"required": [
+									"iri",
+									"label",
+									"hasAnswerObject",
+									"hasLegacyEvent",
+									"type"
+								],
 								"type": "object"
 							},
 		"hasDataType": {
@@ -147,7 +154,13 @@
 											"enum": ["ChoiceValueList"]
 										}
 										
-									}
+									},
+									"required": [
+										"iri",
+										"label",
+										"hasChoiceValue",
+										"type"
+									]
 								},
 		"hasChoiceValue": {
 							"type": "object",
@@ -178,7 +191,13 @@
 								"type": {
 									"enum": ["ChoiceValue"]
 								}
-							}
+							},
+							"required": [
+								"iri",
+								"label",
+								"hasLegacyCode",
+								"type"
+							]							
 						},
 		"ynQuestion": {
 						"enum": [
@@ -197,7 +216,13 @@
 													"enum": ["IntakeMethod"]
 												},
 										"iri": {"$ref": "#/definitions/iri"}
-									  }
+									  },
+									"required": [
+											"iri",
+											"label",
+											"hasLegacyCode",
+											"type"
+										]
 									},		
 		"hasLegacyInterface": {
 								"items": {
@@ -225,7 +250,13 @@
 															"enum": ["ChoiceValue"]
 														},
 												  "iri": {"$ref": "#/definitions/iri"}
-											}
+											},
+								"required": [
+									"iri",
+									"label",
+									"hasLegacyCode",
+									"type"
+								]
             },
 		"hasDataSource": {
 							"type": "object",
@@ -237,7 +268,14 @@
 													},
 											  "iri": {"$ref": "#/definitions/iri"},
 											  "hasPropertyName": {"$ref": "#/definitions/label"}
-										}
+										},
+							"required": [
+								"iri",
+								"label",
+								"providedBy",
+								"hasPropertyName",
+								"type"
+							]
 						},
 		"providedBy": {
 						"type": "object",
@@ -247,7 +285,12 @@
 													"enum": ["ClientSideEventType"]
 												},
 										"iri": {"$ref": "#/definitions/iri"}
-						}
+						},
+						"required": [
+							"iri",
+							"label",
+							"type"
+						]
 					  }
 	}
 }
