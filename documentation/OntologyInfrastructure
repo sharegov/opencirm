@@ -6,19 +6,95 @@ C. 311Hub production/test server configuration
 D. Protege configuration
 
 Hilpold 2015.11.25 valid for mdCirm/OpenCirm v2.0.3b+ and CirmAdmin vC2.0.2+ (C...Configuration server)
+Hilpold 2016.01.29 update
+
 ---------------------------------------------------------------------------------------------------------
 A. Introduction
+The ontology infrastructure consists of all application servers (prod and test), all configuration servers 
+(CirmAdmin), two ontology servers, all Protege desktop clients operating on 311Hub ontologies and one 
+OpenFire XMPP chat server. Every local Cirm or CirmAdmin instance will also become part of the infrastructure 
+temporarily.
+The purpose of the ontology infrastructure is to provide access and maintenance capabilities to the 311Hub 
+ontologies, which contain most business and technical configuration data of 311Hub. 
+
+Ontology servers serve the sole purpose of hosting all revisions of all relevant managed ontologies in a 
+graph database and serve as central points for uploading/downloading changes to such ontologies to enable 
+collaboration. These servers are the only recipients of push operations for changes.
+Application servers, configuration servers, and Protege desktop clients all have copies of the 
+data in their own graph databases, however no machine may ever push changes to one 
+of these (Client/Server ontology management model). New changes are produced by users either on configuration 
+servers or on Protege desktop clients and then pushed to one of the two ontology servers (test or prod).  
  
+** Note that contrary to intuition, 311Hub test application servers connect to the production ontology server. ** 
+This is because users testing on 311Hub Test are normally testing changes that will be deployed to production
+servers soon.
+The test ontology server was only created for testing new functionality of the test configuration server or 
+local instances.
 ---------------------------------------------------------------------------------------------------------
 B. Network and Machines
+All communication between all infrastructure participants is conducted on an XMPP network, controlled by an 
+Openfire server. Which participant sees which data is controlled by XMPP user configuration and the users'
+
+Machine s0141667 hosts the openfire server, used for both production and test .
+ 
+XMPP roster as follows:
+B.1 -------  XMPP user names for 311Hub production and 311Hub test ----------- 
+ontology_server_production	  - This XMPP user is configured on the production ontology server
+
+cirmconfigservice_production  - This XMPP user is configured on the production configuration server (CirmAdmin)
+   
+cirmservice_production        - This XMPP user is configured on each 311Hub production application server of the 
+                              - cluster, on each 311Hub test server and also on local instances (Startup.java).
+
+individuals                   - Everyone using Protege to modify 311hub ontologies, has a personalized XMPP user.  
+(Mala, Tom, Syed, ...)        - Most such users have access to ontology_server_production and update/commit changes
+                              - from/to that server.
+
+Which XMPP user has access to which server is defined in the users' rosters by subscription.                              
+cirmconfigservice_production and cirmservice_production will have ontology_server_production in their rosters, 
+to be able to work with production ontologies.
+Note that a 311Hub application test servers register to the XMPP network using cirmservice_production, because 
+they operate on production ontologies. 
+                              
+B.2 -------  XMPP user names for 311Hub CirmAdmin test ----------- 
+
+ontology_server_test          - This XMPP user is configured on the test ontology server
+cirmconfigservice_test        - This XMPP user is configured on the test configuration server (CirmAdmin)
+cirmservice_test              - Only used, if a special test application server is needed to help with 
+                              - CirmAdmin modification testing.
+individuals (Tom, Camilo,...) - Only individuals who delvelop or maintain CirmAdmin will have access 
+                              - to ontology_server_test, ie have ontology_server_test in their roster.
+
+Which XMPP user has access to which server is defined in the users' rosters by subscription. Most individuals
+will have only ontology_server_production in their roster, unless they develop new CirmAdmin features.
+cirmconfigservice_test and cirmservice_test will have ontology_server_test in their rosters.
 
 ---------------------------------------------------------------------------------------------------------
 C. 311Hub production/test server configuration
-Ontology server XMPP users, 311hub user
 
-prodconfig.json
-testconfig.json
+prodconfig.json contains cirmservice_production user to register to XMPP network.
+testconfig.json contains cirmservice_production (!) user to register to XMPP network.
+prodconfig-conf.json contains cirmconfigservice_production
+
+testconfig-conf.json contains cirmconfigservice_test to connect to ontology_server_test for CirmAdmin 
+                     development/testing purposes only.
+There is no confguration file that uses cirmservice_test, however, if needed for CirmAdmin testing, 
+a local (see Startup.java)or test CiRM instance may be manually configured to use it . 
+
 ---------------------------------------------------------------------------------------------------------
 D. Protege configuration
 
----------------------------------------------------------------------------------------------------------
+Protege should always be configured, so that an individual user name registers on the network.
+(see Menu: File/Preferences/Hypergraph/Peer2Peer Options. The XMPP server configured is always the openfire 
+server name)
+Most individuals only need access to ontology_server_production.
+
+If ontology_server_test is needed, and it's only needed for CirmAdmin development/testing, users must make 
+sure they switch their graph database directory in case they need access to production also 
+(see Menu: File/Preferences/Hypergraph)
+A graph database directory should contain ontologies from either ontology_server_production, or 
+ontology_server_test, NEVER a mix (Some from test, some from production). 
+This is because Production and test ontologies are not distinguishable by name and might lead to a production
+ontology importing a test ontology or vice versa, creating a ontology configuration that's never used on any 
+application or configuration servers.
+ 
