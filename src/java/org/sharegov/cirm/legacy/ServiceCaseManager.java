@@ -782,6 +782,10 @@ public class ServiceCaseManager extends OntoAdmin {
 	
 	}
 	
+	public boolean doRollBack (List<Integer> revisionNumbers){		
+		return rollBackRevisions(revisionNumbers);
+	}
+	
 	private String getHostIpAddress (){
 		String host = "",
 			   protocol = "",

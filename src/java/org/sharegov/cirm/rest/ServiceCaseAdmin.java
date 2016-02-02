@@ -1,5 +1,7 @@
 package org.sharegov.cirm.rest;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -88,6 +90,34 @@ public class ServiceCaseAdmin extends RestService {
 		try
 		{						
 			return Response.ok(ServiceCaseManager.getInstance().compare(ontologyName), MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+		    e.printStackTrace();
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
+	@POST
+	@Path("/ontology/rollback")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response compareOntos(Json aData) {
+		try
+		{						
+			if (!(aData.has("userName"))) throw new IllegalArgumentException("User Name not found"); 
+			if (!(aData.has("revisions"))) throw new IllegalArgumentException("Revisions Name not found"); 
+			
+			String userName = aData.at("userName").asString();
+			Json revisions = aData.at("revisions");
+			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
+			if (revisions == null || !revisions.isArray()) throw new IllegalArgumentException("Revisions List null or empty");
+			
+			List<Integer> intRevisions = new ArrayList<>();
+			for(Object o : revisions.asList()) intRevisions.add(Integer.valueOf(o.toString()));
+						
+			return Response.ok(ServiceCaseManager.getInstance().doRollBack(intRevisions), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 		    e.printStackTrace();
 			return Response

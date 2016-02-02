@@ -22,9 +22,11 @@ import static org.sharegov.cirm.utils.GenUtils.ko;
 import static org.sharegov.cirm.utils.GenUtils.ok;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.GET;
@@ -58,6 +60,7 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.OntologyChangesRepo;
+import org.sharegov.cirm.OntologyChangesRepo.OntoChangesReference;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.StartUp;
 import org.sharegov.cirm.event.EventDispatcher;
@@ -65,6 +68,8 @@ import org.sharegov.cirm.owl.CachedReasoner;
 import org.sharegov.cirm.owl.SynchronizedOWLOntologyManager;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.OntologyCommit;
+
+import com.clarkparsia.pellet.el.ELClassifier;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLOntologyManagerImpl;
 
@@ -405,6 +410,127 @@ public class OntoAdmin extends RestService
 			t.printStackTrace(System.err);
 			throw new RuntimeException(t.toString());
 		}				
+	}
+	
+	private int revertToRevision (int revisionNumber, VersionedOntology vo){
+		RevisionID rID = new RevisionID(repo().getOntologyUUID(vo.getWorkingSetData()), revisionNumber);		
+		vo.revertHeadTo(rID, true);
+		
+		OWL.reasoner().flush();
+		
+		return revisionNumber;
+	}
+	
+	private boolean isPossibleToRollBack (List<Integer> revisions){
+		if (revisions.size() < 1) return false;
+		
+		for (int rnx: revisions){
+			boolean rf = false;
+			for (OWLOntology o : OWL.ontologies()){
+				if (OntologyChangesRepo.getInstance().getOntoRevisionChanges(o.getOntologyID().toString(), rnx) != null) rf = true;
+			}
+			
+			if (!rf) return false;
+		}
+		
+		return true;
+	}
+	
+	public boolean rollBackRevisions (List<Integer> revisions){				
+		if (!isPossibleToRollBack (revisions)) return false;
+		
+		System.out.println("Roll Back Started.");
+		int minRevision = revisions.get(0);
+		for (int rnx: revisions)
+			if (rnx < minRevision) minRevision = rnx;
+		
+		try {			
+			List<OntoChangesReference> toDelete = new ArrayList<>();
+			List<OntoChangesReference> toAdd = new ArrayList<>();
+			
+			for (OWLOntology o : OWL.ontologies()){		
+				System.out.println("Working on: " + o.getOntologyID().toString());	
+				VersionedOntology vo = repo().getVersionControlledOntology(o);
+				
+				if (vo == null) {
+					throw new RuntimeException ("Ontology found, but not versioned: " + o.getOntologyID());
+				}
+				
+				System.out.println("Revert to revision number:" + (minRevision - 1));
+				int baseRevision = revertToRevision(minRevision - 1, vo);
+				System.out.println("Done reverting.");				
+				System.out.println("Re-Applying changes skipping selected revisions...");
+				applyChangesExcludingRevisions (o, baseRevision, revisions, toDelete, toAdd);
+				System.out.println("Done re-applying changes.");						
+			}
+			
+			System.out.println("Updating changes repo...");
+			updateOntologyChangesRepo (toDelete, toAdd);
+			System.out.println("Done updating changes repo.");	
+			System.out.println("Revisions roll back was successfull.");	
+
+			return true;
+			
+		} catch (Throwable t){
+			System.out.println("Error found while performing ontology roll back.");
+			System.out.println("Revisions roll back failed.");	
+			System.out.println(t.getMessage());
+			System.out.println("Re-Applying all removed changes.");
+			
+			for (OWLOntology o : OWL.ontologies()){
+				System.out.println("Working on: " + o.getOntologyID().toString());
+				VersionedOntology vo = repo().getVersionControlledOntology(o);
+				
+				if (vo == null) {
+					throw new RuntimeException ("Ontology found, but not versioned: " + o.getOntologyID());
+				}
+				
+				System.out.println("Revert to revision number:" + (minRevision - 1));
+				int baseRevision = revertToRevision(minRevision - 1, vo);
+				System.out.println("Done reverting.");
+				System.out.println("Re-Applying previuos changes...");
+				applyChangesSinceRevision (o, baseRevision);
+				System.out.println("Done re-applying changes.");
+				System.out.println("Done with: " + o.getOntologyID().toString());
+			}
+			
+
+			System.out.println("Ontology successfully set to pre-rollback state.");
+			
+			return false;			
+		}
+	}
+	
+	private void updateOntologyChangesRepo (List<OntoChangesReference> toDelete, List<OntoChangesReference> toAdd){
+		for (int i = 0; i < toDelete.size(); i++){
+			OntologyChangesRepo.getInstance().deleteOntoRevisionChanges(toDelete.get(i).getOnto(), toDelete.get(i).getRevision());
+			OntologyChangesRepo.getInstance().setOntoRevisionChanges(toAdd.get(i).getOnto(), toAdd.get(i).getRevision(), toAdd.get(i).getValue());
+		}
+	}
+	
+	private void applyChangesExcludingRevisions (OWLOntology o, int baseRevision, List<Integer> excludedRevisions, 
+												 List<OntoChangesReference> toDelete, List<OntoChangesReference> toAdd){
+		
+		Map<Integer, OntologyCommit> changes = OntologyChangesRepo.getInstance().getAllRevisionChangesForOnto(o.getOntologyID().toString());
+		
+		if (changes != null && !changes.isEmpty()) {
+		
+			VersionedOntology vo = repo().getVersionControlledOntology(o);
+			
+			if (vo == null) {
+				throw new RuntimeException ("Ontology found, but not versioned: " + o.getOntologyID());
+			}
+			
+			for (Map.Entry<Integer, OntologyCommit> rx: changes.entrySet()){
+				if (rx.getKey().intValue() > baseRevision && excludedRevisions.indexOf(rx.getKey().intValue()) < 0){
+					OWL.manager().applyChanges(rx.getValue().getChanges());
+					vo.commit(rx.getValue().getUserName(), rx.getValue().getComment());
+					int newRevision = vo.getHeadRevision().getRevision();
+					toDelete.add(OntologyChangesRepo.getInstance().new OntoChangesReference(o.getOntologyID().toString(), rx.getKey().intValue(), null));
+					toDelete.add(OntologyChangesRepo.getInstance().new OntoChangesReference(o.getOntologyID().toString(), newRevision, rx.getValue()));					
+				}
+			}
+		} else System.out.println("No previous changes saved for: " + o.getOntologyID().toString());
 	}
 	
 	private int revertToLastMatch (VersionedOntology vo, DistributedOntology dOnto, HGPeerIdentity server){
