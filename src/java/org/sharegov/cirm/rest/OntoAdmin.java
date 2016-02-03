@@ -336,13 +336,14 @@ public class OntoAdmin extends RestService
 		{ 
 			Refs.owlRepo.resolve().ensurePeerStarted();
 			
-			OWLOntologyManager manager = OWL.manager();	
+			OWLOntologyManager manager = OWL.manager();				
+
+			HGPeerIdentity server = Refs.owlRepo.resolve().getDefaultPeer();
 			
 			// resolve conflicts before commit
 			for (OWLOntology o : OWL.ontologies()) {
 				VersionedOntology vo = repo.getVersionControlledOntology(o);
 				DistributedOntology dOnto = repo.getDistributedOntology(o); 
-				HGPeerIdentity server = Refs.owlRepo.resolve().getDefaultPeer();
 				
 				if (vo == null || dOnto == null) {
 					throw new RuntimeException ("Ontology found, but not versioned or distributed: " + o.getOntologyID());
@@ -440,27 +441,30 @@ public class OntoAdmin extends RestService
 		if (!isPossibleToRollBack (revisions)) return false;
 		
 		System.out.println("Roll Back Started.");
-		int minRevision = revisions.get(0);
-		for (int rnx: revisions)
-			if (rnx < minRevision) minRevision = rnx;
+
+		HGPeerIdentity server = Refs.owlRepo.resolve().getDefaultPeer();
 		
 		try {			
 			List<OntoChangesReference> toDelete = new ArrayList<>();
-			List<OntoChangesReference> toAdd = new ArrayList<>();
+			List<OntoChangesReference> toAdd = new ArrayList<>();			
 			
 			for (OWLOntology o : OWL.ontologies()){		
 				System.out.println("Working on: " + o.getOntologyID().toString());	
 				VersionedOntology vo = repo().getVersionControlledOntology(o);
+				DistributedOntology dOnto = repo().getDistributedOntology(o); 
 				
-				if (vo == null) {
-					throw new RuntimeException ("Ontology found, but not versioned: " + o.getOntologyID());
+				if (vo == null || dOnto == null) {
+					throw new RuntimeException ("Ontology found, but not versioned or distributed: " + o.getOntologyID());
 				}
 				
-				System.out.println("Revert to revision number:" + (minRevision - 1));
-				int baseRevision = revertToRevision(minRevision - 1, vo);
-				System.out.println("Done reverting.");				
+				System.out.println("Revert to last common revision number");
+				int baseRevision = revertToLastMatch(vo, dOnto, server);
+				System.out.println("Done reverting.");	
+				System.out.println("Pulling last revision...");
+				pullFromServer(dOnto, server);
+				System.out.println("Done pulling.");
 				System.out.println("Re-Applying changes skipping selected revisions...");
-				applyChangesExcludingRevisions (o, baseRevision, revisions, toDelete, toAdd);
+				applyChangesExcludingRevisions (o, baseRevision, revisions, toDelete, toAdd); 
 				System.out.println("Done re-applying changes.");						
 			}
 			
@@ -480,13 +484,14 @@ public class OntoAdmin extends RestService
 			for (OWLOntology o : OWL.ontologies()){
 				System.out.println("Working on: " + o.getOntologyID().toString());
 				VersionedOntology vo = repo().getVersionControlledOntology(o);
+				DistributedOntology dOnto = repo().getDistributedOntology(o); 
 				
-				if (vo == null) {
-					throw new RuntimeException ("Ontology found, but not versioned: " + o.getOntologyID());
+				if (vo == null || dOnto == null) {
+					throw new RuntimeException ("Ontology found, but not versioned or distributed: " + o.getOntologyID());
 				}
 				
-				System.out.println("Revert to revision number:" + (minRevision - 1));
-				int baseRevision = revertToRevision(minRevision - 1, vo);
+				System.out.println("Revert to last common revision number");
+				int baseRevision = revertToLastMatch(vo, dOnto, server);
 				System.out.println("Done reverting.");
 				System.out.println("Re-Applying previuos changes...");
 				applyChangesSinceRevision (o, baseRevision);
@@ -527,7 +532,7 @@ public class OntoAdmin extends RestService
 					vo.commit(rx.getValue().getUserName(), rx.getValue().getComment());
 					int newRevision = vo.getHeadRevision().getRevision();
 					toDelete.add(OntologyChangesRepo.getInstance().new OntoChangesReference(o.getOntologyID().toString(), rx.getKey().intValue(), null));
-					toDelete.add(OntologyChangesRepo.getInstance().new OntoChangesReference(o.getOntologyID().toString(), newRevision, rx.getValue()));					
+					toAdd.add(OntologyChangesRepo.getInstance().new OntoChangesReference(o.getOntologyID().toString(), newRevision, rx.getValue()));					
 				}
 			}
 		} else System.out.println("No previous changes saved for: " + o.getOntologyID().toString());
