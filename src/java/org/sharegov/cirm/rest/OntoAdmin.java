@@ -23,10 +23,10 @@ import static org.sharegov.cirm.utils.GenUtils.ok;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.GET;
@@ -35,9 +35,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
-import mjson.Json;
-
-import org.hypergraphdb.HGPersistentHandle;
 import org.hypergraphdb.app.owl.HGDBOntology;
 import org.hypergraphdb.app.owl.versioning.Revision;
 import org.hypergraphdb.app.owl.versioning.RevisionID;
@@ -60,17 +57,16 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.OntologyChangesRepo;
-import org.sharegov.cirm.OntologyChangesRepo.OntoChangesReference;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.StartUp;
 import org.sharegov.cirm.event.EventDispatcher;
 import org.sharegov.cirm.owl.CachedReasoner;
 import org.sharegov.cirm.owl.SynchronizedOWLOntologyManager;
 import org.sharegov.cirm.utils.GenUtils;
+import org.sharegov.cirm.utils.OntoChangesReference;
 import org.sharegov.cirm.utils.OntologyCommit;
 
-import com.clarkparsia.pellet.el.ELClassifier;
-
+import mjson.Json;
 import uk.ac.manchester.cs.owl.owlapi.OWLOntologyManagerImpl;
 
 //import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
@@ -331,6 +327,8 @@ public class OntoAdmin extends RestService
 	
 	protected boolean commit(String userName, String comment, List <OWLOntologyChange> changes) throws RuntimeException
 	{		
+		long commitTimeStamp = new Date().getTime();
+		
 		VDHGDBOntologyRepository repo = repo();
 		try
 		{ 
@@ -338,7 +336,7 @@ public class OntoAdmin extends RestService
 			
 			OWLOntologyManager manager = OWL.manager();				
 
-			HGPeerIdentity server = Refs.owlRepo.resolve().getDefaultPeer();
+			HGPeerIdentity server = Refs.owlRepo.resolve().getDefaultPeer();			
 			
 			// resolve conflicts before commit
 			for (OWLOntology o : OWL.ontologies()) {
@@ -400,7 +398,7 @@ public class OntoAdmin extends RestService
 					vo.commit(userName, comment);
 					committedOntologyCount++;
 					int revision = vo.getHeadRevision().getRevision();
-					OntologyChangesRepo.getInstance().setOntoRevisionChanges(o.getOntologyID().toString(), revision, userName, comment, changes);
+					OntologyChangesRepo.getInstance().setOntoRevisionChanges(o.getOntologyID().toString(), revision, userName, comment, changes, commitTimeStamp);
 				}
 			}
 			
@@ -437,12 +435,27 @@ public class OntoAdmin extends RestService
 		return true;
 	}
 	
-	public boolean rollBackRevisions (List<Integer> revisions){				
+	private List<Long> resolveCommitTimeStamps (List<Integer> revisions){
+		List <Long> result = new ArrayList<>();
+		for (OWLOntology o : OWL.ontologies()){
+			for (int rvx: revisions){
+				OntologyCommit ocx = OntologyChangesRepo.getInstance().getOntoRevisionChanges(o.getOntologyID().toString(), rvx);
+				
+				if (ocx != null) result.add(ocx.getTimeStamp());
+			}
+		}
+		return result;
+	}
+	
+	protected boolean rollBackRevisions (List<Integer> revisions){				
 		if (!isPossibleToRollBack (revisions)) return false;
 		
 		System.out.println("Roll Back Started.");
 
 		HGPeerIdentity server = Refs.owlRepo.resolve().getDefaultPeer();
+		
+
+		List <Long> timeStamps = resolveCommitTimeStamps(revisions);
 		
 		try {			
 			List<OntoChangesReference> toDelete = new ArrayList<>();
@@ -464,7 +477,7 @@ public class OntoAdmin extends RestService
 				pullFromServer(dOnto, server);
 				System.out.println("Done pulling.");
 				System.out.println("Re-Applying changes skipping selected revisions...");
-				applyChangesExcludingRevisions (o, baseRevision, revisions, toDelete, toAdd); 
+				applyChangesExcludingRevisions (o, baseRevision, revisions, timeStamps, toDelete, toAdd); 
 				System.out.println("Done re-applying changes.");						
 			}
 			
@@ -502,6 +515,8 @@ public class OntoAdmin extends RestService
 
 			System.out.println("Ontology successfully set to pre-rollback state.");
 			
+			OWL.reasoner().flush();
+			
 			return false;			
 		}
 	}
@@ -513,8 +528,12 @@ public class OntoAdmin extends RestService
 		}
 	}
 	
-	private void applyChangesExcludingRevisions (OWLOntology o, int baseRevision, List<Integer> excludedRevisions, 
-												 List<OntoChangesReference> toDelete, List<OntoChangesReference> toAdd){
+	private void applyChangesExcludingRevisions (OWLOntology o, 
+												 int baseRevision, 
+												 List<Integer> excludedRevisions,
+												 List<Long> excludedTimeStamps,
+												 List<OntoChangesReference> toDelete, 
+												 List<OntoChangesReference> toAdd){
 		
 		Map<Integer, OntologyCommit> changes = OntologyChangesRepo.getInstance().getAllRevisionChangesForOnto(o.getOntologyID().toString());
 		
@@ -527,12 +546,16 @@ public class OntoAdmin extends RestService
 			}
 			
 			for (Map.Entry<Integer, OntologyCommit> rx: changes.entrySet()){
-				if (rx.getKey().intValue() > baseRevision && excludedRevisions.indexOf(rx.getKey().intValue()) < 0){
-					OWL.manager().applyChanges(rx.getValue().getChanges());
-					vo.commit(rx.getValue().getUserName(), rx.getValue().getComment());
-					int newRevision = vo.getHeadRevision().getRevision();
-					toDelete.add(OntologyChangesRepo.getInstance().new OntoChangesReference(o.getOntologyID().toString(), rx.getKey().intValue(), null));
-					toAdd.add(OntologyChangesRepo.getInstance().new OntoChangesReference(o.getOntologyID().toString(), newRevision, rx.getValue()));					
+				if (rx.getKey().intValue() > baseRevision && 
+				    excludedRevisions.indexOf(rx.getKey().intValue()) < 0 && 
+				    excludedTimeStamps.indexOf(rx.getValue().getTimeStamp()) < 0){
+					
+						OWL.manager().applyChanges(rx.getValue().getChanges());
+						vo.commit(rx.getValue().getUserName(), rx.getValue().getComment());
+						int newRevision = vo.getHeadRevision().getRevision();
+						toDelete.add(new OntoChangesReference(o.getOntologyID().toString(), rx.getKey().intValue(), null));
+						toAdd.add(new OntoChangesReference(o.getOntologyID().toString(), newRevision, rx.getValue()));		
+						
 				}
 			}
 		} else System.out.println("No previous changes saved for: " + o.getOntologyID().toString());

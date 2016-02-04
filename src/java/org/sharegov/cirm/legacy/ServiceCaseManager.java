@@ -343,6 +343,34 @@ public class ServiceCaseManager extends OntoAdmin {
 	}
 	
 	/**
+	 * Removes all objects on cache except the service cases 
+	 * 
+	 * @return 
+	 */
+	
+	public void clearAllCachedButServiceCase() {
+		Set<OWLNamedIndividual> S = getAllIndividuals();
+		Map <String, Json> tmpcache = new ConcurrentHashMap<String, Json>();
+		for (OWLNamedIndividual ind : S) {			
+			Json el = cache.get(ind.getIRI().getFragment());
+			
+			if (el != null && !el.isNull()) tmpcache.put(ind.getIRI().getFragment(), el);
+			else {
+				System.out.println("Named Individual not in cache: " + ind.getIRI().getFragment());
+				System.out.println("Resolving: " + ind.getIRI().getFragment());
+				el = getRequiredData(ind);
+				System.out.println("Done resolving: " + ind.getIRI().getFragment());
+				
+				if (el != null && !el.isNull()) tmpcache.put(ind.getIRI().getFragment(), el);
+				else System.out.println("Error: Cannot resolve individual: " + ind.getIRI().getFragment());
+			}
+		}
+		
+		cache.clear();
+		cache.putAll(tmpcache);
+	}
+	
+	/**
 	 * 
 	 * @return a list of individuals that belong to the class ServiceCase
 	 */
@@ -783,7 +811,14 @@ public class ServiceCaseManager extends OntoAdmin {
 	}
 	
 	public boolean doRollBack (List<Integer> revisionNumbers){		
-		return rollBackRevisions(revisionNumbers);
+		boolean result = rollBackRevisions(revisionNumbers);
+		
+		if (result){
+			clearAllCachedButServiceCase();
+			MetaOntology.clearCacheAndSynchronizeReasoner();
+		}
+		
+		return result;
 	}
 	
 	private String getHostIpAddress (){

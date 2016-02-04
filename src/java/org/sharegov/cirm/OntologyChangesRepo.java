@@ -8,36 +8,6 @@ import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.sharegov.cirm.utils.OntologyCommit;
 
 public class OntologyChangesRepo {
-	public class OntoChangesReference {
-		private String onto;
-		private int revision;
-		private OntologyCommit value;
-		
-		public OntoChangesReference (String onto, int revision, OntologyCommit value){
-			this.onto = onto;
-			this.revision = revision;
-			this.value = value;
-		}
-		
-		public String getOnto() {
-			return onto;
-		}
-		public void setOnto(String onto) {
-			this.onto = onto;
-		}
-		public int getRevision() {
-			return revision;
-		}
-		public void setRevision(int revision) {
-			this.revision = revision;
-		}
-		public OntologyCommit getValue() {
-			return value;
-		}
-		public void setValue(OntologyCommit value) {
-			this.value = value;
-		}
-	}
 	
 	private static OntologyChangesRepo instance;
 	private Map<String, Map<Integer, OntologyCommit>> ontoChangesMap;	
@@ -79,11 +49,11 @@ public class OntologyChangesRepo {
 		} else return ontoChangesMap.get(onto).get(revision);
 	}
 	
-	public void setOntoRevisionChanges(String onto, int revision, String userName, String comment, List <OWLOntologyChange> changes) {
+	public void setOntoRevisionChanges(String onto, int revision, String userName, String comment, List <OWLOntologyChange> changes, long timeStamp) {
 		if (ontoChangesMap.get(onto) == null){
 			ontoChangesMap.put(onto, new ConcurrentHashMap<Integer, OntologyCommit>());
 		}
-		ontoChangesMap.get(onto).put(revision, new OntologyCommit(userName, comment, changes));		
+		ontoChangesMap.get(onto).put(revision, new OntologyCommit(userName, comment, changes, timeStamp));		
 	}
 	
 	public void setOntoRevisionChanges(String onto, int revision, OntologyCommit commit) {

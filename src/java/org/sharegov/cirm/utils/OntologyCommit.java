@@ -5,7 +5,18 @@ import java.util.List;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
 	
 	public class OntologyCommit {
+		private long timeStamp;
+		
+		public long getTimeStamp() {
+			return timeStamp;
+		}
+
+		public void setTimeStamp(long timeStamp) {
+			this.timeStamp = timeStamp;
+		}
+
 		private String userName, comment;
+		
 		public String getUserName() {
 			return userName;
 		}
@@ -32,9 +43,10 @@ import org.semanticweb.owlapi.model.OWLOntologyChange;
 
 		private List <OWLOntologyChange> changes;
 		
-		public OntologyCommit (String userName, String comment, List <OWLOntologyChange> changes){
+		public OntologyCommit (String userName, String comment, List <OWLOntologyChange> changes, long timeStamp){
 			this.userName = userName;
 			this.comment = comment;
 			this.changes = changes;
+			this.timeStamp = timeStamp;
 		}
 	}
