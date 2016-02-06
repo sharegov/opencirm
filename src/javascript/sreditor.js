@@ -3313,7 +3313,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
 				bo.properties.hasCaseNumber = yr.substr(yr.length - 2) + "-1" + U.addLeadingZeroes(bo.boid, 7);
 			}
        		$('[name="SR Lookup"]').val(bo.properties.hasCaseNumber);
-		}	
+		} else {
+			$('[name="SR Lookup"]').val("");
+		} 
        	if(bo.properties.atAddress === undefined)
 		{
        		bo.properties.atAddress = $.extend(new AddressBluePrint(), {});
