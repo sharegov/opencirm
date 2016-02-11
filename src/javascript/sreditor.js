@@ -1290,6 +1290,19 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 				return null;
 		};
 
+		self.showAnonymousAlert = function() {
+			var citizen = self.getFirstCitizenActor();
+			if (citizen != null && citizen.isAnonymous()) {
+				$("#sh_dialog_alert")[0].innerText = "Advise caller that even though report can be submitted anonymously, "
+										+ " the audio recording can be provided if a public records request is submitted.";
+				$("#sh_dialog_alert").dialog({ height: 170, width: 350, modal: true, buttons: {
+					"I advised caller" : function() {
+						$("#sh_dialog_alert").dialog('close');
+					}
+				}});
+			}
+		};
+		
 		self.isCitizenAnonymous = function() {
 			var citizen = self.getFirstCitizenActor();
 			if(citizen == null)
