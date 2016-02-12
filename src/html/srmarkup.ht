@@ -133,7 +133,7 @@
 				<input data-bind="value: $root.getCitizenActorCellPhone(), valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: $root.getCitizenActorCellPhoneError()}" placeholder="Phone Number"/>
 			</div>
 			<div class="grid_2 omega">
-				<input type="checkbox" style="width:18px;display:inline;" data-bind="checked: $root.getCitizenActorField('isAnonymous'), event:{change: $root.isCitizenAnonymous()}, attr:{disabled: $root.isCustomerLocked()}, click: $root.showAnonymousAlert()"/>
+				<input type="checkbox" style="width:18px;display:inline;" data-bind="checked: $root.getCitizenActorField('isAnonymous'), event:{change: $root.isCitizenAnonymous()}, attr:{disabled: $root.isCustomerLocked()}, click: $root.showAnonymousAlert"/>
 				<label>Anonymous</label>
 			</div>
 			<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
