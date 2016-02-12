@@ -1290,7 +1290,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 				return null;
 		};
 
-		self.showAnonymousAlert = function() {
+		self.showAnonymousAlert = function(data, event) {
 			var citizen = self.getFirstCitizenActor();
 			if (citizen != null && citizen.isAnonymous()) {
 				$("#sh_dialog_alert")[0].innerText = "Advise caller that even though report can be submitted anonymously, "
@@ -1301,6 +1301,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 					}
 				}});
 			}
+			return true;
 		};
 		
 		self.isCitizenAnonymous = function() {
