@@ -378,7 +378,8 @@ public class LegacyJMSListener extends Thread
 		Json props = data.at("properties");
 		data.set("type", props.atDel("type"));
 		//2016.02.19 hilpold all interface messages changed to never have empty hasDetails (mdcirm 2547)
-		if (!props.has("hasDetails")) {
+		if (!props.has("hasDetails")) 
+		{
 			props.set("hasDetails", "");
 		}
 		timeStamp(props.at("hasServiceCaseActor"));
@@ -461,7 +462,6 @@ public class LegacyJMSListener extends Thread
 		sr.at("properties").at("hasServiceActivity").add(activity);
 		ServiceCaseJsonHelper.cleanUpProperties(sr);
 		ServiceCaseJsonHelper.assignIris(sr);
-		System.out.println(sr);
 		OWL.resolveIris(sr.at("properties"), null);			
 		result = emulator.updateServiceCaseTransaction(sr, original, null, new ArrayList<CirmMessage>(), "department");
 		if (result.has("ok") && result.is("ok", true)) 
@@ -596,25 +596,25 @@ public class LegacyJMSListener extends Thread
 			TraceUtils.error(new Exception(errmsg));
 			return GenUtils.ko(errmsg);					
 		}
-		else
+		else 
+		{
 			scase = scase.at("bo");
+		}
 		Json existingSave = scase.dup();
 		OWL.resolveIris(scase, null);		
 		ServiceCaseJsonHelper.cleanUpProperties(scase);
 		ServiceCaseJsonHelper.assignIris(scase);
-//		System.out.println("*******************************");
-//		System.out.println("Before Status Change:");
-//		System.out.println(scase);
-//		System.out.println("*******************************");
 		if (jmsg.at("response").is("ok", true))
 		{
-			if (orig.is("messageType", "NewCase"))
+			if (orig.is("messageType", "NewCase")) 
+			{
 				scase.at("properties").at("legacy:hasStatus").set("iri", 
-						fullIri("legacy:O-LOCKED").toString());	
-			System.out.println("After Status Change:");
-			System.out.println(scase);
-			if (jmsg.at("response").has("hasLegacyId"))
+						fullIri("legacy:O-LOCKED").toString());
+			}
+			if (jmsg.at("response").has("hasLegacyId")) 
+			{
 				scase.at("properties").set("legacy:hasLegacyId", jmsg.at("response").at("hasLegacyId"));
+			}	
 			if (jmsg.at("response").has("data"))
 			{
 				Json data = jmsg.at("response").at("data");
