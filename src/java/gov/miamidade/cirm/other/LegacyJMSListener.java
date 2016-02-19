@@ -377,6 +377,10 @@ public class LegacyJMSListener extends Thread
 		Json data = Json.object("properties", jmsg.at("data").dup());
 		Json props = data.at("properties");
 		data.set("type", props.atDel("type"));
+		//2016.02.19 hilpold all interface messages changed to never have empty hasDetails (mdcirm 2547)
+		if (!props.has("hasDetails")) {
+			props.set("hasDetails", "");
+		}
 		timeStamp(props.at("hasServiceCaseActor"));
 		timeStamp(props.at("hasServiceActivity"));
 		try
