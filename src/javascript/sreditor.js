@@ -1308,6 +1308,20 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 				return null;
 		};
 
+		self.showAnonymousAlert = function(data, event) {
+			var citizen = self.getFirstCitizenActor();
+			if (citizen != null && citizen.isAnonymous()) {
+				$("#sh_dialog_alert")[0].innerText = "Advise caller that even though report can be submitted anonymously, "
+										+ " the audio recording can be provided if a public records request is submitted.";
+				$("#sh_dialog_alert").dialog({ height: 170, width: 350, modal: true, buttons: {
+					"I advised caller" : function() {
+						$("#sh_dialog_alert").dialog('close');
+					}
+				}});
+			}
+			return true;
+		};
+		
 		self.isCitizenAnonymous = function() {
 			var citizen = self.getFirstCitizenActor();
 			if(citizen == null)
@@ -2103,9 +2117,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
           }
           else if(model.isPendingApproval && send.properties['legacy:hasStatus'].iri.indexOf('O-OPEN') > -1)
           {
-        	  console.log("validating addresss");
+        	  console.log("validating addresss from open");
         	  self.searchAddress();
-        	  
         	  cirm.top.async().postObject('/legacy/sr/approve', send, upcontinuation);
           }
           else
@@ -3337,7 +3350,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 						$("#sh_dialog_alert")[0].innerText = "The following Service Request has been identified as a self-service request and is 'Pending Approval'. Please review the request and make appropriate changes. When complete, set the status to 'Open' then save.";
 						$("#sh_dialog_alert").dialog({ height: 150, width: 500, modal: true, buttons: {
 								"Continue" : function() {
-									$("#sh_dialog_alert").dialog('close');
+									$("#sh_dialog_alert").dialog('close');							
+									console.log("closing dialog, validating addresss");
+						        	model.searchAddress();														
 								}
 							} 
 						});
@@ -3398,7 +3413,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 				bo.properties.hasCaseNumber = yr.substr(yr.length - 2) + "-1" + U.addLeadingZeroes(bo.boid, 7);
 			}
        		$('[name="SR Lookup"]').val(bo.properties.hasCaseNumber);
-		}	
+		} else {
+			$('[name="SR Lookup"]').val("");
+		} 
        	if(bo.properties.atAddress === undefined)
 		{
        		bo.properties.atAddress = $.extend(new AddressBluePrint(), {});
