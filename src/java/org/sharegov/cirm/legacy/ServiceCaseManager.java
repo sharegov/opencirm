@@ -691,6 +691,52 @@ public class ServiceCaseManager extends OntoAdmin {
 		}
 	}
 	
+	public Json replaceAlertServiceCase (String individualID,  String alertIndividualID, String newLabelContent, String userName){
+
+		individualID = MetaOntology.getIndividualIdentifier(individualID);
+		
+		List<String> evictionList = new ArrayList<String>();
+		evictionList.add(individualID);
+		
+		OwlRepo repo = getRepo();
+		synchronized (repo) {
+			repo.ensurePeerStarted();			
+			
+			String propertyID = "hasServiceCaseAlert";
+					
+			Date now = new Date();
+			String newIri = individualID + "_ALERT_" + Long.toString(now.getTime());
+			
+			Json data = Json.object().set("iri", newIri)
+									 .set("label", newLabelContent)
+									 .set("type", "ServiceCaseAlert");
+					
+			Json oldAlert = getServiceCaseAlert(individualID);
+			
+			List<OWLOntologyChange> changes;
+			
+			if (oldAlert.isObject() && oldAlert.has("iri")){
+				OWLNamedIndividual ind = OWL.individual(oldAlert.at("iri").asString());
+				oldAlert.set("iri", ind.getIRI().getFragment());
+				evictionList.add(ind.getIRI().getFragment());
+				changes = MetaOntology.getAddReplaceIndividualObjectPropertyFromJsonChanges(individualID, propertyID, data, oldAlert);
+			} else {
+				changes = MetaOntology.getAddIndividualObjectFromJsonChanges(individualID, propertyID, data);
+			}		
+
+			String comment = "Create new Alert Message for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID);	
+			
+			boolean r = commit(userName, comment, changes);
+			
+			if (r){
+				registerChange(individualID);
+				clearCache(evictionList);
+				return getMetaIndividualFormatedIri(data.at("iri").asString());
+			} throw new IllegalArgumentException("Cannot update label to Service Case Type "+ PREFIX +  individualID);
+							
+		}
+	}
+	
 	/**
 	 * Creates or Replace the alert message of a Service Case Type
 	 * 

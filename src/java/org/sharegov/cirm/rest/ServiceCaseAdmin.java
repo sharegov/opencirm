@@ -280,7 +280,8 @@ public class ServiceCaseAdmin extends RestService {
 			if (alertUri == null || alertUri.isEmpty()) throw new IllegalArgumentException("alert uri null or empty");
 			if (newLabel == null || newLabel.isEmpty()) throw new IllegalArgumentException("new label null or empty");
 		     
-			return Response.ok(ServiceCaseManager.getInstance().replaceAlertLabel(srType, alertUri, newLabel, userName), MediaType.APPLICATION_JSON).build();
+//			return Response.ok(ServiceCaseManager.getInstance().replaceAlertLabel(srType, alertUri, newLabel, userName), MediaType.APPLICATION_JSON).build();
+			return Response.ok(ServiceCaseManager.getInstance().replaceAlertServiceCase(srType, alertUri, newLabel, userName), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
 			
