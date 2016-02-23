@@ -724,7 +724,7 @@ public class ServiceCaseManager extends OntoAdmin {
 				changes = MetaOntology.getAddIndividualObjectFromJsonChanges(individualID, propertyID, data);
 			}		
 
-			String comment = "Create new Alert Message for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID);	
+			String comment = "Replace Alert Message for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID);	
 			
 			boolean r = commit(userName, comment, changes);
 			
