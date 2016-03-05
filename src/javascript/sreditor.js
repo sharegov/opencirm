@@ -329,14 +329,14 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
 	   				return true;
 				}
 				else if(type == "PHONE" || type == "PHONE_REQ") {
-					var phoneFilter = /^(?:\W*\d){10,16}$/;
+					var phoneFilter = /^(?:\d){10}$|^(?:\d{3}-\d{3}-\d{4})$/ //pre v2.0.9 format /^(?:\W*\d){10,16}$/;
 					if(phoneFilter.test(newValue)) {
 						target.hasError(false);
 						target.validationMessage("");
 					}
 					else {
 						target.hasError(true);
-						target.validationMessage("Invalid format");
+						target.validationMessage("Invalid phone format, use 305-123-1234 OR 3051231234");
 					}
 					return true;
 				}
@@ -348,7 +348,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
 					}
 					else {
 						target.hasError(true);
-						target.validationMessage("Invalid format");
+						target.validationMessage("Invalid extension format, use 1 to 6 digits only");
 					}
 					return true;
 				}
