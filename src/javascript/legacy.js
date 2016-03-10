@@ -1819,7 +1819,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 		self.dom = dom;
 		self.address = ko.observable(undefined);//addressModel;
 		self.addresses = ko.observableArray([]);
-
+       
 		self.searchCriteria = {department: "", type:"", srID:"", inputBy:"", modifiedBy:"",  
 				serviceQuestion:"", 
 				serviceQuestionAnswerTermString:"", //for CHAR, PHONENUM
@@ -1830,7 +1830,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 				serviceQuestionAnswerTermNumberEnd:"", // value dependent on hasDataType of ServiceField
 				// TIME -> not currently supported
 				createdStartDate:"", "createdEndDate":"", "updatedStartDate":"", "updatedEndDate":"", "overdueDate":"",
-				"hasStatus":{"iri":undefined, "label":""}, "hasIntakeMethod":{"iri":undefined, "label":""},
+				"hasStatus":{"iri":undefined, "label":""},
 				"hasPriority":{"iri":undefined, "label":""},"name":"", "lastName":"", 
 				"atAddress":{
 					"fullAddress":"", "municipality":"", 
@@ -1841,6 +1841,9 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 				"geoLayerAttr":{"iri":undefined, "label":""},
 				"geoLayerAreaSearchValue":""
 				};
+		
+		 self.searchCriteria.selectedIntake = ko.observableArray([]);
+		
 		U.visit(self.searchCriteria, U.makeObservableTrimmed);
 		
 		self.hasSearchCriteria = function () {
@@ -2536,10 +2539,17 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 				self.misc.counter(self.misc.counter() + 1);
 			}
 
-			if(!U.isEmptyString(self.searchCriteria.hasIntakeMethod().iri())) {
-				self.misc.query()["legacy:hasIntakeMethod"] = {"iri":self.searchCriteria.hasIntakeMethod().iri(), "type":"legacy:IntakeMethod"};
-				self.misc.counter(self.misc.counter() + 1);
+			if(self.searchCriteria.selectedIntake().length > 0) {
+		        console.log("selected intake methods");
+		        console.log(self.searchCriteria.selectedIntake().length);
+		       
+				
+		        //self.misc.query()["legacy:hasIntakeMethod"] = [{"iri":self.searchCriteria.hasIntakeMethod().iri(), "type":"legacy:IntakeMethod"},{"iri":"http://www.miamidade.gov/cirm/legacy#ANDROID", "type":"legacy:IntakeMethod"}];
+			   // wrong self.misc.query()["legacy:hasIntakeMethod"] = [self.searchCriteria.hasIntakeMethod().iri(), "http://www.miamidade.gov/cirm/legacy#ANDROID"];
+
+				//self.misc.counter(self.misc.counter() + 1);
 			}
+			
 			
 			if(!U.isEmptyString(self.searchCriteria.hasPriority().iri())) {
 				self.misc.query()["legacy:hasPriority"] = {"iri":self.searchCriteria.hasPriority().iri(), "type":"legacy:Priority"};
@@ -3054,7 +3064,6 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 			self.searchCriteria.srID("");
 			self.searchCriteria.hasStatus().iri(undefined);
 			self.searchCriteria.hasStatus().label("");
-			self.searchCriteria.hasIntakeMethod().iri(undefined);
 			self.searchCriteria.hasIntakeMethod().label("");
 			self.searchCriteria.createdStartDate("");
 			self.searchCriteria.createdEndDate("");
