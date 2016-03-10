@@ -2540,14 +2540,29 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 			}
 
 			if(self.searchCriteria.selectedIntake().length > 0) {
-		        console.log("selected intake methods");
-		        console.log(self.searchCriteria.selectedIntake().length);
-		       
+		      
+		        if(self.searchCriteria.selectedIntake().length == 1)
+		        	{
+			        self.misc.query()["legacy:hasIntakeMethod"] = {"iri":self.searchCriteria.selectedIntake()[0], "type":"legacy:IntakeMethod"};
+
+		        	}
+		        else
+		        	{
+		        	 var intakes = []; 
+		        	 var len = self.searchCriteria.selectedIntake().length; 
+		        	 for(i=0; i < len; i++)
+		        		 {
+		        		 intakes.push({"iri":self.searchCriteria.selectedIntake()[i], "type":"legacy:IntakeMethod"});
+		        		 }
+		        	 
+		        	
+		        	 self.misc.query()["legacy:hasIntakeMethod"] = intakes; 
+		        	}
 				
 		        //self.misc.query()["legacy:hasIntakeMethod"] = [{"iri":self.searchCriteria.hasIntakeMethod().iri(), "type":"legacy:IntakeMethod"},{"iri":"http://www.miamidade.gov/cirm/legacy#ANDROID", "type":"legacy:IntakeMethod"}];
 			   // wrong self.misc.query()["legacy:hasIntakeMethod"] = [self.searchCriteria.hasIntakeMethod().iri(), "http://www.miamidade.gov/cirm/legacy#ANDROID"];
 
-				//self.misc.counter(self.misc.counter() + 1);
+				self.misc.counter(self.misc.counter() + 1);
 			}
 			
 			
@@ -3064,7 +3079,8 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 			self.searchCriteria.srID("");
 			self.searchCriteria.hasStatus().iri(undefined);
 			self.searchCriteria.hasStatus().label("");
-			self.searchCriteria.hasIntakeMethod().label("");
+			//self.searchCriteria.hasIntakeMethod().label("");
+			self.searchCriteria.selectedIntake = ko.observableArray([]);
 			self.searchCriteria.createdStartDate("");
 			self.searchCriteria.createdEndDate("");
 			self.searchCriteria.updatedStartDate("");
