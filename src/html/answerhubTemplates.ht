@@ -428,6 +428,7 @@
 		    	<li><label>Code Enforcement Zone:</label>
 		    		<span data-bind="text: $root.addressSearch.getCodeEnforcementZonePhone(addressSearch.address.addressData().codeEnforcementZone)"></span>
 		    	</li>
+  	            <li><label>Miami Neighborhood:</label><span data-bind="text: addressSearch.address.addressData().miamiNeighborhood"></span></li>		      
             </ul>
 		</div>
 		<div id="hurricane">
