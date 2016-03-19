@@ -721,7 +721,17 @@ public class QueryTranslator
 					if(property.getValue().isArray()) 
 					{
 						for(int j=0; j<property.getValue().asList().size(); j++) 
-							ent.add(individual(property.getValue().at(j).getValue().toString()));
+						{
+							Json obj = property.getValue().at(j);
+							if (obj.isObject())
+							{
+								ent.add(individual(obj.at("iri").asString()));
+							}
+							else
+							{
+								ent.add(individual(obj.getValue().toString()));
+							}
+						}
 					}
 					else
 						ent.add(individual(fullIri(property.getValue().getValue().toString())));

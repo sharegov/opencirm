@@ -952,7 +952,10 @@ public class LegacyEmulator extends RestService
 					
 			}
 
+			
 			q = qt.translate(data, store);
+		
+			
 			Set<Long> results = store.query(q, 
 					Refs.tempOntoManager.resolve().getOWLDataFactory());
 			if (results.size() > 0)

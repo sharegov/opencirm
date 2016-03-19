@@ -1819,7 +1819,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 		self.dom = dom;
 		self.address = ko.observable(undefined);//addressModel;
 		self.addresses = ko.observableArray([]);
-
+       
 		self.searchCriteria = {department: "", type:"", srID:"", inputBy:"", modifiedBy:"",  
 				serviceQuestion:"", 
 				serviceQuestionAnswerTermString:"", //for CHAR, PHONENUM
@@ -1830,7 +1830,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 				serviceQuestionAnswerTermNumberEnd:"", // value dependent on hasDataType of ServiceField
 				// TIME -> not currently supported
 				createdStartDate:"", "createdEndDate":"", "updatedStartDate":"", "updatedEndDate":"", "overdueDate":"",
-				"hasStatus":{"iri":undefined, "label":""}, "hasIntakeMethod":{"iri":undefined, "label":""},
+				"hasStatus":{"iri":undefined, "label":""},
 				"hasPriority":{"iri":undefined, "label":""},"name":"", "lastName":"", 
 				"atAddress":{
 					"fullAddress":"", "municipality":"", 
@@ -1841,6 +1841,9 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 				"geoLayerAttr":{"iri":undefined, "label":""},
 				"geoLayerAreaSearchValue":""
 				};
+		
+		 self.searchCriteria.selectedIntake = ko.observableArray([]);
+		
 		U.visit(self.searchCriteria, U.makeObservableTrimmed);
 		
 		self.hasSearchCriteria = function () {
@@ -2535,11 +2538,31 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 				self.misc.query()["legacy:hasStatus"] = {"iri":self.searchCriteria.hasStatus().iri(), "type":"legacy:Status"};
 				self.misc.counter(self.misc.counter() + 1);
 			}
-
-			if(!U.isEmptyString(self.searchCriteria.hasIntakeMethod().iri())) {
-				self.misc.query()["legacy:hasIntakeMethod"] = {"iri":self.searchCriteria.hasIntakeMethod().iri(), "type":"legacy:IntakeMethod"};
-				self.misc.counter(self.misc.counter() + 1);
+			
+			// Search Criteria selectedIntake Validation and Query Preparation
+			var validSelectedIntake = self.searchCriteria.selectedIntake();
+			
+			// 2016.03.18 hilpold hotfix: ignore all selected intakes if default "Select Meth Recd" is selected or 
+			// (default and any combination of other intake methods are selected) by the user
+			if (self.searchCriteria.selectedIntake.indexOf(undefined) >= 0) {
+				//Default selected, this means any(!) intake method matches and therefore whole selection should be ignored
+				validSelectedIntake = [];
 			}
+			
+			if(validSelectedIntake.length > 0) {		      
+		        if(validSelectedIntake.length == 1) {
+			        self.misc.query()["legacy:hasIntakeMethod"] = {"iri":validSelectedIntake[0], "type":"legacy:IntakeMethod"};
+		        } else {
+		        	var intakes = []; 
+		        	var len = validSelectedIntake.length; 
+		        	for(i=0; i < len; i++) {
+		        		intakes.push({"iri":validSelectedIntake[i], "type":"legacy:IntakeMethod"});
+		        	}
+		        	self.misc.query()["legacy:hasIntakeMethod"] = intakes; 
+		        }
+		        self.misc.counter(self.misc.counter() + 1);
+			}
+			//End Search Criteria selectedIntake Validation and Query Preparation
 			
 			if(!U.isEmptyString(self.searchCriteria.hasPriority().iri())) {
 				self.misc.query()["legacy:hasPriority"] = {"iri":self.searchCriteria.hasPriority().iri(), "type":"legacy:Priority"};
@@ -3054,8 +3077,8 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 			self.searchCriteria.srID("");
 			self.searchCriteria.hasStatus().iri(undefined);
 			self.searchCriteria.hasStatus().label("");
-			self.searchCriteria.hasIntakeMethod().iri(undefined);
-			self.searchCriteria.hasIntakeMethod().label("");
+			//self.searchCriteria.hasIntakeMethod().label("");
+			self.searchCriteria.selectedIntake = ko.observableArray([]);
 			self.searchCriteria.createdStartDate("");
 			self.searchCriteria.createdEndDate("");
 			self.searchCriteria.updatedStartDate("");

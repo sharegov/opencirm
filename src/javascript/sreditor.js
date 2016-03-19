@@ -16,7 +16,7 @@
 define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "text!../html/srmarkup.ht"],
    function($, U, rest, ui, store, owl, cirm, legacy, srmarkupText)   {
 	
-    
+   
     
     function getMetadataUrl(){
     	return 'https://api.miamidade.gov/s3ws/metadata/update';
@@ -2037,7 +2037,12 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
     	
     	
       	self.doSubmit = function(model) { 
-			var jsondata = ko.toJS(model.data);
+			
+      		//change the isCreatedBy
+      		model.data().properties().isCreatedBy = cirm.user.username; 
+      		
+      		
+      		var jsondata = ko.toJS(model.data);
 			//console.log("jsondata", jsondata);
 			if(!jsondata.type) {
 				alertDialog('No Service Request created/opened to Save');
@@ -3270,6 +3275,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
 								}
 							} 
 						});
+						
 					}
 					else
 					{
@@ -3809,7 +3815,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
         // Menu switch on SR details, not sure if this 
         return self;
     }
-        
+    
     return {
         edit: edit
     };
