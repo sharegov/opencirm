@@ -2538,33 +2538,31 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 				self.misc.query()["legacy:hasStatus"] = {"iri":self.searchCriteria.hasStatus().iri(), "type":"legacy:Status"};
 				self.misc.counter(self.misc.counter() + 1);
 			}
-
-			if(self.searchCriteria.selectedIntake().length > 0) {
-		      
-		        if(self.searchCriteria.selectedIntake().length == 1)
-		        	{
-			        self.misc.query()["legacy:hasIntakeMethod"] = {"iri":self.searchCriteria.selectedIntake()[0], "type":"legacy:IntakeMethod"};
-
-		        	}
-		        else
-		        	{
-		        	 var intakes = []; 
-		        	 var len = self.searchCriteria.selectedIntake().length; 
-		        	 for(i=0; i < len; i++)
-		        		 {
-		        		 intakes.push({"iri":self.searchCriteria.selectedIntake()[i], "type":"legacy:IntakeMethod"});
-		        		 }
-		        	 
-		        	
-		        	 self.misc.query()["legacy:hasIntakeMethod"] = intakes; 
-		        	}
-				
-		        //self.misc.query()["legacy:hasIntakeMethod"] = [{"iri":self.searchCriteria.hasIntakeMethod().iri(), "type":"legacy:IntakeMethod"},{"iri":"http://www.miamidade.gov/cirm/legacy#ANDROID", "type":"legacy:IntakeMethod"}];
-			   // wrong self.misc.query()["legacy:hasIntakeMethod"] = [self.searchCriteria.hasIntakeMethod().iri(), "http://www.miamidade.gov/cirm/legacy#ANDROID"];
-
-				self.misc.counter(self.misc.counter() + 1);
+			
+			// Search Criteria selectedIntake Validation and Query Preparation
+			var validSelectedIntake = self.searchCriteria.selectedIntake();
+			
+			// 2016.03.18 hilpold hotfix: ignore all selected intakes if default "Select Meth Recd" is selected or 
+			// (default and any combination of other intake methods are selected) by the user
+			if (self.searchCriteria.selectedIntake.indexOf(undefined) >= 0) {
+				//Default selected, this means any(!) intake method matches and therefore whole selection should be ignored
+				validSelectedIntake = [];
 			}
 			
+			if(validSelectedIntake.length > 0) {		      
+		        if(validSelectedIntake.length == 1) {
+			        self.misc.query()["legacy:hasIntakeMethod"] = {"iri":validSelectedIntake[0], "type":"legacy:IntakeMethod"};
+		        } else {
+		        	var intakes = []; 
+		        	var len = validSelectedIntake.length; 
+		        	for(i=0; i < len; i++) {
+		        		intakes.push({"iri":validSelectedIntake[i], "type":"legacy:IntakeMethod"});
+		        	}
+		        	self.misc.query()["legacy:hasIntakeMethod"] = intakes; 
+		        }
+		        self.misc.counter(self.misc.counter() + 1);
+			}
+			//End Search Criteria selectedIntake Validation and Query Preparation
 			
 			if(!U.isEmptyString(self.searchCriteria.hasPriority().iri())) {
 				self.misc.query()["legacy:hasPriority"] = {"iri":self.searchCriteria.hasPriority().iri(), "type":"legacy:Priority"};
