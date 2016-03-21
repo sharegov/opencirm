@@ -2112,8 +2112,13 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
     	
       	self.doSubmit = function(model) { 
 			
-      		//change the isCreatedBy
-      		model.data().properties().isCreatedBy = cirm.user.username; 
+      		//2561 change the isCreatedBy if it was submitted by 311 direct 
+      		if(model.isPendingApproval)
+      			{
+      			console.log("SR came from 311 direct changing created by");
+      			model.data().properties().isCreatedBy = cirm.user.username; 
+      			}
+      		
       		
       		
       		var jsondata = ko.toJS(model.data);
