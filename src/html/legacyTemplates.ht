@@ -907,7 +907,7 @@
 					<select class="f_left" data-bind="options:allStatus, value:searchCriteria.hasStatus().iri, optionsValue:'iri', optionsText:'label', optionsCaption:'Select Status'"></select>
 	    		</div>
 	    		<div class="grid_2">
-					<select class="f_left" data-bind="options:allIntake, value:searchCriteria.hasIntakeMethod().iri, optionsValue:'iri', optionsText:'label', optionsCaption:'Select Meth Recd'"></select>
+					<select class="f_left" data-bind="options:allIntake, selectedOptions:searchCriteria.selectedIntake, optionsValue:'iri', optionsText:'label', optionsCaption:'Select Meth Recd'" multiple="true"></select>
 	    		</div>
 	    		<div class="grid_2 omega">
 			        <select class="f_left" data-bind="options:allPriority, value:searchCriteria.hasPriority().iri, optionsValue:'iri', optionsText:'label', optionsCaption:'Select Priority'"></select>

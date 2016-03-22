@@ -472,7 +472,8 @@
 		      	<label>Code Enforcement Zone:</label>
 		      	<span data-bind="text: $root.getCodeEnforcementZonePhone(address().addressData().codeEnforcementZone)"></span>
 		      </li>
-		    </ul>
+		      <li><label>Miami Neighborhood:</label><span data-bind="text: address().addressData().miamiNeighborhood"></span></li>		      
+		    </ul>		    
 		  </div>
 		  <div id="hurricane">
 		    <ul class="modal_infolist">
