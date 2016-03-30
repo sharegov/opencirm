@@ -47,7 +47,6 @@
 	<classpathentry kind="lib" path="lib/wrapper.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/opencirm"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="lib" path="/opencirm/lib/restlet/org.restlet.ext.fileupload.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/restlet/org.restlet.ext.jaxrs.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/restlet/org.restlet.ext.jetty.jar"/>
@@ -75,5 +74,6 @@
 	<classpathentry kind="lib" path="/opencirm/lib/restlet/org.simpleframework.xml.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/restlet/servlet-api-3.1.jar"/>
 	<classpathentry kind="lib" path="/opencirm/lib/mjson-1.3.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_65"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
