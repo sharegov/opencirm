@@ -446,7 +446,7 @@
 				<a data-bind="if:address().addressData().recyclingCalendarUrl, attr:{ href: address().addressData().recyclingCalendarUrl}" target="_blank">Calendar</a>
 		      </li>
 		      <li><label>Recycling Pickup Day:</label><span data-bind="text: address().addressData().recyclingWeekDay"></span></li>
-		      <li><label>COM Bulky Day:</label><span data-bind="text: address().addressData().bulkyTrashPickupDayAlias"></span></li>
+		      <li><label>COM Bulky/Trash Day:</label><span data-bind="text: address().addressData().bulkyTrashPickupDayAlias"></span></li>
 		    </ul>
 		  </div>
 		  <div id="publicWorks">
@@ -466,13 +466,14 @@
 		  </div>
 		  <div id="wastePickup_continued">
 		    <ul class="modal_infolist">		
-		      <li><label>City Commissioner Name:</label><span data-bind="text: address().addressData().cityCommissionerName"></span></li>
-		      <li><label>Net Office Name:</label><span data-bind="text: address().addressData().netOfficeName"></span></li>
+		      <li><label>COM City Commissioner Name:</label><span data-bind="text: address().addressData().cityCommissionerName"></span></li>
+		      <li><label>COM District Number:</label><span data-bind="text: address().addressData().cityDistrictNumber"></span></li>
+		      <li><label>COM Net Office Name:</label><span data-bind="text: address().addressData().netOfficeName"></span></li>
 		      <li>
-		      	<label>Code Enforcement Zone:</label>
+		      	<label>COM Code Enforcement Zone:</label>
 		      	<span data-bind="text: $root.getCodeEnforcementZonePhone(address().addressData().codeEnforcementZone)"></span>
 		      </li>
-		      <li><label>Miami Neighborhood:</label><span data-bind="text: address().addressData().miamiNeighborhood"></span></li>		      
+		      <li><label>COM Neighborhood:</label><span data-bind="text: address().addressData().miamiNeighborhood"></span></li>		      
 		    </ul>		    
 		  </div>
 		  <div id="hurricane">
