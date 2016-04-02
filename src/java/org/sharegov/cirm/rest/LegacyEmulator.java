@@ -1987,10 +1987,16 @@ public class LegacyEmulator extends RestService
 
 	}
 
+	/**
+	 * Creates an activity now, ignoring possible occur day settings.
+	 * @param boid
+	 * @param activityCode
+	 * @return
+	 */
 	@GET
 	@Path("/bo/{boid}/activities/create/{activityCode}")
 	@Produces("application/json")
-	public Json createActivity(@PathParam("boid") Long boid,
+	public Json createActivityNow(@PathParam("boid") Long boid,
 			@PathParam("activityCode") String activityCode)
 	{
 		try
@@ -2019,7 +2025,8 @@ public class LegacyEmulator extends RestService
 				OWLNamedIndividual activity = individual("legacy:" + activityCode);
 				//hilpold whole algorithm should be inside a transaction and SendEmailOnTxSuccessListener used
 				List<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();
-				manager.createActivity(activity, null, null, bo, null, null, emailsToSend);
+				//Create the activity ignoring occur day settings on TM callback.
+				manager.createActivityOccurNow(activity, bo, emailsToSend);
 				persister.saveBusinessObjectOntology(bo.getOntology());
 				for (CirmMessage m : emailsToSend) 
 				{
