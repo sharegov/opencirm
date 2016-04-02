@@ -198,7 +198,29 @@ public class ActivityManager
 		}
 		createActivitiesFromQuestions(bo, messages);
 	}
-	
+
+	/** 
+	 * Creates an activity now and ignores a potentially configured occurday setting. 
+	 * This method is used to create already scheduled activities on TM callback.
+	 * 
+	 * @param activityType
+	 * @param bo
+	 * @param messages
+	 */
+	public void createActivityOccurNow(OWLNamedIndividual activityType, BOntology bo, List<CirmMessage> messages) {
+		createActivityImpl(activityType, null, null, null, bo, null, null, null, messages, true);
+	}
+
+	/**
+	 * Creates an activity or schdules it for creation (occurdays > 0).
+	 * @param activityType
+	 * @param details
+	 * @param isAssignedTo
+	 * @param bo
+	 * @param createdDate
+	 * @param createdBy
+	 * @param messages
+	 */
 	public void createActivity(OWLNamedIndividual activityType, String details, String isAssignedTo, BOntology bo, Date createdDate, String createdBy, List<CirmMessage> messages)
 	{
 		//Don't set the defaultOutcome, first the activityType needs to be accepted by the Assignee!!
@@ -209,10 +231,12 @@ public class ActivityManager
 //		if(outcomes.size() > 0)
 //			createActivity(activity, outcomes.iterator().next(), details, isAssignedTo, bo);
 //		else
-			createActivity( activityType, null, details, isAssignedTo, bo, createdDate, null, createdBy, messages);
+			createActivity(activityType, null, details, isAssignedTo, bo, createdDate, null, createdBy, messages);
 	}
 	
+	
 	/**
+	 * Creates an activity or schedules it for creation (occurdays >0).
 	 * 
 	 * @param activityType
 	 * @param outcome
@@ -234,6 +258,35 @@ public class ActivityManager
 							   Date completedDate,
 							   String createdBy,
 							   List<CirmMessage> messages)
+	{
+		createActivityImpl(activityType, outcome, details, isAssignedTo, bo, createdDate, completedDate, createdBy, messages, false);
+	}
+	
+	/**
+	 * Creates an activity with all side effect. Delays creation through Time Machine, if activity type's occurdays 
+	 * if configured as > 0.0f and ignoreOccurdays is false. 
+	 * @param activityType
+	 * @param outcome
+	 * @param details
+	 * @param isAssignedTo
+	 * @param bo
+	 * @param createdDate
+	 * @param completedDate
+	 * @param createdBy
+	 * @param messages a list of messages to add messages to.
+	 * @param ignoreOccurDays ignore activity type occur day setting and create activity now.
+	 * @return a Pair of message and template
+	 */
+	private void createActivityImpl(OWLNamedIndividual activityType, 
+							   OWLNamedIndividual outcome, 
+							   String details, 
+							   String isAssignedTo, 
+							   BOntology bo,
+							   Date createdDate,
+							   Date completedDate,
+							   String createdBy,
+							   List<CirmMessage> messages,
+							   boolean ignoreOccurDays)
 	{
 		try
 		{
@@ -260,7 +313,7 @@ public class ActivityManager
 			Set<OWLLiteral> occurDays = reasoner().getDataPropertyValues(
 					activityType,
 					dataProperty("legacy:hasOccurDays"));
-			if(occurDays.size() > 0)
+			if(occurDays.size() > 0 && !ignoreOccurDays)
 			{
 				try
 				{
