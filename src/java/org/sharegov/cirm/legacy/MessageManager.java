@@ -379,7 +379,7 @@ public class MessageManager
 		for (String key : keys) {
 			String value = parameters.get(key);
 			//If string is multiline and does not contain html or xml tags
-			if (value != null  && !value.contains("/>")) {
+			if (value != null  && !containsHtmlOrXmlTags(value)) {
 				if (value.contains("\r\n")) {
 					String newValue = value.replaceAll("\r\n", "<br>\r\n");
 					parameters.put(key, newValue);
@@ -391,6 +391,15 @@ public class MessageManager
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Determines if a string contains any html or xml tags.
+	 * @param s
+	 * @return true if any html or xml end tag was detected
+	 */
+	private boolean containsHtmlOrXmlTags(String s) {
+		return s.contains("</") || s.contains("/>");
 	}
 
 	public String getTestModeHeader(String to, String cc, OWLNamedIndividual messageTemplate) 
