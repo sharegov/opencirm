@@ -25,6 +25,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -294,10 +295,15 @@ public class MessageManager
 			{
 				//TODO String bodyTemplateStr = useLegacyBody? legacyBodyToHTML(bodyTemplate) : bodyTemplate.getLiteral();  
 				String bodyTemplateStr = bodyTemplate.getLiteral();
-				if (!bodyTemplateStr.contains("$$GLOBAL_SR_TEMPLATE"))
+				boolean htmlTemplate = bodyTemplateStr.contains("$$GLOBAL_SR_TEMPLATE") || bodyTemplateStr.startsWith("<html>"); 
+				if (htmlTemplate)
 				{
+					formatMultiLineValueStringsAsHtml(parameters);
+				} 
+				else 
+				{ 
 					bodyTemplateStr = legacyBodyToHTML(bodyTemplateStr);
-				}	
+				}					
 				body = applyTemplate(bodyTemplateStr, parameters);
 			}
 			if (bccTemplate != null)
@@ -363,7 +369,39 @@ public class MessageManager
 		}
 		return msg;
 	}
+
+	/**
+	 * Formats all non-html multi-line string values as html by adding a <br> before each \r.
+	 * @param parameters
+	 */
+	private void formatMultiLineValueStringsAsHtml(Map<String, String> parameters) {
+		Set<String> keys = new HashSet<String>(parameters.keySet());
+		for (String key : keys) {
+			String value = parameters.get(key);
+			//If string is multiline and does not contain html or xml tags
+			if (value != null  && !containsHtmlOrXmlTags(value)) {
+				if (value.contains("\r\n")) {
+					String newValue = value.replaceAll("\r\n", "<br>\r\n");
+					parameters.put(key, newValue);
+				} else if (value.contains("\n")) {
+					String newValue = value.replaceAll("\n", "<br>\n");
+					parameters.put(key, newValue);
+				} else {
+					//single line string, no CRLF or LF, ignore
+				}
+			}
+		}
+	}
 	
+	/**
+	 * Determines if a string contains any html or xml tags.
+	 * @param s
+	 * @return true if any html or xml end tag was detected
+	 */
+	private boolean containsHtmlOrXmlTags(String s) {
+		return s.contains("</") || s.contains("/>");
+	}
+
 	public String getTestModeHeader(String to, String cc, OWLNamedIndividual messageTemplate) 
 	{
 		if (to != null && to.contains("@")) 
