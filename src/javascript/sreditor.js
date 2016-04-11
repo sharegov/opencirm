@@ -2109,6 +2109,110 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
           }
     	};
     	
+    	self.doCache = function()
+    	{
+    		console.log("caching test yos ");
+    		var jsondata = ko.toJS(self.data); 
+    		console.log(jsondata);
+    		Lockr.set('sr', jsondata);
+    		
+    	}
+    	
+    	self.changeSrType = function()
+    	{
+    		console.log("changing sr type ");
+    		
+    		var jsonData; 
+    		var cacheData = ko.toJS(self.data); 
+    		console.log(cacheData); 
+    		
+    		var currentCase = self.data().properties().hasCaseNumber(); 
+    		console.log("current case number " + currentCase); 
+    		
+    		
+    		///make sure to do the gis validation
+    		/**
+    		 * self.enableValidationForSrType(type);
+			var callback = function cb()
+			{
+			    var blueprint = self.makeCaseBlueprint(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + type]);
+                var currentAddress = ko.toJS(self.data().properties().atAddress);
+                blueprint.properties.atAddress = currentAddress;
+                if(self.data().properties().hasXCoordinate() != "")
+                    blueprint.properties.hasXCoordinate = self.data().properties().hasXCoordinate();
+                if(self.data().properties().hasYCoordinate() != "")
+                    blueprint.properties.hasYCoordinate = self.data().properties().hasYCoordinate();
+                fetchSR(blueprint, self, true);
+			};
+			if(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + type].isDisabledCreate == 'true')
+			{
+				var srTypeName = $('#srTypeID').val().trim();
+				alertDialog("The Creation of a new '" + srTypeName +"' Service Request is currently disabled for all users");
+			}
+			else if (!cirm.user.isNewAllowed(type)) 
+			{
+				var srTypeName = $('#srTypeID').val().trim();
+				alertDialog("The Creation of a new '" + srTypeName +"' is currently not permitted for your group.");
+			}
+			else if(self.data().properties().hasXCoordinate() != "" && self.data().properties().hasYCoordinate() != "" ) {
+				self.validateTypeOnXY(type, self.data().properties().hasXCoordinate()
+					, self.data().properties().hasYCoordinate(), callback, "Service Request Type is not valid for this location. Please try a different location.");
+			}
+			else {
+				callback();
+			}
+    		 */
+    		//cache data using case number as key 
+    		//Lockr.set(currentCase, jsonData);
+    		var type = "ASBITE";
+    		//self.startNewServiceRequest("ASBITE");
+    		var blueprint = self.makeCaseBlueprint(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + type]);
+            var currentAddress = ko.toJS(self.data().properties().atAddress);
+            blueprint.properties.atAddress = currentAddress;
+            if(self.data().properties().hasXCoordinate() != "")
+                blueprint.properties.hasXCoordinate = self.data().properties().hasXCoordinate();
+            if(self.data().properties().hasYCoordinate() != "")
+                blueprint.properties.hasYCoordinate = self.data().properties().hasYCoordinate();
+            
+            
+            blueprint.properties.hasCaseNumber = currentCase; 
+            blueprint.properties.atAddress = cacheData.properties.AtAddress; 
+            blueprint.properties.hasDateCreated = cacheData.properties.hasDateCreated; 
+            blueprint.properties.hasDetails = cacheData.properties.hasDetails;
+            blueprint.properties.hasDueDate = cacheData.properties.hasDueDate;
+            blueprint.properties.hasServiceCaseActor = cacheData.properties.hasServiceCaseActor;
+            blueprint.properties.hasGisDataId = cacheData.properties.hasGisDataId;
+            
+            //fetchSR(blueprint, self, true);
+            
+            type = blueprint.type;
+    		if(type.indexOf("legacy:") == -1) {
+    			type = "legacy:"+type;
+    			blueprint.type = type;
+    		}
+    		
+    		 var srType = cirm.refs.serviceCases["http://www.miamidade.gov/cirm/legacy#" + type.split(":")[1]]; 
+    		    console.log('type', srType);
+            
+            setModel(blueprint, self,srType,type,false,true);
+            console.log("new model after change"); 
+           
+            /*
+            self.data().properties().hasCaseNumber = currentCase; 
+            self.data().properties().atAddress = cacheData.properties.AtAddress; 
+            self.data().properties().hasServiceCaseActor = cacheData.properties.hasServiceCaseActor;
+           */
+            
+            jsonData = ko.toJS(self.data);
+            console.log(jsonData)
+    		
+    		
+    	}
+    	
+    	self.applyCacheChanges = function()
+    	{
+    		console.log("applyCacheChanges");
+    	}
     	
       	self.doSubmit = function(model) { 
 			
@@ -3450,17 +3554,32 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 			bo.properties.hasServiceCaseActor = $.map(bo.properties.hasServiceCaseActor, function(v) {
 				//if (typeof v.atAddress == "undefined") v.atAddress = bo.properties.atAddress;
 				$.each(v, function(prop,value){
+					//fix bug that was breaking whenever value is something other than an array
 					if(prop.indexOf('Number') != -1)
 					{
 						var tempNumber = [];
-						$.each(value.split(','), function(j, contactNo) {
-							var numberExtn = contactNo.split('#');
-							var contactNumberFormat = {
-								"number": U.isEmptyString(numberExtn[0]) ? "": numberExtn[0], 
-								"extn": U.isEmptyString(numberExtn[1]) ? "": numberExtn[1]
-							};
-							tempNumber.push(contactNumberFormat);
-						});
+						if (typeof value === 'string' || value instanceof String)
+							{
+							
+							$.each(value.split(','), function(j, contactNo) {
+								var numberExtn = contactNo.split('#');
+								var contactNumberFormat = {
+									"number": U.isEmptyString(numberExtn[0]) ? "": numberExtn[0], 
+									"extn": U.isEmptyString(numberExtn[1]) ? "": numberExtn[1]
+								};
+								tempNumber.push(contactNumberFormat);
+							});
+							
+							}
+						else if(value.isArray)
+							{
+							tempNumber.push(value[0]);
+							}
+						else
+							{
+							tempNumber.push({"number":'',"extn":''});
+							}
+						
 						v[prop] = tempNumber;
 						value = tempNumber;
 					}
