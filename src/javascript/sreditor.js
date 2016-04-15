@@ -1292,14 +1292,17 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 
 		self.showAnonymousAlert = function(data, event) {
 			var citizen = self.getFirstCitizenActor();
+			var user = cirm.user;
 			if (citizen != null && citizen.isAnonymous()) {
-				$("#sh_dialog_alert")[0].innerText = "Advise caller that even though report can be submitted anonymously, "
-										+ " the audio recording can be provided if a public records request is submitted.";
-				$("#sh_dialog_alert").dialog({ height: 170, width: 350, modal: true, buttons: {
-					"I advised caller" : function() {
-						$("#sh_dialog_alert").dialog('close');
-					}
-				}});
+				if (user && user.mdcDepartment !== "COM") {
+					$("#sh_dialog_alert")[0].innerText = "Advise caller that even though report can be submitted anonymously, "
+											+ " the audio recording can be provided if a public records request is submitted.";
+					$("#sh_dialog_alert").dialog({ height: 170, width: 350, modal: true, buttons: {
+						"I advised caller" : function() {
+							$("#sh_dialog_alert").dialog('close');
+						}
+					}});
+				}
 			}
 			return true;
 		};
