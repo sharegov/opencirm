@@ -1502,8 +1502,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "owl", "cirm", "legacy", "t
 			    	delete jsondata.properties.atAddress.Street_Name;
 			    }
 			    //Remove Street_Direction and hasStreetType if addressType is not StreetAddress or Address
-			    if(jsondata.properties.atAddress.addressType != "StreetAddress" && 
-			    	jsondata.properties.atAddress.addressType != "Address")
+			    if(jsondata.properties.atAddress.addressType != "StreetAddress" 
+			    	&& jsondata.properties.atAddress.addressType != "Address" 
+			    	&& jsondata.properties.atAddress.addressType != "PointAddress")
 			    {
 			    	delete jsondata.properties.atAddress.Street_Direction;
 			    	delete jsondata.properties.atAddress.hasStreetType;
