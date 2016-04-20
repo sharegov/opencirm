@@ -1310,14 +1310,17 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 
 		self.showAnonymousAlert = function(data, event) {
 			var citizen = self.getFirstCitizenActor();
+			var user = cirm.user;
 			if (citizen != null && citizen.isAnonymous()) {
-				$("#sh_dialog_alert")[0].innerText = "Advise caller that even though report can be submitted anonymously, "
-										+ " the audio recording can be provided if a public records request is submitted.";
-				$("#sh_dialog_alert").dialog({ height: 170, width: 350, modal: true, buttons: {
-					"I advised caller" : function() {
-						$("#sh_dialog_alert").dialog('close');
-					}
-				}});
+				if (user && user.mdcDepartment !== "COM") {
+					$("#sh_dialog_alert")[0].innerText = "Advise caller that even though report can be submitted anonymously, "
+											+ " the audio recording can be provided if a public records request is submitted.";
+					$("#sh_dialog_alert").dialog({ height: 170, width: 350, modal: true, buttons: {
+						"I advised caller" : function() {
+							$("#sh_dialog_alert").dialog('close');
+						}
+					}});
+				}
 			}
 			return true;
 		};
@@ -1594,8 +1597,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 			    	delete jsondata.properties.atAddress.Street_Name;
 			    }
 			    //Remove Street_Direction and hasStreetType if addressType is not StreetAddress or Address
-			    if(jsondata.properties.atAddress.addressType != "StreetAddress" && 
-			    	jsondata.properties.atAddress.addressType != "Address")
+			    if(jsondata.properties.atAddress.addressType != "StreetAddress" 
+			    	&& jsondata.properties.atAddress.addressType != "Address" 
+			    	&& jsondata.properties.atAddress.addressType != "PointAddress")
 			    {
 			    	delete jsondata.properties.atAddress.Street_Direction;
 			    	delete jsondata.properties.atAddress.hasStreetType;
