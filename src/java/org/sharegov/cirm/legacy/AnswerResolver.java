@@ -124,7 +124,12 @@ public class AnswerResolver implements VariableResolver
 					for (Json answerObject : hasAnswerObjectlist) 
 					{
 						result += answerObject.at("label", "").asString();
-						if (i == hasAnswerObjectlist.size() - 2) result += " and ";
+						if (i == hasAnswerObjectlist.size() - 2) {
+							if (hasAnswerObjectlist.size() > 2) {
+								result += ",";
+							}
+							result += " and ";
+						}
 						else if (i < hasAnswerObjectlist.size() - 1) result += ", ";
 						i++;
 					}
@@ -164,7 +169,12 @@ public class AnswerResolver implements VariableResolver
 					for (Json answerObject : hasAnswerObjectlist) 
 					{
 						result += answerObject.at("label", "").asString();
-						if (i == hasAnswerObjectlist.size() - 2) result += " and ";
+						if (i == hasAnswerObjectlist.size() - 2) {
+							if (hasAnswerObjectlist.size() > 2) {
+								result += ",";
+							}
+							result += " and ";
+						}
 						else if (i < hasAnswerObjectlist.size() - 1) result += ", ";
 						i++;
 					}
