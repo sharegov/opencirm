@@ -529,27 +529,33 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 		self.validateForBULKYTRA = function() {
 			var validationResult;
 			var accNO = self.result().record.AccountInfo.Accounts[0].Account.AccountNumber;
-			var noOfTripsLeft = cirm.top.get('/legacy/ws/WCSAccountQueryByAccount?arg='+accNO).result.WCS.Accounts.Account.Trips;
-			var accStatus = cirm.top.get('/legacy/ws/WCSAccountQueryByAccount?arg='+accNO).result.WCS.Accounts.Account.AccountStatus;
+			var wcsAccount = cirm.top.get('/legacy/ws/WCSAccountQueryByAccount?arg='+accNO).result.WCS.Accounts.Account;
+			var noOfTripsLeft = wcsAccount.Trips;
+			var accStatus = wcsAccount.AccountStatus;
 			var workOrders = cirm.top.get('/legacy/ws/WCSBulkyQueryByAccount?arg='+accNO).result.WCS.WorkOrders;
 			var isPendingWorkOrder = false;
 			var pendingWorkOrderStatus = null;
 			workOrders = U.ensureArray(workOrders);
-			for (var i = 0; i < workOrders.length; i++) 
+			var idx = 0;
+			while (!isPendingWorkOrder && idx < workOrders.length) 
 			{ 
-				if (workOrders[i].WorkOrder.OrderStatus == "PP"  || workOrders[i].WorkOrder.OrderStatus == "SC" || workOrders[i].WorkOrder.OrderStatus == "CK")
+				var workOrderStatus = workOrders[idx].WorkOrder.OrderStatus; 
+				if (workOrderStatus == "PP"  || workOrderStatus == "SC" || workOrderStatus == "CK")
 				{
 					isPendingWorkOrder = true;
-					pendingWorkOrderStatus = workOrders[i].WorkOrder.OrderStatus;
+					pendingWorkOrderStatus = workOrderStatus;
 				}
+				idx++;
 			}
-			validationResult = (noOfTripsLeft > 0 && accStatus == null && !isPendingWorkOrder);
+			var accountStatusOK = (accStatus == null || (accStatus !== "CN" && accStatus !== "SU"));
+			validationResult = (noOfTripsLeft > 0 && accountStatusOK && !isPendingWorkOrder);
 			if (!validationResult) 
 			{
 				alertDialogWCS(self.getWCSErrorMessage(noOfTripsLeft, accStatus, isPendingWorkOrder, pendingWorkOrderStatus));
 			}
 			return validationResult;
 		}
+		
 		/**
 		 * Builds the error message to be displayed on the screen when the validation fails.
 		 */
@@ -562,7 +568,16 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 			}
 			if(accStatus != null)
 			{
-				WCSErrorMessage += "\nThe account status is not Active for this address. \n Account Status:" + accStatus;	
+				if (accStatus === "CN") 
+				{
+					WCSErrorMessage += "\nThe account status is Cancelled (CN) for this address. ";
+				} else if (accStatus === "SU") 
+				{
+					WCSErrorMessage += "\nThe account status is Suspended (SU) for this address. ";
+				} else 
+				{
+					//Account status is ok for any other status code, no error
+				}
 			}
 			if(isPendingWorkOrder)
 			{
