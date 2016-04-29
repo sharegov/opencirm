@@ -547,7 +547,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 				}
 				idx++;
 			}
-			var accountStatusOK = (accStatus == null || (accStatus !== "CN" && accStatus !== "SU"));
+			var accountStatusOK = (accStatus == null || (accStatus !== "CANCELLED" && accStatus !== "SUSPENSE"));
 			validationResult = (noOfTripsLeft > 0 && accountStatusOK && !isPendingWorkOrder);
 			if (!validationResult) 
 			{
@@ -568,10 +568,10 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 			}
 			if(accStatus != null)
 			{
-				if (accStatus === "CN") 
+				if (accStatus === "CANCELLED") 
 				{
 					WCSErrorMessage += "\nThe account status is Cancelled (CN) for this address. ";
-				} else if (accStatus === "SU") 
+				} else if (accStatus === "SUSPENSE") 
 				{
 					WCSErrorMessage += "\nThe account status is Suspended (SU) for this address. ";
 				} else 
