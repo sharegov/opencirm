@@ -2368,7 +2368,7 @@ public class LegacyEmulator extends RestService
 			String locationName = address.has("hasLocationName") ? address.at(
 					"hasLocationName").asString() : null;
 
-			if (addrType.equals("StreetAddress") || addrType.equals("Address"))
+			if (addrType.equals("PointAddress") || addrType.equals("StreetAddress") || addrType.equals("Address"))
 			{
 				Long streetNumber = address.at("Street_Number").asLong();
 				String streetName = address.at("Street_Name").asString();
