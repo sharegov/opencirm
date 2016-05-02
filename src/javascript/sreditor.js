@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../html/srmarkup.ht"], 
-   function($, U, rest, ui, store, cirm, legacy, srmarkupText)   {
+define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfaceValidation", "text!../html/srmarkup.ht"], 
+   function($, U, rest, ui, store, cirm, legacy, interfaceValidation, srmarkupText)   {
 	
    
     
@@ -2160,6 +2160,11 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 				msg = msg + "Don't forget to scroll through all the Questions or open the SR Customers tab to see which fields are mandatory. \n";
 				msg = msg + " Also, please select a valid Unit Number when 'MULTI'";
 				alertDialog(msg);
+				return;
+			}			
+			if (!interfaceValidation.isValidForInterface(jsondata)) {
+				//This service request was an interface service request and specific validation for it's interface failed.
+				alertDialog('Interface Validation for this Service Request failed: \n\n' + interfaceValidation.getValidationMessage())
 				return;
 			}
 			if(jsondata.properties.hasServiceCaseActor.length > 0) {
