@@ -2,7 +2,7 @@
 
 OpenCiRM is a free, open-source platform for citizen relationship management. It was developed as a generic solution for the support of a local government service call center. The solution is completely metadata driven and therefore generic enough to accomodate any type of support service. Many of the software components are in fact general purpose.
 
-The main goal of OpenCiRM is to provide a free, open and extensible platform for government agencies to manage services provided to citizens, from purely informational to on-the-field timely response and follow up. Often such systems as pieced _at hoc_, for example from office tools such as spreadsheets or purchased as expensive closed systems resulting and vendor lock in and costly dependence. We aim to solve that problem.
+The main goal of OpenCiRM is to provide a free, open and extensible platform for government agencies to manage services provided to citizens, from purely informational to on-the-field timely response and follow up. Often such systems are pieced ad hoc for example from office tools such as spreadsheets, or purchased as expensive closed systems resulting and vendor lock in and costly dependence. We aim to solve that problem.
 
 ## FAQ
 
