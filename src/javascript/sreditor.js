@@ -1249,23 +1249,15 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 					result.details.sort(function (a,b) {
 						return a.hasDateCreated - b.hasDateCreated;
 					});
-					var boidList = [];
+					var srDisplayedIsNew = U.isEmptyString(self.data().boid());
 					var filteredDetails = $.map(result.details, function(v,i) { 
-						if((v.hasStatus == 'O-OPEN' || v.hasStatus == 'O-LOCKED' || v.hasStatus == 'O-WIP') && $.inArray(v.boid, boidList) == -1)
-						{
-							boidList.push(v.boid);
-							return v; 
+						if (!srDisplayedIsNew && v.boid == self.data().boid()) {
+							return null;
+						} else {
+							return v;
 						}
 					});
-					if(!U.isEmptyString(self.data().boid()))
-					{
-						if(filteredDetails.length > 0)
-							filteredDetails = $.map(filteredDetails, function(v,i) { 
-								if(v.boid != self.data().boid())
-									return v; 
-							});
-					}
-					else
+					if(srDisplayedIsNew)					
 					{
 						self.data().properties().hasStatus().iri("http://www.miamidade.gov/cirm/legacy#O-DUP");
 						self.data().properties().hasStatus().label("O-DUP");
