@@ -227,6 +227,8 @@
 -->     
    </target>
 
+   <target name="update-and-refresh-test" depends="deploy-test, restart-test-with-fresh-ontodb" description="Deploy to test servers, then delete ontology db, and restart the test cluster one server after the other."/>
+
    <target name="update-test" depends="deploy-test, restart-test" description="Deploy to test servers, then restart the test cluster one server after the other."/>
 
    <target name="deploy-to" depends="make-dist" description="Deploy to specified 'server'.">
@@ -268,6 +270,8 @@
    <target name="deploy60" depends="make-dist"><deploy server="s2030060"/></target>
    <target name="restart60"><restart server="s2030060"/></target>    
     
+	<target name="update-and-refresh-prod" depends="deploy-prod, restart-prod-with-fresh-ontodb" description="Deploy latest release to production, then delete onto db, and restart each server in the cluster one by one."/>	
+
 	<target name="update-prod" depends="deploy-prod, restart-prod" description="Deploy latest release to production, then restart each server in the cluster one by one."/>	
 
     <target name="deployserver" description="Deploy on a specific server">
