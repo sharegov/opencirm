@@ -3,7 +3,7 @@
     "port":80,
     "ssl":true,
     "ssl-port":443,
-    "keystore", "cirm84.jks",
+    "keystore", "cirmTest.jks",
     "storePass", "password",
     "keyPass", "password",
     "ignorePasswords" : true,
@@ -28,7 +28,7 @@
      "ftpPassword":"Allen2010",
      "ftpLocation":"test\\phani",
      "changeset":"",
-     "version":"2.0.10b",
+     "version":"2.0.15b",
 	 "nameBase" : "http://www.miamidade.gov/ontology",
  	 "stopExpansionConditionIRI" : [
 					"http://www.miamidade.gov/cirm/legacy#providedBy",
