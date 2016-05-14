@@ -20,12 +20,22 @@ import mjson.Json;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.sharegov.cirm.event.EventTrigger;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
-
+/**
+ * Sends activities to departmentintegration interfaces, unless they originate at the interface or are of any feedback activity type.
+ * 
+ * @author Thomas Hilpold
+ *
+ */
 public class NewActivityEventHandler implements EventTrigger
 {
 	public final String DEPT = "department";
 	public final String ORIG = "originator";
-	public final String FEEDBACK_ACTIVITY_FRAGMENT = "MDSHARED_FEEDBACK";
+	public final String[] FEEDBACK_ACTIVITY_TYPE_FRAGMENTS = { 
+			"MDSHARED_FEEDBACK", 
+			"MDSHARED_FEEDBACKWEB", 
+			"MDSHARED_FEEDBACKFROMC",
+			"COMSHARED_COMFEEDBACK"
+			};
 	
     @Override
     public void apply(OWLNamedIndividual entity, OWLNamedIndividual changeType, Json data)
@@ -43,18 +53,18 @@ public class NewActivityEventHandler implements EventTrigger
     				ThreadLocalStopwatch.error("NewActivityEventHandler failed to tryActivitySend with " + result);
     			}
     		} else {
-    			ThreadLocalStopwatch.now("NewActivityEventHandler is not sending a " + FEEDBACK_ACTIVITY_FRAGMENT + " activity.");
+    			ThreadLocalStopwatch.now("NewActivityEventHandler is not sending any feedback from or to consitutent activity.");
     		}
         }
     }
     
     /**
-     * Determines if activity type's fragment is MDSHARED_FEEDBACK.
+     * Determines if activity type's fragment is any of FEEDBACK_ACTIVITY_TYPE_FRAGMENTS.
      * 
      * This method does return false if type cannot be determined or activity parameter is null.
      * 
      * @param activity
-     * @return true if MDSHARED_FEEDBACK, false if not OR type could not be determined.
+     * @return true if any of FEEDBACK_ACTIVITY_TYPE_FRAGMENTS, false if not OR type could not be determined.
      */
     public boolean isFeedBackActivity(Json activity) {
     	if (activity == null || Json.nil().equals(activity)) {
@@ -69,7 +79,23 @@ public class NewActivityEventHandler implements EventTrigger
     			actTypeIRI = hasActivity.asString();
     		} // else cannot find activity type iri
     	}    	
-    	return actTypeIRI == null? false : actTypeIRI.endsWith(FEEDBACK_ACTIVITY_FRAGMENT);
+    	return (actTypeIRI == null)? false : isFeedbackActivityIri(actTypeIRI);
+    }
+    
+    /**
+     * Determines if an activity type iri ends with one of FEEDBACK_ACTIVITY_FRAGMENTS.
+     * 
+     * @param actTypeIRI any kind of iri string, null throws null pointer exc.
+     * @return true if iri fragment indicates any feedback activity type.
+     */
+    private boolean isFeedbackActivityIri(String actTypeIRI) {
+       	for (String curFragment : FEEDBACK_ACTIVITY_TYPE_FRAGMENTS) {
+       		if (actTypeIRI.endsWith(curFragment)) {
+       			ThreadLocalStopwatch.now("NewActivityEventHandler detected " + curFragment);
+       			return true;
+       		}
+       	}
+       	return false;
     }
     
 }
