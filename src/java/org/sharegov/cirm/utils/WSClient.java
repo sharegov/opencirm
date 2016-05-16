@@ -45,7 +45,7 @@ import org.w3c.dom.Document;
  */
 public class WSClient
 {
-	public static boolean DBG = false;
+	public static boolean DBG = true;
 	private String wsdlUrl;
 	private String portName;
 	private String namespace;
@@ -107,7 +107,7 @@ public class WSClient
 				bp.getRequestContext().put(BindingProvider.PASSWORD_PROPERTY, password);
 			}
 			MessageFactory factory = ((SOAPBinding) bp.getBinding()).getMessageFactory();
-			//write(request);
+			write(request);
 			SOAPMessage reply = null;
 			SOAPMessage message = factory.createMessage();
 			//SOAPHeader header = message.getSOAPHeader();

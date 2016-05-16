@@ -2232,6 +2232,7 @@ public class LegacyEmulator extends RestService
 			} catch (Exception e) {
 				throw e;
 			}
+			System.out.println(literal.getWriter().toString());
 			Json result = Json.read(literal.getWriter().toString());
 			ThreadLocalStopwatch.stop("END CallWsImpl: " + type + " Success.");		
 			return ok().set("result", result);

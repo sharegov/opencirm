@@ -29,7 +29,7 @@
 			</xsl:if>
 			<!-- NUMBER (no quotes ) -->
 			<xsl:if test="string($elementDataType) !='NaN'">
-				<xsl:text/><xsl:value-of select="text()"/><xsl:text/>
+				<xsl:text/><xsl:value-of select='format-number(text(),"#")'/><xsl:text/>
 			</xsl:if>
 			<!-- NULL -->
 			<xsl:if test="not(*)">
@@ -62,7 +62,7 @@
 				<xsl:text/>"<xsl:value-of select="current()"/>"<xsl:text/> </xsl:if>
 					<!-- NUMBER (no quotes ) -->
 					<xsl:if test="string($dataType) !='NaN'">
-						<xsl:text/><xsl:value-of select="current()"/><xsl:text/>
+						<xsl:text/><xsl:value-of select='format-number(current(),"#")'/><xsl:text/>
 					</xsl:if>
 				</xsl:variable>
 				<xsl:text/><xsl:value-of select="local-name()"/>:<xsl:value-of select="$data"/><xsl:text/>
