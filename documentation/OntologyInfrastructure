@@ -97,4 +97,34 @@ ontology_server_test, NEVER a mix (Some from test, some from production).
 This is because Production and test ontologies are not distinguishable by name and might lead to a production
 ontology importing a test ontology or vice versa, creating a ontology configuration that's never used on any 
 application or configuration servers.
+
+------------------------------------------------------------------------------------------------------------
+E. Ontology Servers
+Server	 - Chat User					-	Service Name	- DB Directory 
+s0020269 - ontology_server_test			-	owldbTest		- C:\owldbTest\data
+s0141669 - ontology_server_production	-   owldbserver     - c:\owldb\data
  
+Refresh Prod to Test repo servers
+sc \\s0020269 stop owldbTest
+mkdir \\s0020269\c$\owldbTest\data-backup_%date:~-4,4%%date:~-10,2%%date:~-7,2%
+copy \\s0020269\c$\owldbTest\data \\s0020269\c$\owldbTest\data-backup_%date:~-4,4%%date:~-10,2%%date:~-7,2%
+del \\s0020269\c$\owldbTest\data\* /Q
+sc \\s0141669 stop owldbserver
+copy \\s0141669\c$\owldb\data \\s0020269\c$\owldbTest\data
+sc \\s0141669 start owldbserver
+sc \\s0020269 start owldbTest
+
+
+REM stop start chat server
+sc \\s0141667 stop Openfire
+sc \\s0141667 start Openfire
+
+Refresh cirmadmin development environment with fresh ontos
+sc \\s0144654 stop cirmservices
+del \\s0144654\c$\cirmservices\dbConf\* /Q
+sc \\s0144654 start cirmservices
+
+Refresh cirmadmin test environment with fresh ontos
+sc \\s0144549 stop cirmservices
+del \\s0144549\c$\cirmservices\dbConf\* /Q
+sc \\s0144549 start cirmservices
