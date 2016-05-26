@@ -134,7 +134,7 @@ public class OWL
 	private static volatile OWLDataFactory factory;
 	private static volatile OntologyLoader loader;
 	private static volatile PrefixManager prefixManager = null;
-	private static volatile boolean initialized = false;
+	private static volatile boolean initialized = false;		
 	
 	private static synchronized void init()
 	{
@@ -499,6 +499,23 @@ public class OWL
 				return true;
 		}
 		return false;
+	}
+	
+	public static PropertyType getPropertyType (IRI id){
+		OWLObjectProperty propO = dataFactory().getOWLObjectProperty(id);
+		OWLDataProperty propD = dataFactory().getOWLDataProperty(id);
+		OWLAnnotationProperty propA = dataFactory().getOWLAnnotationProperty(id);
+		
+		for (OWLOntology o : ontologies())
+		{
+			if (o.getSignature().contains(propO)) 
+				return PropertyType.OBJECT;
+			else if (o.getSignature().contains(propD)) 
+				return PropertyType.DATA;
+			else if (o.getSignature().contains(propA)) 
+				return PropertyType.ANNOTATION;
+		}
+		return PropertyType.UNKNOWN;
 	}
 	
 	public static OWLObjectProperty objectProperty(IRI id)

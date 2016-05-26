@@ -55,6 +55,7 @@ import org.restlet.routing.Template;
 import org.restlet.service.EncoderService;
 import org.sharegov.cirm.legacy.ActivityManager;
 import org.sharegov.cirm.legacy.MessageManager;
+import org.sharegov.cirm.legacy.ServiceCaseManager;
 import org.sharegov.cirm.owl.CachedReasoner;
 import org.sharegov.cirm.rdb.RelationalOWLMapper;
 import org.sharegov.cirm.rest.MainRestApplication;
@@ -80,6 +81,7 @@ public class StartUp extends ServerResource
 	public static Level LOGGING_LEVEL = Level.INFO;
 
 	public volatile static Json config = Json.object()
+			.set("isConfigServer", true)
 			.set("workingDir", "C:/work/opencirm")
 			.set("mainApplication", "http://www.miamidade.gov/ontology#CIRMApplication") 
 			.set("port", 8182)
@@ -90,29 +92,34 @@ public class StartUp extends ServerResource
 			.set("storePass", "password")
 			.set("keyPass", "password")
 			.set("defaultOntologyIRI", "http://www.miamidade.gov/cirm/legacy")
-			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#ProdConfigSet")
+//			.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#ProdConfigSet")
 			.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#TestConfigSet")
 			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#LocalConfigSetXE")
 			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#LocalConfigSet")
 			.set("nameBase", "http://www.miamidade.gov/ontology" )
+//			.set("customIRIMappingFile", "C:/work/mdcirm/customIRIMap.properties")
 			.set("stopExpansionConditionIRI", Json.array(
 					"http://www.miamidade.gov/cirm/legacy#providedBy",
 					"http://www.miamidade.gov/cirm/legacy#hasChoiceValue"
 					))
-			.set("metaDatabaseLocation", "c:/temp/testontodb")
+			.set("metaDatabaseLocation", "c:/temp/testdbConf")
 			.set("allClientsExempt", true)
 			.set("network", Json.object(				
-					"user", "cirmservice_production",
-					"password","cirmsprod",
+					"user", "cirmconfigservice_test",
+					"password","ccstest",
 					"serverUrl","s0141667",
-					"ontoServer","ontology_server_production"))
+					"ontoServer","ontology_server_test"))
+//			.set("network", Json.object(				
+//					"user", "cirmservice_production",
+//					"password","cirmsprod",
+//					"serverUrl","s0141667",
+//					"ontoServer","ontology_server_production"))
 			.set("ontologyPrefixes", Json.object(
 					"legacy:", "http://www.miamidade.gov/cirm/legacy#",
 					"mdc:", "http://www.miamidade.gov/ontology#",
 					":", "http://www.miamidade.gov/ontology#"
 					))
 			.set("cachedReasonerPopulate", false);
-			//.set("NOT IN USE SINCE 2442 customIRIMappingFile", "C:/work/mdcirm/customIRIMap.properties");
 			
 	
 	public static Component server = null; 
@@ -135,6 +142,15 @@ public class StartUp extends ServerResource
         return server != null && server.isStarted();
     }
     
+    /**
+     * Returns true if and only if this server is a configuration server intended to allow 
+     * modifications of version managed ontologies and preview those changes in it's 311Hub UI (CirmAdmin project).
+     *  
+     * @return true, or false if this is a normal 311Hub production server
+     */
+    public static boolean isConfigServer() {
+        return config.has("isConfigServer") && config.at("isConfigServer").asBoolean(); 
+    }
 
 	public static class CirmServerResource extends DirectoryServerResource 
 	{
@@ -400,6 +416,7 @@ public class StartUp extends ServerResource
    			oa.cachedReasonerQ1Populate();
    		}
 	    try {
+	    	ServiceCaseManager.getInstance();
 	    	server.start();
 	    	if (redirectServer != null) redirectServer.start();
 	    } catch (Exception e) {

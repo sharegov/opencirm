@@ -1,0 +1,125 @@
+{
+  "id": "http://some.site.somewhere/entry-schema#",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "schema for an fstab entry",
+  "items": {
+    "type": "object",
+	"oneOf": [
+      {
+        "additionalProperties": false,
+        "properties": {
+          "isDisabled": {
+            "type": "boolean"
+          },
+          "hasBusinessCodes": {
+            "pattern": "^NOUPDATE$",
+            "type": "string"
+          },
+          "hasOrderBy": {
+            "pattern": "^[-+]?[0-9]*.?[0-9]+$",
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "hasAllowableModules": {
+            "pattern": "^,(((SREINTAK|SRERESAC|SREMASS|SRSNGLWO|SRSUMMRY|WEBINTAK|SRSUMMRY),)*)+$",
+            "type": "string"
+          },
+          "type": {
+            "pattern": "^ServiceNote$",
+            "type": "string"
+          },
+          "hasDataType": {
+            "pattern": "^CHAR$",
+            "type": "string"
+          },
+          "iri": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "iri",
+          "label",
+          "hasAllowableModules",
+          "hasBusinessCodes",
+          "hasDataType",
+          "hasOrderBy"
+        ],
+        "type": "object"
+      },
+	  {
+        "additionalProperties": false,
+        "properties": {
+          "isDisabled": {
+            "type": "boolean"
+          },
+          "hasBusinessCodes": {
+            "pattern": "^,(((NOUPDATE|REQINTAK),)*)+$",
+            "type": "string"
+          },
+          "hasOrderBy": {
+            "pattern": "^[-+]?[0-9]*.?[0-9]+$",
+            "type": "string"
+          },
+          "hasLegacyCode": {
+            "type": "string"
+          },
+          "hasServiceFieldAlert": {
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "iri": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "label": {
+            "type": "string"
+          },
+          "hasAllowableModules": {
+            "pattern": "^,(((SREINTAK|SRERESAC|SREMASS|SRSNGLWO|SRSUMMRY|WEBINTAK|SRSUMMRY),)*)+$",
+            "type": "string"
+          },
+          "type": {
+            "pattern": "^ServiceQuestion$",
+            "type": "string"
+          },
+          "hasChoiceValueList": {
+            "items": {"type":"object"},
+            "minItems": 1,
+            "type": "array"
+
+          },
+          "hasDataType": {
+            "enum": [
+              "CHAR",
+              "DATE",
+              "NUMBER",
+              "CHARLIST",
+              "CHARMULT",
+              "CHAROPT"
+            ]
+          },
+          "iri": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "iri",
+          "label",
+          "hasAllowableModules",
+          "hasBusinessCodes",
+          "hasDataType",
+          "hasOrderBy"
+        ],
+        "type": "object"
+      }
+	]
+  },
+  "minItems": 1,
+  "uniqueItems": true,
+  "type": "array"
+}

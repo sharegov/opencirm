@@ -21,10 +21,8 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.owl.CachedReasoner;
-import org.sharegov.cirm.rdb.RelationalOWLMapper;
-import org.sharegov.cirm.utils.DLQueryParser;
 
-public class ClearOWLEntityCache implements EventTrigger
+public class ClearOWLEntityCacheForSrTypeModification implements EventTrigger
 {
 	public void apply(OWLNamedIndividual entity, OWLNamedIndividual changeType, Json data)
 	{
@@ -35,14 +33,8 @@ public class ClearOWLEntityCache implements EventTrigger
 				CachedReasoner cr = (CachedReasoner) OWL.reasoner();
 				//Thread safe call
 				cr.clearCache();
-				//TODO maybe other cached reasoners need to be cleared
-				// those created by OWL.reasoner(bo) are expected to be collected with their temp manager
-				// after a request.
-				// Only one ref to OWL.reasoner(county) was found in case importer which should not cause 
-				// problems.
 			}
 			Refs.owlJsonCache.resolve().clearAll();
-			RelationalOWLMapper.getInstance().clearCache();
 			Refs.ontologyTransformer.resolve().clearPredicateCache();		
 		}
 	}

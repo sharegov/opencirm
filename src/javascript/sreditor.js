@@ -732,6 +732,10 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 	    };
 	    
 	    self.startNewServiceRequest = function(type) {
+			if (cirm.user.isConfigAllowed()) {
+				//hilpold Check server for new version of SR type 
+				cirm.refs.reloadServiceCaseTypeIfNeeded(type);
+			}
 	    	self.enableValidationForSrType(type);
 			var callback = function cb()
 			{
@@ -770,9 +774,15 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			var type = cirm.refs.serviceCaseList[srTypeID];
 			//TODO Trigger type change event
 			$(document).trigger(legacy.InteractionEvents.SrTypeSelection, [type]);
+			
+			//TODO hilpold - Refactor and simplify below code  
 			if(!U.isEmptyString(self.data().type()))
 			{
 				if(!U.isEmptyString(type)){
+					if (cirm.user.isConfigAllowed()) {
+						//hilpold Check server for new version of SR type 
+						cirm.refs.reloadServiceCaseTypeIfNeeded(type);
+					}
 					if(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + type].isDisabled == 'true')
 						alertDialog("Cannot create a disabled Service Request Type");
 					else
@@ -784,12 +794,20 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			else
 			{
 				if(!U.isEmptyString(type)){
+					if (cirm.user.isConfigAllowed()) {
+						//hilpold Check server for new version of SR type 
+						cirm.refs.reloadServiceCaseTypeIfNeeded(type);
+					}
 					if(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + type].isDisabled == 'true')
 						alertDialog("Cannot create a disabled Service Request Type");
 					else
 						self.startNewServiceRequest(type);
 				}
 				else if(!U.isEmptyString(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + srTypeID])){
+					if (cirm.user.isConfigAllowed()) {
+						//hilpold Check server for new version of SR type 
+						cirm.refs.reloadServiceCaseTypeIfNeeded(type);
+					}
 					if(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + srTypeID].isDisabled == 'true')
 						alertDialog("Cannot create a disabled Service Request Type");
 					else
@@ -798,6 +816,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 				else
 					alertDialog("Please select a valid Service Request Type");
 			}
+			//TODO hilpold - Refactor and simplify above code  
 		};
 		
     	self.srLookupOnEnter = function(data, event) {
@@ -806,7 +825,6 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
     		}
     		return true;
     	};
-    	
     	
     	//jquery related functions
         

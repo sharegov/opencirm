@@ -29,8 +29,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
 import java.sql.Timestamp;
@@ -59,6 +61,7 @@ import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.io.IOUtils;
 import org.hypergraphdb.type.BonesOfBeans;
 //import com.google.gson.*;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -353,6 +356,45 @@ public class GenUtils
 		{
 			method.releaseConnection();
 		}
+	}
+	
+	public static Json httpPostWithBasicAuth(String url, String username, String password, String postData, String...headers)
+	{
+		try {
+			URL uri = new URL (url);
+			String credentials = username + ":" + password;
+			String encoding = Base64.encode(credentials.getBytes(), false);
+			
+			HttpURLConnection connection = (HttpURLConnection) uri.openConnection();
+	        connection.setRequestMethod("POST");
+	        connection.setDoOutput(true);
+	        connection.setRequestProperty  ("Authorization", "Basic " + encoding);
+	        
+	        if (headers != null)
+			{
+				if (headers.length % 2 != 0)
+					throw new IllegalArgumentException("Odd number of headers argument, specify HTTP headers in pairs: name then value, etc.");
+				for (int i = 0; i < headers.length; i++)
+					connection.setRequestProperty (headers[i], headers[++i]);
+			}
+	        
+	        if (postData != null && !postData.isEmpty()){		        
+		        OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
+		        wr.write(postData);
+		        wr.flush();
+	        }
+
+	        int HttpResult = connection.getResponseCode(); 
+	        connection.disconnect();
+	        Json result = Json.object().set("response_code", HttpResult);
+	        if(HttpResult == HttpURLConnection.HTTP_OK){	        
+	        	return result.set("response", IOUtils.toString((InputStream)connection.getInputStream()));
+	        } else return result;
+	        
+		} catch(Exception e) {
+			return Json.object().set("error", e.getMessage());
+        }		
+		
 	}
 
 	public static Json httpPostJson(String url, Json json)

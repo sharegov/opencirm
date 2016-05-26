@@ -39,7 +39,6 @@
 	<classpathentry kind="lib" path="lib/jena/slf4j-log4j12-1.5.8.jar"/>
 	<classpathentry kind="lib" path="lib/jena/xercesImpl-2.7.1.jar"/>
 	<classpathentry kind="lib" path="lib/jgrapht-jdk1.5.jar"/>
-	<classpathentry kind="lib" path="lib/mjson-1.3-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/org.apache.commons.io.jar"/>
 	<classpathentry kind="lib" path="lib/owlapi-bin.jar" sourcepath="C:/_CiRM/y. tools/OWL API 3.2.4/owlapi-src.jar"/>
 	<classpathentry kind="lib" path="lib/pellet-cli.jar"/>
@@ -66,7 +65,6 @@
 	<classpathentry kind="lib" path="lib/staxon-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/xsdlib.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="lib" path="lib/restlet/org.restlet.ext.fileupload.jar"/>
 	<classpathentry kind="lib" path="lib/restlet/org.restlet.ext.jaxrs.jar"/>
 	<classpathentry kind="lib" path="lib/restlet/org.restlet.ext.jetty.jar" sourcepath="C:/worklib/restlet-jse-2.3.5/src/org.restlet.ext.jetty"/>
@@ -89,5 +87,7 @@
 	<classpathentry kind="lib" path="lib/restlet/org.json.jar"/>
 	<classpathentry kind="lib" path="lib/restlet/org.simpleframework.xml.jar"/>
 	<classpathentry kind="lib" path="lib/restlet/servlet-api-3.1.jar"/>
+	<classpathentry kind="lib" path="lib/mjson-1.3.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_65"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

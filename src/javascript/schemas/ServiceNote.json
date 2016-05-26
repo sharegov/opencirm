@@ -1,0 +1,28 @@
+{
+	"additionalProperties": false,
+	"properties": {
+		"isDisabled": {"$ref": "#/definitions/isDisabled"},
+		"hasBusinessCodes": {"$ref": "#/definitions/hasBusinessCodes"},
+		"hasOrderBy": {"$ref": "#/definitions/hasOrderBy"},
+		"label": {"$ref": "#/definitions/label"},
+		"hasAllowableModules": {"$ref": "#/definitions/hasAllowableModules"},
+		"type": {
+			"pattern": "^ServiceNote$",
+			"type": "string"
+		},
+		"hasDataType": {"$ref": "#/definitions/hasDataType"},
+		"iri": {"$ref": "#/definitions/iri"},
+		"hasDataSource": {"$ref": "#/definitions/hasDataSource"},
+		"hasLegacyCode": {"$ref": "#/definitions/hasLegacyCode"},
+		"hasChoiceValueList": {"$ref": "#/definitions/hasChoiceValueList"}
+	},
+	"required": [
+		"iri",
+		"label",
+		"hasAllowableModules",
+		"hasBusinessCodes",
+		"hasDataType",
+		"hasOrderBy"
+	],
+	"type": "object"
+}
