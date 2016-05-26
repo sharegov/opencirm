@@ -210,15 +210,27 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
     
     }
     
-   
     
-    
-   
-    
-   
-
-
-    
+    /***
+     * Test all service cases have a dept with Name
+     */
+    @Test
+    public void testServiceCaseDepartmentNotNull(){
+    	Json json = serviceCaseManager.getAll(); 
+    	
+    	for(Json serviceCase: json.asJsonList())
+    	{
+    		try {
+    			if(serviceCase.has("department") && !serviceCase.at("department").isNull())
+    			{
+    				assertTrue(serviceCase.at("department").at("Name").asString() != null);
+    			}
+			} catch (Exception e) {
+				assertTrue(serviceCase.at("iri") + " has no dept with Name property " + serviceCase.toString(), false);
+			}
+    		
+    	}
+    }
     
     public static boolean annotationExist(String iri){
     	OWLEntity entity = OWL.dataFactory().getOWLNamedIndividual(OWL.fullIri(iri));

@@ -208,18 +208,6 @@ public class OntoAdmin extends RestService
 		}		
 	}
 	
-//	@SuppressWarnings("unchecked")
-//	private PelletReasoner pellet(OWLReasoner r)
-//	{
-//		if ( r instanceof Wrapper<?>) {
-//			r = ((Wrapper<OWLReasoner>)r).unwrapAll();
-//		}
-//		if (r instanceof PelletReasoner)
-//			return (PelletReasoner)r;
-//		else
-//			throw new IllegalArgumentException("Pellet reasoner expected.");
-//	}
-	
 	@POST
 	@Path("/synchToLatest/{iri}")
 	public Json pull(@PathParam("iri") String iri)

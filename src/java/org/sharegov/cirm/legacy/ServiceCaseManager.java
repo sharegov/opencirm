@@ -55,6 +55,7 @@ public class ServiceCaseManager extends OntoAdmin {
 		
 		ThreadLocalStopwatch.startTop("Started Service Case Admin Cache.");
 		getAll();
+		//getOne(OWL.individual("legacy:TM100"));
 		ThreadLocalStopwatch.now("End Service Case Admin Cache.");
 	}
 
@@ -171,7 +172,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			return getParentAgencyName (np);
 		}
 		
-		return p.at("Name").asString();
+		return p.has("Name")?p.at("Name").asString():p.at("label").asString();
 	}
 	
 	/** 
@@ -210,10 +211,10 @@ public class ServiceCaseManager extends OntoAdmin {
 
 		OWLNamedIndividual ind = OWL.individual(iri);
 		
-		Json np = (p.isObject()&&p.has("type")&&p.has("Name")) ? p : getSerializedIndividual(ind.getIRI().getFragment(), ind.getIRI().getScheme());
+		Json np = (p.isObject() && p.has("type") && (p.has("Name") || p.has("label"))) ? p : getSerializedIndividual(ind.getIRI().getFragment(), ind.getIRI().getScheme());
 		
 		if (np.has("type") && np.at("type").asString().toLowerCase().compareTo("division_county") != 0){
-			return Json.object().set("Name", np.at("Name").asString()).set("Type", np.at("type").asString());
+			return Json.object().set("Name", np.has("Name")?np.at("Name").asString():np.at("label").asString()).set("Type", np.at("type").asString());
 		} else {
 			return resolveDepartment(np);
 		}
@@ -229,21 +230,20 @@ public class ServiceCaseManager extends OntoAdmin {
 	
 	private Json resolveDepartmentDivision (Json p){
 		Json result = Json.object();
-		
 		if (p.has("iri")){
 			OWLNamedIndividual ind = OWL.individual(p.at("iri").asString());
 			
-			Json np = (p.has("type")&&p.has("Name")) ? p : getSerializedIndividual(ind.getIRI().getFragment(), ind.getIRI().getStart()); 
+			Json np = (p.has("type")&& (p.has("Name")||p.has("label"))) ? p : getSerializedIndividual(ind.getIRI().getFragment(), ind.getIRI().getStart()); 
 			
 			if (np.has("type") && np.at("type").asString().toLowerCase().compareTo("division_county") == 0){
-				result.set("division",  Json.object().set("Name", np.at("Name").asString()).set("Division_Code", np.at("Division_Code").asString()));
+				result.set("division",  Json.object().set("Name", np.has("Name")?np.at("Name").asString():np.at("label").asString()).set("Division_Code", np.at("Division_Code").asString()));
 				
 				if (!np.has("hasParentAgency")&&!np.has("Department")) np = getSerializedIndividual(ind.getIRI().getFragment(), ind.getIRI().getStart());
 				
 				result.set("department", resolveDepartment (np));					
 			} else {
 				result.set("division", Json.object().set("Name", Json.nil()).set("Division_Code", Json.nil()));
-				result.set("department", Json.object().set("Name", np.has("Name") ? np.at("Name").asString(): Json.nil()).set("Type", np.has("type") ? np.at("type").asString(): Json.nil()));
+				result.set("department", Json.object().set("Name", np.has("Name") ? np.at("Name").asString(): np.at("label").asString()).set("Type", np.has("type") ? np.at("type").asString(): Json.nil()));
 			}
 		} else throw new IllegalArgumentException("Cannot find IRI property for Individual: " + p.asString());
 		
@@ -306,9 +306,7 @@ public class ServiceCaseManager extends OntoAdmin {
 				
 			}		
 			result.set("jurisdiction", jurisdiction);
-			
 			Json depdiv = findDepartmentDivision(jIndividual);
-			
 			if (!depdiv.has("department")) throw new IllegalArgumentException("Individual legacy:" +  individual.getIRI().getFragment() + " have no provider/owner associated.");
 			if (!depdiv.has("division")) throw new IllegalArgumentException("Cannot resolve division for Individual legacy:" +  individual.getIRI().getFragment());
 			
@@ -336,10 +334,20 @@ public class ServiceCaseManager extends OntoAdmin {
 		Set<OWLNamedIndividual> S = getAllIndividuals();
 		Json A = Json.array();
 		for (OWLNamedIndividual ind : S) {			
-			A.add(getRequiredData(ind));
+			A.add(getOne(ind));
 		}
 
 		return A;
+	}
+	
+	
+	/**
+	 * 
+	 * @return a Service Case Type that contains the required data for the user interface
+	 */
+	
+	public Json getOne(OWLNamedIndividual individual){
+		return getRequiredData(individual);
 	}
 	
 	/**
@@ -526,7 +534,6 @@ public class ServiceCaseManager extends OntoAdmin {
 			OWLIndividuals q = new OWLIndividuals();
 			
 			Json S = q.doInternalQuery("{" + cacheKey + "}");
-			
 			for (Json ind: S.asJsonList()){
 				cache.put(cacheKey, ind);
 				return ind;
