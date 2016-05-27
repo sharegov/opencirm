@@ -1043,10 +1043,10 @@
 						<th align="left" width="120px;"> City </th>
 						<th align="left" width="50px;"> Zip <img src="images/sort.gif" onmouseover="this.style.cursor='pointer';" style="float: right;" data-bind="event: {click: function(data,event) {sortData('Zip_Code')} }"></th>
 						<th align="left" width="70px;"> Status <img src="images/sort.gif" onmouseover="this.style.cursor='pointer';" style="float: right;" data-bind="event: {click: function(data,event) {sortData('hasStatus')} }"></th>
-						<th align="left" width="90px;"> Created Dt <img src="images/sort.gif" onmouseover="this.style.cursor='pointer';" style="float: right;" data-bind="event: {click: function(data,event) {sortData('hasDateCreated')} }"></th>
+						<th align="left" width="95px;"> Created Dt <img src="images/sort.gif" onmouseover="this.style.cursor='pointer';" style="float: right;" data-bind="event: {click: function(data,event) {sortData('hasDateCreated')} }"></th>
 						<th align="left" width="100px;"> Last Actvt Dt </th>
-						<th align="left" width="90px;" style="border-right: 0px;" data-bind="visible: misc.metaData().newColumn() != '', text: misc.metaData().newColumn()"> </th>
-						<th align="left" width="10px;" data-bind="visible: misc.metaData().newColumn() != '' ">
+						<th align="left" width="90px;" style="border-right: 0px;white-space: nowrap" data-bind="visible: misc.metaData().newColumn() != '', text: misc.metaData().newColumnLabel()"> </th>
+						<th align="left" width="10px;" style="white-space: nowrap" data-bind="visible: misc.metaData().newColumn() != '' " >
 							<img src="images/sort.gif" onmouseover="this.style.cursor='pointer';" style="float: right;" data-bind="event: {click: function(data,event) {sortData('gisColumn')} }">
 						</th>
 					</tr>
@@ -1060,10 +1060,10 @@
 						<td align="left" width="120px;" data-bind="text: Street_Address_City"></td>
 						<td align="left" width="50px;" data-bind="text: Zip_Code"></td>
 						<td align="left" width="70px;" data-bind="text: hasStatus"></td>
-						<td align="left" width="90px;" data-bind="text: hasDateCreated"></td>
+						<td align="left" width="95px;" data-bind="text: hasDateCreated"></td>
 						<td align="left" width="100px;" data-bind="text: lastActivityUpdatedDate"></td>
-						<td align="left" width="90px;" style="border-right: 0px;" data-bind="visible: $root.misc.metaData().newColumn() != '', text: gisColumn"></td>
-						<td align="left" width="10px;" data-bind="visible: $root.misc.metaData().newColumn() != ''"></td>
+						<td align="left" width="90px;" style="border-right: 0px;white-space: nowrap" data-bind="visible: $root.misc.metaData().newColumn() != '', text: gisColumn"></td>
+						<td align="left" width="10px;" style="white-space: nowrap" data-bind="visible: $root.misc.metaData().newColumn() != ''" ></td>
 						<div class="clear">&nbsp;</div>
 					</tr>
 				</tbody>

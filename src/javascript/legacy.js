@@ -2376,7 +2376,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 		self.misc = {
 			"currentPage":1, "itemsPerPage":15, "counter":0, "query":{}, 
 			"sortDetails":{"sortBy":"hasCaseNumber", "sortDirection":"desc"},
-			"metaData":{"columns":8, "newColumn":""}
+			"metaData":{"columns":8, "newColumn":"", "newColumnLabel" : ""}
 		};
 		U.visit(self.misc, U.makeObservableTrimmed);
 
@@ -2843,23 +2843,27 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 			if(!U.isEmptyString(self.searchCriteria.geoLayerAttr().iri()))
 			{
 				self.misc.query().hasGeoPropertySet = {"type":"GeoPropertySet"};
-				var geoLayerArea = $.grep(self.geoLayerAttribute, function(v) { 
+				//Find selected  geoLayer in refs list to get iri and label for the layer
+				var geoLayerAttribute = $.grep(self.geoLayerAttribute, function(v) { 
 					if(v.iri == self.searchCriteria.geoLayerAttr().iri())
-						return v.label
-				});
-				var geoLayerAreaLabel = geoLayerArea[0].label;
+						return true;
+				})[0];				
+				var geoLayerAreaIriFragment = geoLayerAttribute.iri.split('#')[1];
+				var geoLayerAreaLabel = geoLayerAttribute.label;
 				var value = self.searchCriteria.geoLayerAreaSearchValue();
 				value = U.isEmptyString(value) == false ? value : "isNotNull(\"\")";
-				self.misc.query().hasGeoPropertySet[geoLayerAreaLabel] = value;
-				//self.misc.query().hasGeoPropertySet[geoLayerAreaLabel] = self.searchCriteria.geoLayerAreaSearchValue();
+				self.misc.query().hasGeoPropertySet[geoLayerAreaIriFragment] = value;
+				//Display Geo Layer as column in result table
 				self.misc.metaData().columns(9);
-				self.misc.metaData().newColumn(geoLayerAreaLabel);
+				self.misc.metaData().newColumn(geoLayerAreaIriFragment);
+				self.misc.metaData().newColumnLabel(geoLayerAreaLabel);
 				self.misc.counter(self.misc.counter() + 1);
 			}
 			else if(U.isEmptyString(self.searchCriteria.geoLayerAttr().iri()))
 			{
 				self.misc.metaData().columns(8);
 				self.misc.metaData().newColumn("");
+				self.misc.metaData().newColumnLabel("");
 			}
 		};
 		
@@ -3107,6 +3111,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 			self.searchCriteria.geoLayerAreaSearchValue("");
 			self.misc.metaData().columns(8);
 			self.misc.metaData().newColumn("");
+			self.misc.metaData().newColumnLabel("");
 			self.result({"record":[]});
 			//self.clearAddress();
 			patchPlaceholdersforIE();
