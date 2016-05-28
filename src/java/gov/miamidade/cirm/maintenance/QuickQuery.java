@@ -152,9 +152,12 @@ public class QuickQuery {
 	//public static String[] PROPS = new String[] { "iri", "label", "hasEmailTemplate.iri", "hasEmailTemplate.hasTo", "hasEmailTemplate.hasSubject" };
 	
 	//17 Activities with autoAssing true, but no assignmentRule
-	public static String DLQUERY = "legacy:MessageVariable ";
-	public static String[] PROPS = new String[] { "iri", "label" };
+	//public static String DLQUERY = "legacy:MessageVariable ";
+	//public static String[] PROPS = new String[] { "iri", "label" };
 	
+	//18 legacy:hasDuplicateCheckRule with AnyStatus
+	public static String DLQUERY = "legacy:ServiceCase and legacy:hasDuplicateCheckRule some (owl:Thing and legacy:hasStatusLimit value legacy:AnyStatus) ";
+	public static String[] PROPS = new String[] { "iri", "label", "isDisabled", "isDisabledCreate", "hasDuplicateCheckRule.hasStatusLimit.iri", "hasDuplicateCheckRule.hasThresholdDays" };
 	public static String[] VAR3 = new String[]
 	{
 		"BULKYTRA",
