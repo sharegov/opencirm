@@ -3,7 +3,7 @@
     "port":80,
     "ssl":true,
     "ssl-port":443,
-    "keystore", "cirm84.jks",
+    "keystore", "cirmTest.jks",
     "storePass", "password",
     "keyPass", "password",
 	"ignorePasswords" : true,

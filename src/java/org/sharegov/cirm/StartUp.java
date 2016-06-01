@@ -88,7 +88,7 @@ public class StartUp extends ServerResource
 			.set("ignorePasswords", true)
 			.set("ssl-port", 8183)
 			.set("ssl", true)
-			.set("keystore", "cirm84.jks")
+			.set("keystore", "cirm.jks")
 			.set("storePass", "password")
 			.set("keyPass", "password")
 			.set("defaultOntologyIRI", "http://www.miamidade.gov/cirm/legacy")
