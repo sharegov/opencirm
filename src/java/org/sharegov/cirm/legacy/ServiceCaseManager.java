@@ -221,6 +221,25 @@ public class ServiceCaseManager extends OntoAdmin {
 		
 	}
 	
+	private Json getDepartmentDivisionSerializedIndividual (Json p){
+		OWLNamedIndividual ind;
+		if (p.isObject()){
+			if (p.has("iri")){
+				ind = OWL.individual(p.at("iri").asString());	
+			} else {
+				throw new IllegalArgumentException("Cannot find IRI property for Individual: " + p.asString());
+			}			
+		} else {
+			try {
+				ind = OWL.individual(p.asString());				
+			} catch (Exception e) {
+				throw new IllegalArgumentException("Cannot build Individual: " + p.asString());				
+			}
+		}
+		
+		 return getSerializedIndividual(ind.getIRI().getFragment(), ind.getIRI().getStart()); 
+	}
+	
 	/**
 	 * Returns the Division and Department to whom the individual belongs
 	 * 
@@ -230,23 +249,16 @@ public class ServiceCaseManager extends OntoAdmin {
 	
 	private Json resolveDepartmentDivision (Json p){
 		Json result = Json.object();
-		if (p.has("iri")){
-			OWLNamedIndividual ind = OWL.individual(p.at("iri").asString());
-			
-			Json np = (p.has("type")&& (p.has("Name")||p.has("label"))) ? p : getSerializedIndividual(ind.getIRI().getFragment(), ind.getIRI().getStart()); 
-			
-			if (np.has("type") && np.at("type").asString().toLowerCase().compareTo("division_county") == 0){
-				result.set("division",  Json.object().set("Name", np.has("Name")?np.at("Name").asString():np.at("label").asString()).set("Division_Code", np.at("Division_Code").asString()));
-				
-				if (!np.has("hasParentAgency")&&!np.has("Department")) np = getSerializedIndividual(ind.getIRI().getFragment(), ind.getIRI().getStart());
-				
-				result.set("department", resolveDepartment (np));					
-			} else {
-				result.set("division", Json.object().set("Name", Json.nil()).set("Division_Code", Json.nil()));
-				result.set("department", Json.object().set("Name", np.has("Name") ? np.at("Name").asString(): np.at("label").asString()).set("Type", np.has("type") ? np.at("type").asString(): Json.nil()));
-			}
-		} else throw new IllegalArgumentException("Cannot find IRI property for Individual: " + p.asString());
+		Json np = (p.isObject() && p.has("type") && (p.has("Name")||p.has("label"))&&p.has("hasParentAgency")&&p.has("Department")) ? p: getDepartmentDivisionSerializedIndividual (p);
 		
+		if (np.has("type") && np.at("type").asString().toLowerCase().compareTo("division_county") == 0){
+			result.set("division",  Json.object().set("Name", np.has("Name")?np.at("Name").asString():np.at("label").asString()).set("Division_Code", np.at("Division_Code").asString()));
+			
+			result.set("department", resolveDepartment (np));					
+		} else {
+			result.set("division", Json.object().set("Name", Json.nil()).set("Division_Code", Json.nil()));
+			result.set("department", Json.object().set("Name", np.has("Name") ? np.at("Name").asString(): np.at("label").asString()).set("Type", np.has("type") ? np.at("type").asString(): Json.nil()));
+		}		
 		
 		return result;
 	}
@@ -313,6 +325,11 @@ public class ServiceCaseManager extends OntoAdmin {
 			result.with(depdiv);
 		} catch (Exception e) {
 			System.out.println("Error while trying to resolve data for legacy:" + individual.getIRI().getFragment());
+			if (e.getMessage() != null ){
+				System.out.println(e.getMessage());
+			} else {
+				e.printStackTrace();
+			}
 			
 			if (!result.has("jurisdiction")) result.set("jurisdiction", Json.nil());
 			if (!result.has("department")) result.set("department", Json.nil());
