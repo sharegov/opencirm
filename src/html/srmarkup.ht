@@ -474,6 +474,7 @@
 		      	<span data-bind="text: $root.getCodeEnforcementZonePhone(address().addressData().codeEnforcementZone)"></span>
 		      </li>
 		      <li><label>COM Neighborhood:</label><span data-bind="text: address().addressData().miamiNeighborhood"></span></li>		      
+		      <li><label>COM Fire District:</label><span data-bind="text: address().addressData().firePreventionBureauDistrict"></span></li>		      
 		    </ul>		    
 		  </div>
 		  <div id="hurricane">
