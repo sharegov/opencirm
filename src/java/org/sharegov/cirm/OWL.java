@@ -963,7 +963,7 @@ public class OWL
 		return dataFactory().getOWLClassAssertionAxiom(e, i);
 	}
 	
-	public static Date add(Date start, float days, boolean useWorkWeek)
+	public static Date addDaysToDate(Date start, float days, boolean useWorkWeek)
 	{
 		Date result = null;
 		int seconds = (int) (86400 * days);
