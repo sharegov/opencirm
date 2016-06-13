@@ -72,7 +72,7 @@
 						"enum": ["true","false"]
 					  },
 		"hasBusinessCodes": {
-								"pattern": "^,(((NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD),)*)+$",
+								"pattern": "^(,(((NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD),)*)+)|(NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD)$",
 								"type": "string"
 							},
 		"hasOrderBy": {
