@@ -58,6 +58,7 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.sharegov.cirm.event.ClearOWLEntityCache;
 import org.sharegov.cirm.event.ClearOWLEntityCacheForSrTypeModification;
+import org.sharegov.cirm.rest.OWLIndividuals;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
@@ -742,17 +743,17 @@ public class MetaOntology
 		if (root.isObject()) {
 			Map<String,Json> properties = root.asJsonMap();
 			for (Map.Entry<String, Json> propKeyValue : properties.entrySet()) {
-				if (!propKeyValue.getKey().equals("iri") 
-						&& isFullIriString(propKeyValue.getValue())) {
+				if (!propKeyValue.getKey().equals("iri") && isFullIriString(propKeyValue.getValue())) {
 					//modify Json key to fully resolved json object
-					Json serializedOwlEntity = findByIri(owlSerialized, propKeyValue.getValue().asString());
+					Json serializedOwlEntity = findByIri(owlSerialized, propKeyValue.getValue().asString(), RESOLVE_ALL_IRI_MAX_DEPTH);
 					if (serializedOwlEntity.isNull()) {
-						//ignore
-						//throw new IllegalArgumentException("parameter contains IRI for which no serialized object could be found: " + propKeyValue.getValue());
-					} else {
-						//replace key with full object instead of string IRI.
-						propKeyValue.setValue(serializedOwlEntity.dup());	
+						serializedOwlEntity = getSerializedOntologyObject(propKeyValue.getValue().asString());
+					} 
+					if (serializedOwlEntity.isNull()){
+						throw new IllegalArgumentException("parameter contains IRI for which no serialized object could be found: " + propKeyValue.getValue());
 					}
+					//replace key with full object instead of string IRI.
+					propKeyValue.setValue(serializedOwlEntity.dup());
 				} 
 				resolveAllIris(owlSerialized, propKeyValue.getValue(), maxDepth - 1);
 			}
@@ -761,15 +762,17 @@ public class MetaOntology
 			while(arrayIt.hasNext()) {
 				Json elem = arrayIt.next();
 				if (isFullIriString(elem)) {
-					Json serializedOwlEntity = findByIri(owlSerialized, elem.asString());
+					Json serializedOwlEntity = findByIri(owlSerialized, elem.asString(), RESOLVE_ALL_IRI_MAX_DEPTH);
 					if (serializedOwlEntity.isNull()) {
-						//ignore now
-					} else {
-						//replace cur elem.
-						arrayIt.set(serializedOwlEntity.dup());
-						//needed so recursion continues with object not iri string.
-						elem = serializedOwlEntity;
+						serializedOwlEntity = getSerializedOntologyObject(elem.asString());
+					} 
+					if (serializedOwlEntity.isNull()){
+						throw new IllegalArgumentException("parameter contains IRI for which no serialized object could be found: " + elem.asString());
 					}
+					//replace cur elem.
+					arrayIt.set(serializedOwlEntity.dup());
+					//needed so recursion continues with object not iri string.
+					elem = serializedOwlEntity;
 				} 
 				resolveAllIris(owlSerialized, elem, maxDepth - 1);
 			}
@@ -797,14 +800,18 @@ public class MetaOntology
 	 * @param fullIRI
 	 * @return
 	 */
-	public static Json findByIri(Json owlSerialized, String fullIRI) {
+	public static Json findByIri(Json owlSerialized, String fullIRI, int maxDepth) {
+		if (maxDepth == 0){
+			return Json.nil();
+		}
+		
 		if (owlSerialized.isObject()) {
 			if (owlSerialized.has("iri") && fullIRI.equals(owlSerialized.at("iri").asString()))
-				return owlSerialized;
+				return resolveAllIris(owlSerialized);
 			else {
 				Map<String,Json> properties = owlSerialized.asJsonMap();
 				for (Json propValue : properties.values()) {
-					Json result = findByIri(propValue, fullIRI);
+					Json result = findByIri(propValue, fullIRI, maxDepth-1);
 					if (!result.isNull()) {
 						return result;
 					}
@@ -814,13 +821,33 @@ public class MetaOntology
 		} else if (owlSerialized.isArray()) {
 			List<Json> array = owlSerialized.asJsonList();
 			for (Json elem : array) {
-				Json result = findByIri(elem, fullIRI);
+				Json result = findByIri(elem, fullIRI, maxDepth-1);
 				if (!result.isNull()) {
-					return result;
+					return resolveAllIris(result);
 				}
 			}
 			return Json.nil();
 		} else return Json.nil();				
+	}
+	
+	private static Json getSerializedOntologyObject (String fullIRI){			
+		String individualID = fullIRI.substring(fullIRI.indexOf("#")+1, fullIRI.length());
+		
+		try {
+					
+			OWLIndividuals q = new OWLIndividuals();
+			
+			Json S = q.doInternalQuery("{legacy:" + individualID + "}");
+			for (Json ind: S.asJsonList()){
+				return ind;
+			}
+			
+		} catch (Exception e) {
+			System.out.println("Error while querying the Ontology for legacy:" + individualID);
+			e.printStackTrace();		
+		}
+		
+		return Json.object();
 	}
 
 	

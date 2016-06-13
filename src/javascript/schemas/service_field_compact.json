@@ -1,17 +1,24 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
     "description": "schema for an Service Case question list",
-    "items": {
-        "type": "object",
-        "oneOf": [
-			{"$ref": "#/definitions/ServiceNote"},
-			{"$ref": "#/definitions/ServiceQuestion"}                      
-        ]
-    },
+    "items": { "$ref": "#/definitions/ServiceField"},
     "minItems": 1,
     "uniqueItems": true,
     "type": "array",
 	"definitions":{
+		"ServiceField": {
+							"type": "object",
+							"oneOf": [
+								{"$ref": "#/definitions/ServiceNote"},
+								{"$ref": "#/definitions/ServiceQuestion"}                      
+							]
+						},
+		"ServiceFieldList": {
+								"items": { "$ref": "#/definitions/ServiceField"},
+								"minItems": 1,
+								"uniqueItems": true,
+								"type": "array"
+							},
 		"ServiceNote": {
 							"additionalProperties": false,
 							"properties": {
@@ -54,6 +61,8 @@
 									"hasServiceFieldAlert": {"$ref": "#/definitions/hasServiceFieldAlert"},	
 									"isDisabled": {"$ref": "#/definitions/isDisabled"},	
 									"hasDefaultIntakeMethod": {"$ref": "#/definitions/hasDefaultIntakeMethod"},
+									"hasStandardizeStreetFormat": {"$ref": "#/definitions/hasStandardizeStreetFormat"},
+									"hasLegacyEvent": {"$ref": "#/definitions/hasLegacyEvent"},
 									"type": {
 										"enum": ["ServiceQuestion"]
 									}
@@ -68,11 +77,14 @@
 								],
 								"type": "object"
 							},
+		"hasStandardizeStreetFormat": {
+										"enum": ["true","false"]
+									},
 		"isDisabled": {
 						"enum": ["true","false"]
 					  },
 		"hasBusinessCodes": {
-								"pattern": "^(,(((NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD),)*)+)|(NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD)$",
+								"pattern": "^((,(((NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD),)*)+)|(NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD))?$",
 								"type": "string"
 							},
 		"hasOrderBy": {
@@ -83,7 +95,7 @@
 					"type": "string"
 				},
 		"hasAllowableModules": {
-									"pattern": "^,(((SREINTAK|SRERESAC|SREMASS|SRSNGLWO|SRSUMMRY|WEBINTAK|SRSUMMRY|MD-WCS|MD-WCSL),)*)+$", 
+									"pattern": "^,?(((SREINTAK|SRERESAC|SREMASS|SRSNGLWO|SRSUMMRY|WEBINTAK|SRSUMMRY|MD-WCS|MD-WCSL),?)*)+$", 
 									"type": "string"
 								},
 		"iri": {
@@ -188,6 +200,7 @@
 								"hasLegacyCode": {"$ref": "#/definitions/hasLegacyCode"},
 								"hasOrderBy": {"$ref": "#/definitions/hasOrderBy"},
 								"isDisabled": {"$ref": "#/definitions/isDisabled"},
+								"hasLegacyEvent": {"$ref": "#/definitions/hasLegacyEvent"},
 								"type": {
 									"enum": ["ChoiceValue"]
 								}
@@ -236,9 +249,10 @@
 							"properties": {
 								"label": {"$ref": "#/definitions/label"},
 								"type": {
-											"enum": ["ServiceFieldAlert"]
+											"enum": ["ServiceFieldAlert","ClearServiceField","MarkServiceFieldRequired","MarkServiceFieldDisabled"]
 										},
-								"iri": {"$ref": "#/definitions/iri"}
+								"iri": {"$ref": "#/definitions/iri"},
+							    "hasServiceField": {"$ref": "#/definitions/ServiceFieldList"}
 							}
 						},
 		"hasAnswerObject": {
@@ -249,7 +263,8 @@
 												  "type": {
 															"enum": ["ChoiceValue"]
 														},
-												  "iri": {"$ref": "#/definitions/iri"}
+												  "iri": {"$ref": "#/definitions/iri"},
+												  "hasLegacyEvent": {"$ref": "#/definitions/hasLegacyEvent"}
 											},
 								"required": [
 									"iri",

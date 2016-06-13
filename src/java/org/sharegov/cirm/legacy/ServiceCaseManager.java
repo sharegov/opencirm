@@ -29,6 +29,8 @@ import org.sharegov.cirm.rest.OntoAdmin;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
+import com.sun.tools.javac.resources.legacy;
+
 import mjson.Json;
 
 /**
@@ -871,6 +873,8 @@ public class ServiceCaseManager extends OntoAdmin {
 		srType = MetaOntology.getIndividualIdentifier(srType);
 		
 		Json sr = getMetaIndividual(srType);		
+		
+		cache.remove(srType);
 		
 		if (sr.has("hasServiceField")){
 			
