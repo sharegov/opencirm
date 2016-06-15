@@ -31,8 +31,6 @@ import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import mjson.Json;
-
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
@@ -56,13 +54,12 @@ import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.reasoner.BufferingMode;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
-import org.sharegov.cirm.event.ClearOWLEntityCache;
 import org.sharegov.cirm.event.ClearOWLEntityCacheForSrTypeModification;
 import org.sharegov.cirm.rest.OWLIndividuals;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
-import com.clarkparsia.sparqlowl.parser.antlr.SparqlOwlParser.booleanLiteral_return;
+import mjson.Json;
 
 
 /**
@@ -76,7 +73,7 @@ public class MetaOntology
 {
 
 	private static String PREFIX = "legacy:";
-	public static final int RESOLVE_ALL_IRI_MAX_DEPTH = 5;
+	public static final int RESOLVE_ALL_IRI_MAX_DEPTH = 10;
 	/*
 	 * Generic Ontology handling functions.
 	 */
@@ -807,7 +804,7 @@ public class MetaOntology
 		
 		if (owlSerialized.isObject()) {
 			if (owlSerialized.has("iri") && fullIRI.equals(owlSerialized.at("iri").asString()))
-				return resolveAllIris(owlSerialized);
+				return owlSerialized;
 			else {
 				Map<String,Json> properties = owlSerialized.asJsonMap();
 				for (Json propValue : properties.values()) {
@@ -823,7 +820,7 @@ public class MetaOntology
 			for (Json elem : array) {
 				Json result = findByIri(elem, fullIRI, maxDepth-1);
 				if (!result.isNull()) {
-					return resolveAllIris(result);
+					return result;
 				}
 			}
 			return Json.nil();

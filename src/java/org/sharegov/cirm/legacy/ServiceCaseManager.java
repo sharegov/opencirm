@@ -29,8 +29,6 @@ import org.sharegov.cirm.rest.OntoAdmin;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
-import com.sun.tools.javac.resources.legacy;
-
 import mjson.Json;
 
 /**
@@ -872,10 +870,21 @@ public class ServiceCaseManager extends OntoAdmin {
 
 		srType = MetaOntology.getIndividualIdentifier(srType);
 		
-		Json sr = getMetaIndividual(srType);		
+		Json sr = getMetaIndividual(srType);			
 		
+		// temporary --- remember to remove before production push
 		cache.remove(srType);
 		
+		//Syed's solution
+//		sr = OWL.resolveIris(sr, null);
+//		
+//		if (sr.has("hasServiceField")){
+//			
+//			return  sr.at("hasServiceField");
+//			
+//		} else return Json.nil();
+		
+		//Old solution		
 		if (sr.has("hasServiceField")){
 			
 			return MetaOntology.resolveAllIris( sr.at("hasServiceField"));
@@ -999,6 +1008,23 @@ public class ServiceCaseManager extends OntoAdmin {
 		}		
 		
 		return true;		
+	}
+	
+	public Json getSchema (String schemaUri){
+		try {
+			URL url = new URL(schemaUri);	
+			
+			String host = url.getProtocol() + "://" + url.getHost() + ":" + Integer.toString(url.getPort());
+			String path = url.getPath();
+			
+			return GenUtils.httpGetJson(host + path);
+			
+		} catch (Exception e) {
+			System.out.println("Malformed JSON Schema URI:" + schemaUri);
+			e.printStackTrace();
+		}
+		
+		return Json.object();
 	}
 	
 	public Json getFullSchema (String schemaUri){

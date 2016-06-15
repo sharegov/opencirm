@@ -355,8 +355,9 @@ public class ServiceCaseAdmin extends RestService {
 			String protocol = StartUp.config.at("ssl").asBoolean() ? "https://": "http://";
 			String port =  StartUp.config.at("ssl").asBoolean() ? StartUp.config.at("ssl-port").asInteger() != 443 ? ":" + StartUp.config.at("ssl-port").asString(): "": 
 																  StartUp.config.at("port").asInteger() != 80 ? ":" + StartUp.config.at("port").asString(): "";
-			return Response.ok (Json.object().set("result", ServiceCaseManager.getInstance().getFullSchema(protocol + host + port + "/javascript/schemas/service_field_compact.json")), MediaType.APPLICATION_JSON).build();
-			
+																  
+//			return Response.ok (Json.object().set("result", ServiceCaseManager.getInstance().getFullSchema(protocol + host + port + "/javascript/schemas/service_field_compact.json")), MediaType.APPLICATION_JSON).build();																  
+		    return Response.ok (Json.object().set("result", ServiceCaseManager.getInstance().getSchema(protocol + host + port + "/javascript/schemas/service_field_compact.json")), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Response
