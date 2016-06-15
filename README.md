@@ -42,5 +42,4 @@ The system is being developed and maintained by current and former Miami-Dade Co
 * Describing and Configuring Services
 * Integrating in Your IT Ecosystem
 
-
-    ....
+....
