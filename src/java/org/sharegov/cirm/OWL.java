@@ -1732,24 +1732,35 @@ public class OWL
 //			StartUp.config = Json.read(GenUtils.readTextFile(new File("c:/work/cirmservices/conf/devconfig.json")));
 //		System.out.println("Using config " + StartUp.config.toString());
 //		System.out.println(OWL.queryIndividuals("hasLegacyInterface value MDC-CMS"));
-		OWL.init();
-		OWLOntology O = ontology();
-		Set<OWLNamedIndividual> pwtypes = queryIndividuals("legacy:hasLegacyInterface value legacy:MD-PWS", O);
-		for (OWLNamedIndividual ind  : pwtypes)
+		try
 		{
-			System.out.println("ADd to " + ind);
-			manager().applyChange(new AddAxiom(O, dataFactory().getOWLObjectPropertyAssertionAxiom(objectProperty("hasDataConstraint"), 
-					ind, individual("legacy:hasDetailsMax500"))));
+			StartUp.config = Json.read(GenUtils.readTextFile(new File("conf/devconfig.json")));
+			OWL.init();		
+			Json problem = Json.read(new File("/home/borislav/sharegov/resolveiris_problem.json").toURI().toURL());
+			System.out.println(problem);
+			System.out.println(OWL.resolveIris(problem, null));
 		}
-		if (pwtypes.isEmpty())
-			System.out.println("No types found!");
-		else
-		{			
-			VDHGDBOntologyRepository.getInstance().getVersionControlledOntology(O).commit("boris", "Apply hasDataConstraint on hasDetails rule for all PW cases.");
-			OntoAdmin oadmin = new OntoAdmin();
-			oadmin.push(O.getOntologyID().getOntologyIRI().toString());
+		catch (Throwable t)
+		{
+			t.printStackTrace(System.err);
 		}
-		OWLSubObjectPropertyOfAxiom axiom = null;
+//		OWLOntology O = ontology();
+//		Set<OWLNamedIndividual> pwtypes = queryIndividuals("legacy:hasLegacyInterface value legacy:MD-PWS", O);
+//		for (OWLNamedIndividual ind  : pwtypes)
+//		{
+//			System.out.println("ADd to " + ind);
+//			manager().applyChange(new AddAxiom(O, dataFactory().getOWLObjectPropertyAssertionAxiom(objectProperty("hasDataConstraint"), 
+//					ind, individual("legacy:hasDetailsMax500"))));
+//		}
+//		if (pwtypes.isEmpty())
+//			System.out.println("No types found!");
+//		else
+//		{			
+//			VDHGDBOntologyRepository.getInstance().getVersionControlledOntology(O).commit("boris", "Apply hasDataConstraint on hasDetails rule for all PW cases.");
+//			OntoAdmin oadmin = new OntoAdmin();
+//			oadmin.push(O.getOntologyID().getOntologyIRI().toString());
+//		}
+//		OWLSubObjectPropertyOfAxiom axiom = null;
 //		Set<OWLClassExpression> S = new HashSet<OWLClassExpression>();
 //		for (OWLClassExpression ind:expr.getOperands())
 //			S.add(R(ind));
