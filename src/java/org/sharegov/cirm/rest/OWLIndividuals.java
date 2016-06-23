@@ -153,6 +153,11 @@ public class OWLIndividuals extends RestService
 	@Produces("application/json")
 	public Json getOWLIndividual(@PathParam("individual") String individualName) throws OWLException
 	{
+		return getOWLIndividualByName(individualName);		
+	}	
+	
+	public Json getOWLIndividualByName(String individualName) throws OWLException
+	{
 		try
 		{
 			OWLNamedIndividual ind = individual(individualName);
@@ -170,7 +175,7 @@ public class OWLIndividuals extends RestService
 			t.printStackTrace(System.err);
 			return Json.object();
 		}		
-	}	
+	}
 	
 	/**
 	 * Determines if an OWL individual was modified after a specified time.

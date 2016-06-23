@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
@@ -73,7 +74,7 @@ public class MetaOntology
 {
 
 	private static String PREFIX = "legacy:";
-	public static final int RESOLVE_ALL_IRI_MAX_DEPTH = 10;
+	public static final int RESOLVE_ALL_IRI_MAX_DEPTH = 5;
 	/*
 	 * Generic Ontology handling functions.
 	 */
@@ -834,9 +835,14 @@ public class MetaOntology
 					
 			OWLIndividuals q = new OWLIndividuals();
 			
+//			Json S = q.getOWLIndividualByName("legacy:" + individualID);
 			Json S = q.doInternalQuery("{legacy:" + individualID + "}");
-			for (Json ind: S.asJsonList()){
-				return ind;
+			if (S.isArray()){
+				for (Json ind: S.asJsonList()){
+					return ind;
+				}
+			} else{
+				return S;
 			}
 			
 		} catch (Exception e) {
@@ -845,6 +851,133 @@ public class MetaOntology
 		}
 		
 		return Json.object();
+	}
+	
+	public static Json resolveIRIs(Json j){
+		Json result = j.dup();
+		
+		Map<String, Json> objectMap = new ConcurrentHashMap<String, Json>();
+		
+		mapJsonObject(result, objectMap);
+		
+		resolveEmptyObjects(objectMap);
+		
+		String error = "";
+		
+		if (!checkAllObjects(objectMap, error)){
+			throw new IllegalArgumentException("Unable to resolve object: " + error);
+		}
+		
+		Map<String, Boolean> resolutionMap = new ConcurrentHashMap<String, Boolean>();
+		
+		expandJson(result, objectMap, resolutionMap);
+		
+		return result;
+	}
+	
+	private static void mapJsonObject(Json j, Map<String, Json> map){
+		if (j.isObject()) {
+			Map<String,Json> properties = j.asJsonMap();
+			for (Map.Entry<String, Json> propKeyValue : properties.entrySet()) {
+				Json value = propKeyValue.getValue();
+				
+				if (propKeyValue.getKey().equals("iri")){					
+					map.put(value.asString(), j.dup());
+				} else if (isFullIriString(value)) {
+					if (!map.containsKey(value.asString())){
+						map.put(value.asString(), Json.nil());
+					}
+				} 
+				mapJsonObject(value, map);
+				
+			}
+		} else if (j.isArray()) {
+			ListIterator<Json> arrayIt = j.asJsonList().listIterator();
+			while(arrayIt.hasNext()) {
+				Json elem = arrayIt.next();
+				if (isFullIriString(elem)) {
+					if (!map.containsKey(elem.asString())){
+						map.put(elem.asString(), Json.nil());
+					}
+				} 
+				mapJsonObject(elem, map);
+			}
+		} else {
+			// nothing to do for primitives
+		}  	
+	}
+	
+	private static void resolveEmptyObjects(Map<String, Json> map){
+		boolean newObjects;
+		do {
+			newObjects = false;
+			for (Map.Entry<String, Json> propKeyValue : map.entrySet()) {
+				if (propKeyValue.getValue().isNull()){
+					propKeyValue.setValue(getSerializedOntologyObject(propKeyValue.getKey()).dup());
+					mapJsonObject(propKeyValue.getValue(), map);
+					newObjects = true;
+				}
+			}
+		}while(newObjects);
+	}
+	
+	private static boolean checkAllObjects(Map<String, Json> map, String failedIRI){
+		for (Map.Entry<String, Json> propKeyValue : map.entrySet()) {
+			if (propKeyValue.getValue().isNull()){
+				failedIRI = propKeyValue.getKey();
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private static void expandJson(Json j, Map<String, Json> objectMap, Map<String, Boolean> resolutionMap){
+		if (j.isObject()) {
+			if (!j.has("iri")){
+				throw new IllegalArgumentException("Object missing IRI property: " + j.asString());
+			}
+			if (resolutionMap.containsKey(j.at("iri").asString())){
+				if (resolutionMap.get(j.at("iri").asString())){
+					j = objectMap.get(j.at("iri").asString()).dup();
+					return;
+				} else {
+					throw new IllegalArgumentException("Infinite recursive definition found for object : " + j.at("iri").asString());
+				}
+			} else {
+				resolutionMap.put(j.at("iri").asString(), false);
+			}
+			Map<String,Json> properties = j.asJsonMap();
+			for (Map.Entry<String, Json> propKeyValue : properties.entrySet()) {
+				if (!propKeyValue.getKey().equals("iri")&&isFullIriString(propKeyValue.getValue())) {
+					if (!isObjectOnMap(propKeyValue.getValue().asString(), objectMap)){
+						throw new IllegalArgumentException("Object missing on the map: " + propKeyValue.getValue().asString());
+					}
+					propKeyValue.setValue(objectMap.get(propKeyValue.getValue().asString()).dup());
+				} 
+				expandJson(propKeyValue.getValue(), objectMap, resolutionMap);				
+			}
+			objectMap.put(j.at("iri").asString(), j.dup());
+			resolutionMap.put(j.at("iri").asString(), true);
+		} else if (j.isArray()) {
+			ListIterator<Json> arrayIt = j.asJsonList().listIterator();
+			while(arrayIt.hasNext()) {
+				Json elem = arrayIt.next();
+				if (isFullIriString(elem)) {
+					if (!isObjectOnMap(elem.asString(), objectMap)){
+						throw new IllegalArgumentException("Object missing on the map: " + elem.asString());
+					}
+					elem = objectMap.get(elem.asString()).dup();
+				} 
+				arrayIt.set(elem.dup());
+				expandJson(elem, objectMap, resolutionMap);
+			}
+		} else {
+			// nothing to do for primitives
+		}  	
+	}
+	
+	private static boolean isObjectOnMap(String objectIRI, Map<String, Json> map){
+		return map.containsKey(objectIRI);
 	}
 
 	

@@ -887,7 +887,8 @@ public class ServiceCaseManager extends OntoAdmin {
 		//Old solution		
 		if (sr.has("hasServiceField")){
 			
-			return MetaOntology.resolveAllIris( sr.at("hasServiceField"));
+//			return MetaOntology.resolveAllIris( sr.at("hasServiceField"));
+			return MetaOntology.resolveIRIs(sr.at("hasServiceField"));
 			
 		} else return Json.nil();
 	

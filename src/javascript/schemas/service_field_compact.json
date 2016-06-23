@@ -63,6 +63,7 @@
 									"hasDefaultIntakeMethod": {"$ref": "#/definitions/hasDefaultIntakeMethod"},
 									"hasStandardizeStreetFormat": {"$ref": "#/definitions/hasStandardizeStreetFormat"},
 									"hasLegacyEvent": {"$ref": "#/definitions/hasLegacyEvent"},
+									"hasActivityAssignment": {"$ref": "#/definitions/hasActivityAssignment"},
 									"type": {
 										"enum": ["ServiceQuestion"]
 									}
@@ -83,11 +84,18 @@
 		"isDisabled": {
 						"enum": ["true","false"]
 					  },
+		"booleanValue": {
+						"enum": ["true","false"]
+					  },
 		"hasBusinessCodes": {
 								"pattern": "^((,(((NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD),)*)+)|(NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD))?$",
 								"type": "string"
 							},
 		"hasOrderBy": {
+						"pattern": "^[-+]?[0-9]*.?[0-9]+$",
+						"type": "string"
+					  },
+		"floatNumber": {
 						"pattern": "^[-+]?[0-9]*.?[0-9]+$",
 						"type": "string"
 					  },
@@ -246,15 +254,149 @@
 							},
 		"hasLegacyEvent": {
 							"type": "object",
-							"properties": {
-								"label": {"$ref": "#/definitions/label"},
-								"type": {
-											"enum": ["ServiceFieldAlert","ClearServiceField","MarkServiceFieldRequired","MarkServiceFieldDisabled"]
+							"oneOf":[
+										{"$ref": "#/definitions/LegacyEventObject"},
+										{"$ref": "#/definitions/ListOfLegacyEventObject"}
+									]
+						  },
+	    "ListOfLegacyEventObject": {
+								"items": {
+											"type": "object",
+											"oneOf":[
+														{"$ref": "#/definitions/LegacyEventObject"}
+													]
 										},
-								"iri": {"$ref": "#/definitions/iri"},
-							    "hasServiceField": {"$ref": "#/definitions/ServiceFieldList"}
-							}
-						},
+								"minItems": 1,
+								"type": "array"
+							},
+		"LegacyEventObject": {
+								"type": "object",
+								"properties": {
+									"label": {"$ref": "#/definitions/label"},
+									"type": {
+												"enum": ["ServiceFieldAlert","ClearServiceField","MarkServiceFieldRequired","MarkServiceFieldDisabled","ActivityAssignment","StatusChange"]
+											},
+									"iri": {"$ref": "#/definitions/iri"},
+									"hasServiceField": {"$ref": "#/definitions/ServiceFieldList"},
+									"hasActivity": {"$ref": "#/definitions/Activity"},
+									"hasStatus": {"$ref": "#/definitions/hasStatus"}
+								}
+							},
+		"hasStatus": {
+						"type": "object",
+						"properties": {
+							"label": {"$ref": "#/definitions/label"},
+							"type": {
+										"enum": ["Status"]
+									},
+							"iri": {"$ref": "#/definitions/iri"},
+							"hasLegacyCode": {"$ref": "#/definitions/hasLegacyCode"},
+							"hasOrderBy": {"$ref": "#/definitions/hasOrderBy"},
+							"hasAllowableStatuses": {"$ref": "#/definitions/hasAllowableStatuses"},
+							"isAlwaysPublic": {"$ref": "#/definitions/ynQuestion"}						
+						}
+					},
+		"hasAllowableStatuses": {
+									"pattern": "^,?(((C-CLOSED|O-OPEN|O-PENDING),?)*)+$", 
+									"type": "string"
+								},
+		"Activity": {
+						"type": "object",
+						"properties": {
+							"label": {"$ref": "#/definitions/label"},
+							"type": {
+										"enum": ["Activity"]
+									},
+							"iri": {"$ref": "#/definitions/iri"},
+							"hasLegacyCode": {"$ref": "#/definitions/hasLegacyCode"},
+							"hasOrderBy": {"$ref": "#/definitions/hasOrderBy"},
+							"hasBusinessCodes": {"$ref": "#/definitions/hasBusinessCodes"},
+							"hasOccurDays": {"$ref": "#/definitions/floatNumber"},
+							"hasSuspenseDays": {"$ref": "#/definitions/floatNumber"},
+							"isAutoCreate": {"$ref": "#/definitions/ynQuestion"},
+							"isAutoAssign": {"$ref": "#/definitions/booleanValue"},
+							"hasAllowableOutcome": {"$ref": "#/definitions/Outcome"},
+							"hasDefaultOutcome": {"$ref": "#/definitions/Outcome"},
+							"hasAssignmentRule": {"$ref": "#/definitions/hasAssignmentRule"},
+							"hasActivityAssignment": {"$ref": "#/definitions/hasActivityAssignment"}
+							
+						}
+					},
+		"hasAssignmentRule": {
+								"type": "object",
+								"properties": {
+									"label": {"$ref": "#/definitions/label"},
+									"type": {
+												"enum": ["AssignActivityToUserRule"]
+											},
+									"iri": {"$ref": "#/definitions/iri"},
+									"hasUsername": {"$ref": "#/definitions/email"}
+								}
+							},
+		"Outcome": {
+						"type": "object",
+						"oneOf":[
+									{"$ref": "#/definitions/OutcomeObject"},
+									{"$ref": "#/definitions/ListOfOutcomeObject"}
+								]
+					},
+	    "ListOfOutcomeObject": {
+								"items": {
+											"type": "object",
+											"oneOf":[
+														{"$ref": "#/definitions/OutcomeObject"}
+													]
+										},
+								"minItems": 1,
+								"type": "array"
+							},
+		"OutcomeObject": {
+						"type": "object",
+						"properties": {
+							"label": {"$ref": "#/definitions/label"},
+							"hasLegacyCode": {"$ref": "#/definitions/hasLegacyCode"},
+							"hasLegacyEvent": {"$ref": "#/definitions/hasLegacyEvent"},
+							"type": {
+										"enum": ["Outcome"]
+									},
+							"iri": {"$ref": "#/definitions/iri"}
+						}
+					},
+		"hasActivityAssignment": {
+									"type": "object",
+									"oneOf":[
+												{"$ref": "#/definitions/ActivityAssignmentObject"},
+												{"$ref": "#/definitions/ListOfActivityAssignmentObject"}
+											]
+								  },
+	    "ListOfActivityAssignmentObject": {
+								"items": {
+											"type": "object",
+											"oneOf":[
+														{"$ref": "#/definitions/ActivityAssignmentObject"}
+													]
+										},
+								"minItems": 1,
+								"type": "array"
+							},
+		"ActivityAssignmentObject": {
+									"type": "object",
+									"properties": {
+										"label": {"$ref": "#/definitions/label"},
+										"hasActivity": {"$ref": "#/definitions/Activity"},
+										"hasOutcome": {"$ref": "#/definitions/Outcome"},
+										"hasLegacyEvent": {"$ref": "#/definitions/hasLegacyEvent"},
+										"hasAnswerObject": {"$ref": "#/definitions/hasAnswerObject"},
+										"type": {
+													"enum": ["Activity Trigger", "QuestionTrigger"]
+												},
+										"iri": {"$ref": "#/definitions/iri"}
+									}
+								},
+		"email": {
+					"type": "string",
+					"format": "email"
+				},
 		"hasAnswerObject": {
 								"type": "object",
 								"properties": {
