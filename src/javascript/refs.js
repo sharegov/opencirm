@@ -62,6 +62,7 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
             {"hasName": "caseStatuses", "hasQueryExpression": "legacy:Status"},
             {"hasName": "casePriorities", "hasQueryExpression": "legacy:Priority"},
             {"hasName": "caseIntakeMethods", "hasQueryExpression": "legacy:IntakeMethod"},
+            {"hasName": "caseIntakeMethodLists", "hasQueryExpression": "legacy:IntakeMethodList"},
             {"hasName": "statesInUS", "hasQueryExpression": "State__U.S._"},
             {"hasName": "typeToXSDMappings", "hasUrl": "/legacy/getHasTypeMappingToXSD"},
             {"hasName": "serviceCaseClass", "hasUrl": "/individuals/legacy:ServiceCase"},

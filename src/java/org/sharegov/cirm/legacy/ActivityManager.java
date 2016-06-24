@@ -320,7 +320,7 @@ public class ActivityManager
 					float occurDay = occurDays.iterator().next().parseFloat();
 					if (occurDay > 0)
 					{
-					Date delayedCreationDate = OWL.add(now.getTime(), occurDay, useWorkWeek);
+					Date delayedCreationDate = OWL.addDaysToDate(now.getTime(), occurDay, useWorkWeek);
 						try
 						{
 							String serverUrl = getServerUrl();
@@ -455,7 +455,7 @@ public class ActivityManager
 					if (i > 0)
 					{
 					Calendar due = Calendar.getInstance();
-					due.setTime(OWL.add(now.getTime(), i, useWorkWeek));
+					due.setTime(OWL.addDaysToDate(now.getTime(), i, useWorkWeek));
 					OWLLiteral dueDate = factory.getOWLLiteral(DatatypeFactory.newInstance()
 							.newXMLGregorianCalendar((GregorianCalendar)due)
 							.toXMLFormat()

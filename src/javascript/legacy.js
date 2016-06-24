@@ -2066,7 +2066,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 		// ---------------------------------------------------------------------------------------------------
 		
 		self.allStatus = cirm.refs.caseStatuses.sort(sortAlpha);
-		self.allIntake = cirm.refs.caseIntakeMethods.sort(sortAlpha);
+		self.selectableIntakeMethods = getSelectableIntakeMethods();
 		self.allPriority = cirm.refs.casePriorities.sort(sortAlpha);
 		self.geoLayerAttribute = cirm.refs.GeoLayerAttributes.sort(sortAlpha);
 
@@ -2085,6 +2085,46 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 			});
 		};
 
+		/**
+		 * Gets a sorted list of intakeMethods for selection, creating a hierarchy for IntakeMethodLists,
+		 * which contain multiple intake methods as hasObject property.
+		 * If an intake method is object of an IntakeMethodList, it will be removed from the top level and
+		 * only appear under the according IntakeMethodList.
+		 */
+		function getSelectableIntakeMethods() {
+			var intakeMethods = cirm.refs.caseIntakeMethods; //U.clone(needs deepcopy as we'll modify this later //.sort(sortAlpha);
+			var intakeMethodLists = cirm.refs.caseIntakeMethodLists; //.sort(sortAlpha);
+			var rawIntakeMethods = intakeMethods.concat(intakeMethodLists).sort(sortAlpha);
+			var selectableIntakeMethods = [];
+			var intakeMethodListObjectIris = [];			
+			$.each(rawIntakeMethods, function(idx, elem) {
+				 var intakeMethodListArr = $.grep(intakeMethodLists, function( iml ) {
+					  return iml.iri == elem.iri;
+				 });
+				 selectableIntakeMethods.push(elem);
+				 if (intakeMethodListArr.length == 1) {					
+					 //Get intake methods from intake method list and add to array
+					 var listIntakeMethods = U.ensureArray(intakeMethodListArr[0].hasObject)
+					 listIntakeMethods.sort(sortAlpha);
+					 $.each(listIntakeMethods, function(idx, elem) {
+						 //clone to preserve original label in refs
+						 elem = U.clone(elem);
+						 elem.label = " .. " + elem.label; 
+						 elem.isListObject = true; 
+						 selectableIntakeMethods.push(elem);
+						 intakeMethodListObjectIris.push(elem.iri);
+						 listIntakeMethods[idx] = elem;
+					 });
+				 }
+			 });			
+			//Remove all top level intake methods that are contained in Lists
+			selectableIntakeMethods = $.map(selectableIntakeMethods, function(elem, idx) {
+				var okToShow = !($.inArray( elem.iri, intakeMethodListObjectIris) >= 0 && !elem.isListObject === true);
+				if (okToShow) return elem;
+			});
+			return selectableIntakeMethods;
+		} 
+		
 		self.isPopulatedSRQuestions = ko.computed(function() {
 			self.searchCriteria['serviceQuestion'](undefined);
 			var tempSRType = self.searchCriteria['type']();
@@ -2376,7 +2416,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 		self.misc = {
 			"currentPage":1, "itemsPerPage":15, "counter":0, "query":{}, 
 			"sortDetails":{"sortBy":"hasCaseNumber", "sortDirection":"desc"},
-			"metaData":{"columns":8, "newColumn":""}
+			"metaData":{"columns":8, "newColumn":"", "newColumnLabel" : ""}
 		};
 		U.visit(self.misc, U.makeObservableTrimmed);
 
@@ -2525,30 +2565,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 				}
 				self.misc.counter(self.misc.counter() + 1);
 			}
-/*			
-			if(!U.isEmptyString(self.searchCriteria.srID())) {
-				var alphabetPattern = /[A-Za-z]{2}/;
-				if(self.searchCriteria.srID().match(alphabetPattern))
-				{
-					var friendlyFormat = self.makeCaseNumber(self.searchCriteria.srID());
-					if(friendlyFormat == 'false' || friendlyFormat.indexOf('AC') == -1)
-					{
-						var formatExample = "\n .SR_ID : 13-00000434 or 434";
-						alertDialogAdvSrch("Unrecognizable SR ID Format. Please use one of these formats :" + formatExample);
-						return false;
-					}
-					else
-						self.misc.query()["legacy:hasCaseNumber"] = friendlyFormat;
-						//self.misc.query().hasUserFriendlyID = friendlyFormat;
-				}
-				else if(self.searchCriteria.srID().indexOf("-") != -1)
-					self.misc.query()["legacy:hasCaseNumber"] = self.searchCriteria.srID();
-					//self.misc.query()["legacy:hasLegacyId"] = self.searchCriteria.srID();
-				else
-					self.misc.query().boid = self.searchCriteria.srID();
-				self.misc.counter(self.misc.counter() + 1);
-			}
-*/
+
 			if(!U.isEmptyString(self.searchCriteria.hasStatus().iri())) {
 				self.misc.query()["legacy:hasStatus"] = {"iri":self.searchCriteria.hasStatus().iri(), "type":"legacy:Status"};
 				self.misc.counter(self.misc.counter() + 1);
@@ -2564,17 +2581,30 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 				validSelectedIntake = [];
 			}
 			
-			if(validSelectedIntake.length > 0) {		      
-		        if(validSelectedIntake.length == 1) {
-			        self.misc.query()["legacy:hasIntakeMethod"] = {"iri":validSelectedIntake[0], "type":"legacy:IntakeMethod"};
-		        } else {
-		        	var intakes = []; 
-		        	var len = validSelectedIntake.length; 
-		        	for(i=0; i < len; i++) {
-		        		intakes.push({"iri":validSelectedIntake[i], "type":"legacy:IntakeMethod"});
-		        	}
-		        	self.misc.query()["legacy:hasIntakeMethod"] = intakes; 
-		        }
+			if(validSelectedIntake.length > 0) {	
+				var intakeMethodLists = cirm.refs.caseIntakeMethodLists;
+	        	var intakes = []; 
+	        	var len = validSelectedIntake.length; 
+	        	for(i=0; i < len; i++) {
+	        		var curIntakeIri = validSelectedIntake[i];
+	        		var intakeMethodListArr = $.grep(intakeMethodLists, function (elem, idx) {
+	        			return (elem.iri == curIntakeIri);
+	        		});
+	        		if (intakeMethodListArr.length  >0) {
+	        			//IntakeMethodlist, containing multiple intake methods selected
+	        			$.each(intakeMethodListArr, function(idx, elem) {
+	        				var listIntakeOjbArr = U.ensureArray(elem.hasObject);
+	        				$.each(listIntakeOjbArr, function(idx2, listIntakeObj) {
+	        					intakes.push({"iri": listIntakeObj.iri, "type":"legacy:IntakeMethod"});
+	        				});
+	        			});
+	        			//We do not push curIntakeIri, as it is an IntakeMethodlist
+	        		} else {
+	        			//top level intake method
+	        			intakes.push({"iri": curIntakeIri, "type":"legacy:IntakeMethod"});
+	        		}
+	        	}
+	        	self.misc.query()["legacy:hasIntakeMethod"] = intakes.length > 1? intakes : intakes[0]; 
 		        self.misc.counter(self.misc.counter() + 1);
 			}
 			//End Search Criteria selectedIntake Validation and Query Preparation
@@ -2843,23 +2873,27 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 			if(!U.isEmptyString(self.searchCriteria.geoLayerAttr().iri()))
 			{
 				self.misc.query().hasGeoPropertySet = {"type":"GeoPropertySet"};
-				var geoLayerArea = $.grep(self.geoLayerAttribute, function(v) { 
+				//Find selected  geoLayer in refs list to get iri and label for the layer
+				var geoLayerAttribute = $.grep(self.geoLayerAttribute, function(v) { 
 					if(v.iri == self.searchCriteria.geoLayerAttr().iri())
-						return v.label
-				});
-				var geoLayerAreaLabel = geoLayerArea[0].label;
+						return true;
+				})[0];				
+				var geoLayerAreaIriFragment = geoLayerAttribute.iri.split('#')[1];
+				var geoLayerAreaLabel = geoLayerAttribute.label;
 				var value = self.searchCriteria.geoLayerAreaSearchValue();
 				value = U.isEmptyString(value) == false ? value : "isNotNull(\"\")";
-				self.misc.query().hasGeoPropertySet[geoLayerAreaLabel] = value;
-				//self.misc.query().hasGeoPropertySet[geoLayerAreaLabel] = self.searchCriteria.geoLayerAreaSearchValue();
+				self.misc.query().hasGeoPropertySet[geoLayerAreaIriFragment] = value;
+				//Display Geo Layer as column in result table
 				self.misc.metaData().columns(9);
-				self.misc.metaData().newColumn(geoLayerAreaLabel);
+				self.misc.metaData().newColumn(geoLayerAreaIriFragment);
+				self.misc.metaData().newColumnLabel(geoLayerAreaLabel);
 				self.misc.counter(self.misc.counter() + 1);
 			}
 			else if(U.isEmptyString(self.searchCriteria.geoLayerAttr().iri()))
 			{
 				self.misc.metaData().columns(8);
 				self.misc.metaData().newColumn("");
+				self.misc.metaData().newColumnLabel("");
 			}
 		};
 		
@@ -2917,8 +2951,8 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 					self.misc.query().sortBy = sortByField;
 					self.misc.query().sortDirection = sortDirection;
 				}
-				console.log("query", self.misc.query());
-				console.log("criteria", ko.toJS(self.searchCriteria));
+				//console.log("query", self.misc.query());
+				//console.log("criteria", ko.toJS(self.searchCriteria));
 			
 				$("#advSearch_dialog_progress").dialog({height: 140, modal: true});
 				cirm.top.async().postObject("/legacy/advSearch", self.misc.query(),  function(result) {
@@ -3093,7 +3127,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 			self.searchCriteria.hasStatus().iri(undefined);
 			self.searchCriteria.hasStatus().label("");
 			//self.searchCriteria.hasIntakeMethod().label("");
-			self.searchCriteria.selectedIntake = ko.observableArray([]);
+			self.searchCriteria.selectedIntake([]);
 			self.searchCriteria.createdStartDate("");
 			self.searchCriteria.createdEndDate("");
 			self.searchCriteria.updatedStartDate("");
@@ -3107,6 +3141,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 			self.searchCriteria.geoLayerAreaSearchValue("");
 			self.misc.metaData().columns(8);
 			self.misc.metaData().newColumn("");
+			self.misc.metaData().newColumnLabel("");
 			self.result({"record":[]});
 			//self.clearAddress();
 			patchPlaceholdersforIE();
