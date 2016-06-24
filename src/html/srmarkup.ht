@@ -469,6 +469,7 @@
 		      <li><label>COM City Commissioner Name:</label><span data-bind="text: address().addressData().cityCommissionerName"></span></li>
 		      <li><label>COM District Number:</label><span data-bind="text: address().addressData().cityDistrictNumber"></span></li>
 		      <li><label>COM Net Office Name:</label><span data-bind="text: address().addressData().netOfficeName"></span></li>
+		      <li><label>COM Net Office Area:</label><span data-bind="text: address().addressData().netAreaId"></span></li>
 		      <li>
 		      	<label>COM Code Enforcement Zone:</label>
 		      	<span data-bind="text: $root.getCodeEnforcementZonePhone(address().addressData().codeEnforcementZone)"></span>
