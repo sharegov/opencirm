@@ -426,6 +426,7 @@
 				<li><label>COM City Commissioner Name:</label><span data-bind="text: addressSearch.address.addressData().cityCommissionerName"></span></li>
     		    <li><label>COM District Number:</label><span data-bind="text: addressSearch.address.addressData().cityDistrictNumber"></span></li>
 				<li><label>COM Net Office Name:</label><span data-bind="text: addressSearch.address.addressData().netOfficeName"></span></li>
+				<li><label>COM Net Office Area:</label><span data-bind="text: addressSearch.address.addressData().netAreaId"></span></li>
 		    	<li><label>COM Code Enforcement Zone:</label>
 		    		<span data-bind="text: $root.addressSearch.getCodeEnforcementZonePhone(addressSearch.address.addressData().codeEnforcementZone)"></span>
 		    	</li>
