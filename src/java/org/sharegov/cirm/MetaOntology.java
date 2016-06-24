@@ -967,9 +967,9 @@ public class MetaOntology
 						throw new IllegalArgumentException("Object missing on the map: " + elem.asString());
 					}
 					elem = objectMap.get(elem.asString()).dup();
-				} 
+				}
+				expandJson(elem, objectMap, resolutionMap); 
 				arrayIt.set(elem.dup());
-				expandJson(elem, objectMap, resolutionMap);
 			}
 		} else {
 			// nothing to do for primitives
