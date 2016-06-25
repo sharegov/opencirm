@@ -28,7 +28,7 @@
      "ftpPassword":"Allen2010",
      "ftpLocation":"test\\phani",
      "changeset":"",
-     "version":"2.0.17b",
+     "version":"2.0.18b",
 	 "nameBase" : "http://www.miamidade.gov/ontology",
  	 "stopExpansionConditionIRI" : [
 					"http://www.miamidade.gov/cirm/legacy#providedBy",
