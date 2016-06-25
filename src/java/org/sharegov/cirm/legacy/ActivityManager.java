@@ -165,7 +165,6 @@ public class ActivityManager
 	 * for the activityType configuration of the
 	 * supplied serviceCaseType.
 	 * If the activity was disabled, it will not be created.  
-	 * Default outcomes are set for autoassigned activities.
 	 * 
 	 * @param serviceCaseType
 	 * @param bo
