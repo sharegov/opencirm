@@ -86,7 +86,7 @@ public abstract class AbstractCaseUpdateHttpClient {
 	}
 	
 	/**
-	 * Processes all lines in the file (except header if given).
+	 * Loads and Processes all lines in the file (except header if given).
 	 */
 	protected void processAll() {
 		long targetProcesssingTime = getTargetProcessingTimePerCaseMs();
@@ -125,14 +125,14 @@ public abstract class AbstractCaseUpdateHttpClient {
 	
 	/**
 	 * Prints a completion estimate time based on known average processing time.
-	 * @param averageDuration
-	 * @param nrOfRemaining
+	 * @param averageDuration in miliseconds per line
+	 * @param nrOfRemaining remaining lines to process
 	 */
 	void printCompletionEstimate(double averageDuration, int nrOfRemaining) {
 		Calendar c = Calendar.getInstance();
 		int minutesToCompletion = (int)(averageDuration * ((nrOfRemaining) / 1000.0 / 60.0));
 		c.add(Calendar.MINUTE,  minutesToCompletion);
-		ThreadLocalStopwatch.now("Estiated completion at " + COMPLETION_FORMAT.format(c.getTime()) 
+		ThreadLocalStopwatch.now("Estimated completion at " + COMPLETION_FORMAT.format(c.getTime()) 
 				+ " in " + DEC_FORMAT.format(minutesToCompletion / 60.0) + " hours" );
 	}
 	
@@ -141,8 +141,8 @@ public abstract class AbstractCaseUpdateHttpClient {
 	 * Validates (basic) the column count and columns 1-3 for each row.
 	 * 
 	 * @return a list of rows as Strings without header
-	 * @throws IllegalStateException
-	 * @throws IOException
+	 * @throws IllegalStateException on line validation error with cause.
+	 * @throws IOException if file read issue.
 	 */
 	List<String> loadFile(URI fileUri) throws URISyntaxException, IOException {
 		ArrayList<String> result = new ArrayList<>();
@@ -154,7 +154,7 @@ public abstract class AbstractCaseUpdateHttpClient {
 				validateLine(line, HAS_HEADER_LINE && result.isEmpty());
 			} catch (Exception e) {
 				ThreadLocalStopwatch.error("Validation exception in row " + (result.size() + 1) + " File " + getFileUri());
-				throw new RuntimeException("File Validation failed");
+				throw new IllegalStateException("File Validation failed");
 			}
 			result.add(line);
 		}
@@ -165,11 +165,12 @@ public abstract class AbstractCaseUpdateHttpClient {
 	};
 	
 	/**
-	 * Basic vadildation of a line/row.
-	 * @param line
-	 * @param isHeaderLine
-	 * @throws ParseException
-	 * @throws NumberFormatException
+	 * Basic validation of a line read from the file.
+	 * 
+	 * @param line from file
+	 * @param isHeaderLine only token count is checked for header line.
+	 * @throws ParseException if col2 update date parsing fails.
+	 * @throws IllegalStateException if col contains whitespace or too few characters.
 	 */
 	protected void validateLine(String line, boolean isHeaderLine) throws ParseException, NumberFormatException {
 		StringTokenizer lineTok = new StringTokenizer(line, COLUMN_SEPARATOR);
@@ -200,7 +201,7 @@ public abstract class AbstractCaseUpdateHttpClient {
 					throw new IllegalStateException("Column 3 (Case type) contains whitespace or lowercase: " + col3Str);
 				}
 			}			
-		}		
+		} // headerline		
 	}
 	
 	/**
@@ -234,7 +235,7 @@ public abstract class AbstractCaseUpdateHttpClient {
 	}
 	
 	/**
-	 * Gets a file uri pointing to a file with at least 2 columns (col1: caseIdentifier, col2:UpdateDate (M\d\yyyy), col3: caseType).
+	 * Gets a file uri pointing to a file with at least 3 columns (col1: caseIdentifier, col2:UpdateDate (M\d\yyyy), col3: caseType).
 	 * caseIdentifier typically is caseNumber or biod, however, you can implement your own case search.
 	 * casetype should be given in fragment only format. (e.g. BULKYTRA)
 	 * 
@@ -279,12 +280,12 @@ public abstract class AbstractCaseUpdateHttpClient {
 	 */
 	protected abstract boolean updateCase(Json serviceRequest, Date column2UpdateDate);
 	
-	
 	/**
-	 * Determines if case is already closed.
+	 * Determines if the type in column3 mtches the loaded sr's type.
 	 * 
-	 * @param sr
-	 * @return true if closed.
+	 * @param sr the loaded sr
+	 * @param column3SrType the type fragment in the current line.
+	 * @throws IllegalStateException if types don't match.
 	 */
 	void validateType(Json sr, String column3SrType) {
 		if (!sr.at("type").asString().equals("legacy:" + column3SrType)) {
@@ -345,27 +346,4 @@ public abstract class AbstractCaseUpdateHttpClient {
 		if (DBG) ThreadLocalStopwatch.now("Done.");
 		return ok;
 	}
-	
-
-	
-//	/**
-//	 * Modifies the service request to update status to C-CLOSED.
-//	 * If there are no updates already after the closedDate or no updates at all, the status change user, SR isModifiedBy, 
-//	 * and hadDateLastModified will be set to the closedDate.
-//	 * 
-//	 * @param sr a prefixed iri SR json.
-//	 */
-//	void closeCase(Json sr, Date closedDate) {
-//		boolean updateModified = false;
-//		//update
-//		sr.at("properties").at("legacy:hasStatus").set("iri", "http://www.miamidade.gov/cirm/legacy#C-CLOSED");
-//		if (sr.at("properties").has("hasDateLastModified")) {
-//			Date oldMod = GenUtils.parseDate(sr.at("properties").at("hasDateLastModified").asString());
-//			updateModified = oldMod.before(closedDate);
-//		}
-//		if (updateModified || !sr.at("properties").has("hasDateLastModified")) {
-//			sr.at("properties").set("hasDateLastModified", GenUtils.formatDate(closedDate));
-//			sr.at("properties").set("isModifiedBy", MODIFIED_BY);
-//		}
-//	}
 }
