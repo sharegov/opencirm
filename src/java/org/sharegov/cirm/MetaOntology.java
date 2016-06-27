@@ -913,7 +913,7 @@ public class MetaOntology
 			newObjects = false;
 			for (Map.Entry<String, Json> propKeyValue : map.entrySet()) {
 				if (propKeyValue.getValue().isNull()){
-					propKeyValue.setValue(getSerializedOntologyObject(propKeyValue.getKey()).dup());
+					propKeyValue.setValue(getSerializedOntologyObject(propKeyValue.getKey()));
 					mapJsonObject(propKeyValue.getValue(), map);
 					newObjects = true;
 				}
@@ -969,7 +969,7 @@ public class MetaOntology
 					elem = objectMap.get(elem.asString()).dup();
 				}
 				expandJson(elem, objectMap, resolutionMap); 
-				arrayIt.set(elem.dup());
+				arrayIt.set(elem);
 			}
 		} else {
 			// nothing to do for primitives
