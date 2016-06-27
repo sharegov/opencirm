@@ -1056,6 +1056,36 @@ public class LegacyEmulator extends RestService
 //		}
 	}
 
+	/**
+	 * UpdateHistoric allows updating a serviceCase in the past for exempt clients.
+	 * e.g. close a locked case at a date provided by a department.
+	 * 
+	 * @param updatedServiceCase a prefixed service case json with updates applied.
+	 * @param updatedDateStr a date in ISO (Genutils) standard.
+	 * @return
+	 */
+	@POST
+	@Path("updateHistoric")
+	@Consumes("application/json")
+	@Produces("application/json")
+	public Json updateServiceCaseHistoric(Json updatedServiceCase, @QueryParam("updatedDate") final String updatedDateStr)
+	{
+		if (!isClientCirmAdmin()) {
+			return ko("Permission denied for non CirmAdmin client.");
+		}
+		ThreadLocalStopwatch.startTop("START updateServiceCaseHistoric");
+		System.out.println(updatedServiceCase.toString());
+		Date updatedDate = GenUtils.parseDate(updatedDateStr);
+		Json result = updateServiceCase(updatedServiceCase, updatedDate, "department");
+		if (result.is("ok", true)) {
+			srStatsReporter.succeeded("updateServiceCaseHistoric restcall", updatedServiceCase);
+		} else {
+			srStatsReporter.failed("updateServiceCaseHistoric restcall", updatedServiceCase, result.at("error").toString(), result.at("stackTrace").toString());
+		}
+		ThreadLocalStopwatch.stop("END updateServiceCaseHistoric");
+		return result;
+	}
+	
 	@POST
 	//@Encoded 2372 Java8 hilpold
 	@Path("update")
@@ -1283,7 +1313,11 @@ public class LegacyEmulator extends RestService
 			return updateResult;
 	}
 	
-	public Json updateServiceCase(final Json serviceCaseParam, final String originator)
+	public Json updateServiceCase(final Json serviceCaseParam, final String originator) {
+		return updateServiceCase(serviceCaseParam, null, originator);
+	}
+	
+	public Json updateServiceCase(final Json serviceCaseParam, final Date updateDate, final String originator)
 	{
 		if (originator == null) throw new NullPointerException("originator");
 		//wrap the entire update in a transaction block.
@@ -1302,7 +1336,7 @@ public class LegacyEmulator extends RestService
 				Long boid = serviceCaseParam.at("boid").asLong();
 				Json bo = findServiceCaseOntology(boid).toJSON();
 				//TODO hilpold not always cirmuser, could be CityOfMIamiClient or DepartmentIntegration also!
-				Json result = updateServiceCaseTransaction(serviceCaseParam, bo, null, emailsToSend, originator); //"cirmuser"
+				Json result = updateServiceCaseTransaction(serviceCaseParam, bo, updateDate, emailsToSend, originator); //"cirmuser"
 				Response.setCurrent(current);
 				return result;
 			}});			

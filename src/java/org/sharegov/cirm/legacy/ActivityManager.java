@@ -39,6 +39,7 @@ import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.owl.Model;
 import org.sharegov.cirm.rest.LegacyEmulator;
+import org.sharegov.cirm.utils.ActivityUtils;
 import org.sharegov.cirm.utils.GenUtils;
 
 /**
@@ -60,6 +61,8 @@ public class ActivityManager
 	public static final String ACTIVITY_AUTO = "auto";
 	public static final String ACTIVITY_ERROR = "error";
 
+	private final ActivityUtils utils = new ActivityUtils();
+	
 	/**
 	 * Counts time machine calls since activitymanager creation for each task.
 	 * As activitymanagers should be created once per transaction execution, it can ensure proper time machine task overwrites on retry.
@@ -161,7 +164,7 @@ public class ActivityManager
 	 * as defined by the ontology property isAutoCreate 'Y'
 	 * for the activityType configuration of the
 	 * supplied serviceCaseType.
-	 *  
+	 * If the activity was disabled, it will not be created.  
 	 * 
 	 * @param serviceCaseType
 	 * @param bo
@@ -170,34 +173,30 @@ public class ActivityManager
 	{
 		for(OWLNamedIndividual activityType : getActivities(serviceCaseType))
 		{
-			Set<OWLLiteral> values = reasoner().getDataPropertyValues(
-													activityType,
-													dataProperty("legacy:isAutoCreate"));
-			for(OWLLiteral value: values)
+			if (utils.isAutoCreate(activityType) && !utils.isDisabled(activityType)) 
 			{
-				if(value.getLiteral().equalsIgnoreCase("Y"))
-				{
-					//Don't set default outcomes. First, the serviceActivity needs to be accepted by the Assignee!!
-//					Set<OWLNamedIndividual> outcomes = reasoner().getObjectPropertyValues(
-//							activityType,
-//							objectProperty("legacy:hasDefaultOutcome"))
-//							.getFlattened();
-//					if(outcomes.size() > 0)
-//						createActivity(activity, outcomes.iterator().next(), null, null, bo);
-//					else
-					List<CirmMessage> localMessages = new ArrayList<CirmMessage>();
-					createActivity(activityType, null, null, null, bo, createdDate, null, null , localMessages);
-					for (CirmMessage lm : localMessages) 
-					{
-						lm.addExplanation("createDefaultActivities T: " + serviceCaseType.getIRI().getFragment());
-						messages.add(lm);
-					}
-					break;
-				}
+				Date completedDate = null;
+				OWLNamedIndividual outcome = null;
+                //TODO Discuss if autoassign activites should have their default outcomes set.
+				// Enable below if decision positive:
+				// Maybe introduce property.
+                //				if (utils.isAutoAssign(activityType)) {
+                //				    outcome = utils.getDefaultOutcome(activityType);
+                //				    //completedDate = createdDate;
+                //				}
+    			List<CirmMessage> localMessages = new ArrayList<CirmMessage>();
+    			createActivity(activityType, outcome, null, null, bo, createdDate, completedDate, null, localMessages);
+    			for (CirmMessage lm : localMessages) 
+    			{
+    				lm.addExplanation("createDefaultActivities T: " + serviceCaseType.getIRI().getFragment());
+    				messages.add(lm);
+    			}
 			}
-		}
+		} //for
 		createActivitiesFromQuestions(bo, messages);
 	}
+	
+
 
 	/** 
 	 * Creates an activity now and ignores a potentially configured occurday setting. 
@@ -320,7 +319,7 @@ public class ActivityManager
 					float occurDay = occurDays.iterator().next().parseFloat();
 					if (occurDay > 0)
 					{
-					Date delayedCreationDate = OWL.add(now.getTime(), occurDay, useWorkWeek);
+					Date delayedCreationDate = OWL.addDaysToDate(now.getTime(), occurDay, useWorkWeek);
 						try
 						{
 							String serverUrl = getServerUrl();
@@ -455,7 +454,7 @@ public class ActivityManager
 					if (i > 0)
 					{
 					Calendar due = Calendar.getInstance();
-					due.setTime(OWL.add(now.getTime(), i, useWorkWeek));
+					due.setTime(OWL.addDaysToDate(now.getTime(), i, useWorkWeek));
 					OWLLiteral dueDate = factory.getOWLLiteral(DatatypeFactory.newInstance()
 							.newXMLGregorianCalendar((GregorianCalendar)due)
 							.toXMLFormat()
