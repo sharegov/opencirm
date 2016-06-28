@@ -88,7 +88,7 @@
 						"enum": ["true","false"]
 					  },
 		"hasBusinessCodes": {
-								"pattern": "^((,(((NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD),)*)+)|(NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD))?$",
+								"pattern": "^((,(((NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD|5DAYWORK|INSSPEC),)*)+)|(NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD|5DAYWORK|INSSPEC))?$",
 								"type": "string"
 							},
 		"hasOrderBy": {
@@ -183,12 +183,11 @@
 									]
 								},
 		"hasChoiceValue": {
-							"type": "object",
 							"oneOf":[
 										{"$ref": "#/definitions/ChoiceValue"},
 										{"$ref": "#/definitions/ListOfChoiceValues"}
 									]
-						},
+						  },
 		"ListOfChoiceValues": {
 								"items": {
 											"type": "object",
@@ -252,8 +251,7 @@
 								"minItems": 1,
 								"type": "array"
 							},
-		"hasLegacyEvent": {
-							"type": "object",
+		"hasLegacyEvent": {							
 							"oneOf":[
 										{"$ref": "#/definitions/LegacyEventObject"},
 										{"$ref": "#/definitions/ListOfLegacyEventObject"}
@@ -333,8 +331,7 @@
 									"hasUsername": {"$ref": "#/definitions/email"}
 								}
 							},
-		"Outcome": {
-						"type": "object",
+		"Outcome": {						
 						"oneOf":[
 									{"$ref": "#/definitions/OutcomeObject"},
 									{"$ref": "#/definitions/ListOfOutcomeObject"}
@@ -363,7 +360,6 @@
 						}
 					},
 		"hasActivityAssignment": {
-									"type": "object",
 									"oneOf":[
 												{"$ref": "#/definitions/ActivityAssignmentObject"},
 												{"$ref": "#/definitions/ListOfActivityAssignmentObject"}

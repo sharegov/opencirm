@@ -830,13 +830,28 @@ public class MetaOntology
 	
 	private static Json getSerializedOntologyObject (String fullIRI){			
 		String individualID = fullIRI.substring(fullIRI.indexOf("#")+1, fullIRI.length());
+		OWLIndividuals q = new OWLIndividuals();
+		Json S = Json.nil();
 		
 		try {
-					
-			OWLIndividuals q = new OWLIndividuals();
 			
-//			Json S = q.getOWLIndividualByName("legacy:" + individualID);
-			Json S = q.doInternalQuery("{legacy:" + individualID + "}");
+			S = q.doInternalQuery("{legacy:" + individualID + "}");			
+			
+		} catch (Exception e) {
+			System.out.println("Error while querying the Ontology for legacy:" + individualID);
+			System.out.println("Querying individual's endpoint instead...");
+			try {
+				
+				S = q.getOWLIndividualByName("legacy:" + individualID);		
+				
+				
+			} catch (Exception ex){
+				System.out.println("Unable to resolve Object: legacy:" + individualID);
+				ex.printStackTrace();
+			}					
+		}
+		
+		if (!S.isNull()){
 			if (S.isArray()){
 				for (Json ind: S.asJsonList()){
 					return ind;
@@ -844,13 +859,9 @@ public class MetaOntology
 			} else{
 				return S;
 			}
-			
-		} catch (Exception e) {
-			System.out.println("Error while querying the Ontology for legacy:" + individualID);
-			e.printStackTrace();		
 		}
 		
-		return Json.object();
+		return S;
 	}
 	
 	public static Json resolveIRIs(Json j){
