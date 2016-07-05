@@ -323,6 +323,31 @@ public class ServiceCaseManager extends OntoAdmin {
 			if (!depdiv.has("division")) throw new IllegalArgumentException("Cannot resolve division for Individual legacy:" +  individual.getIRI().getFragment());
 			
 			result.with(depdiv);
+			
+			Json isInterfaceSR = Json.object().set("interface_sr", false);
+			if (jIndividual.has("hasLegacyInterface")){
+//				jIndividual.set("hasLegacyInterface", MetaOntology.resolveAllIris(jIndividual.at("hasLegacyInterface ")));
+				
+				if (jIndividual.at("hasLegacyInterface").isArray()){
+					List<Json> array = jIndividual.at("hasLegacyInterface").asJsonList();
+					for (Json elem : array) {
+						if (isInterfaceSR(elem)){
+							isInterfaceSR.set("interface_sr", true);
+							break;
+						}
+					}
+					
+				} else if (jIndividual.at("hasLegacyInterface").isObject()){
+					if (isInterfaceSR(jIndividual.at("hasLegacyInterface"))){
+						isInterfaceSR.set("interface_sr", true);
+					}					
+				} else {
+					throw new IllegalArgumentException("Illegal value of property hasLegacyInterface on legacy:" +  individual.getIRI().getFragment());
+				}
+			}
+			
+			result.with(isInterfaceSR);
+			
 		} catch (Exception e) {
 			System.out.println("Error while trying to resolve data for legacy:" + individual.getIRI().getFragment());
 			if (e.getMessage() != null ){
@@ -340,7 +365,11 @@ public class ServiceCaseManager extends OntoAdmin {
 		
 		return result;
 		
-	}	
+	}
+	
+	private boolean isInterfaceSR(Json interfaceDescription){
+		return (interfaceDescription.isObject() && interfaceDescription.has("isExternal") && interfaceDescription.at("isExternal").asString().compareToIgnoreCase("true")==0);
+	}
 	
 	/**
 	 * 
