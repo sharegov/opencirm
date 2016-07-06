@@ -859,7 +859,7 @@ public class MetaOntology
 			} else{
 				return S;
 			}
-		}
+		} 
 		
 		return S;
 	}
@@ -924,7 +924,11 @@ public class MetaOntology
 			newObjects = false;
 			for (Map.Entry<String, Json> propKeyValue : map.entrySet()) {
 				if (propKeyValue.getValue().isNull()){
-					propKeyValue.setValue(getSerializedOntologyObject(propKeyValue.getKey()));
+					Json value = getSerializedOntologyObject(propKeyValue.getKey());
+					if (value.isNull()){
+						throw new IllegalArgumentException("Unable to serialize invividual legacy: " + propKeyValue.getKey());
+					}
+					propKeyValue.setValue(value);
 					mapJsonObject(propKeyValue.getValue(), map);
 					newObjects = true;
 				}
@@ -934,7 +938,7 @@ public class MetaOntology
 	
 	private static boolean checkAllObjects(Map<String, Json> map, String failedIRI){
 		for (Map.Entry<String, Json> propKeyValue : map.entrySet()) {
-			if (propKeyValue.getValue().isNull()){
+			if (propKeyValue.getValue().isNull()||!propKeyValue.getValue().isObject()){
 				failedIRI = propKeyValue.getKey();
 				return false;
 			}
@@ -944,12 +948,15 @@ public class MetaOntology
 	
 	private static void expandJson(Json j, Map<String, Json> objectMap, Map<String, Boolean> resolutionMap){
 		if (j.isObject()) {
-			if (!j.has("iri")){
+			if (!j.has("iri")){ 
 				throw new IllegalArgumentException("Object missing IRI property: " + j.asString());
 			}
 			if (resolutionMap.containsKey(j.at("iri").asString())){
 				if (resolutionMap.get(j.at("iri").asString())){
-					j = objectMap.get(j.at("iri").asString()).dup();
+//					would like to empty j before adding the extended object. 
+//					the line bellow clears the object but null point exception is triggered when trying to use the object after.
+//					j.asJsonMap().clear();
+					j.with(objectMap.get(j.at("iri").asString()).dup());
 					return;
 				} else {
 					throw new IllegalArgumentException("Infinite recursive definition found for object : " + j.at("iri").asString());

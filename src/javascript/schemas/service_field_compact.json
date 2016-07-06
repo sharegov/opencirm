@@ -39,8 +39,6 @@
 							"required": [
 								"iri",
 								"label",
-								"hasAllowableModules",
-								"hasBusinessCodes",
 								"hasDataType",
 								"hasOrderBy",
 								"type"
@@ -71,7 +69,6 @@
 								"required": [
 									"iri",
 									"label",
-									"hasAllowableModules",
 									"hasDataType",
 									"hasOrderBy",
 									"type"
@@ -88,7 +85,7 @@
 						"enum": ["true","false"]
 					  },
 		"hasBusinessCodes": {
-								"pattern": "^((,(((NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD|5DAYWORK|INSSPEC),)*)+)|(NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD|5DAYWORK|INSSPEC))?$",
+								"pattern": "^((,(((NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD|5DAYWORK|INSSPEC|DUPSTAFF|REQRESAC),)*)+)|(NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD|5DAYWORK|INSSPEC|DUPSTAFF|REQRESAC))?$",
 								"type": "string"
 							},
 		"hasOrderBy": {
@@ -215,7 +212,6 @@
 							"required": [
 								"iri",
 								"label",
-								"hasLegacyCode",
 								"type"
 							]							
 						},
@@ -325,10 +321,10 @@
 								"properties": {
 									"label": {"$ref": "#/definitions/label"},
 									"type": {
-												"enum": ["AssignActivityToUserRule"]
+												"enum": ["AssignActivityToUserRule", "CaseActivityAssignmentRule"]
 											},
 									"iri": {"$ref": "#/definitions/iri"},
-									"hasUsername": {"$ref": "#/definitions/email"}
+									"hasUsername": {"$ref": "#/definitions/username"}
 								}
 							},
 		"Outcome": {						
@@ -389,10 +385,9 @@
 										"iri": {"$ref": "#/definitions/iri"}
 									}
 								},
-		"email": {
-					"type": "string",
-					"format": "email"
-				},
+		"username": {
+						"type": "string"
+					},
 		"hasAnswerObject": {
 								"type": "object",
 								"properties": {

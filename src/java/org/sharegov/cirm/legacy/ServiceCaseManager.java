@@ -871,23 +871,9 @@ public class ServiceCaseManager extends OntoAdmin {
 		srType = MetaOntology.getIndividualIdentifier(srType);
 		
 		Json sr = getMetaIndividual(srType);			
-		
-		// temporary --- remember to remove before production push
-		cache.remove(srType);
-		
-		//Syed's solution
-//		sr = OWL.resolveIris(sr, null);
-//		
-//		if (sr.has("hasServiceField")){
-//			
-//			return  sr.at("hasServiceField");
-//			
-//		} else return Json.nil();
-		
-		//Old solution		
+				
 		if (sr.has("hasServiceField")){
 			
-//			return MetaOntology.resolveAllIris( sr.at("hasServiceField"));
 			Json questions = MetaOntology.resolveIRIs(sr.at("hasServiceField"));
 			
 			if (!questions.isArray()){
