@@ -20,6 +20,7 @@ import static org.sharegov.cirm.OWL.owlClass;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -267,8 +268,8 @@ public class MetaOntology
 	 * 
 	 */
 	public static List<OWLOntologyChange> getAddIndividualObjectFromJsonChanges (String parentID, String propertyID,  Json data){
-		OWLOntology O = OWL.ontology();
 		String ontologyIri = Refs.defaultOntologyIRI.resolve();
+		OWLOntology O = OWL.ontology(ontologyIri);		
 
 		if (O == null) {
 			throw new RuntimeException("Ontology not found: " + ontologyIri);
@@ -355,8 +356,12 @@ public class MetaOntology
 		return (a.getAxiom().equals(b.getAxiom()) && a.getClass() != b.getClass());			
 	}
 	
+	private static boolean isIdenticalAxion (OWLOntologyChange a, OWLOntologyChange b){
+		return (a.getAxiom().equals(b.getAxiom()) && a.getClass() == b.getClass());			
+	}
+	
 	public static List<OWLOntologyChange> clearChanges (List<OWLOntologyChange> changes){
-		List<OWLOntologyChange> result = new ArrayList<>();
+		List<OWLOntologyChange> uniques = new ArrayList<>();
 		
 		int lim = changes.size();
 		for (int i=0; i<lim; i++){
@@ -370,9 +375,34 @@ public class MetaOntology
 			}
 			
 			if (!found){
-				result.add(changes.get(i));
+				uniques.add(changes.get(i));
 			}
 			
+		}
+		
+		// Mark duplicates
+		List<Integer> toRemove = new ArrayList<>();
+		
+		lim = uniques.size();
+		for (int i=0; i<lim; i++){
+			if (!toRemove.contains(i)){
+				for (int j=i+1;j<lim; j++){
+					if (!toRemove.contains(j)){
+						if (isIdenticalAxion(uniques.get(i), uniques.get(j))){
+							toRemove.add(j);
+						}
+					}
+				}
+			}			
+		}
+		
+		// Filter the results
+		List<OWLOntologyChange> result = new ArrayList<>();
+		
+		for (int i=0; i<lim; i++){
+			if (!toRemove.contains(i)){
+				result.add(uniques.get(i));
+			}
 		}
 		
 		return result;
@@ -444,7 +474,7 @@ public class MetaOntology
 			if (key.equals("label") || key.equals("iri") || key.equals("type"))
 			{
 				if (key.equals("type"))
-					result.add(new AddAxiom(O, factory.getOWLClassAssertionAxiom(owlClass(fullIri(e.getValue().asString())),parent)));
+					result.add(new AddAxiom(O, factory.getOWLClassAssertionAxiom(owlClass(fullIri(PREFIX + e.getValue().asString())),parent)));
 				else if (key.equals("label"))
 					result.add(new  AddAxiom(O,factory.getOWLAnnotationAssertionAxiom(((OWLEntity) parent).getIRI(), 
 																					  factory.getOWLAnnotation(OWL.annotationProperty("http://www.w3.org/2000/01/rdf-schema#label"), 
@@ -644,31 +674,20 @@ public class MetaOntology
 	 * 
 	 */
 	
-	public static String getOntologyFromUri(String uri){
-		String token = tokenizeUri(uri, "/", 5, 4); 
-		return tokenizeUri(token, "#", 2, 0);
+	public static String getOntologyFromUri(String uri){		
+		return uri.substring(uri.lastIndexOf("/")+1,uri.indexOf("#"));
 	}
 		
 	public static String getIdFromUri(String uri)
 	{
-		return tokenizeUri(uri, "#", 2, 1);
+		return uri.substring(uri.indexOf("#")+1, uri.length());
 	}
 	
 	public static String getIdFromIdentifier(String uri)
 	{
-		return tokenizeUri(uri, ":", 2, 1);
+		return uri.substring(uri.indexOf(":")+1, uri.length());
 	}
 		
-	private static String tokenizeUri(String uri, String del, int expectedLength, int returnPosition){
-			
-			String tokens[]  = uri.split(del);
-			
-			if(tokens.length != expectedLength)
-				throw new IllegalArgumentException("Invalid uri");
-			
-			return tokens[returnPosition];
-	}
-	
 	public static String getIndividualIdentifier(String id){
 		if (id.contains(":")) return getIdFromIdentifier(id);
 		else if (id.contains("#")) return getIdFromUri(id);

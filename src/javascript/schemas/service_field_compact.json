@@ -85,7 +85,7 @@
 						"enum": ["true","false"]
 					  },
 		"hasBusinessCodes": {
-								"pattern": "^((,(((NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD|5DAYWORK|INSSPEC|DUPSTAFF|REQRESAC),)*)+)|(NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD|5DAYWORK|INSSPEC|DUPSTAFF|REQRESAC))?$",
+								"pattern": "^,?(((NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD|5DAYWORK|INSSPEC|DUPSTAFF|REQRESAC|REQMASS),?)*)+$",
 								"type": "string"
 							},
 		"hasOrderBy": {
@@ -138,7 +138,6 @@
 								"required": [
 									"iri",
 									"label",
-									"hasAnswerObject",
 									"hasLegacyEvent",
 									"type"
 								],
