@@ -1114,11 +1114,27 @@ public class ActivityManager
 
 	}
 	
-		
-	public void changeStatus(OWLNamedIndividual newStatus, Date statusChangeDate, String statusChangedBy, BOntology bo, List<CirmMessage> messages)
+	/**
+	 * Registers a status change of an SR by creating a legacy:StatusChangeActivity.
+	 */
+	public void changeStatus(OWLNamedIndividual newStatus, Date statusChangeDate, String statusChangedBy, BOntology bo, List<CirmMessage> messages) {
+		changeStatus(null, newStatus, statusChangeDate, statusChangedBy, bo, messages);
+	}
+	
+	/**
+	 * Registers a status change of an SR by creating a legacy:StatusChangeActivity.
+	 * Adds the old status into the details field of the status change activity.
+	 * @param oldStatus the status of the SR before the status change.
+	 */
+	public void changeStatus(OWLNamedIndividual oldStatus, OWLNamedIndividual newStatus, Date statusChangeDate, String statusChangedBy, BOntology bo, List<CirmMessage> messages)
 	{
 		OWLNamedIndividual statusChange = individual("legacy:StatusChangeActivity");
-		createActivity(statusChange, newStatus, null, null, bo, statusChangeDate, statusChangeDate, statusChangedBy, messages);
+		String details = null;
+		if (oldStatus != null) {
+			String oldStatusFragment = oldStatus.getIRI().getFragment();
+			details = oldStatusFragment == null? null : "Old: " + oldStatusFragment;
+		}
+		createActivity(statusChange, newStatus, details, null, bo, statusChangeDate, statusChangeDate, statusChangedBy, messages);
 	}
 	
 	/**

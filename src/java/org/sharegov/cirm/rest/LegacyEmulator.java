@@ -124,6 +124,7 @@ import org.sharegov.cirm.rdb.Statement;
 import org.sharegov.cirm.stats.CirmStatistics;
 import org.sharegov.cirm.stats.CirmStatisticsFactory;
 import org.sharegov.cirm.stats.SRCirmStatsDataReporter;
+import org.sharegov.cirm.utils.ConcurrentLockedToOpenException;
 import org.sharegov.cirm.utils.ExcelExportUtil;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.JsonUtil;
@@ -1220,9 +1221,21 @@ public class LegacyEmulator extends RestService
 		///T2 END
 		//06-20-2013 syed - Check for a status change.
 		if(currentStatus != null && 
-				newStatus != null	&&
-				!currentStatus.equals(newStatus))
-			mngr.changeStatus(newStatus, updatedDate, (srModifiedBy != null)?srModifiedBy.getLiteral():null, bontology, emailsToSend);
+				!currentStatus.equals(newStatus)) 
+		{
+			if ("cirmuser".equals(originator) 
+				&& currentStatus.equals(individual("legacy:O-LOCKED"))
+				&& newStatus.equals(individual("legacy:O-OPEN"))) 
+			{
+				//2016.07.08 hilpold mdcirm 2639 
+				// We prevent a very specific concurrent SR modification problem:
+				// only if a user saves an SR in OPEN status, which is already locked, we prevent 
+				// an overwrite of interface changes.
+				throw new ConcurrentLockedToOpenException();
+			} else {
+				mngr.changeStatus(currentStatus, newStatus, updatedDate, (srModifiedBy != null)?srModifiedBy.getLiteral():null, bontology, emailsToSend);
+			}
+		}
 
 		//Update those existing Activities for which Outcome is set in current request
 		if(uiActs.asJsonList().size() > 0)
