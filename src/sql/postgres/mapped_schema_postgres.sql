@@ -132,6 +132,10 @@ gis_comdist bigint,
 gis_cmaint character varying(8),
 gis_stlght character varying(16),
 gis_bulkserv bigint,
+gis_net_area_name character varying(50),
+gis_miami_neighborhood character varying(40),
+gis_pw_maint_zone bigint,
+gis_fire_prev_bureau bigint
 constraint cirm_gis_info_pk primary key (id));
 
 alter table cirm_sr_requests add constraint cirmfk_on_sr_request_address foreign key (sr_request_address) references cirm_mdc_address;
