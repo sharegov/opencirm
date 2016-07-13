@@ -899,11 +899,17 @@ public class ServiceCaseManager extends OntoAdmin {
 
 		srType = MetaOntology.getIndividualIdentifier(srType);
 		
-		Json sr = getMetaIndividual(srType);		
-		
+		Json sr = getMetaIndividual(srType);			
+				
 		if (sr.has("hasServiceField")){
 			
-			return MetaOntology.resolveAllIris( sr.at("hasServiceField"));
+			Json questions = MetaOntology.resolveIRIs(sr.at("hasServiceField"));
+			
+			if (!questions.isArray()){
+				return Json.array().add(questions);						
+			} else {
+				return questions;
+			}
 			
 		} else return Json.nil();
 	
@@ -1024,6 +1030,23 @@ public class ServiceCaseManager extends OntoAdmin {
 		}		
 		
 		return true;		
+	}
+	
+	public Json getSchema (String schemaUri){
+		try {
+			URL url = new URL(schemaUri);	
+			
+			String host = url.getProtocol() + "://" + url.getHost() + ":" + Integer.toString(url.getPort());
+			String path = url.getPath();
+			
+			return GenUtils.httpGetJson(host + path);
+			
+		} catch (Exception e) {
+			System.out.println("Malformed JSON Schema URI:" + schemaUri);
+			e.printStackTrace();
+		}
+		
+		return Json.object();
 	}
 	
 	public Json getFullSchema (String schemaUri){

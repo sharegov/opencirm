@@ -355,8 +355,9 @@ public class ServiceCaseAdmin extends RestService {
 			String protocol = StartUp.config.at("ssl").asBoolean() ? "https://": "http://";
 			String port =  StartUp.config.at("ssl").asBoolean() ? StartUp.config.at("ssl-port").asInteger() != 443 ? ":" + StartUp.config.at("ssl-port").asString(): "": 
 																  StartUp.config.at("port").asInteger() != 80 ? ":" + StartUp.config.at("port").asString(): "";
-			return Response.ok (Json.object().set("result", ServiceCaseManager.getInstance().getFullSchema(protocol + host + port + "/javascript/schemas/service_field_compact.json")), MediaType.APPLICATION_JSON).build();
-			
+																  
+//			return Response.ok (Json.object().set("result", ServiceCaseManager.getInstance().getFullSchema(protocol + host + port + "/javascript/schemas/service_field_compact.json")), MediaType.APPLICATION_JSON).build();																  
+		    return Response.ok (Json.object().set("result", ServiceCaseManager.getInstance().getSchema(protocol + host + port + "/javascript/schemas/service_field_compact.json")), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Response
@@ -442,6 +443,56 @@ public class ServiceCaseAdmin extends RestService {
 			}
 		}
 		
+	}
+	
+	
+	@POST
+	@Path("/authorize")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response authorize(Json aData) {
+		try
+		{						
+			if (!(aData.has("username"))) throw new IllegalArgumentException("User Name not found"); 
+			if (!(aData.has("password"))) throw new IllegalArgumentException("Revisions not found"); 
+			if (!(aData.has("provider"))) throw new IllegalArgumentException("Provider not found"); 
+			if (!(aData.has("groups"))) throw new IllegalArgumentException("Groups not found"); 
+			
+			String username = aData.at("username").asString();
+			String password = aData.at("password").asString();
+			String provider = aData.at("provider").asString();
+			Boolean groups = aData.at("groups").asBoolean();
+			if (username == null || username.isEmpty()) throw new IllegalArgumentException("username null or empty");
+			if (password == null || password.isEmpty()) throw new IllegalArgumentException("password List null or empty");
+			if (provider == null || !provider.isEmpty()) throw new IllegalArgumentException("invalid value sent for provider");
+			if (groups == null || !groups) throw new IllegalArgumentException("invalid value sent for groups");
+			
+			Json r = (new UserService()).authenticate(aData);
+			
+			if (r.at("ok").asBoolean()){
+				Json user = Json.object()
+								.set("cn", r.at("user").at("cn"))
+								.set("groups", r.at("user").at("groups"));
+				Json result = Json.object()
+								  .set("ok", true)
+								  .set("user", user);
+				
+				return Response.ok(result, MediaType.APPLICATION_JSON).build();
+			} else {
+				return Response
+						.status(Status.UNAUTHORIZED)
+						.type(MediaType.APPLICATION_JSON)
+						.entity(r).build();
+			}	
+						
+			
+		} catch (Exception e) {
+		    e.printStackTrace();
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
 	}
 	
 	// Experimental. Not in use for the UI

@@ -20,18 +20,18 @@ import static org.sharegov.cirm.OWL.owlClass;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-
-import mjson.Json;
 
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
@@ -56,12 +56,12 @@ import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.reasoner.BufferingMode;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
-import org.sharegov.cirm.event.ClearOWLEntityCache;
 import org.sharegov.cirm.event.ClearOWLEntityCacheForSrTypeModification;
+import org.sharegov.cirm.rest.OWLIndividuals;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
-import com.clarkparsia.sparqlowl.parser.antlr.SparqlOwlParser.booleanLiteral_return;
+import mjson.Json;
 
 
 /**
@@ -268,8 +268,8 @@ public class MetaOntology
 	 * 
 	 */
 	public static List<OWLOntologyChange> getAddIndividualObjectFromJsonChanges (String parentID, String propertyID,  Json data){
-		OWLOntology O = OWL.ontology();
 		String ontologyIri = Refs.defaultOntologyIRI.resolve();
+		OWLOntology O = OWL.ontology(ontologyIri);		
 
 		if (O == null) {
 			throw new RuntimeException("Ontology not found: " + ontologyIri);
@@ -356,8 +356,12 @@ public class MetaOntology
 		return (a.getAxiom().equals(b.getAxiom()) && a.getClass() != b.getClass());			
 	}
 	
+	private static boolean isIdenticalAxion (OWLOntologyChange a, OWLOntologyChange b){
+		return (a.getAxiom().equals(b.getAxiom()) && a.getClass() == b.getClass());			
+	}
+	
 	public static List<OWLOntologyChange> clearChanges (List<OWLOntologyChange> changes){
-		List<OWLOntologyChange> result = new ArrayList<>();
+		List<OWLOntologyChange> uniques = new ArrayList<>();
 		
 		int lim = changes.size();
 		for (int i=0; i<lim; i++){
@@ -371,9 +375,34 @@ public class MetaOntology
 			}
 			
 			if (!found){
-				result.add(changes.get(i));
+				uniques.add(changes.get(i));
 			}
 			
+		}
+		
+		// Mark duplicates
+		List<Integer> toRemove = new ArrayList<>();
+		
+		lim = uniques.size();
+		for (int i=0; i<lim; i++){
+			if (!toRemove.contains(i)){
+				for (int j=i+1;j<lim; j++){
+					if (!toRemove.contains(j)){
+						if (isIdenticalAxion(uniques.get(i), uniques.get(j))){
+							toRemove.add(j);
+						}
+					}
+				}
+			}			
+		}
+		
+		// Filter the results
+		List<OWLOntologyChange> result = new ArrayList<>();
+		
+		for (int i=0; i<lim; i++){
+			if (!toRemove.contains(i)){
+				result.add(uniques.get(i));
+			}
 		}
 		
 		return result;
@@ -445,7 +474,7 @@ public class MetaOntology
 			if (key.equals("label") || key.equals("iri") || key.equals("type"))
 			{
 				if (key.equals("type"))
-					result.add(new AddAxiom(O, factory.getOWLClassAssertionAxiom(owlClass(fullIri(e.getValue().asString())),parent)));
+					result.add(new AddAxiom(O, factory.getOWLClassAssertionAxiom(owlClass(fullIri(PREFIX + e.getValue().asString())),parent)));
 				else if (key.equals("label"))
 					result.add(new  AddAxiom(O,factory.getOWLAnnotationAssertionAxiom(((OWLEntity) parent).getIRI(), 
 																					  factory.getOWLAnnotation(OWL.annotationProperty("http://www.w3.org/2000/01/rdf-schema#label"), 
@@ -645,31 +674,20 @@ public class MetaOntology
 	 * 
 	 */
 	
-	public static String getOntologyFromUri(String uri){
-		String token = tokenizeUri(uri, "/", 5, 4); 
-		return tokenizeUri(token, "#", 2, 0);
+	public static String getOntologyFromUri(String uri){		
+		return uri.substring(uri.lastIndexOf("/")+1,uri.indexOf("#"));
 	}
 		
 	public static String getIdFromUri(String uri)
 	{
-		return tokenizeUri(uri, "#", 2, 1);
+		return uri.substring(uri.indexOf("#")+1, uri.length());
 	}
 	
 	public static String getIdFromIdentifier(String uri)
 	{
-		return tokenizeUri(uri, ":", 2, 1);
+		return uri.substring(uri.indexOf(":")+1, uri.length());
 	}
 		
-	private static String tokenizeUri(String uri, String del, int expectedLength, int returnPosition){
-			
-			String tokens[]  = uri.split(del);
-			
-			if(tokens.length != expectedLength)
-				throw new IllegalArgumentException("Invalid uri");
-			
-			return tokens[returnPosition];
-	}
-	
 	public static String getIndividualIdentifier(String id){
 		if (id.contains(":")) return getIdFromIdentifier(id);
 		else if (id.contains("#")) return getIdFromUri(id);
@@ -742,17 +760,17 @@ public class MetaOntology
 		if (root.isObject()) {
 			Map<String,Json> properties = root.asJsonMap();
 			for (Map.Entry<String, Json> propKeyValue : properties.entrySet()) {
-				if (!propKeyValue.getKey().equals("iri") 
-						&& isFullIriString(propKeyValue.getValue())) {
+				if (!propKeyValue.getKey().equals("iri") && isFullIriString(propKeyValue.getValue())) {
 					//modify Json key to fully resolved json object
-					Json serializedOwlEntity = findByIri(owlSerialized, propKeyValue.getValue().asString());
+					Json serializedOwlEntity = findByIri(owlSerialized, propKeyValue.getValue().asString(), RESOLVE_ALL_IRI_MAX_DEPTH);
 					if (serializedOwlEntity.isNull()) {
-						//ignore
-						//throw new IllegalArgumentException("parameter contains IRI for which no serialized object could be found: " + propKeyValue.getValue());
-					} else {
-						//replace key with full object instead of string IRI.
-						propKeyValue.setValue(serializedOwlEntity.dup());	
+						serializedOwlEntity = getSerializedOntologyObject(propKeyValue.getValue().asString());
+					} 
+					if (serializedOwlEntity.isNull()){
+						throw new IllegalArgumentException("parameter contains IRI for which no serialized object could be found: " + propKeyValue.getValue());
 					}
+					//replace key with full object instead of string IRI.
+					propKeyValue.setValue(serializedOwlEntity.dup());
 				} 
 				resolveAllIris(owlSerialized, propKeyValue.getValue(), maxDepth - 1);
 			}
@@ -761,15 +779,17 @@ public class MetaOntology
 			while(arrayIt.hasNext()) {
 				Json elem = arrayIt.next();
 				if (isFullIriString(elem)) {
-					Json serializedOwlEntity = findByIri(owlSerialized, elem.asString());
+					Json serializedOwlEntity = findByIri(owlSerialized, elem.asString(), RESOLVE_ALL_IRI_MAX_DEPTH);
 					if (serializedOwlEntity.isNull()) {
-						//ignore now
-					} else {
-						//replace cur elem.
-						arrayIt.set(serializedOwlEntity.dup());
-						//needed so recursion continues with object not iri string.
-						elem = serializedOwlEntity;
+						serializedOwlEntity = getSerializedOntologyObject(elem.asString());
+					} 
+					if (serializedOwlEntity.isNull()){
+						throw new IllegalArgumentException("parameter contains IRI for which no serialized object could be found: " + elem.asString());
 					}
+					//replace cur elem.
+					arrayIt.set(serializedOwlEntity.dup());
+					//needed so recursion continues with object not iri string.
+					elem = serializedOwlEntity;
 				} 
 				resolveAllIris(owlSerialized, elem, maxDepth - 1);
 			}
@@ -797,14 +817,18 @@ public class MetaOntology
 	 * @param fullIRI
 	 * @return
 	 */
-	public static Json findByIri(Json owlSerialized, String fullIRI) {
+	public static Json findByIri(Json owlSerialized, String fullIRI, int maxDepth) {
+		if (maxDepth == 0){
+			return Json.nil();
+		}
+		
 		if (owlSerialized.isObject()) {
 			if (owlSerialized.has("iri") && fullIRI.equals(owlSerialized.at("iri").asString()))
 				return owlSerialized;
 			else {
 				Map<String,Json> properties = owlSerialized.asJsonMap();
 				for (Json propValue : properties.values()) {
-					Json result = findByIri(propValue, fullIRI);
+					Json result = findByIri(propValue, fullIRI, maxDepth-1);
 					if (!result.isNull()) {
 						return result;
 					}
@@ -814,13 +838,183 @@ public class MetaOntology
 		} else if (owlSerialized.isArray()) {
 			List<Json> array = owlSerialized.asJsonList();
 			for (Json elem : array) {
-				Json result = findByIri(elem, fullIRI);
+				Json result = findByIri(elem, fullIRI, maxDepth-1);
 				if (!result.isNull()) {
 					return result;
 				}
 			}
 			return Json.nil();
 		} else return Json.nil();				
+	}
+	
+	private static Json getSerializedOntologyObject (String fullIRI){			
+		String individualID = fullIRI.substring(fullIRI.indexOf("#")+1, fullIRI.length());
+		OWLIndividuals q = new OWLIndividuals();
+		Json S = Json.nil();
+		
+		try {
+			
+			S = q.doInternalQuery("{legacy:" + individualID + "}");			
+			
+		} catch (Exception e) {
+			System.out.println("Error while querying the Ontology for legacy:" + individualID);
+			System.out.println("Querying individual's endpoint instead...");
+			try {
+				
+				S = q.getOWLIndividualByName("legacy:" + individualID);		
+				
+				
+			} catch (Exception ex){
+				System.out.println("Unable to resolve Object: legacy:" + individualID);
+				ex.printStackTrace();
+			}					
+		}
+		
+		if (!S.isNull()){
+			if (S.isArray()){
+				for (Json ind: S.asJsonList()){
+					return ind;
+				}
+			} else{
+				return S;
+			}
+		} 
+		
+		return S;
+	}
+	
+	public static Json resolveIRIs(Json j){
+		Json result = j.dup();
+		
+		Map<String, Json> objectMap = new ConcurrentHashMap<String, Json>();
+		
+		mapJsonObject(result, objectMap);
+		
+		resolveEmptyObjects(objectMap);
+		
+		String error = "";
+		
+		if (!checkAllObjects(objectMap, error)){
+			throw new IllegalArgumentException("Unable to resolve object: " + error);
+		}
+		
+		Map<String, Boolean> resolutionMap = new ConcurrentHashMap<String, Boolean>();
+		
+		expandJson(result, objectMap, resolutionMap);
+		
+		return result;
+	}
+	
+	private static void mapJsonObject(Json j, Map<String, Json> map){
+		if (j.isObject()) {
+			Map<String,Json> properties = j.asJsonMap();
+			for (Map.Entry<String, Json> propKeyValue : properties.entrySet()) {
+				Json value = propKeyValue.getValue();
+				
+				if (propKeyValue.getKey().equals("iri")){					
+					map.put(value.asString(), j.dup());
+				} else if (isFullIriString(value)) {
+					if (!map.containsKey(value.asString())){
+						map.put(value.asString(), Json.nil());
+					}
+				} 
+				mapJsonObject(value, map);
+				
+			}
+		} else if (j.isArray()) {
+			ListIterator<Json> arrayIt = j.asJsonList().listIterator();
+			while(arrayIt.hasNext()) {
+				Json elem = arrayIt.next();
+				if (isFullIriString(elem)) {
+					if (!map.containsKey(elem.asString())){
+						map.put(elem.asString(), Json.nil());
+					}
+				} 
+				mapJsonObject(elem, map);
+			}
+		} else {
+			// nothing to do for primitives
+		}  	
+	}
+	
+	private static void resolveEmptyObjects(Map<String, Json> map){
+		boolean newObjects;
+		do {
+			newObjects = false;
+			for (Map.Entry<String, Json> propKeyValue : map.entrySet()) {
+				if (propKeyValue.getValue().isNull()){
+					Json value = getSerializedOntologyObject(propKeyValue.getKey());
+					if (value.isNull()){
+						throw new IllegalArgumentException("Unable to serialize invividual legacy: " + propKeyValue.getKey());
+					}
+					propKeyValue.setValue(value);
+					mapJsonObject(propKeyValue.getValue(), map);
+					newObjects = true;
+				}
+			}
+		}while(newObjects);
+	}
+	
+	private static boolean checkAllObjects(Map<String, Json> map, String failedIRI){
+		for (Map.Entry<String, Json> propKeyValue : map.entrySet()) {
+			if (propKeyValue.getValue().isNull()||!propKeyValue.getValue().isObject()){
+				failedIRI = propKeyValue.getKey();
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private static void expandJson(Json j, Map<String, Json> objectMap, Map<String, Boolean> resolutionMap){
+		if (j.isObject()) {
+			if (!j.has("iri")){ 
+				throw new IllegalArgumentException("Object missing IRI property: " + j.asString());
+			}
+			if (resolutionMap.containsKey(j.at("iri").asString())){
+				if (resolutionMap.get(j.at("iri").asString())){
+//					would like to empty j before adding the extended object. 
+//					the line bellow clears the object but null point exception is triggered when trying to use the object after.
+//					j.asJsonMap().clear();
+					j.with(objectMap.get(j.at("iri").asString()).dup());
+					return;
+				} else {
+					throw new IllegalArgumentException("Infinite recursive definition found for object : " + j.at("iri").asString());
+				}
+			} else {
+				resolutionMap.put(j.at("iri").asString(), false);
+			}
+			Map<String,Json> properties = j.asJsonMap();
+			for (Map.Entry<String, Json> propKeyValue : properties.entrySet()) {
+				if (!propKeyValue.getKey().equals("iri")&&isFullIriString(propKeyValue.getValue())) {
+					if (!isObjectOnMap(propKeyValue.getValue().asString(), objectMap)){
+						throw new IllegalArgumentException("Object missing on the map: " + propKeyValue.getValue().asString());
+					}
+					propKeyValue.setValue(objectMap.get(propKeyValue.getValue().asString()).dup());
+				} 
+				expandJson(propKeyValue.getValue(), objectMap, resolutionMap);				
+			}
+			objectMap.put(j.at("iri").asString(), j.dup());
+			resolutionMap.put(j.at("iri").asString(), true);
+		} else if (j.isArray()) {
+			ListIterator<Json> arrayIt = j.asJsonList().listIterator();
+			while(arrayIt.hasNext()) {
+				Json elem = arrayIt.next();
+				if (isFullIriString(elem)) {
+					if (!isObjectOnMap(elem.asString(), objectMap)){
+						throw new IllegalArgumentException("Object missing on the map: " + elem.asString());
+					}
+					elem = objectMap.get(elem.asString()).dup();
+				}
+				expandJson(elem, objectMap, resolutionMap); 
+				arrayIt.set(elem);
+			}
+		} else {
+			// nothing to do for primitives
+		}  	
+	}
+	
+	private static boolean isObjectOnMap(String objectIRI, Map<String, Json> map){
+		return map.containsKey(objectIRI);
 	}
 
 	
