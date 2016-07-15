@@ -144,6 +144,10 @@ create table CIRM_GIS_INFO (
 	   GIS_CMAINT varchar2(8),
 	   GIS_STLGHT varchar2(16),
 	   GIS_BULKSERV number(19,0),
+	   GIS_NET_AREA_NAME VARCHAR2(50),
+	   GIS_MIAMI_NEIGHBORHOOD VARCHAR2(40),
+	   GIS_PW_MAINT_ZONE NUMBER(19,0),
+	   GIS_FIRE_PREV_BUREAU NUMBER(19,0)
        --primary key (ID)
         constraint CIRM_GIS_INFO_PK primary key (ID) 
         	USING INDEX PCTFREE 30 INITRANS 100 MAXTRANS 255
