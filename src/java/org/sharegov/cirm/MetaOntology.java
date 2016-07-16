@@ -665,7 +665,7 @@ public class MetaOntology
 			String tokens[]  = uri.split(del);
 			
 			if(tokens.length != expectedLength)
-				throw new IllegalArgumentException("Invalid uri");
+				throw new IllegalArgumentException("Invalid uri " + uri);
 			
 			return tokens[returnPosition];
 	}

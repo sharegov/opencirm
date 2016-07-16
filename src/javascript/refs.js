@@ -73,8 +73,9 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
                  });
                  return x;
             }},
-            {"hasName": "serviceCases", "hasQueryExpression" : "legacy:ServiceCase",            
+            {"hasName": "serviceCases", "hasQueryExpression" : "ServiceRequestType",            
                 "map":function(A) {
+                    console.log('got service cases', A);
                     //A = [A];  
                     var m = {};
                     $.each(A, function(i,v) {
@@ -89,7 +90,12 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
             {"hasName": "serviceCaseList", "dependsOn":["serviceCases"], 
              "map": function(A) { 
                  var x = {};
-                 $.each(A, function (i,v) {x[v.label+' - '+v.hasJurisdictionCode]=v.hasLegacyCode});
+                 $.each(A, function (i,v) {
+                    var key = v.label;
+                    if (v.hasJurisdictionCode)
+                        key += ' - ' + v.hasJurisdictionCode;
+                    x[key]=v.hasLegacyCode ? v.hasLegacyCode : v.iri;
+                 });
                  return x;
             }},
             //Map from SR iri to load time long value.
@@ -114,7 +120,9 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
                     var x = [];
                     $.each(A, function (i,v) {
                     	if(v.isDisabled != 'true') {
-                          var tempLabel = v.label+' - '+v.hasJurisdictionCode;
+                          var tempLabel = v.label;
+                          if (v.hasJurisdictionCode)
+                              tempLabel += ' - '+v.hasJurisdictionCode;
                           x.push({"label":tempLabel, "value":tempLabel});
                         }
                    });                    

@@ -658,7 +658,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 	    }
 	    
 	    self.makeCaseBlueprint = function(type) {
-	        var blue = {boid:'', type: 'legacy:' + type.hasLegacyCode, properties:{}};
+	        var blue = {boid:'', type: type.iri, properties:{}};
 	        var P = blue.properties; 
 			P.atAddress = {
 	            Street_Address_City: {iri : '', label: ''},
@@ -732,6 +732,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 	    };
 	    
 	    self.startNewServiceRequest = function(type) {
+			var typeiri = !type.startsWith("http:") ?
+					    'http://www.miamidade.gov/cirm/legacy#' + type : type;	        
 			if (cirm.user.isConfigAllowed()) {
 				//hilpold Check server for new version of SR type 
 				cirm.refs.reloadServiceCaseTypeIfNeeded(type);
@@ -739,7 +741,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 	    	self.enableValidationForSrType(type);
 			var callback = function cb()
 			{
-			    var blueprint = self.makeCaseBlueprint(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + type]);
+			    var blueprint = self.makeCaseBlueprint(cirm.refs.serviceCases[typeiri]);
                 var currentAddress = ko.toJS(self.data().properties().atAddress);
                 blueprint.properties.atAddress = currentAddress;
                 if(self.data().properties().hasXCoordinate() != "")
@@ -748,7 +750,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
                     blueprint.properties.hasYCoordinate = self.data().properties().hasYCoordinate();
                 fetchSR(blueprint, self, true);
 			};
-			if(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + type].isDisabledCreate == 'true')
+			if(cirm.refs.serviceCases[typeiri].isDisabledCreate == 'true')
 			{
 				var srTypeName = $('#srTypeID').val().trim();
 				alertDialog("The Creation of a new '" + srTypeName +"' Service Request is currently disabled for all users");
@@ -771,10 +773,15 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			$("#sh_dialog_address_search").dialog({ height: 140, modal: true });
 			$("#sh_dialog_address_search").dialog('close');
 			var srTypeID = $('#srTypeID').val().trim();
+			console.log('type lookup', srTypeID, cirm.refs.serviceCaseList);
 			var type = cirm.refs.serviceCaseList[srTypeID];
+
 			//TODO Trigger type change event
 			$(document).trigger(legacy.InteractionEvents.SrTypeSelection, [type]);
 			
+			var typeiri = !type.startsWith("http:") ?
+					    'http://www.miamidade.gov/cirm/legacy#' + type : type;
+
 			//TODO hilpold - Refactor and simplify below code  
 			if(!U.isEmptyString(self.data().type()))
 			{
@@ -783,7 +790,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 						//hilpold Check server for new version of SR type 
 						cirm.refs.reloadServiceCaseTypeIfNeeded(type);
 					}
-					if(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + type].isDisabled == 'true')
+					if(cirm.refs.serviceCases[typeiri].isDisabled == 'true')
 						alertDialog("Cannot create a disabled Service Request Type");
 					else
 						self.clearSR(type);
@@ -798,17 +805,17 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 						//hilpold Check server for new version of SR type 
 						cirm.refs.reloadServiceCaseTypeIfNeeded(type);
 					}
-					if(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + type].isDisabled == 'true')
+					if(cirm.refs.serviceCases[typeiri].isDisabled == 'true')
 						alertDialog("Cannot create a disabled Service Request Type");
 					else
 						self.startNewServiceRequest(type);
 				}
-				else if(!U.isEmptyString(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + srTypeID])){
+				else if(!U.isEmptyString(cirm.refs.serviceCases[typeiri])){
 					if (cirm.user.isConfigAllowed()) {
 						//hilpold Check server for new version of SR type 
 						cirm.refs.reloadServiceCaseTypeIfNeeded(type);
 					}
-					if(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + srTypeID].isDisabled == 'true')
+					if(cirm.refs.serviceCases[typeiri].isDisabled == 'true')
 						alertDialog("Cannot create a disabled Service Request Type");
 					else
 						self.startNewServiceRequest(srTypeID);
@@ -3318,11 +3325,12 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
     	
     function fetchSR(bo, model, isNew) {
     	var type = bo.type;
-		if(type.indexOf("legacy:") == -1) {
+		if(!type.startsWith("http:") && type.indexOf("legacy:") == -1) {
 			type = "legacy:"+type;
 			bo.type = type;
 		}
-	    var srType = cirm.refs.serviceCases["http://www.miamidade.gov/cirm/legacy#" + type.split(":")[1]]; 
+		var typeiri = type.startsWith("http:") ? type : "http://www.miamidade.gov/cirm/legacy#" + type.split(":")[1]; 
+	    var srType = cirm.refs.serviceCases[typeiri]; 
 	    console.log('type', srType);
 	    
 		if(srType.hasServiceCaseAlert && bo.boid == "") {

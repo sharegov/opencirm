@@ -119,9 +119,14 @@ public class UserService extends RestService implements AutoConfigurable
 	        UserProvider provider = providerMap.get(name);
 	        if (provider != null)
 	            return provider;
-	        if (!desc.at("hasUserBase").has(name))
-	            return null;	        
-	        String classname = desc.at("hasUserBase").at(name).at("hasImplementation").at("iri").asString().split("#")[1];
+	        if (!desc.has("hasUserBase"))
+	        	return null;
+	        Json userBase = desc.at("hasUserBase");
+	        if (userBase.has(name))
+	        	userBase = userBase.at(name);
+	        if (!userBase.isObject())
+	        	return null;
+	        String classname = userBase.at("hasImplementation").at("iri").asString().split("#")[1];
 	        try 
 	        {
 	            provider = (UserProvider)Class.forName(classname).newInstance();
@@ -130,7 +135,7 @@ public class UserService extends RestService implements AutoConfigurable
 	            synchronized(provider)
 	            {
 		            if (provider instanceof AutoConfigurable)
-		            	((AutoConfigurable)provider).autoConfigure(desc.at("hasUserBase").at(name));
+		            	((AutoConfigurable)provider).autoConfigure(userBase);
 	            }
 	            providerMap.put(name, provider);
 	            return provider;
@@ -179,7 +184,7 @@ public class UserService extends RestService implements AutoConfigurable
 	
     public void autoConfigure(Json config)
     {
-        this.desc = config;        
+        this.desc = OWL.resolveIris(config, null);        
     }
 	
 	/**

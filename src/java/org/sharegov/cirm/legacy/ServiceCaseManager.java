@@ -38,7 +38,7 @@ import mjson.Json;
  */
 public class ServiceCaseManager extends OntoAdmin {		
 
-	private static final String PREFIX = "legacy:";
+	private static final String PREFIX = ""; //"legacy:";
 	private static String jenkingsEndpointRefreshOntosOnlyTest = "https://api.miamidade.gov/jenkins/job/CIRM-ADMIN-TEST-REFRESH-ONTOS/build?token=1a85a585ef7c424191c7c58ee3c4a97d556eec91";
 	private static String jenkingsEndpointRefreshOntosOnlyProduction = "https://api.miamidade.gov/jenkins/job/CIRM-ADMIN-PRODUCTION-REFRESH-ONTOS/build?token=1a85a585ef7c424191c7c58ee3c4a97d556ffc91";
 	private static ServiceCaseManager instance = null; 
@@ -301,7 +301,7 @@ public class ServiceCaseManager extends OntoAdmin {
 		
 		String iri = individual.getIRI().toString();
 		
-		Json result = Json.object().set("iri", MetaOntology.getOntologyFromUri(iri) + ":" + individual.getIRI().getFragment())
+		Json result = Json.object().set("iri", iri) // MetaOntology.getOntologyFromUri(iri) + ":" + individual.getIRI().getFragment())
 //								   .set("code", individual.getIRI().getFragment())
 								   .set("label", OWL.getEntityLabel(individual))
 								   .set("disabled", isSrDisabledOrDisabledCreate(individual));
