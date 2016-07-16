@@ -1218,7 +1218,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 		function showErrorDialog(errorMsg)
 		{
 			$("#sh_dialog_sr_err")[0].innerHTML= errorMsg;
-			$("#sh_dialog_sr_err").dialog({height: 140, width: 500, modal: true});
+			$("#sh_dialog_sr_err").dialog({height: 200, width: 500, modal: true});
 		};
 
 		self.getProfile = function() {

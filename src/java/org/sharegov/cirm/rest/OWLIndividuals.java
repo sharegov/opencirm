@@ -155,22 +155,28 @@ public class OWLIndividuals extends RestService
 	{
 		try
 		{
-			OWLNamedIndividual ind = individual(individualName);
-			Json el = OWL.toJSON(ontology(), ind);
-			if (!isClientExempt() &&
-				reasoner().getTypes(ind, false).containsEntity(OWL.owlClass("Protected")) &&
-				!Permissions.check(individual("BO_View"), 
-									individual(individualName), 
-									getUserActors()))
-				return ko("Permission denied.");
-			return el;
+			return getOWLIndividualByName(individualName);	
 		}
 		catch (Throwable t)
 		{
 			t.printStackTrace(System.err);
 			return Json.object();
-		}		
+		}	
 	}	
+	
+	public Json getOWLIndividualByName(String individualName) throws OWLException
+	{
+		
+		OWLNamedIndividual ind = individual(individualName);
+		Json el = OWL.toJSON(ontology(), ind);
+		if (!isClientExempt() &&
+			reasoner().getTypes(ind, false).containsEntity(OWL.owlClass("Protected")) &&
+			!Permissions.check(individual("BO_View"), 
+								individual(individualName), 
+								getUserActors()))
+			return ko("Permission denied.");
+		return el;				
+	}
 	
 	/**
 	 * Determines if an OWL individual was modified after a specified time.
@@ -264,58 +270,40 @@ public class OWLIndividuals extends RestService
 	
 	public synchronized Json doInternalQuery (String queryAsString)
 	{
-		try
-		{
-			OWLOntology ontology = ontology();
-			OWLReasoner reasoner = reasoner(ontology);
-			//Set<OWLNamedIndividual> userActors = getUserActors();
-//			Json result = Json.array();		
-			OWLClassExpression expr = OWL.parseDL(queryAsString, ontology);
-			Set<OWLNamedIndividual> allAllowed = null;
-			if (!isClientExempt() && reasoner.getSuperClasses(expr, false).containsEntity(owlClass("Protected")))
-			{
-//				queryAsString = Permissions.constrainClause(individual("BO_View"), getUserActors())
-//						+ " and " + queryAsString;
-				allAllowed = new HashSet<OWLNamedIndividual>();
-				Set<OWLNamedIndividual> policies = Permissions.policiesForActors(getUserActors());
-				for (OWLNamedIndividual x : policies)
-				{
-//					System.out.println("Policy: " + x);
-					Set<OWLNamedIndividual> policyObjects = OWL.objectProperties(x, "hasObject");					
-//					System.out.println("Object: " + policyObjects);
-					allAllowed.addAll(policyObjects);
-				}
-			}
-			// The following is not a 100% test for protection. To be 100%, we'd have
-			// to check that getInstances returns an empty set rather than getSubClasses, but
-			// this will work in practice and it's a hopefully faster test
-			else if (!isClientExempt() && !reasoner.getSubClasses(and(expr, owlClass("Protected")), false).isBottomSingleton())
-			{
-				throw new IllegalAccessError ("Access denied - protected resources could be returned, please split the query.");
-			}
+		OWLOntology ontology = ontology();
+		OWLReasoner reasoner = reasoner(ontology);
 			
-			//long ss = System.currentTimeMillis();
-//			Json j = Refs.owlJsonCache.resolve().set(queryAsString).resolve();
+		OWLClassExpression expr = OWL.parseDL(queryAsString, ontology);
+		Set<OWLNamedIndividual> allAllowed = null;
+		if (!isClientExempt() && reasoner.getSuperClasses(expr, false).containsEntity(owlClass("Protected")))
+		{
+				
+			allAllowed = new HashSet<OWLNamedIndividual>();
+			Set<OWLNamedIndividual> policies = Permissions.policiesForActors(getUserActors());
+			for (OWLNamedIndividual x : policies)
+			{
+					
+				Set<OWLNamedIndividual> policyObjects = OWL.objectProperties(x, "hasObject");					
+					
+				allAllowed.addAll(policyObjects);
+			}
+		}
+		// The following is not a 100% test for protection. To be 100%, we'd have
+		// to check that getInstances returns an empty set rather than getSubClasses, but
+		// this will work in practice and it's a hopefully faster test
+		else if (!isClientExempt() && !reasoner.getSubClasses(and(expr, owlClass("Protected")), false).isBottomSingleton())
+		{
+			throw new IllegalAccessError ("Access denied - protected resources could be returned, please split the query.");
+		}
+		
 //			
-			OWLSerialEntityCache jsonEntities = Refs.owlJsonCache.resolve();
-			Json j = Json.array();
-			for (OWLNamedIndividual ind : OWL.queryIndividuals(queryAsString))
-				if (allAllowed == null || allAllowed.contains(ind))
-					j.add(jsonEntities.individual(ind.getIRI()).resolve());
-			
-			//System.out.println("QUERY TIME for '" + queryAsString + "' -- " + (System.currentTimeMillis() - ss));
-			return j;
-//			for (OWLNamedIndividual ind : reasoner.getInstances(expr, false).getFlattened())
-//				//reasoner.getInstances(expr, false).getFlattened())
-//				result.add(OWL.toJSON(ontology, ind));
-//			return result;
-		}
-		catch (Exception ex)
-		{
-			System.out.println("While get instances for " + queryAsString);
-			ex.printStackTrace();
-			return Json.object();
-		}
+		OWLSerialEntityCache jsonEntities = Refs.owlJsonCache.resolve();
+		Json j = Json.array();
+		for (OWLNamedIndividual ind : OWL.queryIndividuals(queryAsString))
+			if (allAllowed == null || allAllowed.contains(ind))
+				j.add(jsonEntities.individual(ind.getIRI()).resolve());
+		
+		return j;
 	}
 
 }

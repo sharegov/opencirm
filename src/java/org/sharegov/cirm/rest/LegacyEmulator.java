@@ -124,6 +124,7 @@ import org.sharegov.cirm.rdb.Statement;
 import org.sharegov.cirm.stats.CirmStatistics;
 import org.sharegov.cirm.stats.CirmStatisticsFactory;
 import org.sharegov.cirm.stats.SRCirmStatsDataReporter;
+import org.sharegov.cirm.utils.ConcurrentLockedToOpenException;
 import org.sharegov.cirm.utils.ExcelExportUtil;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.JsonUtil;
@@ -1056,6 +1057,36 @@ public class LegacyEmulator extends RestService
 //		}
 	}
 
+	/**
+	 * UpdateHistoric allows updating a serviceCase in the past for exempt clients.
+	 * e.g. close a locked case at a date provided by a department.
+	 * 
+	 * @param updatedServiceCase a prefixed service case json with updates applied.
+	 * @param updatedDateStr a date in ISO (Genutils) standard.
+	 * @return
+	 */
+	@POST
+	@Path("updateHistoric")
+	@Consumes("application/json")
+	@Produces("application/json")
+	public Json updateServiceCaseHistoric(Json updatedServiceCase, @QueryParam("updatedDate") final String updatedDateStr)
+	{
+		if (!isClientCirmAdmin()) {
+			return ko("Permission denied for non CirmAdmin client.");
+		}
+		ThreadLocalStopwatch.startTop("START updateServiceCaseHistoric");
+		System.out.println(updatedServiceCase.toString());
+		Date updatedDate = GenUtils.parseDate(updatedDateStr);
+		Json result = updateServiceCase(updatedServiceCase, updatedDate, "department");
+		if (result.is("ok", true)) {
+			srStatsReporter.succeeded("updateServiceCaseHistoric restcall", updatedServiceCase);
+		} else {
+			srStatsReporter.failed("updateServiceCaseHistoric restcall", updatedServiceCase, result.at("error").toString(), result.at("stackTrace").toString());
+		}
+		ThreadLocalStopwatch.stop("END updateServiceCaseHistoric");
+		return result;
+	}
+	
 	@POST
 	//@Encoded 2372 Java8 hilpold
 	@Path("update")
@@ -1190,9 +1221,21 @@ public class LegacyEmulator extends RestService
 		///T2 END
 		//06-20-2013 syed - Check for a status change.
 		if(currentStatus != null && 
-				newStatus != null	&&
-				!currentStatus.equals(newStatus))
-			mngr.changeStatus(newStatus, updatedDate, (srModifiedBy != null)?srModifiedBy.getLiteral():null, bontology, emailsToSend);
+				!currentStatus.equals(newStatus)) 
+		{
+			if ("cirmuser".equals(originator) 
+				&& currentStatus.equals(individual("legacy:O-LOCKED"))
+				&& newStatus.equals(individual("legacy:O-OPEN"))) 
+			{
+				//2016.07.08 hilpold mdcirm 2639 
+				// We prevent a very specific concurrent SR modification problem:
+				// only if a user saves an SR in OPEN status, which is already locked, we prevent 
+				// an overwrite of interface changes.
+				throw new ConcurrentLockedToOpenException();
+			} else {
+				mngr.changeStatus(currentStatus, newStatus, updatedDate, (srModifiedBy != null)?srModifiedBy.getLiteral():null, bontology, emailsToSend);
+			}
+		}
 
 		//Update those existing Activities for which Outcome is set in current request
 		if(uiActs.asJsonList().size() > 0)
@@ -1283,7 +1326,11 @@ public class LegacyEmulator extends RestService
 			return updateResult;
 	}
 	
-	public Json updateServiceCase(final Json serviceCaseParam, final String originator)
+	public Json updateServiceCase(final Json serviceCaseParam, final String originator) {
+		return updateServiceCase(serviceCaseParam, null, originator);
+	}
+	
+	public Json updateServiceCase(final Json serviceCaseParam, final Date updateDate, final String originator)
 	{
 		if (originator == null) throw new NullPointerException("originator");
 		//wrap the entire update in a transaction block.
@@ -1302,7 +1349,7 @@ public class LegacyEmulator extends RestService
 				Long boid = serviceCaseParam.at("boid").asLong();
 				Json bo = findServiceCaseOntology(boid).toJSON();
 				//TODO hilpold not always cirmuser, could be CityOfMIamiClient or DepartmentIntegration also!
-				Json result = updateServiceCaseTransaction(serviceCaseParam, bo, null, emailsToSend, originator); //"cirmuser"
+				Json result = updateServiceCaseTransaction(serviceCaseParam, bo, updateDate, emailsToSend, originator); //"cirmuser"
 				Response.setCurrent(current);
 				return result;
 			}});			

@@ -239,8 +239,24 @@ public class SRJsonActivityUtil
 	 */
 	public static String getHasOutcomeLabel(Json activity)
 	{
-		//TODO need to find first serialized outcome?
-		return activity.at("hasOutcome", Json.object()).at("label", "").asString();
+		String result;
+		//TODO need to find first serialized outcome? 
+		//still true if two or more activities of same type are in SR and
+		//IRIs were not fully resolved before calling this method.
+		Json outcome = activity.at("hasOutcome", Json.object());
+		if (outcome.isObject()) {
+			result = outcome.at("label", "").asString();
+		} else if (outcome.isString()) {
+			String outcomeStr = outcome.asString();
+			if (outcomeStr.contains("#")) { 
+				result = outcomeStr.split("#")[1];
+			} else {
+				result = outcomeStr;
+			}
+		} else {
+			throw new RuntimeException("Misconfiguration of outcome detected in Activity: " + activity);
+		}
+		return result; 
 	}
 
 	/**

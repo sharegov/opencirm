@@ -3127,7 +3127,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 			self.searchCriteria.hasStatus().iri(undefined);
 			self.searchCriteria.hasStatus().label("");
 			//self.searchCriteria.hasIntakeMethod().label("");
-			self.searchCriteria.selectedIntake = ko.observableArray([]);
+			self.searchCriteria.selectedIntake([]);
 			self.searchCriteria.createdStartDate("");
 			self.searchCriteria.createdEndDate("");
 			self.searchCriteria.updatedStartDate("");
