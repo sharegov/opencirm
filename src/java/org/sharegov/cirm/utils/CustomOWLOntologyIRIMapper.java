@@ -27,6 +27,7 @@ import java.util.Properties;
 
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntologyIRIMapper;
+import org.sharegov.cirm.StartUp;
 
 /**
  * A CustomOWLOntologyIRIMapper that can read ontology to document mappings from java Properties.
@@ -83,7 +84,10 @@ public class CustomOWLOntologyIRIMapper implements OWLOntologyIRIMapper
 		for (Entry<Object, Object> customMapping : customMappings.entrySet()) {
 			try {
 				IRI ontologyIRI = IRI.create(((String)customMapping.getKey()).trim());
-				IRI documentIRI = IRI.create(((String)customMapping.getValue()).trim());
+				String location = ((String)customMapping.getValue()).trim();
+				if (!location.contains(":"))
+					location = "file://" + StartUp.config.at("workingDir").asString() + File.separator + location;
+				IRI documentIRI = IRI.create(location);
 				ontologyIRIToDocumentIRIMap.put(ontologyIRI, documentIRI);
 				//Test URL creation of document IRI to validate. Has to be absolute.
 				@SuppressWarnings("unused")

@@ -1,0 +1,21 @@
+{
+   "workingDir":"/home/borislav/sharegov/opencirm",
+   "customIRIMappingFile":"conf/openontomap.properties",   
+   "port":8182,
+   "ssl-port":8183,   
+   "ignorePasswords":true,
+   "mainApplication" : "http://opencirm.org#CIRMApplication",
+   "defaultOntologyIRI":"http://opencirm.org/demo",
+   "allClientsExempt":true,
+   "nameBase":"http://opencirm.org",
+   "stopExpansionConditionIRI":[
+        "http://opencirm.org/cirm#providedBy",
+        "http://opencirm.org/cirm#hasChoiceValue"
+    ],   
+   "cacheNotUsingJena":true,				
+   "ontologyPrefixes":{
+       "legacy:":"http://opencirm.org/cirm#",
+       ":":"http://opencirm.org#",
+       "mdc:":"http://opencirm.org#"},
+   "ontologyConfigSet":"http://opencirm.org#DemoConfigSet"   
+}

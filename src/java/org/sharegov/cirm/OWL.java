@@ -185,8 +185,11 @@ public class OWL
 			loader = new OntologyLoader(manager);	
 			if (StartUp.config.has("customIRIMappingFile"))
 			{
-				String customIRIMappingFile = StartUp.config.at("customIRIMappingFile").asString();
-				manager.addIRIMapper(CustomOWLOntologyIRIMapper.createFrom(new File(customIRIMappingFile)));
+				File customIRIMappingFile = new File(StartUp.config.at("customIRIMappingFile").asString());
+				if (!customIRIMappingFile.isAbsolute())
+					customIRIMappingFile = new File(new File(StartUp.config.at("workingDir").asString()), 
+													StartUp.config.at("customIRIMappingFile").asString());
+				manager.addIRIMapper(CustomOWLOntologyIRIMapper.createFrom(customIRIMappingFile));
 			}		
 			DEFAULT_STOP_EXPANSION_CONDITION = getInitializedDefaultStopExpansionCondition(factory); 
 			initialized = true;
