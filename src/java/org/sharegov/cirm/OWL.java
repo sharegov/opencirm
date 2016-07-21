@@ -1344,6 +1344,25 @@ public class OWL
 		return json;
 	}
 	
+	public static String prefixFor(String fragment, Class<?> type) {
+		for (String prefix : OWL.prefixManager().getPrefixNames()) {
+			IRI iri = fullIri(prefix + fragment);
+			for (OWLOntology o : OWL.ontologies()) {
+				if (type == OWLClass.class && o.containsClassInSignature(iri)) {
+					return prefix;
+				} else if (type == OWLDataProperty.class
+						&& o.containsDataPropertyInSignature(iri)) {
+					return prefix;
+				} else if (type == OWLObjectProperty.class
+						&& o.containsObjectPropertyInSignature(iri)) {
+					return prefix;
+				}
+			}
+
+		}
+		return OWL.prefixManager().getDefaultPrefix();
+	}
+	
 	public static Json prefix(Json json)
 	{
 		Set<OWLProperty<?,?>> properties = new HashSet<OWLProperty<?,?>>();
