@@ -460,6 +460,19 @@ public class MetaOntology
 		return null;
 	}
 	
+	protected static String getClassPrefix (String irifragment){
+		Json prefixes = Json.array().add("legacy:").add("mdc:").add(":");
+		for (Json prefix : prefixes.asJsonList()) {
+			IRI propIri = fullIri(prefix.asString() + irifragment);
+			for (OWLOntology o : OWL.ontologies()) {
+				if (o.containsClassInSignature(propIri)) {
+					return prefix.asString();
+				}
+			}
+		}
+		return null;
+	}
+	
 	/*
 	 * Refactored code coming from BOntology class 
 	 * 
@@ -473,12 +486,17 @@ public class MetaOntology
 			Json value = e.getValue();
 			if (key.equals("label") || key.equals("iri") || key.equals("type"))
 			{
-				if (key.equals("type"))
-					result.add(new AddAxiom(O, factory.getOWLClassAssertionAxiom(owlClass(fullIri(PREFIX + e.getValue().asString())),parent)));
-				else if (key.equals("label"))
+				if (key.equals("type")){
+					String classPrefix = getClassPrefix(e.getValue().asString());
+					
+					if (classPrefix == null) throw new RuntimeException("Undeclared OWL class: " + e.getValue().asString());
+					
+					result.add(new AddAxiom(O, factory.getOWLClassAssertionAxiom(owlClass(fullIri(classPrefix + e.getValue().asString())),parent)));
+				}else if (key.equals("label")){
 					result.add(new  AddAxiom(O,factory.getOWLAnnotationAssertionAxiom(((OWLEntity) parent).getIRI(), 
 																					  factory.getOWLAnnotation(OWL.annotationProperty("http://www.w3.org/2000/01/rdf-schema#label"), 
 																				      factory.getOWLLiteral(value.asString())))));
+				}
 				continue;
 			}
 			
