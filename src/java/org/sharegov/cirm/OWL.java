@@ -1344,7 +1344,8 @@ public class OWL
 		return json;
 	}
 	
-	public static String prefixFor(String fragment, Class<?> type) {
+	public static String prefixFor(String fragment, Class<?> type) throws Exception
+	{
 		for (String prefix : OWL.prefixManager().getPrefixNames()) {
 			IRI iri = fullIri(prefix + fragment);
 			for (OWLOntology o : OWL.ontologies()) {
@@ -1358,9 +1359,19 @@ public class OWL
 					return prefix;
 				}
 			}
-
 		}
-		return OWL.prefixManager().getDefaultPrefix();
+		throw new Exception("The fragment was not found in any ontology");
+	}
+	
+	
+	public static String prefixFor(String fragment, Class<?> type, String defaultPrefix)
+	{
+		try{
+			return  prefixFor(fragment, type);
+		}catch (Exception e)
+		{
+			return defaultPrefix;
+		}
 	}
 	
 	public static Json prefix(Json json)
