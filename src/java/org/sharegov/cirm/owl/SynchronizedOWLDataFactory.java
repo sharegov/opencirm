@@ -27,6 +27,7 @@ import org.semanticweb.owlapi.vocab.OWLFacet;
  * 
  * @author Thomas Hilpold
  */
+@SuppressWarnings("deprecation")
 public class SynchronizedOWLDataFactory implements OWLDataFactory
 {
 	OWLDataFactory factory;

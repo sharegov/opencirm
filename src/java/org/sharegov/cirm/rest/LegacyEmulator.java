@@ -1093,6 +1093,7 @@ public class LegacyEmulator extends RestService
 	@Produces("application/json")
 	public Json updateServiceCase(@FormParam("data") final String formData)
 	{
+		ThreadLocalStopwatch.startTop("START updateServiceCase data");
 		Json form = read(formData);
 		
 		// Not sure if this is needed anymore (Boris)
@@ -1102,17 +1103,21 @@ public class LegacyEmulator extends RestService
 		if (!isClientExempt()
 				&& !Permissions.check(individual("BO_Update"),
 						individual(form.at("type").asString()),
-						getUserActors()))
+						getUserActors())) {
+			ThreadLocalStopwatch.stop("DENIED updateServiceCase data");
 			return ko("Permission denied.");
+		}
 		else
 		{
 			Json result = updateServiceCase(form, "cirmuser");
 			if (result.is("ok", true)) 
 			{
+				ThreadLocalStopwatch.stop("END updateServiceCase data");
 				srStatsReporter.succeeded("updateServiceCase restcall", form);
 			}
 			else
 			{
+				ThreadLocalStopwatch.fail("FAIL updateServiceCase data");
 				srStatsReporter.failed("updateServiceCase restcall", form, result.at("error").toString(), result.at("stackTrace").toString());
 			}
 			return result;
@@ -1610,7 +1615,7 @@ public class LegacyEmulator extends RestService
 	@Produces("application/json")
 	public Json createNewKOSR(@FormParam("data") final String formData)
 	{
-		ThreadLocalStopwatch.start("START createNewKOSR");
+		ThreadLocalStopwatch.startTop("START createNewKOSR");
 		final Json legacyForm = read(formData);		
 		try
 		{
@@ -2900,6 +2905,7 @@ public class LegacyEmulator extends RestService
 	@Consumes("application/json")
 	public Json approveCase(Json legacyform)
 	{
+		ThreadLocalStopwatch.startTop("START approveCase");
 		try{
 			//We could optionally choose to lookup the current SR in the DB to ensure approval state
 			//is still APPROVAL_PENDING
@@ -2912,9 +2918,11 @@ public class LegacyEmulator extends RestService
 			approvalProcess.getSideEffects().add(new CreateNewSREmail());
 			approvalProcess.getSideEffects().add(new AddTxnListenerForNewSR());
 			approvalProcess.approve();
+			ThreadLocalStopwatch.stop("END approveCase");
 			return ok().set("bo", approvalProcess.getBOntology().toJSON());
 		}catch(Exception e)
 		{
+			ThreadLocalStopwatch.fail("FAIL approveCase");
 			return ko(e);
 		}
 			

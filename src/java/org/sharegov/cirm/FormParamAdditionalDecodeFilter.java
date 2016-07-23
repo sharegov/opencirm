@@ -51,7 +51,7 @@ import org.sharegov.cirm.utils.ThreadLocalStopwatch;
  */
 public class FormParamAdditionalDecodeFilter extends Filter {
 
-	public static boolean DBG = true; 
+	public static boolean DBG = false; 
 	
 	public static final String DECODER_CHAR_SET = "UTF-8";
 	

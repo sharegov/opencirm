@@ -74,7 +74,7 @@ public class ApprovalProcess
 	{
 //		if (approvalState.equals(ApprovalState.APPROVAL_PENDING))
 //		{
-			Json result = getPersister().getStore().txn(new CirmTransaction<Json> () {
+			getPersister().getStore().txn(new CirmTransaction<Json> () {
 				@Override
 				public Json call() throws Exception
 				{

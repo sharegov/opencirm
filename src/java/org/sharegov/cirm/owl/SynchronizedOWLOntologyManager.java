@@ -18,11 +18,8 @@ package org.sharegov.cirm.owl;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import org.semanticweb.owlapi.io.OWLOntologyDocumentSource;
@@ -53,6 +50,13 @@ import org.semanticweb.owlapi.model.OWLOntologyStorer;
 import org.semanticweb.owlapi.model.UnknownOWLOntologyException;
 import org.semanticweb.owlapi.model.UnloadableImportException;
 
+/**
+ * SynchronizedOWLOntologyManager wraps any OWLOntologyManager for synchronized thread safe access.
+ * 
+ * @author Thomas Hilpold
+ *
+ */
+@SuppressWarnings("deprecation")
 public class SynchronizedOWLOntologyManager implements OWLOntologyManager
 {
 
