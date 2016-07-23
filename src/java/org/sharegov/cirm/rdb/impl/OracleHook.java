@@ -47,7 +47,7 @@ public class OracleHook implements DatabaseHook
 				try {
 					Properties connectionProperties = new Properties();
 					int timeoutSecs = Integer.parseInt(description.at("hasTimeoutSecs").asString());
-					connectionProperties.setProperty("oracle.jdbc.ReadTimeout", "" + timeoutSecs);
+					connectionProperties.setProperty("oracle.jdbc.ReadTimeout", "" + timeoutSecs * 1000);
 					ods.setConnectionProperties(connectionProperties);
 				} catch (Exception e) {
 					ThreadLocalStopwatch.error("Database connection hasTimeoutSecs not an integer value, using default for data source url" + ods.getURL());
@@ -97,7 +97,7 @@ public class OracleHook implements DatabaseHook
 					ThreadLocalStopwatch.error("Database connection hasTimeoutSecs not an integer value, using default for pool data source url" + pds.getURL());
 					e.printStackTrace();
 				}
-			}	
+			}
 			pds.setConnectionProperties(connectionProperties);
 		}
 		catch (Exception ex)
