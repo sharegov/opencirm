@@ -187,11 +187,11 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 			    var mapWindow = null;
 				var callback = function () {
 			        self.setAddressOnMap(self.address.fullAddress(), 
-				                                    self.address.zip(),
-				                                    self.address.addressData().propertyInfo,
-				                                    self.address.unit(),
-				                                    self.address.municipalityId()
-				                                );
+                                      self.address.zip(),
+                                      self.address.addressData().propertyInfo,
+                                      self.address.unit(),
+                                      self.address.municipalityId()
+                                  );
 			        $(document).unbind("mapInitializedEvent", callback);			        
 			    };
 			    $(document).bind("mapInitializedEvent", callback);
@@ -341,36 +341,36 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 			self.showProgress("#ah_dialog_location_search");
 		    $(document).trigger(legacy.InteractionEvents.UserAction, 
 		            ['Search Common Location', self.address.commonLocation.name()]);			
-			self.gis.getCommonLocationCandidates(self.address.commonLocation.name(), function( candidates ) {
-				if(candidates === undefined || candidates.length == 0) {
-					//self.address.addressData(null);
-					self.hideProgress("#ah_dialog_location_search");
-					$( "#ah_dialog_location" ).dialog({
-						height: 200,
-						modal: true
-					});
-					return;
-				}
-				if(candidates.length == 1) {
-					self.hideProgress("#ah_dialog_location_search");
-					self.setCommonLocation(candidates[0]);
-				}else {
-					self.hideProgress("#ah_dialog_location_search");
-					self.commonLocations(candidates);
-					$( "#ah_dialog_locations_resolve" ).dialog({
-						height: 200,
-						modal: true
-					});
-				}
-			}
-			,function(msg, req, status) {
-				self.hideProgress("#ah_dialog_location_search");
-				$("#ah_addr_dialog_alert")[0].innerText = status + ' \n' + msg;
-				$("#ah_addr_dialog_alert").dialog({ height: 150, width: 350, modal: true, buttons: {
-					"Close" : function() { $("#ah_addr_dialog_alert").dialog('close'); }
-				}});
-			}
-			);
+          self.gis.getCommonLocationCandidates(self.address.commonLocation.name(), function( candidates ) {
+            if(candidates === undefined || candidates.length == 0) {
+              //self.address.addressData(null);
+              self.hideProgress("#ah_dialog_location_search");
+              $( "#ah_dialog_location" ).dialog({
+                height: 200,
+                modal: true
+              });
+              return;
+            }
+            if(candidates.length == 1) {
+              self.hideProgress("#ah_dialog_location_search");
+              self.setCommonLocation(candidates[0]);
+            }else {
+              self.hideProgress("#ah_dialog_location_search");
+              self.commonLocations(candidates);
+              $( "#ah_dialog_locations_resolve" ).dialog({
+                height: 200,
+                modal: true
+              });
+            }
+          }
+          ,function(msg, req, status) {
+            self.hideProgress("#ah_dialog_location_search");
+            $("#ah_addr_dialog_alert")[0].innerText = status + ' \n' + msg;
+            $("#ah_addr_dialog_alert").dialog({ height: 150, width: 350, modal: true, buttons: {
+              "Close" : function() { $("#ah_addr_dialog_alert").dialog('close'); }
+            }});
+          }
+          );
 		};
 
 		self.standardizeStreet = function(data, fromServiceHub) {
@@ -397,13 +397,14 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 		};
 		
 		self.searchAddress = function(behindTheScenes) {
-		    if (U.offline()) {
-		        console.log("Can't search address while in offline mode.");
-		        return;
-		    }
-		    $(document).trigger(legacy.InteractionEvents.WCSClear, []);
-			$(document).trigger(legacy.InteractionEvents.UserAction, ['Validate Address', 
-			    self.address.fullAddress() + ',' + self.address.zip()]);
+		  if (U.offline()) {
+		    console.log("Can't search address while in offline mode.");
+		    return;
+		  }
+		  $(document).trigger(legacy.InteractionEvents.WCSClear, []);
+			$(document).trigger(legacy.InteractionEvents.UserAction, 
+			                    ['Validate Address', 
+			                      self.address.fullAddress() + ',' + self.address.zip()]);
 			if(!self.gis) {
 				initGis();
 			}
@@ -412,16 +413,17 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 				$('body').css('cursor', 'url(/html/images/hourglass.cur),auto');
 				self.showProgress("#ah_dialog_address_search");
 			}
-			if (self.address.unit() != undefined && self.address.unit().length > 0) {
-				self.gis.getCondoAddress(self.address.fullAddress(),self.address.zip(), self.address.unit(), function(candidate) {
+			if (!U.isEmptyString(self.address.unit())) {
+				self.gis.getCondoAddress(self.address.fullAddress(),
+				                         self.address.zip(), 
+				                         self.address.unit(), function(candidate) {
 					self.hideProgress("#ah_dialog_address_search");
 					$('body').css('cursor', 'default');
 					if(!candidate)
 						$( "#ah_dialog_address" ).dialog({ height: 200,modal: true });
 					else
 						self.setAddress(candidate, false);
-				}
-				,function(msg, req, status) {
+				},function(msg, req, status) {
 					self.hideProgress("#ah_dialog_address_search");
 					$('body').css('cursor', 'default');
 					$("#ah_addr_dialog_alert")[0].innerText = status + ' \n' + msg;
@@ -431,7 +433,9 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 				});
 			}
 			else {
-				self.gis.getAddressCandidates(self.address.fullAddress(),self.address.zip(), self.address.municipality(), function(candidates) {
+				self.gis.getAddressCandidates(self.address.fullAddress(),
+				                              self.address.zip(), 
+				                              self.address.municipality(), function(candidates) {
 					if(candidates === undefined || candidates.length == 0) {
 						//self.address.clear();
 						self.hideProgress("#ah_dialog_address_search");
@@ -441,7 +445,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 							modal: true
 						});
 						return;
-					}	
+					}
 					else if(candidates.length == 1) {
 						self.hideProgress("#ah_dialog_address_search");
 						$('body').css('cursor', 'default');
@@ -477,9 +481,10 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 				self.hideProgress("#ah_dialog_address_search");
 				$('body').css('cursor', 'default');	
 				 if (req.status != 200) {
-						$("#ah_addr_dialog_alert")[0].innerText = status + ' \n' + "Address and geographic data lookups are currently unavailable.  Please try again shortly.";
-				 }else{			
-						$("#ah_addr_dialog_alert")[0].innerText = status + ' \n' + msg;			 
+				   $("#ah_addr_dialog_alert")[0].innerText = status + ' \n' + "Address and geographic data lookups are currently unavailable.  Please try again shortly.";
+				 } 
+				 else {			
+				   $("#ah_addr_dialog_alert")[0].innerText = status + ' \n' + msg;			 
 				 }
 					
 					$("#ah_addr_dialog_alert").dialog({ height: 150, width: 350, modal: true, buttons: {
