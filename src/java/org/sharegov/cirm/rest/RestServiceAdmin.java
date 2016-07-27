@@ -39,7 +39,6 @@ public class RestServiceAdmin extends RestService
 	@Path("/sysinfo")
 	public Json sysInfo()
 	{
-		System.out.println("in RestServiceAdmin.syinfo, remove this trace");
 		try
 		{
 			Json info = Json.object();
