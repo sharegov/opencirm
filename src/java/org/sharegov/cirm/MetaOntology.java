@@ -361,34 +361,15 @@ public class MetaOntology
 	}
 	
 	public static List<OWLOntologyChange> clearChanges (List<OWLOntologyChange> changes){
-		List<OWLOntologyChange> uniques = new ArrayList<>();
-		
-		int lim = changes.size();
-		for (int i=0; i<lim; i++){
-			boolean found = false;
-			for (int j=0;j<lim; j++)
-				if (i!=j){
-					if (isIdenticalOppositeAxion(changes.get(i), changes.get(j))){
-					found = true;
-					continue;
-				}
-			}
-			
-			if (!found){
-				uniques.add(changes.get(i));
-			}
-			
-		}
-		
 		// Mark duplicates
 		List<Integer> toRemove = new ArrayList<>();
 		
-		lim = uniques.size();
+		int lim = changes.size();
 		for (int i=0; i<lim; i++){
 			if (!toRemove.contains(i)){
 				for (int j=i+1;j<lim; j++){
 					if (!toRemove.contains(j)){
-						if (isIdenticalAxion(uniques.get(i), uniques.get(j))){
+						if (isIdenticalAxion(changes.get(i), changes.get(j))){
 							toRemove.add(j);
 						}
 					}
@@ -397,22 +378,44 @@ public class MetaOntology
 		}
 		
 		// Filter the results
-		List<OWLOntologyChange> result = new ArrayList<>();
-		
-		for (int i=0; i<lim; i++){
-			if (!toRemove.contains(i)){
-				result.add(uniques.get(i));
+		for (int i=lim-1; i>-1; i--){
+			if (toRemove.contains(i)){
+				changes.remove(i);
 			}
 		}
 		
-		return result;
+
+		lim = changes.size();
+		toRemove.clear();
+		for (int i=0; i<lim; i++){
+			if (!toRemove.contains(i)){
+				for (int j=0;j<lim; j++)
+					if (i!=j){
+						if (!toRemove.contains(j)){
+							if (isIdenticalOppositeAxion(changes.get(i), changes.get(j))){
+							toRemove.add(i);
+							toRemove.add(j);
+							continue;
+						}
+					}
+				}
+			}			
+		}
+		
+		for (int i=lim-1; i>-1; i--){
+			if (toRemove.contains(i)){
+				changes.remove(i);
+			}
+		}
+		
+		return changes;
 	}
 	
 	public static List<OWLOntologyChange> getRemoveAllPropertiesIndividualChanges (OWLIndividual individual){
 		List<OWLOntologyChange> L = new ArrayList<OWLOntologyChange>();
 		
 		for (OWLOntology O: OWL.ontologies()){		
-			for (OWLAxiom a : O.getDeclarationAxioms((OWLEntity)individual)) L.add(new RemoveAxiom(O, a));
+//			for (OWLAxiom a : O.getDeclarationAxioms((OWLEntity)individual)) L.add(new RemoveAxiom(O, a));
 			for (OWLAxiom a : O.getReferencingAxioms((OWLEntity)individual)) L.add(new RemoveAxiom(O, a));			
 			for (OWLAxiom a : O.getDataPropertyAssertionAxioms(individual)) L.add(new RemoveAxiom(O, a));
 			for (OWLAxiom a : O.getObjectPropertyAssertionAxioms(individual)) L.add(new RemoveAxiom(O, a));
@@ -480,6 +483,9 @@ public class MetaOntology
 	
 	protected static List<OWLOntologyChange> makeObjectIndividual (OWLIndividual parent, Json properties, OWLOntology O, OWLOntologyManager manager, OWLDataFactory factory){
 		List<OWLOntologyChange> result = new ArrayList<OWLOntologyChange>();
+		
+		result.addAll(getRemoveAllPropertiesIndividualChanges(parent));
+		
 		for (Map.Entry<String, Json> e : properties.asJsonMap().entrySet())
 		{
 			String key = e.getKey();
@@ -570,7 +576,7 @@ public class MetaOntology
 	{
 		// Remove all data and object properties currently declared on the ontology.
 		List<OWLOntologyChange> L = new ArrayList<OWLOntologyChange>();
-		L.addAll(getRemoveOnlyPropertiesIndividualChanges(individual));		
+//		L.addAll(getRemoveOnlyPropertiesIndividualChanges(individual));		
 		L.addAll(makeObjectIndividual(individual, properties, O, manager, factory));
 		
 		return L;

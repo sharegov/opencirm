@@ -981,7 +981,7 @@ public class ServiceCaseManager extends OntoAdmin {
 						
 						OWLNamedIndividual ind = OWL.individual(PREFIX + iri);
 						evictionList.add(ind.getIRI().getFragment());
-						changes.addAll(MetaOntology.getRemoveAllPropertiesIndividualChanges(ind));
+//						changes.addAll(MetaOntology.getRemoveAllPropertiesIndividualChanges(ind));
 					}
 				} else {
 					// not so sure ask thomas
@@ -1000,6 +1000,7 @@ public class ServiceCaseManager extends OntoAdmin {
 				ThreadLocalStopwatch.now("---- Start Commiting Changes.");
 				
 				boolean r = commit(userName, comment, changes);
+//				boolean r = true;
 				
 				ThreadLocalStopwatch.now("---- Ended Commiting Changes.");
 				

@@ -399,11 +399,11 @@
 												  "hasLegacyEvent": {"$ref": "#/definitions/hasLegacyEvent"}
 											},
 								"required": [
-									"iri",
-									"label",
-									"hasLegacyCode",
-									"type"
-								]
+												"iri",
+												"label",
+												"hasLegacyCode",
+												"type"
+											]
             },
 		"hasDataSource": {
 							"type": "object",
