@@ -3282,7 +3282,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 				if(this.hasActivity().label() == 'StatusChangeActivity' && this.hasOutcome().iri().indexOf('#C-') > -1 )
 				{
 					var date = this.hasCompletedTimestamp;
-					if(closedDate == null || closedDate > date)
+					if(closedDate == null || closedDate() > date())
 					{ 
 						closedDate = date;
 					}
