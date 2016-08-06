@@ -7,7 +7,7 @@ D. Protege configuration
 
 Hilpold 2015.11.25 valid for mdCirm/OpenCirm v2.0.3b+ and CirmAdmin vC2.0.2+ (C...Configuration server)
 Hilpold 2016.01.29 update
-
+Hilpold 2016.08.05 update for v2.1.0
 ---------------------------------------------------------------------------------------------------------
 A. Introduction
 The ontology infrastructure consists of all application servers (prod and test), all configuration servers 
@@ -102,16 +102,16 @@ application or configuration servers.
 E. Ontology Servers
 Server	 - Chat User					-	Service Name	- DB Directory 
 s0020269 - ontology_server_test			-	owldbTest		- C:\owldbTest\data
-s0141669 - ontology_server_production	-   owldbserver     - c:\owldb\data
+s0144737 - ontology_server_production	-   ontologyServer  - C:\ontologyServer\data
  
 Refresh Prod to Test repo servers
 sc \\s0020269 stop owldbTest
 mkdir \\s0020269\c$\owldbTest\data-backup_%date:~-4,4%%date:~-10,2%%date:~-7,2%
 copy \\s0020269\c$\owldbTest\data \\s0020269\c$\owldbTest\data-backup_%date:~-4,4%%date:~-10,2%%date:~-7,2%
 del \\s0020269\c$\owldbTest\data\* /Q
-sc \\s0141669 stop owldbserver
-copy \\s0141669\c$\owldb\data \\s0020269\c$\owldbTest\data
-sc \\s0141669 start owldbserver
+sc \\s0144737 stop ontologyServer
+copy \\s0144737\c$\ontologyServer\data \\s0020269\c$\owldbTest\data
+sc \\s0144737 start ontologyServer
 sc \\s0020269 start owldbTest
 
 

@@ -2,6 +2,7 @@ Live Reporting
 This document explains the Live Reporting requirements, it's core architecture, as well as serves as a user's guide for common tasks.
 
 Hilpold 2015.05.06 valid for mdCirm/OpenCirm v1.0.23+
+Hilpold 2016.08.05 valid for 2.0.19+ (Enabled by default)
 
 1) Live Reporting Requirements (Core)
 1.1) The initial requirement for live reporting is that during time of emergency activation (Hurricane, other emergency), the EOC needs a feed of new SRs 
@@ -82,12 +83,21 @@ Implemented Usage:
 	LiveReportingSenders. 
 
 3) Common Tasks
-3.1) Start Live Reporting
-Live reporting is disabled by default on all servers. Therefore it has to be enabled using the following post REST call on each server:
+3.1) Query status
+
+GET /liveReporting/status
+
+3.2) Stop Live Reporting
+
+Live reporting is enabled by default (since 2.0.19) on all servers. To stop it manually, post this REST call to each server: 
+
+POST /liveReporting/stop
+
+
+3.3) Start Live Reporting
+Live reporting is enabled (since 2.0.19) by default on all servers. Therefore the following post REST call should only be used after a manual Stop:
 
 POST /liveReporting/start
-
-Call this on each server in the cluster.
 
 After this call returns successfully, all new SRs that are received by the server from all sources will be sent to the outReportingQueue (CIRMDW queue).
 If the listener on the other end of the queue is not running, the queue will fill up and once it's full, additional messages will be lost.
@@ -95,14 +105,6 @@ If the listener on the other end of the queue is not running, the queue will fil
 however, Live Reporting has a facility to send any new case on demand. See 3.4. below.)
 
 If Live Reporting was already started, it will remain running and an appropriate response will be sent.
-
-3.2) Stop Live Reporting
-
-POST /liveReporting/stop
-
-3.3) Query status
-
-GET /liveReporting/status
 
 3.4) Manually send an SR - sendAsNewSR
 This should only be used for testing or if is known that a particular SR failed to be sent.
