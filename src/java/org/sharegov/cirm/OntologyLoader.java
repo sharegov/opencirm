@@ -70,9 +70,6 @@ public class OntologyLoader
 		// TODO: all this should be in customIRIMappings file only..
 		locations.put(IRI.create("http://www.miamidade.gov/cirm/legacy"), 
 				  new File(StartUp.config.at("workingDir").asString() + "/src/ontology/legacy.owl"));		
-		locations.put(IRI.create("http://www.miamidade.gov/cirm/legacy/exported"),
-//				new File("c:/temp/csrnew.owl"));
-				  new File(StartUp.config.at("workingDir").asString() + "/src/ontology/csr.owl"));		
 		locations.put(IRI.create("http://www.miamidade.gov/ontology"), 
 			      new File(StartUp.config.at("workingDir").asString() + "/src/ontology/County_Working.owl"));
 		locations.put(IRI.create("http://www.miamidade.gov/ontology/pkbi"), 
