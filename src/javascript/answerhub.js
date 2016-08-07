@@ -63,18 +63,18 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 		};
 		
 		self.clear = function() {
-    	    self.fullAddress("");
-    	    self.zip("");
-    		self.folio("");
-    		self.unit("");
-    		self.municipality("");
-    		self.municipalityId("");
-    		self.coordinates({});
-    		self.commonLocation.name("");
-    		self.commonLocation.layer("");
-    		self.commonLocation.id("");
-    		self.addressData(null);
-    	};
+	    self.fullAddress("");
+	    self.zip("");
+  		self.folio("");
+  		self.unit("");
+  		self.municipality("");
+  		self.municipalityId("");
+  		self.coordinates({});
+  		self.commonLocation.name("");
+  		self.commonLocation.layer("");
+  		self.commonLocation.id("");
+  		self.addressData(null);
+  	};
 
     	self.getCity = function( alias ) {
     		if(!alias)
@@ -122,114 +122,111 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 		self.gis = null;
 		self.map = ko.observable(null);
 		self.last5Addr = ko.observableArray([]);
-    	self.clear = function() {
-    		self.address.clear();
-    	    self.addresses.removeAll();
-    	};
+  	self.clear = function() {
+  		self.address.clear();
+  	    self.addresses.removeAll();
+  	};
 
-    	self.updateLast5Addr = function() {
-    		var temp = {
-    			"fullAddress": self.address.fullAddress(), "municipality":self.address.municipality(),
-    			"zip":self.address.zip(), "folio":self.address.folio(), "unit": self.address.unit()};
-    		if(self.last5Addr().length == 5)
-    			self.last5Addr.pop();
-    		self.last5Addr.unshift(temp);
-    	};
+  	self.updateLast5Addr = function() {
+  		var temp = {
+  			"fullAddress": self.address.fullAddress(), "municipality":self.address.municipality(),
+  			"zip":self.address.zip(), "folio":self.address.folio(), "unit": self.address.unit()};
+  		if(self.last5Addr().length == 5)
+  			self.last5Addr.pop();
+  		self.last5Addr.unshift(temp);
+  	};
     	
-    	self.showLast5Addr = function() {
-			$("#ah_last5_addr").dialog({height: 200, width: 600, modal: true});
-    	};
+  	self.showLast5Addr = function() {
+		  $("#ah_last5_addr").dialog({height: 200, width: 600, modal: true});
+  	};
 
-    	self.fetchAddress = function(el) {
-		  	$("#ah_last5_addr").dialog('close');
-			$("#ah_addr_dialog_alert")[0].innerText = "Do you want to fetch this Address ?";
-			$("#ah_addr_dialog_alert").dialog({ height: 150, width: 350, modal: true, buttons: {
-				"Fetch" : function() {
-					self.address.fullAddress(el.fullAddress);
-					self.address.municipality(el.municipality);
-					self.address.folio(el.folio);
-					self.address.zip(el.zip);
-					$("#ah_addr_dialog_alert").dialog('close');
-					self.searchAddress();
-				},
-				"Cancel": function() {
-				  	$("#ah_addr_dialog_alert").dialog('close');
-				}
-			  } 
-			});
+  	self.fetchAddress = function(el) {
+	  	$("#ah_last5_addr").dialog('close');
+  		$("#ah_addr_dialog_alert")[0].innerText = "Do you want to fetch this Address ?";
+  		$("#ah_addr_dialog_alert").dialog({ height: 150, width: 350, modal: true, buttons: {
+  			"Fetch" : function() {
+  				self.address.fullAddress(el.fullAddress);
+  				self.address.municipality(el.municipality);
+  				self.address.folio(el.folio);
+  				self.address.zip(el.zip);
+  				$("#ah_addr_dialog_alert").dialog('close');
+  				self.searchAddress();
+  			},
+  			"Cancel": function() {
+  			  	$("#ah_addr_dialog_alert").dialog('close');
+  			}
+  		  } 
+  		});
+  	};
 
-    	};
-
-    	self.validateOnTab = function(data, event) {
-    	    if(event.keyCode == 9 || event.keyCode == 13) {
-   	            self.searchAddress();
-    	    }
-    	    return true;    	    
-    	};
+  	self.validateOnTab = function(data, event) {
+  	    if(event.keyCode == 9 || event.keyCode == 13) {
+ 	        self.searchAddress();
+  	    }
+  	    return true;    	    
+  	};
     	
-    	self.searchFolioOnEnter = function(data, event) {
-    		if(event.keyCode == 13) {
-    			self.searchFolio();
-    		}
-    		return true;
-    	};
-    	
-    	self.searchCommonLocationOnEnter = function(data, event) {
-    		if(event.keyCode == 13) {
-    			self.searchCommonLocation();
-    		}
-    		return true;
-    	};
+  	self.searchFolioOnEnter = function(data, event) {
+  		if(event.keyCode == 13) {
+  			self.searchFolio();
+  		}
+  		return true;
+  	};
+  	
+  	self.searchCommonLocationOnEnter = function(data, event) {
+  		if(event.keyCode == 13) {
+  			self.searchCommonLocation();
+  		}
+  		return true;
+  	};
     	
 		self.launchMap = function() {
 			$(document).trigger(legacy.InteractionEvents.UserAction, ['Launch Map', '']);		    
 			if(!self.map() || self.map().closed) {
-			    var mapWindow = null;
+			  var mapWindow = null;
 				var callback = function () {
-			        self.setAddressOnMap(self.address.fullAddress(), 
-                                      self.address.zip(),
-                                      self.address.addressData().propertyInfo,
-                                      self.address.unit(),
-                                      self.address.municipalityId()
-                                  );
-			        $(document).unbind("mapInitializedEvent", callback);			        
-			    };
-			    $(document).bind("mapInitializedEvent", callback);
-			    mapWindow = window.open("/html/answerhubmap.html","","width=1024,height=768,alwaysRaised=yes");
+  			  self.setAddressOnMap( self.address.fullAddress(), 
+                                self.address.zip(),
+                                self.address.addressData().propertyInfo,
+                                self.address.unit(),
+                                self.address.municipalityId()
+                              );
+  			  $(document).unbind("mapInitializedEvent", callback);			        
+  			};
+			  $(document).bind("mapInitializedEvent", callback);
+        mapWindow = window.open("/html/googlemap.html","","width=1024,height=768,alwaysRaised=yes");
+			  //mapWindow = window.open("/html/answerhubmap.html","","width=1024,height=768,alwaysRaised=yes");
 			    //IE9 fix for callee exception.
 			    //02.21.2013 wrapped event and listeners as workaround to avoid initial page load
-                $(mapWindow).load(function() {
-                    $(mapWindow).unload(function() {
-                        self.map(null);
-                    });
-                });
+        $(mapWindow).load(function() {
+            $(mapWindow).unload(function() {
+                self.map(null);
+            });
+        });
 				self.map(mapWindow);
-				
-				
 			}
 			else {
 				self.map().focus();
-				self.setAddressOnMap(self.address.fullAddress(), 
-				                                self.address.zip(),
-				                                self.address.addressData().propertyInfo,
-				                                self.address.unit(),
-				                                self.address.municipalityId());
+				self.setAddressOnMap( self.address.fullAddress(), 
+                              self.address.zip(),
+                              self.address.addressData().propertyInfo,
+                              self.address.unit(),
+                              self.address.municipalityId());
 			}			
 		};
 		
 		self.setAddressOnMap = function(address, zip, propertyInfo, unit, municipalityId)
 		{
-			//if(propertyInfo.match) {
-				self.map().address = address;
-				self.map().zip = zip;
-				self.map().propertyInfo = propertyInfo;
-				if(unit != 'MULTI')
-					self.map().unit = unit;
-				else 
-					self.map().unit = "";
-				self.map().municipalityId = municipalityId;
-				self.map().doMap();
-			//}
+		  self.map().address = address;
+			self.map().zip = zip;
+			self.map().propertyInfo = propertyInfo;
+			if(unit != 'MULTI')
+				self.map().unit = unit;
+			else 
+				self.map().unit = "";
+			self.map().municipalityId = municipalityId;
+      self.map().originalResult = self.gisData;
+			self.map().doMap();
 		};
 		
 		$(document).bind(legacy.InteractionEvents.LaunchMap, function(event, data) {
@@ -271,55 +268,55 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 		};*/
 	
 		self.setAddress = function(data, viaResolveAddress, behindTheScenes) {
-		    console.log('set address', data);
-				self.address.setData( data );
-				if(data.propertyInfo.propertyType != undefined && data.propertyInfo.propertyType == 'MULTI')
-				{
-					self.address.unit('MULTI');
-					var unitAutoComplete = {
-						minLength: 0,
-						source: data.propertyInfo.units,
-						select: function (event, ui)
-						{
-							$("#ah_unit_select").dialog({
-		   		             	autoOpen: true,
-		   		             	modal:true,
-		   		             	buttons : {
-		   		                	"Yes" : function() {
-										self.address.unit(ui.item.value);
-										$(this).dialog("close");
-										self.searchAddress();
-							     	},
-		   			                "No" : function() {
-							     		$(this).dialog("close");
-		   			                }
-		   			             }
-		   			         });
-						}
-					};
-					$("#ah_unit").autocomplete(unitAutoComplete);
-					$("#sh_unit").autocomplete(unitAutoComplete);
-				}
-				else
-				{
-					$("#ah_unit").autocomplete( "destroy" );
-					$("#sh_unit").autocomplete( "destroy" );
-				}
-				
-				if(self.map()) {
-					self.map().address = self.address.fullAddress();
-					self.map().zip = self.address.zip();
-					self.map().propertyInfo = self.address.addressData().propertyInfo;
-					if(self.address.unit() != 'MULTI')
-						self.map().unit = self.address.unit();
-					else 
-						self.map().unit = "";
-					self.map().municipalityId = self.address.municipalityId();
-					self.map()['doMap'].call(self.map());
-				}
-				if(viaResolveAddress == false)
-					self.updateLast5Addr();
-				$(document).trigger(legacy.InteractionEvents.AddressValidated, [self.address, behindTheScenes]);
+      self.gisData = data.originalResult;
+			self.address.setData( data );
+			if(data.propertyInfo.propertyType != undefined && data.propertyInfo.propertyType == 'MULTI')
+			{
+				self.address.unit('MULTI');
+				var unitAutoComplete = {
+					minLength: 0,
+					source: data.propertyInfo.units,
+					select: function (event, ui)
+					{
+						$("#ah_unit_select").dialog({
+	   		             	autoOpen: true,
+	   		             	modal:true,
+	   		             	buttons : {
+	   		                	"Yes" : function() {
+									self.address.unit(ui.item.value);
+									$(this).dialog("close");
+									self.searchAddress();
+						     	},
+	   			                "No" : function() {
+						     		$(this).dialog("close");
+	   			                }
+	   			             }
+	   			         });
+					}
+				};
+				$("#ah_unit").autocomplete(unitAutoComplete);
+				$("#sh_unit").autocomplete(unitAutoComplete);
+		  }
+			else
+			{
+				$("#ah_unit").autocomplete( "destroy" );
+				$("#sh_unit").autocomplete( "destroy" );
+			}
+			
+			if (self.map()) {
+				self.map().address = self.address.fullAddress();
+				self.map().zip = self.address.zip();
+				self.map().propertyInfo = self.address.addressData().propertyInfo;
+				if(self.address.unit() != 'MULTI')
+					self.map().unit = self.address.unit();
+				else 
+					self.map().unit = "";
+				self.map().municipalityId = self.address.municipalityId();
+				self.map()['doMap'].call(self.map());
+			}
+			if(viaResolveAddress == false)
+				self.updateLast5Addr();
+			$(document).trigger(legacy.InteractionEvents.AddressValidated, [self.address, behindTheScenes]);
 		};
 		
 		self.setCommonLocation = function (data) {
@@ -452,6 +449,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 						self.setAddress(candidates[0], false, behindTheScenes);
 					}
 					else {
+            console.log('many candidates', candidates);
 						if(!behindTheScenes)
 						{
 							self.hideProgress("#ah_dialog_address_search");
@@ -476,20 +474,20 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 							}
 						}
 					}
-				}
-				,function(msg, req, status) {
-				self.hideProgress("#ah_dialog_address_search");
-				$('body').css('cursor', 'default');	
-				 if (req.status != 200) {
-				   $("#ah_addr_dialog_alert")[0].innerText = status + ' \n' + "Address and geographic data lookups are currently unavailable.  Please try again shortly.";
-				 } 
-				 else {			
-				   $("#ah_addr_dialog_alert")[0].innerText = status + ' \n' + msg;			 
-				 }
-					
-					$("#ah_addr_dialog_alert").dialog({ height: 150, width: 350, modal: true, buttons: {
-						"Close" : function() { $("#ah_addr_dialog_alert").dialog('close'); }
-					}});
+				},
+        function(msg, req, status) {
+  				self.hideProgress("#ah_dialog_address_search");
+  				$('body').css('cursor', 'default');
+  				if (req.status != 200) {
+  				  $("#ah_addr_dialog_alert")[0].innerText = status + ' \n' + "Address and geographic data lookups are currently unavailable.  Please try again shortly.";
+  				} 
+  				else {			
+  				  $("#ah_addr_dialog_alert")[0].innerText = status + ' \n' + msg;			 
+  				}
+  					
+  			 $("#ah_addr_dialog_alert").dialog({ height: 150, width: 350, modal: true, buttons: {
+  						"Close" : function() { $("#ah_addr_dialog_alert").dialog('close'); }
+  			  }});
 				});
 			}
 		};
@@ -876,26 +874,25 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 		// otherwise KO complains when it can't find the bindings defined in the
 			// sub-component (while
 		// binding the containing component..
-		legacy.popularSearches(function(t) {
-			self.model.topicSearch.keywords("");
-			$(document).trigger(legacy.InteractionEvents.UserAction, ['PredefinedSearch', t.hasName()]);			
-			self.model.topicSearch.searchKnowledgeBase(t.hasText());
-		}).embed($('#popularSearchContainer',self.markup));
-		    
-		    var ihist = legacy.interactionHistory(); 
-		    ihist.embed($('#callInteractionContainer',self.markup));	
-		    
+  		legacy.popularSearches(function(t) {
+  			self.model.topicSearch.keywords("");
+  			$(document).trigger(legacy.InteractionEvents.UserAction, ['PredefinedSearch', t.hasName()]);			
+  			self.model.topicSearch.searchKnowledgeBase(t.hasText());
+  		}).embed($('#popularSearchContainer',self.markup));
+  		    
+  		    var ihist = legacy.interactionHistory(); 
+  		    ihist.embed($('#callInteractionContainer',self.markup));			    
 		}
 		
 		// Menu switch on SR details, not sure if this
 		return self;
 	}
     
-	var M = {
-	    AddressModel:AddressModel,
+  var M = {
+    AddressModel:AddressModel,
 		makeAnswerHub: makeAnswerHub
 	};
-    if (modulesInGlobalNamespace)
-        window.answerhub = M;
-    return M;	
+  if (modulesInGlobalNamespace)
+    window.answerhub = M;
+  return M;	
 });

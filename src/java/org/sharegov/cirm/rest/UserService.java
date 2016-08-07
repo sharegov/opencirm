@@ -220,7 +220,9 @@ public class UserService extends RestService implements AutoConfigurable
 	        if (!request.has("provider") || request.is("provider", ""))
 	            request.set("provider", desc.at("authenticatesWith").at("hasName"));			
 			UserProvider providerImpl = provider(request.at("provider").asString());
-			Json profile = providerImpl.get(request.at("username").asString()); 			        
+			Json profile = Json.object("username", "cirm", "password", "cirm");
+					//providerImpl.get(request.at("username").asString());
+					
 			if (profile.isNull()) return ko("No profile");
 				if (request.is("groups", true) || request.is("access", true))
 					profile.set("groups", providerImpl.findGroups(request.at("username").asString()));

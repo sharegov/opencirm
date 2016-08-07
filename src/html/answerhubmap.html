@@ -59,57 +59,54 @@
 	     	//load map
     		$(document).ready(function (){
 	    		<!-- For version detection, set to min. required Flash Player version, or 0 (or 0.0.0), for no version detection. --> 
-				(function()
-				{
-	            var swfVersionStr = "10.0.0";
-	            <!-- To use express install, set to playerProductInstall.swf, otherwise the empty string. -->
-	            var xiSwfUrlStr = "playerProductInstall.swf";
-	            var flashvars = {};
-	            var params = {};
-	            params.quality = "high";
-	            params.bgcolor = "#ffffff";
-	            params.allowscriptaccess = "sameDomain";
-	            params.allowfullscreen = "true";	            var attributes = {};
-	            attributes.id = "AnswerHubMap";
-	            attributes.name = "AnswerHubMap";
-	            attributes.align = "middle";
-	            swfobject.embedSWF(
-	                "gismap/AnswerHubMap.swf", "map", 
-	                "100%", "100%", 
-	                swfVersionStr, xiSwfUrlStr, 
-	                flashvars, params, attributes, function(e){window.opener['mapInitializedCallback'].call(window.opener);});
-				<!-- JavaScript enabled so display the flashContent div in case it is not replaced with a swf object. -->
-				swfobject.createCSS("#map", "display:block;text-align:left;");
-				})();
-				//end load map
-				
-				
-				
+    				(function()
+    				{
+    	            var swfVersionStr = "10.0.0";
+    	            <!-- To use express install, set to playerProductInstall.swf, otherwise the empty string. -->
+    	            var xiSwfUrlStr = "playerProductInstall.swf";
+    	            var flashvars = {};
+    	            var params = {};
+    	            params.quality = "high";
+    	            params.bgcolor = "#ffffff";
+    	            params.allowscriptaccess = "sameDomain";
+    	            params.allowfullscreen = "true";	            var attributes = {};
+    	            attributes.id = "AnswerHubMap";
+    	            attributes.name = "AnswerHubMap";
+    	            attributes.align = "middle";
+    	            swfobject.embedSWF(
+    	                "gismap/AnswerHubMap.swf", "map", 
+    	                "100%", "100%", 
+    	                swfVersionStr, xiSwfUrlStr, 
+    	                flashvars, params, attributes,
+                        function(e){window.opener['mapInitializedCallback'].call(window.opener);});
+    				<!-- JavaScript enabled so display the flashContent div in case it is not replaced with a swf object. -->
+    				swfobject.createCSS("#map", "display:block;text-align:left;");
+    				})();
+    				//end load map
     		});
 
-            function addressFromMapCallback(propInfo)
-            {
-               window.opener['addressFromMapCallback'].call(window.opener, propInfo);
-            }
+        function addressFromMapCallback(propInfo) {
+           window.opener['addressFromMapCallback'].call(window.opener, propInfo);
+        }
  	
-    		function doMap()
-    		{
-//    		    alert('do map ' + window.address);
-				if(window != null && window.address && window.zip)
-				{
-					try
-					{
-						//console.log(window.unit);
-						AnswerHubMap.mapAddress(window.address, window.zip, window.municipalityId, window.unit);
-						
-//	    				alert('map address successful');
-					}catch(error)
-					{
-//					    alert('map adderss failed, will try again:' + error);
-						setTimeout( doMap, 1000 );
-					}
-				}
-			}
+    		function doMap() {
+  //    		    alert('do map ' + window.address);
+  				if(window != null && window.address && window.zip)
+  				{
+  					try
+  					{
+  						//console.log(window.unit);
+  						AnswerHubMap.mapAddress(window.address, window.zip, window.municipalityId, window.unit);
+  						
+  //	    				alert('map address successful');
+  					}
+            catch(error)
+  					{
+  //					    alert('map adderss failed, will try again:' + error);
+  						setTimeout( doMap, 1000 );
+  					}
+  				}
+			  }
         </script>
     </head>
     <body>

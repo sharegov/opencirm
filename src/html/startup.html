@@ -226,50 +226,54 @@ function (rest, U, cirm, legacy, sreditor, answerhub, store) {
 			});
 		});
 		
-        $(document).bind(legacy.InteractionEvents.AddressValidated, function(event, data, behindTheScenes) {
-
-			var callback = function cb(){
-	    		var address = editor.model.data().properties().atAddress();
-	        	var city = data.getCity();
-	        	//TODO:
-	        	//
-	        	/*
-	        	An issue that remains and requires some thought/decision 
-	        	is how we will resolve an intersection to a Street_Address in the ontology. 
-	        	Either the properties on this type need to be expanded or a new OWLClass needs to be 
-	        	defined because it currently doesn't fit our SH Street_Address model (i.e. searching for NW 87TH AVE & NW 56TH ST, 33178 
-	            returns multiple directions and multiple streetnames and suffixes). We could just ensure those properties in Street_Address 
-	            are non-functional and add the properties more than once with the set of values. Again, someone has to decide. 
-	        	*/
-	        	if(true || data.addressData().parsedAddress.House != undefined && data.addressData().parsedAddress.House.length > 0)
-	        	{
-		        	address.addressType(data.addressData().addressType);
-		        	address.fullAddress(data.fullAddress());
-		        	address.folio(data.folio());
-		        	var direction = data.getDirection();
-		            var streetType = data.getStreetType();
-		            address.Street_Number(data.addressData().parsedAddress.House);
-		            address.Street_Name(data.addressData().parsedAddress.StreetName);
-		            address.Zip_Code($.trim(data.zip())); 
-		            if(data.addressData().propertyInfo.parcelInfoCondoUnit != undefined && data.addressData().propertyInfo.parcelInfoCondoUnit.length > 0)
-			            address.Street_Unit_Number($.trim(data.addressData().propertyInfo.parcelInfoCondoUnit));
-			        if(data.addressData().propertyInfo.propertyType == "MULTI")
-			        	address.Street_Unit_Number($.trim(data.addressData().propertyInfo.propertyType));
-		            address.Street_Address_City().label(data.municipality());
-		            address.Street_Address_City().iri(city.iri);
-		            if(direction != undefined) {
-		            	address.Street_Direction().label(data.addressData().parsedAddress.PreDir);
-		            	address.Street_Direction().iri(direction.iri);
-		            }
-		            if(streetType != undefined) {
-			            address.hasStreetType().label(data.addressData().parsedAddress.SufType);
-			            address.hasStreetType().iri(streetType.iri);
-			        }
-		        	address.hasLocationName(data.commonLocation.name());
-					editor.model.data().properties().hasXCoordinate(data.coordinates().x);
-					editor.model.data().properties().hasYCoordinate(data.coordinates().y);
-	        	}
-	        	if(!behindTheScenes)
+    $(document).bind(legacy.InteractionEvents.AddressValidated, function(event, data, behindTheScenes) {
+			var callback = function cb() {
+        var address = editor.model.data().properties().atAddress();
+	      var city = data.getCity();
+        	//TODO:
+        	//
+        	/*
+        	An issue that remains and requires some thought/decision 
+        	is how we will resolve an intersection to a Street_Address in the ontology. 
+        	Either the properties on this type need to be expanded or a new OWLClass needs to be 
+        	defined because it currently doesn't fit our SH Street_Address model (i.e. searching for NW 87TH AVE & NW 56TH ST, 33178 
+            returns multiple directions and multiple streetnames and suffixes). We could just ensure those properties in Street_Address 
+            are non-functional and add the properties more than once with the set of values. Again, someone has to decide. 
+        	*/
+      	if(true || 
+           data.addressData().parsedAddress.House != undefined && 
+           data.addressData().parsedAddress.House.length > 0)
+      	{
+        	address.addressType(data.addressData().addressType);
+        	address.fullAddress(data.fullAddress());
+        	address.folio(data.folio());
+        	var direction = data.getDirection();
+          var streetType = data.getStreetType();
+          address.Street_Number(data.addressData().parsedAddress.House);
+          address.Street_Name(data.addressData().parsedAddress.StreetName);
+          address.Zip_Code($.trim(data.zip())); 
+          if (data.addressData().propertyInfo.parcelInfoCondoUnit != undefined && 
+              data.addressData().propertyInfo.parcelInfoCondoUnit.length > 0)
+	           address.Street_Unit_Number($.trim(data.addressData().propertyInfo.parcelInfoCondoUnit));
+	        if (data.addressData().propertyInfo.propertyType == "MULTI")
+	        	address.Street_Unit_Number($.trim(data.addressData().propertyInfo.propertyType));
+          address.Street_Address_City().label(data.municipality());
+          address.Street_Address_City().iri(city.iri);
+          if (direction != undefined) {
+            	address.Street_Direction().label(data.addressData().parsedAddress.PreDir);
+            	address.Street_Direction().iri(direction.iri);
+          }
+          if (streetType != undefined) {
+            address.hasStreetType().label(data.addressData().parsedAddress.SufType);
+            address.hasStreetType().iri(streetType.iri);
+	        }
+        	address.hasLocationName(data.commonLocation.name());
+          if (data.coordinates()) {
+  					editor.model.data().properties().hasXCoordinate(data.coordinates().x);
+  					editor.model.data().properties().hasYCoordinate(data.coordinates().y);
+          }
+        }
+	      if (!behindTheScenes)
 					editor.model.dupChecker();
 			};
 			

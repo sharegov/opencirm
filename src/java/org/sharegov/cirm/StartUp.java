@@ -283,7 +283,8 @@ public class StartUp extends ServerResource
 		try
 		{
 			ConfigSet.getInstance();
-		}catch(Throwable t)
+		}
+		catch(Throwable t)
 		{
 			throw new RuntimeException(t);
 		}

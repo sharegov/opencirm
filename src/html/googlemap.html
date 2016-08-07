@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- This stylesheet contains specific styles for displaying the map
+         on this page. Replace it with your own styles as described in the
+         documentation:
+         https://developers.google.com/maps/documentation/javascript/tutorial -->
+         <!--
+    <link rel="stylesheet" href="/maps/documentation/javascript/demos/demos.css">
+    -->
+  </head>
+  <body>
+    <div id="map" style="width:100%; height:100vh"></div>
+    <script>
+      var googleMap = null;
+      function initMap() {
+//        console.log('initMap callback called');
+        // Create a map object and specify the DOM element for display.
+        var mapel = document.getElementById('map');
+
+        googleMap = new google.maps.Map(mapel, {
+          scrollwheel: false,
+          zoom: 15
+        });
+//        console.log('maps created');
+        window.opener['mapInitializedCallback'].call(window.opener);
+      }
+
+      function doMap() {
+        console.log('positioning Google Map on ', 
+            window.address, window.zip, window.municipalityId, window.unit,
+            window.originalResult.geometry.location);
+        var location = window.originalResult.geometry.location;
+        var position = {lat:location.lat(),lng:location.lng()};
+        googleMap.setCenter(position);
+        var marker = new google.maps.Marker({
+            position: position,
+            map:googleMap,
+            title:"Incident location"
+        });        
+      }
+    </script>
+    <script 
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCaOiVSUeMAx_RCyUvpuorvZKTT3-t1JiU&callback=initMap"
+      async defer></script>
+  </body>
+</html>

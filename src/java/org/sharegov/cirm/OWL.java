@@ -548,11 +548,14 @@ public class OWL
 		OWLObjectProperty prop = objectProperty(id);
 		if (prop == null)
 			throw new NullPointerException("No object property with ID '" + id + "'");
+		Map<OWLPropertyExpression<?,?>, Set<OWLObject>> all = OWL.allProperties(ind, ontology(), false, true);
 		Set<OWLNamedIndividual> S = reasoner().getObjectPropertyValues(ind, prop).getFlattened();
-		if (S.isEmpty())
-			return null;
-		else
+		if (!S.isEmpty())
 			return S.iterator().next();
+		else if (all.containsKey(prop))
+			return (OWLNamedIndividual)all.get(prop).iterator().next();
+		else
+			return null;
 	}
 	
 	public static Set<OWLAnnotation> annotations(OWLNamedIndividual ind)
