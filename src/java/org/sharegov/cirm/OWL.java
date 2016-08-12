@@ -1344,6 +1344,7 @@ public class OWL
 		return json;
 	}
 	
+	
 	public static Json prefix(Json json)
 	{
 		Set<OWLProperty<?,?>> properties = new HashSet<OWLProperty<?,?>>();
