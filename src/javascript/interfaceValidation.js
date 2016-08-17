@@ -46,7 +46,7 @@ function($, U, cirm)   {
     	self.isValidForInterface = function (serviceRequest) {
     		validationMessage = "";
     		var typePrefixedIRI = serviceRequest.type;
-    		var typeFragment = typePrefixedIRI.split(":")[1];
+    		var typeFragment = typePrefixedIRI; // typePrefixedIRI.split(":")[1];
     		var typeInterface = self.getInterfaceForType(typeFragment)
     		
     		var interfaceValidationFunction;
@@ -70,7 +70,7 @@ function($, U, cirm)   {
     	 * gets the interface, if known by interface validator, for a given service request type as fragment.
     	 */
     	self.getInterfaceForType = function (typeFragment) {
-    		var typeFullIri = LEGACY_IRI_PREFIX + typeFragment;
+    		var typeFullIri = /*LEGACY_IRI_PREFIX + */ typeFragment;
     		var type = cirm.refs.serviceCases[typeFullIri];
     		var legacyInterfaceArr = U.ensureArray(type.hasLegacyInterface);
     		var result = null;

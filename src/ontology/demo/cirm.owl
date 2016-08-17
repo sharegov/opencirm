@@ -35,237 +35,6 @@
         <Class IRI="#AnyStatus"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#BEEWASP"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#CABCOM"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#CAVESINK"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#CODEPOFF"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COM08REG"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMAFTER"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMAGTKR"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMAHINS"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMAMFC"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMBIC"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMBRS"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMBUAST"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMBUILD"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMBUUST"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMCANAL"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMCEABV"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMCEBLM"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMCEBRT"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMCECCV"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMCECUI"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMCEILC"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMCEILD"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMCEILS"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMCEILU"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMCEIMR"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMCENCU"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMCEOGL"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMCEPKC"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMCEPKU"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMCESGN"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMCESTL"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMCETRE"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMCEVUS"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMCOMLO"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMD1C"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMD4C"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMD5C"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMDANPU"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMDIREC"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMFCUIN"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMHD"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMHOMCB"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMINPRO"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMLIQLI"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMMWP"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMNCM"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMONDTR"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMPRIMP"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMPVTRC"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMPWF3"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMPWPH"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMPWSF"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMPWTH"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMPWTT"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMQC311"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMRCYMS"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMRECTR"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMROADS"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMSE2"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMSFDT"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMSGRAD"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMSQPT"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMSWCB"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMSWIH"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMSWKDM"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMSWRCD"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMSWRCS"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMSWROL"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMTAXPP"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMTHFT"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMTRACO"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMTREEP"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMTRETK"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMTRSHM"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMTRT"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMTTT"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#COMVLREG"/>
-    </Declaration>
-    <Declaration>
         <Class IRI="#ChoiceValue"/>
     </Declaration>
     <Declaration>
@@ -276,21 +45,6 @@
     </Declaration>
     <Declaration>
         <Class IRI="#CreateServiceCase"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#GARBAGE1"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#GARBCSM"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#GARCONDM"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#GREEN"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#HOTSPOTI"/>
     </Declaration>
     <Declaration>
         <Class IRI="#IntakeMethod"/>
@@ -308,15 +62,6 @@
         <Class IRI="#LegacyTrigger"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#MANHOLE"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#MD8ECC"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#MOWING"/>
-    </Declaration>
-    <Declaration>
         <Class IRI="#MarkServiceFieldDisabled"/>
     </Declaration>
     <Declaration>
@@ -329,172 +74,13 @@
         <Class IRI="#MessageVariable"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#NETINTRA"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#NETOFFIC"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#NETREF"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#NOISEVIO"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#OCAECC"/>
-    </Declaration>
-    <Declaration>
         <Class IRI="#Outcome"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#POCHGRAZ"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW124"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW319"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW320"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW321"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW323"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW325"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW327"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW328"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW329"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW330"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW332"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW333"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW334"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW335"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW376"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW379"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW403"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW408"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW413"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW414"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW415"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW416"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW417"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW418"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW419"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW465"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW6021"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW6022"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW6023"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW6024"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW6025"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW6026"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW6063"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW6066"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW6091"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#PW96"/>
     </Declaration>
     <Declaration>
         <Class IRI="#Priority"/>
     </Declaration>
     <Declaration>
         <Class IRI="#QuestionTrigger"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#ROADDEB1"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#ROADDEBR"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#SCAPI"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#SCCBFRI"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#SCGPRO"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#SCNAMP"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#SCNCSR"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#SCNE"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#SCTP"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#SCTRA"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#STRUMPRE"/>
     </Declaration>
     <Declaration>
         <Class IRI="#SendEmail"/>
@@ -540,27 +126,6 @@
     </Declaration>
     <Declaration>
         <Class IRI="#StreetAddressOnlyCheckRule"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#TRASH"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#TREDDON"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#TREEBLOT"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#TREEDOWN"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#TREEFELL"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#TRLEAN"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#ZONCALLB"/>
     </Declaration>
     <Declaration>
         <ObjectProperty IRI="#hasActivity"/>
@@ -656,6 +221,12 @@
         <ObjectProperty IRI="#providedBy"/>
     </Declaration>
     <Declaration>
+        <DataProperty IRI="http://opencirm.org#fullAddress"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#hasAttachment"/>
+    </Declaration>
+    <Declaration>
         <DataProperty IRI="#hasAddressBuffer"/>
     </Declaration>
     <Declaration>
@@ -669,6 +240,9 @@
     </Declaration>
     <Declaration>
         <DataProperty IRI="#hasBusinessCodes"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#hasCaseNumber"/>
     </Declaration>
     <Declaration>
         <DataProperty IRI="#hasCc"/>
@@ -763,352 +337,12 @@
         <Class IRI="#LegacyTrigger"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#BEEWASP"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#CABCOM"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#CAVESINK"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#CODEPOFF"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COM08REG"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMAFTER"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMAGTKR"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMAHINS"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMAMFC"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMBIC"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMBRS"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMBUAST"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMBUILD"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMBUUST"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMCANAL"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMCEABV"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMCEBLM"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMCEBRT"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMCECCV"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMCECUI"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMCEILC"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMCEILD"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMCEILS"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMCEILU"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMCEIMR"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMCENCU"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMCEOGL"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMCEPKC"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMCEPKU"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMCESGN"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMCESTL"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMCETRE"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMCEVUS"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMCOMLO"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMD1C"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMD4C"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMD5C"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMDANPU"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMDIREC"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMFCUIN"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMHD"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMHOMCB"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMINPRO"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMLIQLI"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMMWP"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMNCM"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMONDTR"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMPRIMP"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMPVTRC"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMPWF3"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMPWPH"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMPWSF"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMPWTH"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMPWTT"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMQC311"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMRCYMS"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMRECTR"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMROADS"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMSE2"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMSFDT"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMSGRAD"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMSQPT"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMSWCB"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMSWIH"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMSWKDM"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMSWRCD"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMSWRCS"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMSWROL"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMTAXPP"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMTHFT"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMTRACO"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMTREEP"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMTRETK"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMTRSHM"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMTRT"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMTTT"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#COMVLREG"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
         <Class IRI="#ClearServiceField"/>
         <Class IRI="#LegacyEvent"/>
     </SubClassOf>
     <SubClassOf>
         <Class IRI="#CreateServiceCase"/>
         <Class IRI="#LegacyEvent"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#GARBAGE1"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#GARBCSM"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#GARCONDM"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#GREEN"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#HOTSPOTI"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#MANHOLE"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#MD8ECC"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#MOWING"/>
-        <Class IRI="#ServiceCase"/>
     </SubClassOf>
     <SubClassOf>
         <Class IRI="#MarkServiceFieldDisabled"/>
@@ -1119,220 +353,8 @@
         <Class IRI="#LegacyEvent"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#NETINTRA"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#NETOFFIC"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#NETREF"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#NOISEVIO"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#OCAECC"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#POCHGRAZ"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW124"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW319"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW320"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW321"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW323"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW325"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW327"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW328"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW329"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW330"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW332"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW333"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW334"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW335"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW376"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW379"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW403"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW408"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW413"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW414"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW415"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW416"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW417"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW418"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW419"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW465"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW6021"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW6022"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW6023"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW6024"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW6025"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW6026"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW6063"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW6066"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW6091"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#PW96"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
         <Class IRI="#QuestionTrigger"/>
         <Class IRI="#LegacyTrigger"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#ROADDEB1"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#ROADDEBR"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#SCAPI"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#SCCBFRI"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#SCGPRO"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#SCNAMP"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#SCNCSR"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#SCNE"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#SCTP"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#SCTRA"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#STRUMPRE"/>
-        <Class IRI="#ServiceCase"/>
     </SubClassOf>
     <SubClassOf>
         <Class IRI="#SendEmail"/>
@@ -1377,34 +399,6 @@
         <Class IRI="#StatusChange"/>
         <Class IRI="#LegacyEvent"/>
     </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#TRASH"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#TREDDON"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#TREEBLOT"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#TREEDOWN"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#TREEFELL"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#TRLEAN"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#ZONCALLB"/>
-        <Class IRI="#ServiceCase"/>
-    </SubClassOf>
     <ObjectPropertyDomain>
         <ObjectProperty IRI="#hasAllowableEvent"/>
         <ObjectUnionOf>
@@ -1412,6 +406,22 @@
             <Class IRI="#ServiceCase"/>
         </ObjectUnionOf>
     </ObjectPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#hasCaseNumber"/>
+        <Class IRI="http://opencirm.org#ServiceRequestType"/>
+    </DataPropertyDomain>
+    <DataPropertyRange>
+        <DataProperty IRI="http://opencirm.org#fullAddress"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://opencirm.org#hasAttachment"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#hasCaseNumber"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
 </Ontology>
 
 

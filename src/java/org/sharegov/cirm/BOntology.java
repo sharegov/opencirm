@@ -148,7 +148,8 @@ public class BOntology implements JsonSerializable
 		{
 			OWLOntologyManager manager = Refs.tempOntoManager.resolve();
 			IRI ontologyIRI = IRI.create(Refs.boIriPrefix.resolve() + "/"
-					+ data.at("type").asString().replace("legacy:", "") + "/"
+					//+ data.at("type").asString().replace("legacy:", "") + "/"
+					+ OWL.fullIri(data.at("type").asString()).getFragment() + "/"
 					+ data.at("boid").asString());
 			OWLOntology o = manager.getOntology(ontologyIRI);
 			if (o != null)

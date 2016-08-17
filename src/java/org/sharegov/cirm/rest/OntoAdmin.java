@@ -606,7 +606,8 @@ public class OntoAdmin extends RestService
 			synchronized(OWL.reasoner()) 
 			{
 		        manager.removeOntology(ont);
-		        try {
+		        try 
+		        {
 		            ont = manager.loadOntologyFromOntologyDocument(ontologyDocumentIRI);
 					System.out.println("done.");
 					System.out.print("flushing reasoner" + OWL.reasoner() + "...");
@@ -614,7 +615,8 @@ public class OntoAdmin extends RestService
 					OWL.reasoner().flush();
 					System.out.println("done.");
 				}
-		        catch (Throwable t) {
+		        catch (Throwable t) 
+		        {
 		        	if (manager instanceof SynchronizedOWLOntologyManager) 
 		        	{
 		        		manager = ((SynchronizedOWLOntologyManager)manager).getWrappedOWLOntologyManager(); 

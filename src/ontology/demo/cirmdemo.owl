@@ -248,7 +248,13 @@
         <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.utils.JsonEntityProvider"/>
     </Declaration>
     <Declaration>
+        <NamedIndividual IRI="#BusinessObjectIRIPrefixConfig"/>
+    </Declaration>
+    <Declaration>
         <NamedIndividual IRI="#CLOSED"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#DBIDFactoryConfig"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="#DBUserProvider"/>
@@ -269,6 +275,18 @@
         <NamedIndividual IRI="#PhoneIntake"/>
     </Declaration>
     <Declaration>
+        <NamedIndividual IRI="#PropertyLegallyResponsible"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#PropertyOther"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#PropertyOwner"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#PropertyTenant"/>
+    </Declaration>
+    <Declaration>
         <NamedIndividual IRI="#Standard"/>
     </Declaration>
     <Declaration>
@@ -276,6 +294,12 @@
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="#WebIntake"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#choicesResidence"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#sqPropertyOwner"/>
     </Declaration>
     <SubClassOf>
         <Class IRI="http://opencirm.org#AnswerHubConfiguration"/>
@@ -701,8 +725,16 @@
         <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.utils.JsonEntityProvider"/>
     </ClassAssertion>
     <ClassAssertion>
+        <Class IRI="http://opencirm.org#ConfigParam"/>
+        <NamedIndividual IRI="#BusinessObjectIRIPrefixConfig"/>
+    </ClassAssertion>
+    <ClassAssertion>
         <Class IRI="http://opencirm.org/cirm#Status"/>
         <NamedIndividual IRI="#CLOSED"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#ConfigParam"/>
+        <NamedIndividual IRI="#DBIDFactoryConfig"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="http://opencirm.org#UserBaseDataSource"/>
@@ -729,6 +761,22 @@
         <NamedIndividual IRI="#PhoneIntake"/>
     </ClassAssertion>
     <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="#PropertyLegallyResponsible"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="#PropertyOther"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="#PropertyOwner"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="#PropertyTenant"/>
+    </ClassAssertion>
+    <ClassAssertion>
         <Class IRI="http://opencirm.org/cirm#Priority"/>
         <NamedIndividual IRI="#Standard"/>
     </ClassAssertion>
@@ -740,6 +788,14 @@
         <Class IRI="http://opencirm.org/cirm#IntakeMethod"/>
         <NamedIndividual IRI="#WebIntake"/>
     </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValueList"/>
+        <NamedIndividual IRI="#choicesResidence"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ServiceQuestion"/>
+        <NamedIndividual IRI="#sqPropertyOwner"/>
+    </ClassAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
         <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
@@ -749,11 +805,6 @@
         <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
         <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
         <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.SystemMonitorService"/>
-    </ObjectPropertyAssertion>
-    <ObjectPropertyAssertion>
-        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
-        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OntoAdmin"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
@@ -773,22 +824,7 @@
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
         <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.CodeService"/>
-    </ObjectPropertyAssertion>
-    <ObjectPropertyAssertion>
-        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
-        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OWLIndividuals"/>
-    </ObjectPropertyAssertion>
-    <ObjectPropertyAssertion>
-        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
-        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
         <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.MetaService"/>
-    </ObjectPropertyAssertion>
-    <ObjectPropertyAssertion>
-        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
-        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.SearchService"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
@@ -799,6 +835,26 @@
         <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
         <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
         <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.UiService"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OntoAdmin"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.CodeService"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OWLIndividuals"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.SearchService"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
@@ -823,7 +879,17 @@
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#hasMember"/>
         <NamedIndividual IRI="http://opencirm.org#DemoConfigSet"/>
+        <NamedIndividual IRI="#BusinessObjectIRIPrefixConfig"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasMember"/>
+        <NamedIndividual IRI="http://opencirm.org#DemoConfigSet"/>
         <NamedIndividual IRI="http://opencirm.org#OperationsLocalPostgresDB"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasMember"/>
+        <NamedIndividual IRI="http://opencirm.org#DemoConfigSet"/>
+        <NamedIndividual IRI="#DBIDFactoryConfig"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#Value"/>
@@ -844,6 +910,11 @@
         <ObjectProperty IRI="http://opencirm.org/cirm#hasDefaultStatus"/>
         <NamedIndividual IRI="http://opencirm.org#Illegal_Dumping"/>
         <NamedIndividual IRI="#OPEN"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceField"/>
+        <NamedIndividual IRI="http://opencirm.org#Illegal_Dumping"/>
+        <NamedIndividual IRI="#sqPropertyOwner"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#hasDatabaseType"/>
@@ -881,6 +952,11 @@
         <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.search.GoogleSearchEngine"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#Value"/>
+        <NamedIndividual IRI="#DBIDFactoryConfig"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rdb.DBIDFactory"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
         <NamedIndividual IRI="#DBUserProvider"/>
         <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.user.DBUserProvider"/>
@@ -889,6 +965,31 @@
         <ObjectProperty IRI="#hasDataSource"/>
         <NamedIndividual IRI="#DBUserProvider"/>
         <NamedIndividual IRI="http://opencirm.org#LocalPostgresDatabase"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="#choicesResidence"/>
+        <NamedIndividual IRI="#PropertyTenant"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="#choicesResidence"/>
+        <NamedIndividual IRI="#PropertyLegallyResponsible"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="#choicesResidence"/>
+        <NamedIndividual IRI="#PropertyOther"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="#choicesResidence"/>
+        <NamedIndividual IRI="#PropertyOwner"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValueList"/>
+        <NamedIndividual IRI="#sqPropertyOwner"/>
+        <NamedIndividual IRI="#choicesResidence"/>
     </ObjectPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -1184,12 +1285,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUrl"/>
         <NamedIndividual IRI="http://opencirm.org#LocalPostgresDatabase"/>
-        <Literal datatypeIRI="&xsd;string">jdbc:postgresql://localhost:5432/cirm</Literal>
+        <Literal datatypeIRI="&xsd;string">jdbc:postgresql://localhost:5432/opencirm</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://opencirm.org#LocalPostgresDatabase"/>
-        <Literal datatypeIRI="&xsd;string">cirm</Literal>
+        <Literal datatypeIRI="&xsd;string">opencirm</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -1312,6 +1413,21 @@
         <Literal datatypeIRI="&xsd;string">Village of Virginia Gardens</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="#BusinessObjectIRIPrefixConfig"/>
+        <Literal datatypeIRI="&xsd;string">businessObjectIRIPrefix</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Value"/>
+        <NamedIndividual IRI="#BusinessObjectIRIPrefixConfig"/>
+        <Literal datatypeIRI="&xsd;string">http://opencirm.org/demo/bo</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="#DBIDFactoryConfig"/>
+        <Literal datatypeIRI="&xsd;string">CIRMIDFactory</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasIdName"/>
         <NamedIndividual IRI="#DBUserProvider"/>
         <Literal datatypeIRI="&xsd;string">username</Literal>
@@ -1325,6 +1441,11 @@
         <DataProperty IRI="http://opencirm.org#hasTableName"/>
         <NamedIndividual IRI="#DBUserProvider"/>
         <Literal datatypeIRI="&xsd;string">cirm_user</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasDataType"/>
+        <NamedIndividual IRI="#sqPropertyOwner"/>
+        <Literal datatypeIRI="&xsd;string">CHARLIST</Literal>
     </DataPropertyAssertion>
     <SubObjectPropertyOf>
         <ObjectProperty IRI="#hasUserBase"/>
@@ -1603,6 +1724,26 @@
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>#PropertyLegallyResponsible</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Legally Responsible for Property</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>#PropertyOther</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Other</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>#PropertyOwner</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Owner</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>#PropertyTenant</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Tenant</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
         <IRI>#Standard</IRI>
         <Literal datatypeIRI="&rdf;PlainLiteral">3-Standard</Literal>
     </AnnotationAssertion>
@@ -1615,6 +1756,11 @@
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
         <IRI>#WebIntake</IRI>
         <Literal datatypeIRI="&rdf;PlainLiteral">Website</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>#sqPropertyOwner</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Relationship to Property</Literal>
     </AnnotationAssertion>
 </Ontology>
 

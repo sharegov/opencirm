@@ -31,6 +31,7 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.sharegov.cirm.owl.CachedReasoner;
+import org.sharegov.cirm.owl.OWLSerialEntityCache;
 import org.sharegov.cirm.owl.SynchronizedOWLOntologyManager;
 import org.sharegov.cirm.owl.SynchronizedReasoner;
 
@@ -76,6 +77,8 @@ public class OntologyLoader
 			      new File(StartUp.config.at("workingDir").asString() + "/src/County_Working_PKBI.owl"));			
 		locations.put(IRI.create("http://www.miamidade.gov/users/enet"), 
 				  new File(StartUp.config.at("workingDir").asString() + "/src/ontology/enet.owl"));
+		locations.put(IRI.create("http://opencirm.org/demo"), 
+				  new File(StartUp.config.at("workingDir").asString() + "/src/ontology/demo/cirmdemo.owl"));
 		
 		this.manager = manager;
 		boolean hgdbManager = false;
@@ -175,6 +178,7 @@ public class OntologyLoader
 			{
 				manager.removeOntology(o);
 				reasoners.remove(iri);
+				Refs.owlJsonCache.resolve().clearAll();
 			}
 			try
 			{

@@ -75,8 +75,6 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
             }},
             {"hasName": "serviceCases", "hasQueryExpression" : "ServiceRequestType",            
                 "map":function(A) {
-                    console.log('got service cases', A);
-                    //A = [A];  
                     var m = {};
                     $.each(A, function(i,v) {
                     	var serviceCase = prepareServiceCaseTypeForUI(v);

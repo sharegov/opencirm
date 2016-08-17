@@ -672,44 +672,44 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 		self.departments = ko.observableArray([defDepartment]);
 		self.selectedDepartment = ko.observable(defDepartment);
 		
-        self.selectedAgency.subscribe(function (v) {
-               self.departments.removeAll();                
-               self.departments.unshift(defDepartment);
-               self.selectedDepartment(defDepartment);
-               if (v.value == '')
-                   return;
-               var iri = v.value;
-               //console.log('selected ', iri, cirm.refs.[iri]);
-               $.each(cirm.refs.agencies[iri].agencies, function(i,v) {
-                    self.departments.push({name:v.label,value:v.iri});
-                });
-               self.departments.sort(function(x,y) 
-                   { return (x.name > y.name) ? 1 : (x.name == y.name ? 0 : -1); });
-        }, self);
+    self.selectedAgency.subscribe(function (v) {
+           self.departments.removeAll();                
+           self.departments.unshift(defDepartment);
+           self.selectedDepartment(defDepartment);
+           if (v.value == '')
+               return;
+           var iri = v.value;
+           //console.log('selected ', iri, cirm.refs.[iri]);
+           $.each(cirm.refs.agencies[iri].agencies, function(i,v) {
+                self.departments.push({name:v.label,value:v.iri});
+            });
+           self.departments.sort(function(x,y) 
+               { return (x.name > y.name) ? 1 : (x.name == y.name ? 0 : -1); });
+    }, self);
 
-        $(document).bind(legacy.InteractionEvents.AddressClear, function(event) {
-                self.selectedAgency(defAgency);
-                self.departments.removeAll();
-                self.departments.unshift(defDepartment);
-                self.selectedDepartment(defDepartment);
-        });
+    $(document).bind(legacy.InteractionEvents.AddressClear, function(event) {
+            self.selectedAgency(defAgency);
+            self.departments.removeAll();
+            self.departments.unshift(defDepartment);
+            self.selectedDepartment(defDepartment);
+    });
         
 		$("#kb_results").hide();
 
-    	self.clear = function() {
-    	    self.topics(null);
-    	    self.serviceRequests.removeAll();
-    	    self.keywords("");
-    	    self.selectedAgency(defAgency);  	    
-    	    $("#kb_results").hide();
-    	};
+  	self.clear = function() {
+  	    self.topics(null);
+  	    self.serviceRequests.removeAll();
+  	    self.keywords("");
+  	    self.selectedAgency(defAgency);  	    
+  	    $("#kb_results").hide();
+  	};
 
-    	self.searchOnEnter  = function(data, event) {
-    	    if(event.keyCode == 13) {
-   	            self.searchKnowledgeBase();
-    	    }
-    	    return true;    	    
-    	};
+  	self.searchOnEnter  = function(data, event) {
+  	    if(event.keyCode == 13) {
+ 	            self.searchKnowledgeBase();
+  	    }
+  	    return true;    	    
+  	};
 
 		self.searchKnowledgeBase = function(terms) {
 			var query = "";
