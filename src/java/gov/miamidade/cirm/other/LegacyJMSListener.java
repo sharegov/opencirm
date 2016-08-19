@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -216,18 +217,42 @@ public class LegacyJMSListener extends Thread
     	cleanup();
     }
     
-            
-    public void timeStamp(Json A)
+    /**
+     * Recursively time stamps each Json Object by applying a hasDateCreated property with value NOW,
+     * only if such object does not yet have a hasDateCreated Property.
+     * 
+     * @param anyJson any Json or null.
+     */
+    public void timeStamp(Json anyJson) 
     {
-    	//java.text.DateFormat format = new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm:ss a");
-    	if (A == null || A.isPrimitive())
+    	timeStamp(anyJson, new Date());
+    }
+    
+    /**
+     * Recursively time stamps each Json Object by applying a hasDateCreated property with value timeStampDate,
+     * only if such object does not yet have a hasDateCreated Property.<br>
+     * Only Objects passed in directly or found in recursive Arrays are time stamped.<br>
+     * Objects or arrays found as value of properties are not time stamped or traversed.<br>
+     * <br>
+     * Typically used for activities received from departmental interfaces.<br>
+     * <br>
+     * @param anyJson any Json or null;
+     * @param timeStampDate the date to be used for time stamping Json Objects
+     */
+    public void timeStamp(Json anyJson, Date timeStampDate)
+    {
+    	if (timeStampDate == null) {
+    		throw new IllegalArgumentException("timeStampDate was null error, timestamp json: " + anyJson);
+    	}
+    	if (anyJson == null || anyJson.isPrimitive()) {
     		return;
-    	else if (A.isObject() && !A.has("hasDateCreated"))
-    		A.set("hasDateCreated",  GenUtils.formatDate(new java.util.Date()));
-    	else if (A.isArray())
-    		for (Json x : A.asJsonList())
-    			timeStamp(x);
-    		//A.set("hasDateCreate", new Date().)
+    	} else if (anyJson.isObject() && !anyJson.has("hasDateCreated")) {
+    		anyJson.set("hasDateCreated",  GenUtils.formatDate(timeStampDate));
+    	} else if (anyJson.isArray()) {
+    		for (Json x : anyJson.asJsonList()) {
+    			timeStamp(x, timeStampDate);
+    		}
+    	}
     }
     	
 	private void gisToAtAddress(Json gis, Json addr)
@@ -485,9 +510,44 @@ public class LegacyJMSListener extends Thread
 	private Json updateTxn(LegacyEmulator emulator, Json existing, Json newdata) throws JMSException
 	{
 		Json result;
-		Json existingSave = existing.dup();		
+		Json preUpdateSr = existing.dup();				
+		Json updateDateJson = newdata.atDel("updateDate");
+		Date updateDate = null;
+		if (updateDateJson != null) 
+		{
+			updateDate = GenUtils.parseDate(updateDateJson.asString());
+		}
+		//Note that existing and newdata will be modified in next line.
+		updateExistingCase(existing, newdata, updateDate);
+		Json postUpdateSr = existing;
+		result = emulator.updateServiceCaseTransaction(postUpdateSr, 
+													 preUpdateSr,
+													 updateDate,
+													 new ArrayList<CirmMessage>(),
+													 "department");
+		if (result.has("ok") && result.is("ok", true)) 
+		{
+			srStatsReporter.succeeded("updateCaseTxn", result);
+		} else
+		{
+			srStatsReporter.failed("updateCaseTxn", result, "updateServiceCaseTransaction ko", "" + result.at("error"));
+		}
+		return result;
+	}
+	
+	/**
+	 * Updates an existing case json by applying new data received from an interface update message to the passed in existing case json.
+	 * Existing and newData will be modified by this method.
+	 * 
+	 * To be used inside of a transaction.
+	 * @param existing case SR loaded from the DB.
+	 * @param newdata data received from an interface.
+	 */
+	 void updateExistingCase(Json existing, Json newdata, Date updateDate) {
+		 if (updateDate == null) {
+			 updateDate = new Date();
+		 }
 		Json props = existing.at("properties");
-		Json updateDate = newdata.atDel("updateDate");
 		if (newdata.has("hasXCoordinate") && (
 					  !props.has("hasXCoordinate") || !newdata.is("hasXCoordinate", props.at("hasXCoordinate")))
 			||  
@@ -526,10 +586,11 @@ public class LegacyJMSListener extends Thread
 			// the flex questions for that new type as well.
 			existing.at("properties").delAt("hasServiceAnswer");
 		}
-		if (!newdata.has("isModifiedBy"))
+		if (!newdata.has("isModifiedBy")) {
 			newdata.set("isModifiedBy", "department");
-		timeStamp(newdata.at("hasServiceCaseActor", Json.array()));
-		timeStamp(newdata.at("hasServiceActivity", Json.array()));
+		}
+		timeStamp(newdata.at("hasServiceCaseActor", Json.array()), updateDate);
+		timeStamp(newdata.at("hasServiceActivity", Json.array()), updateDate);
 		ServiceCaseJsonHelper.insertIriFromCode(newdata.at("hasServiceCaseActor", Json.array()), "hasServiceActor", "");
 		ServiceCaseJsonHelper.insertIriFromCode(newdata.at("hasServiceAnswer",Json.array()), "hasServiceField", existing.at("type").asString() + "_");
 		ServiceCaseJsonHelper.insertIriFromCode(newdata.at("hasServiceActivity"), "hasActivity", existing.at("type").asString() + "_");
@@ -540,7 +601,13 @@ public class LegacyJMSListener extends Thread
 		ServiceCaseJsonHelper.cleanUpProperties(existing);
 		ServiceCaseJsonHelper.assignIris(existing);
 		ServiceCaseJsonHelper.replaceAnswerLabelsWithValues(newdata.at("legacy:hasServiceAnswer"));
-		OWL.resolveIris(existing.at("properties"), null);				
+		OWL.resolveIris(existing.at("properties"), null);		
+		// After resolveIRIs, the json implementation will point hasOutcome and HasStatus to the same status {"iri", "....O-LOCKED"} object.
+		// Therefore durig the merge, where the value of "iri" in the status object is updated to C-CLOSED, both references are updated.
+		// Pointing two property values at the same json obect first happens in Owl.resolveIRIs, where the gathering know only the {"iri","...O-LOCKED} object 
+		// and that same object will be referred to from all occurances of a "O-LOCKED" string iri as value.
+		//Possible fix: modify Owl.resolve IRIs to use DUP when getting from the map; however performance impact!!
+		// OR: never update the IRI or an object. OR: merge before resolveIRIs. OR: change merge to never update IRI??
 		ServiceCaseJsonHelper.mergeInto(newdata, existing.at("properties"));			
 		trace("Merged: " + existing + "\n\n");
 		// The following is to remove the "temp" IRIs which interfering with newly added answers,
@@ -548,19 +615,6 @@ public class LegacyJMSListener extends Thread
 		// Shouldn't be needed anymore as BOntology is not returning them...
 //		for (Json x : existing.at("properties").at("legacy:hasServiceAnswer").asJsonList())
 //			x.delAt("iri");
-		result = emulator.updateServiceCaseTransaction(existing, 
-													 existingSave,
-													 updateDate == null ? null : GenUtils.parseDate(updateDate.asString()),
-													 new ArrayList<CirmMessage>(),
-													 "department");
-		if (result.has("ok") && result.is("ok", true)) 
-		{
-			srStatsReporter.succeeded("updateCaseTxn", result);
-		} else
-		{
-			srStatsReporter.failed("updateCaseTxn", result, "updateServiceCaseTransaction ko", "" + result.at("error"));
-		}
-		return result;
 	}
 
 	/**
