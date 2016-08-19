@@ -511,15 +511,15 @@ public class LegacyJMSListener extends Thread
 	{
 		Json result;
 		Json preUpdateSr = existing.dup();				
+		Json postUpdateSr = existing;
 		Json updateDateJson = newdata.atDel("updateDate");
 		Date updateDate = null;
 		if (updateDateJson != null) 
 		{
 			updateDate = GenUtils.parseDate(updateDateJson.asString());
 		}
-		//Note that existing and newdata will be modified in next line.
-		updateExistingCase(existing, newdata, updateDate);
-		Json postUpdateSr = existing;
+		//Note that postUpdateSr and newdata will be modified in next line.
+		updateExistingCase(postUpdateSr, newdata, updateDate);
 		result = emulator.updateServiceCaseTransaction(postUpdateSr, 
 													 preUpdateSr,
 													 updateDate,
@@ -719,16 +719,17 @@ public class LegacyJMSListener extends Thread
 				ThreadLocalStopwatch.now("LegacyJMSListener.process NewCase ");
 				Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
 				public Json call() throws JMSException
-				{							
-					MessageValidationResult validationResult = validator.validateNewCase(jmsg);
+				{				
+					Json jmsgForTx = jmsg.dup();
+					MessageValidationResult validationResult = validator.validateNewCase(jmsgForTx);
 					Json R;
 					if (validationResult.isValid()) 
 					{
-						R = newCaseTxn(emulator, jmsg);
+						R = newCaseTxn(emulator, jmsgForTx);
 						if (!R.is("ok", true)) 
 						{
 							ThreadLocalStopwatch.error("LegacyJMSListener.process NewCase txn failed");
-							System.err.println(R.at("error") + " for " + jmsg);
+							System.err.println(R.at("error") + " for " + jmsgForTx);
 						}
 						srStatsReporter.succeeded("process-NewCase", R);
 					} else
@@ -740,7 +741,7 @@ public class LegacyJMSListener extends Thread
 						{	//respond ok, despite error to not allow interface retry 
 							R = Json.object("ok", true, "error", validationResult.getResponseMessage());
 						}
-						srStatsReporter.failed("process-NewCase", jmsg, "invalid message", "" + validationResult.getResponseMessage());
+						srStatsReporter.failed("process-NewCase", jmsgForTx, "invalid message", "" + validationResult.getResponseMessage());
 					}
 					return R;
 				}});
@@ -753,34 +754,35 @@ public class LegacyJMSListener extends Thread
 				public Json call() throws JMSException
 				{							
 					ThreadLocalStopwatch.now("LegacyJMSListener.process lookup case for update or new activity");
+					Json jmsgForTx = jmsg.dup();
 					MessageValidationResult validationResult;
 					validationResult = (messageType == LegacyMessageType.NewActivity)? 
-							validator.validateNewActivity(jmsg) : validator.validateCaseUpdate(jmsg);
+							validator.validateNewActivity(jmsgForTx) : validator.validateCaseUpdate(jmsgForTx);
 					Json R;
 					if (validationResult.isValid()) 
 					{
-						Json sr = validationResult.getExistingSR();
-						sr = sr.at("bo");
+						Json origSr = validationResult.getExistingSR();
+						Json origSrForTxn = origSr.at("bo").dup(); //Dup needed for idempotent retries!
 						// This should be done already by the framework, but we are not there
 						// yet...not clear on strategy, maybe "all non-functional properties
 						// should be turned into arrays".
-						sr.at("properties").delAt("extendedTypes");
-						sr.at("properties").delAt("gisAddressData");
-						trace("Existing: " + sr + "\n\n");
+						origSrForTxn.at("properties").delAt("extendedTypes");
+						origSrForTxn.at("properties").delAt("gisAddressData");
+						trace("Existing: " + origSrForTxn + "\n\n");
 						if (messageType == LegacyMessageType.NewActivity) 
 						{
 							ThreadLocalStopwatch.now("LegacyJMSListener.process newActivityTxn ");					
-							R = newActivityTxn(emulator, sr, jmsg.at("data").at("hasServiceActivity").at(0));
+							R = newActivityTxn(emulator, origSrForTxn, jmsgForTx.at("data").at("hasServiceActivity").at(0));
 						}
 						else
 						{ //update service case
 							ThreadLocalStopwatch.now("LegacyJMSListener.process updateTxn ");					
-							R = updateTxn(emulator, sr, jmsg.at("data").dup().delAt("boid"));
+							R = updateTxn(emulator, origSrForTxn, jmsgForTx.at("data").dup().delAt("boid"));
 						}
 						if (R.is("ok", false)) 
 						{
 							ThreadLocalStopwatch.error("ERROR: LegacyJMSListener.process newActivityTxn or updateTxn failed, responding");
-							System.err.println(R.at("error") + " for " + jmsg);
+							System.err.println(R.at("error") + " for " + jmsgForTx);
 						}
 					}
 					else 
@@ -792,12 +794,12 @@ public class LegacyJMSListener extends Thread
 						{	//respond ok, despite error to not allow interface retry 
 							R = Json.object("ok", true, "error", validationResult.getResponseMessage());
 						}
-						srStatsReporter.failed("process-NewActivityOrCaseUpdate", jmsg, "invalid message ", "" + validationResult.getResponseMessage());
+						srStatsReporter.failed("process-NewActivityOrCaseUpdate", jmsgForTx, "invalid message ", "" + validationResult.getResponseMessage());
 						ThreadLocalStopwatch.error("ERROR: LegacyJMSListener.process lookup for update or new activity: case not found, responding that");							
 					}
 					try
 					{
-						JMSClient.connectAndRespond(jmsg, R);
+						JMSClient.connectAndRespond(jmsgForTx, R);
 					}
 					// TODO: we should re-implement this to ask the TimeServer to call back and retry sending the response
 					catch (Exception ex) { throw new RuntimeException(ex); }					
@@ -812,7 +814,7 @@ public class LegacyJMSListener extends Thread
 				final ArrayList<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();				
 				Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
 				public Json call() throws JMSException
-				{							
+				{												
 					Json R = responseTxn(emulator, jmsg, emailsToSend);
 					if (R.is("ok", false))
 					{
