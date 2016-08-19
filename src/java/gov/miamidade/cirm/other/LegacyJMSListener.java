@@ -648,7 +648,8 @@ public class LegacyJMSListener extends Thread
 		{
 			scase = scase.at("bo");
 		}
-		Json existingSave = scase.dup();
+		Json preUpdateSr = scase.dup();
+		//Update scase
 		OWL.resolveIris(scase, null);		
 		ServiceCaseJsonHelper.cleanUpProperties(scase);
 		ServiceCaseJsonHelper.assignIris(scase);
@@ -656,6 +657,7 @@ public class LegacyJMSListener extends Thread
 		{
 			if (orig.is("messageType", "NewCase")) 
 			{
+				ServiceCaseJsonHelper.ensureExclusivePropertyValueObject(scase.at("properties"), "legacy:hasStatus");
 				scase.at("properties").at("legacy:hasStatus").set("iri", 
 						fullIri("legacy:O-LOCKED").toString());
 			}
@@ -673,6 +675,7 @@ public class LegacyJMSListener extends Thread
 		}
 		else
 		{
+			ServiceCaseJsonHelper.ensureExclusivePropertyValueObject(scase.at("properties"), "legacy:hasStatus");
 			scase.at("properties").at("legacy:hasStatus").set("iri", fullIri("legacy:X-ERROR").toString());
 			scase.at("properties").set("legacy:hasDepartmentError", jmsg.at("response").at("error"));				
 		}				
@@ -684,7 +687,7 @@ public class LegacyJMSListener extends Thread
 		OWL.resolveIris(scase.at("properties").at("legacy:hasServiceActivity"), null);								
 		trace("Saving " + scase + "\n\n");
 		Json result = emulator.updateServiceCaseTransaction(scase, 
-														    existingSave, 
+														    preUpdateSr, 
 														    null, 
 														    emailsToSend,
 														    "department");
