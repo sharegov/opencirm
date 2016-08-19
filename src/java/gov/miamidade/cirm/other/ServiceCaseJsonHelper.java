@@ -369,8 +369,6 @@ public class ServiceCaseJsonHelper
     {
     	for (Map.Entry<String, Json> srcEntry : src.asJsonMap().entrySet())
     	{
-    		System.out.println(srcEntry.getKey() + " val: " + srcEntry.getValue());
-    		System.out.println(dest);
     		String srcEntryKey = srcEntry.getKey();
     		Json srcEntryValue = srcEntry.getValue();
     		

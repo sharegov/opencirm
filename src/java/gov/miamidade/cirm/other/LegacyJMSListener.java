@@ -602,19 +602,13 @@ public class LegacyJMSListener extends Thread
 		ServiceCaseJsonHelper.assignIris(existing);
 		ServiceCaseJsonHelper.replaceAnswerLabelsWithValues(newdata.at("legacy:hasServiceAnswer"));
 		OWL.resolveIris(existing.at("properties"), null);		
-		// After resolveIRIs, the json implementation will point hasOutcome and HasStatus to the same status {"iri", "....O-LOCKED"} object.
-		// Therefore durig the merge, where the value of "iri" in the status object is updated to C-CLOSED, both references are updated.
-		// Pointing two property values at the same json obect first happens in Owl.resolveIRIs, where the gathering know only the {"iri","...O-LOCKED} object 
+		// hilpold: After resolveIRIs, the json implementation will point hasOutcome and HasStatus to the same status {"iri", "....O-LOCKED"} object.
+		// Therefore during the merge, where the value of "iri" in the status object is updated to C-CLOSED, both references are updated.
+		// Pointing two property values at the same json object first happens in Owl.resolveIRIs, where the gathering knows only the {"iri","...O-LOCKED} object 
 		// and that same object will be referred to from all occurances of a "O-LOCKED" string iri as value.
-		//Possible fix: modify Owl.resolve IRIs to use DUP when getting from the map; however performance impact!!
-		// OR: never update the IRI or an object. OR: merge before resolveIRIs. OR: change merge to never update IRI??
+		// Resolution: change merge to never update a possibly shared object.
 		ServiceCaseJsonHelper.mergeInto(newdata, existing.at("properties"));			
 		trace("Merged: " + existing + "\n\n");
-		// The following is to remove the "temp" IRIs which interfering with newly added answers,
-		// the end up having duplicate temp IRIs. 
-		// Shouldn't be needed anymore as BOntology is not returning them...
-//		for (Json x : existing.at("properties").at("legacy:hasServiceAnswer").asJsonList())
-//			x.delAt("iri");
 	}
 
 	/**
