@@ -367,27 +367,36 @@ public class ServiceCaseJsonHelper
     
     public static void mergeInto(Json src, Json dest)
     {
-    	for (Map.Entry<String, Json> e : src.asJsonMap().entrySet())
+    	for (Map.Entry<String, Json> srcEntry : src.asJsonMap().entrySet())
     	{
-    		if (e.getValue().isNull())
-    			dest.delAt(e.getKey());
-    		else if (!dest.has(e.getKey()))
-    			dest.set(e.getKey(), e.getValue());
-    		else if (e.getValue().isObject())
-    			mergeInto(e.getValue(), dest.at(e.getKey()));
-    		else if (e.getValue().isArray())
+    		System.out.println(srcEntry.getKey() + " val: " + srcEntry.getValue());
+    		System.out.println(dest);
+    		String srcEntryKey = srcEntry.getKey();
+    		Json srcEntryValue = srcEntry.getValue();
+    		
+    		if (srcEntryValue.isNull())
+    			dest.delAt(srcEntryKey);
+    		else if (!dest.has(srcEntryKey))
+    			dest.set(srcEntryKey, srcEntryValue);
+    		else if (srcEntryValue.isObject()) {
+    			//Json Object values could be shared among many referring properties after assignIRIs.
+    			//Therefore ensure an exclusive duplicate prior to modifications.
+    			ensureExclusivePropertyValueObject(dest, srcEntryKey);
+    			mergeInto(srcEntryValue, dest.at(srcEntryKey));    			
+    		}
+    		else if (srcEntryValue.isArray())
     		{
-    			Comparator<Json> comp = arrayElementComparators.get(e.getKey());
+    			Comparator<Json> comp = arrayElementComparators.get(srcEntryKey);
     			if (comp == null)
     				comp = defaultJsonCompare;
-    			Json A = dest.at(e.getKey());
+    			Json A = dest.at(srcEntryKey);
     			if (A == null)
-    				dest.set(e.getKey(), e.getValue());
+    				dest.set(srcEntryKey, srcEntryValue);
     			else if (!A.isArray())
     				throw new RuntimeException("Attempt to merge array element into a scalar or an object.");
     			else
     			{
-    				for (Json srcel : e.getValue().asJsonList())
+    				for (Json srcel : srcEntryValue.asJsonList())
     				{
     					int idx = -1;
     					for (int i = 0; i < A.asJsonList().size() && idx < 0; i++)
@@ -401,11 +410,32 @@ public class ServiceCaseJsonHelper
     			}
     		}
     		else
-    			dest.set(e.getKey(), e.getValue());
+    			dest.set(srcEntryKey, srcEntryValue);
     	}
     }
 	
-    public static Json findUSStateObject(String abbreviation)
+    /**
+     * Ensures that a jsonObject has an exclusive object value at propertyName by duplicating that value.
+     * Thereby references to that object which may occur in the Json structure are eliminated.
+     * Method will check if JsonObject is in fact a non-null Json object and return without throwing an error if 
+     * the check fails.
+     * 
+     * @param jsonObject a json object. null, non object or object not having property will return without modifying jsonObject
+     * @param propertyName a propertyName which jsonObject may have.
+     */
+    public static void ensureExclusivePropertyValueObject(Json jsonObject, String propertyName) {
+		if (jsonObject == null || !jsonObject.isObject()) return;
+		if (!jsonObject.has(propertyName)) return;
+		//1 inspect dest at key
+		Json propertyValue = jsonObject.at(propertyName);
+		if (propertyValue!= null && propertyValue.isObject()) {
+			//2 Duplicate object and replace with duplicate.
+			Json destAtKeyExclusive = propertyValue.dup();
+			jsonObject.set(propertyName, destAtKeyExclusive);
+		}
+	}
+
+	public static Json findUSStateObject(String abbreviation)
     {
     	for (OWLNamedIndividual ind : OWL.queryIndividuals("State__U.S._"))
     		if (OWL.dataProperties(ind, "USPS_Abbrevation").contains(OWL.literal(abbreviation)))
