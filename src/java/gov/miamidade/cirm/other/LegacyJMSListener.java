@@ -482,13 +482,60 @@ public class LegacyJMSListener extends Thread
 	{
 		Json result;
 		Json original = sr.dup();
+		boolean createdDateProvided = false;
+		Date updateDate = new Date();
+		//1. if sr was already modified, we use that date as updatedDate
+		if (original.has("properties") && original.at("properties").has("hasDateLastModified")) {	
+			try {
+				updateDate = GenUtils.parseDate(original.at("properties").at("hasDateLastModified").asString());				
+			} catch(Exception e) {
+				ThreadLocalStopwatch.error("Failed to parse sr last modified date in newActivityTxn for SR " + original);
+			}
+		}
+		//2. use create activity date as update date if after last sr modification.
+		if (activity.has("hasDateCreated")) {
+			createdDateProvided = true;
+			try {
+    			Date actCreated = GenUtils.parseDate(activity.at("hasDateCreated").asString());
+    			if (actCreated.after(updateDate)) {
+    				updateDate = actCreated;
+    				sr.at("properties").set("isModifiedBy", "department");
+    			}
+			} catch (Exception e) {
+				ThreadLocalStopwatch.error("Failed to parse new activity hasDateCreated in newActivityTxn for act " + activity);
+			}
+		}
+		//3. use activity calculated act created =~ act completed date as update date if after sr modification 
+		//Timestamp activity if needed to set created date at completed date
+		if (activity.has("hasCompletedTimestamp")) {
+			try {
+				Date completedDate = GenUtils.parseDate(activity.at("hasCompletedTimestamp").asString());
+				//Add one minute for each existing activity with same completed date to retain order
+				//in case multiple activities are received for the same day and hasCompletedTimestamp from interface has zero hours.
+				Date calcCreatedDate = ServiceCaseJsonHelper.calculateNextActivityCreatedDate(original, completedDate);
+				if (!createdDateProvided) {
+					timeStamp(activity, calcCreatedDate);
+				} 
+				if (calcCreatedDate.after(updateDate)) {
+					updateDate = calcCreatedDate;
+					sr.at("properties").set("isModifiedBy", "department");
+				}
+			} catch(Exception e) {
+				ThreadLocalStopwatch.error("Failed to parse sr last modified date in newActivityTxn for SR " + original);
+			}
+		}
+		//4. act created by "department" if not provided by interface.
+		if (!activity.has("isCreatedBy")) {
+			activity.set("isCreatedBy", "department");
+		}
+		
 		ServiceCaseJsonHelper.insertIriFromCode(activity.at("hasActivity"), sr.at("type").asString() + "_");
 		ServiceCaseJsonHelper.insertIriFromCode(activity.at("hasOutcome"), "OUTCOME_");		
 		sr.at("properties").at("hasServiceActivity").add(activity);
 		ServiceCaseJsonHelper.cleanUpProperties(sr);
 		ServiceCaseJsonHelper.assignIris(sr);
-		OWL.resolveIris(sr.at("properties"), null);			
-		result = emulator.updateServiceCaseTransaction(sr, original, null, new ArrayList<CirmMessage>(), "department");
+		OWL.resolveIris(sr.at("properties"), null);
+		result = emulator.updateServiceCaseTransaction(sr, original, updateDate, new ArrayList<CirmMessage>(), "department");
 		if (result.has("ok") && result.is("ok", true)) 
 		{
 			srStatsReporter.succeeded("newActivityTxn", result);
@@ -590,7 +637,8 @@ public class LegacyJMSListener extends Thread
 			newdata.set("isModifiedBy", "department");
 		}
 		timeStamp(newdata.at("hasServiceCaseActor", Json.array()), updateDate);
-		timeStamp(newdata.at("hasServiceActivity", Json.array()), updateDate);
+		Date activiyCreatedDate = ServiceCaseJsonHelper.calculateNextActivityCreatedDate(existing, updateDate);
+		timeStamp(newdata.at("hasServiceActivity", Json.array()), activiyCreatedDate);
 		ServiceCaseJsonHelper.insertIriFromCode(newdata.at("hasServiceCaseActor", Json.array()), "hasServiceActor", "");
 		ServiceCaseJsonHelper.insertIriFromCode(newdata.at("hasServiceAnswer",Json.array()), "hasServiceField", existing.at("type").asString() + "_");
 		ServiceCaseJsonHelper.insertIriFromCode(newdata.at("hasServiceActivity"), "hasActivity", existing.at("type").asString() + "_");

@@ -17,7 +17,9 @@ package gov.miamidade.cirm.other;
 
 import gov.miamidade.cirm.GisClient;
 
+import java.util.Calendar;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -32,8 +34,10 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
+import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.JsonUtil;
 import org.sharegov.cirm.utils.Mapping;
+import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
 /**
  * <p>
@@ -517,4 +521,70 @@ public class ServiceCaseJsonHelper
     	}
     }
     
+    /**
+     * Determines a created date for a new activity based on the number of activities with created dates in the zero hour for the given day.
+     * Interfaces provide timestamps with zero hours, zero minutes; to maintain order, we add one minute to each new activity.
+     * 
+     * Expects to find zero, one or more serviceActivites in properties.hasServiceActivity 
+     * 
+     * @param sr in load format without legacy: prefixes of full iris.
+     * @param createdDate
+     * @return
+     */
+    public static Date calculateNextActivityCreatedDate(Json sr, Date createdDate) {    	
+    	Calendar createdCal = Calendar.getInstance();
+    	createdCal.setTime(createdDate);
+    	if (createdCal.get(Calendar.HOUR_OF_DAY) != 0) 
+    	{
+    		//meaningful timestamp, not date only, use it.
+    		return createdDate;
+    	}    	
+    	createdCal.set(Calendar.MINUTE, 0);
+    	Date minDate = createdCal.getTime();
+    	Date maxDate = new Date(minDate.getTime() + 60 * 60 * 1000); // 1 hour
+    	if (sr.has("properties") && sr.at("properties").has("hasServiceActivity")) {
+    		Json hasServiceActivity = sr.at("properties").at("hasServiceActivity");
+    		int nrOfMinutesToAdd = getNrOfServiceActivitiesCreatedBetween(hasServiceActivity, minDate, maxDate);
+    		createdCal.add(Calendar.MINUTE, nrOfMinutesToAdd);
+    		return createdCal.getTime();
+    	} else {
+    		return createdDate;
+    	}
+    }    
+    
+    /**
+     * Determines the number of service activities created between min and max (inclusive).
+     * 
+     * @param hasServiceActivity json object or array; null allowed. 
+     * @param minDate
+     * @param maxDate
+     * @return the number of SAs created in the specified time frame or 0 if none or error.
+     */
+    public static int getNrOfServiceActivitiesCreatedBetween(Json hasServiceActivity, Date minDate, Date maxDate) {
+    	if (hasServiceActivity == null || hasServiceActivity.isNull()) return 0;
+    	Json serviceActivityArray = hasServiceActivity;
+    	if (!serviceActivityArray.isArray()) {
+    		serviceActivityArray = Json.array(hasServiceActivity);
+    	}
+    	int counter = 0;
+    	for (Json sa : serviceActivityArray.asJsonList()) {
+    		if (!sa.isObject()) continue;
+    		if (!sa.has("hasDateCreated")) continue;
+    		if (!sa.at("hasDateCreated").isString()) continue;
+    		String saCreatedDateStr = sa.at("hasDateCreated").asString();    		
+    		try {
+    			Date saCreatedDate = GenUtils.parseDate(saCreatedDateStr);
+    			if ((minDate.before(saCreatedDate) || minDate.equals(saCreatedDate)) 
+    					&& (maxDate.after(saCreatedDate) || maxDate.equals(saCreatedDate)) 
+    			   )
+    			{
+    				counter ++;
+    			}
+    		} catch(Exception e) 
+    		{
+    			ThreadLocalStopwatch.error("Failed to parse created date in getNrOfActivitieWithCreatedBetween for " + sa);
+    		}
+    	}
+    	return counter;
+    }
 }
