@@ -341,8 +341,12 @@ public class GisDAO
         }
         return columns;
     }
+    public static void updateNormalizedColumns(long dbId, Json locationInfo, boolean directMapping) 
+    {
+    	updateNormalizedColumns(dbId, locationInfo, null, directMapping);
+    }
     
-    public static void updateNormalizedColumns(long dbId, Json locationInfo, boolean directMapping)
+    public static void updateNormalizedColumns(long dbId, Json locationInfo, List<String> columns, boolean directMapping)
     {
         Json col = getColumns();
         try
@@ -355,61 +359,76 @@ public class GisDAO
                 String name = col.at(i).at("label").asString().split("\\.")[1];
                 if (!("ID".equals(name)|| "HASH".equals(name) ||"DATA".equals(name)))
                 {
-                    update.SET(name, "?");
-                    if (!col.at(i).has("hasColumnType"))
-                        throw new NullPointerException("Missing column type for " + col.at(i));
-                    String typeName = getColumnTypeName(col.at(i).at("hasColumnType"));
-                    if ("VARCHAR".equals(typeName))
-                        parameterTypes.add(OWL.individual(Concepts.VARCHAR));
-                    else if ("INTEGER".equals(typeName))
-                        parameterTypes.add(OWL.individual(Concepts.INTEGER));
-                    else if ("DOUBLE".equals(typeName))
-                        parameterTypes.add(OWL.individual(Concepts.DOUBLE));                
-                    else
-                        parameterTypes.add(OWL.individual(Concepts.VARCHAR));
-                    if (directMapping || col.at(i).has("hasGeoAttribute"))
-                    {
-                        Json value = null;
-                        if(directMapping)
+                	if (columns == null || columns.contains(name)) 
+                	{
+                        update.SET(name, "?");
+                        if (!col.at(i).has("hasColumnType"))
+                            throw new NullPointerException("Missing column type for " + col.at(i));
+                        String typeName = getColumnTypeName(col.at(i).at("hasColumnType"));
+                        if ("VARCHAR".equals(typeName))
+                            parameterTypes.add(OWL.individual(Concepts.VARCHAR));
+                        else if ("INTEGER".equals(typeName))
+                            parameterTypes.add(OWL.individual(Concepts.INTEGER));
+                        else if ("DOUBLE".equals(typeName))
+                            parameterTypes.add(OWL.individual(Concepts.DOUBLE));                
+                        else
+                            parameterTypes.add(OWL.individual(Concepts.VARCHAR));
+                        if (directMapping || col.at(i).has("hasGeoAttribute"))
                         {
-                            String legacyGeoName = name.substring("GIS_".length());
-                            if (!locationInfo.has(legacyGeoName))
+                            Json value = null;
+                            if(directMapping)
                             {
-                                parameters.add(null);
-                                
-                                continue;
-                            }
-                            else
-                                value = locationInfo.at(legacyGeoName);
-                            
-                        }
-                        else 
-                        {
-                            String layerName = col.at(i).at("hasGeoAttribute").at("hasGisLayer").at("hasName").asString();
-                            String attrname = col.at(i).at("hasGeoAttribute").at("hasName").asString();
-                            if (!locationInfo.has(layerName))
-                            {
-                                value = null;
-                            }
-                            else
-                            {
-                                Json ldata = locationInfo.at(layerName);
-                                value = null;
-                                if (ldata.isObject())
+                                String legacyGeoName = name.substring("GIS_".length());
+                                if (!locationInfo.has(legacyGeoName))
                                 {
-                                    if(ldata.has(attrname))
-                                        value = ldata.at(attrname);
-                                    else 
-                                        value = null;
+                                    parameters.add(null);
+                                    
+                                    continue;
                                 }
-                                else if (ldata.isArray() && ldata.asJsonList().size() > 0 && ldata.at(0).isObject())
-                                    value = ldata.at(0).at(attrname);
+                                else
+                                    value = locationInfo.at(legacyGeoName);
+                                
                             }
+                            else 
+                            {
+                                String layerName = col.at(i).at("hasGeoAttribute").at("hasGisLayer").at("hasName").asString();
+                                String attrname = col.at(i).at("hasGeoAttribute").at("hasName").asString();
+                                Json layerJson = null;
+                                if (locationInfo.has(layerName)) {
+                                	layerJson = locationInfo.at(layerName);
+                                } 
+                                else if (locationInfo.has("address") 
+                                		&& locationInfo.at("address").isObject() 
+                                		&& locationInfo.at("address").has(layerName)) 
+                                {
+                                	layerJson = locationInfo.at("address").at(layerName);
+                                }
+                                if (layerJson != null )                               
+                                {
+                                    value = null;
+                                    if (layerJson.isObject())
+                                    {
+                                        if(layerJson.has(attrname))
+                                            value = layerJson.at(attrname);
+                                        else 
+                                            value = null;
+                                    }
+                                    else if (layerJson.isPrimitive()) 
+                                    {
+                                    	value = layerJson;
+                                    }                                    
+                                    else if (layerJson.isArray() && layerJson.asJsonList().size() > 0 && layerJson.at(0).isObject()) 
+                                    {
+                                        value = layerJson.at(0).at(attrname);
+                                    }
+                                }
+                            }
+                            parameters.add((value != null)?value.asString():null);
                         }
-                        parameters.add((value != null)?value.asString():null);
+                        else {
+                            parameters.add(null);
+                        }
                     }
-                    else
-                        parameters.add(null);
                 }
             }
             update.WHERE("ID").EQUALS(Long.toString(dbId));
