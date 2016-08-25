@@ -969,7 +969,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 		});
 
 		self.loadFromServerByCaseNumber = function(lookup_boid) {
-			var query = {"type":"legacy:ServiceCase", "legacy:hasCaseNumber":lookup_boid};
+			var query = {/*"type":"http://opencirm.org#ServiceRequestType", */
+                   "http://opencirm.org/cirm#hasCaseNumber":lookup_boid};
+      //var query = {"type":"legacy:ServiceCase", "legacy:hasCaseNumber":lookup_boid};
 			cirm.top.async().postObject("/legacy/caseNumberSearch", query, function(result) {
 				$("#sh_dialog_sr_lookup").dialog('close');
 				if(result.ok)
@@ -1460,11 +1462,11 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 		
 		self.getSRType = function(el)
 		{
-			if(U.isEmptyString(el.type))
-				return self.srType().label + ' [' +self.srType().hasJurisdictionCode +']';
+			if(U.isEmptyString(el.type)) 
+				return self.typeLabel(self.srType())
 			var srTypeLabel = $.map(cirm.refs.serviceCases, function(v) {
 				if(v.iri == el.type)
-					return v.label + ' [' +v.hasJurisdictionCode + ']';
+					return typeLabel(v);
 			});
 			if(srTypeLabel.length > 0)
 				return srTypeLabel[0];
@@ -2039,52 +2041,43 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			jsondata.properties.actorEmails = emailCustomers;
 		};
 
-    	self.postNewCase = function (jsondata, model) {
-           
-            
-            
-            
-            
-            
-    		jsondata.properties.hasDateCreated = self.getServerDateTime().asISODateString();
-            jsondata.properties.isCreatedBy = cirm.user.username;
-            var send = prefixMaker(jsondata);
-            console.log("send", send);
+    self.postNewCase = function (jsondata, model) {
+      jsondata.properties.hasDateCreated = self.getServerDateTime().asISODateString();
+      jsondata.properties.isCreatedBy = cirm.user.username;
+      var send = prefixMaker(jsondata);
+      console.log("send", send);
 			$("#sh_save_progress").dialog({height: 140, modal: true, dialogClass: 'no-close'});
-            cirm.top.async().post("/legacy/kosubmit", {data:JSON.stringify(send)}, function(result) {
-                console.log("result", ko.toJS(result));
-                if(result.ok == true) {
-                    $(document).trigger(legacy.InteractionEvents.UserAction, 
-                        ["SR Created", result.bo.type + ":" + result.bo.properties.hasCaseNumber]);
-                    $("#sh_save_progress").dialog('close');
-                    alertDialog("Successfully saved SR. The SR ID is "+result.bo.properties.hasCaseNumber);
-                    var srid = result.bo.properties.hasCaseNumber;
-                    $('[name="SR Lookup"]').val(result.bo.properties.hasCaseNumber);
-                    var type = result.bo.type;
-                    if(type.indexOf("legacy:") == -1) { 
-                        type = "legacy:"+type;
-                        result.bo.type = type;
-                    }
-                    self.removeDuplicates();
-                    setModel(result.bo, model, model.srType(), type, true, false);
-               
-                    var meta = []; 
-                    meta.push(new metadata("sr",srid));
-                    meta.push(new metadata("type",type));
-                   
-                    //2149 Optional Image upload - disabled meta until next week
-                    //Enabled again
-                    updateMetadata(meta, self.data().properties().hasAttachment()); 
-                }
-                else if(result.ok == false) {
-                    $("#sh_save_progress").dialog('close');
-                  showErrorDialog("An error occurred while saving the Service Request : <br>"+result.error);
-                }
-            });    	    
-    	
-            
-    	
-    	};
+      cirm.top.async().post("/legacy/kosubmit", {data:JSON.stringify(send)}, function(result) {
+        console.log("result", ko.toJS(result));
+        if(result.ok == true) {
+            $(document).trigger(legacy.InteractionEvents.UserAction, 
+                ["SR Created", result.bo.type + ":" + result.bo.properties.hasCaseNumber]);
+            $("#sh_save_progress").dialog('close');
+            alertDialog("Successfully saved SR. The SR ID is "+result.bo.properties.hasCaseNumber);
+            var srid = result.bo.properties.hasCaseNumber;
+            $('[name="SR Lookup"]').val(result.bo.properties.hasCaseNumber);
+            var type = result.bo.type;
+            if(type.indexOf("legacy:") == -1) { 
+                type = "legacy:"+type;
+                result.bo.type = type;
+            }
+            self.removeDuplicates();
+            setModel(result.bo, model, model.srType(), type, true, false);
+       
+            var meta = []; 
+            meta.push(new metadata("sr",srid));
+            meta.push(new metadata("type",type));
+           
+            //2149 Optional Image upload - disabled meta until next week
+            //Enabled again
+            updateMetadata(meta, self.data().properties().hasAttachment()); 
+        }
+        else if(result.ok == false) {
+            $("#sh_save_progress").dialog('close');
+          showErrorDialog("An error occurred while saving the Service Request : <br>"+result.error);
+        }
+      }); 
+    };
     	
     	  self.updateExistingCase = function (jsondata, model) {
           jsondata.properties.hasDateLastModified = self.getServerDateTime().asISODateString();
@@ -2823,6 +2816,11 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			"CHARLISTOPT":"charOptDisabledTemplate", "undefined":"charDisabledTemplate"
 		};
 
+    self.typeLabel = function(type) {
+      return type.hasJurisdictionCode ? type.label + " [" + type.hasJurisdictionCode + "]"
+                                      : type.label;
+    }
+
 		self.selectTemplate = function(el) {
 			var datatype = el.hasDataType ? el.hasDataType() : undefined;
 			if((el.isOldData && el.isOldData()) || (el.fromDiffSRType && el.fromDiffSRType()))
@@ -3087,7 +3085,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 		
 		self.buildSRType = function(el) {
 			if(!U.isEmptyString(self.srType().label))
-				return self.srType().label + " - " +self.srType().hasJurisdictionCode;
+				return self.typeLabel(self.srType());      
 			else
 				return "";
 		};
@@ -3325,30 +3323,33 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
     	
     function fetchSR(bo, model, isNew) {
     	var type = bo.type;
-		if(!type.startsWith("http:") && type.indexOf("legacy:") == -1) {
-			type = "legacy:"+type;
-			bo.type = type;
-		}
-		var typeiri = type.startsWith("http:") ? type : "http://www.miamidade.gov/cirm/legacy#" + type.split(":")[1]; 
+		  if(!type.startsWith("http:") && type.indexOf("legacy:") == -1) {
+			 //type = "legacy:"+type;
+        type = "http://opencirm.org#" + type;
+			   bo.type = type;
+		  }
+		  var typeiri = type.startsWith("http:") ? type : "http://www.miamidade.gov/cirm/legacy#" + type.split(":")[1]; 
 	    var srType = cirm.refs.serviceCases[typeiri]; 
+      var typeLabel = srType.hasJurisdictionCode ? 
+                      srType.label + " - " + srType.hasJurisdictionCode : srType.label;
 	    console.log('type', srType);
 	    
-		if(srType.hasServiceCaseAlert && bo.boid == "") {
-			$("#sh_dialog_alert")[0].innerText = srType.hasServiceCaseAlert.label;
-			$("#sh_dialog_alert").dialog({ height: 500, width: 500, modal: true, buttons: {
-				"Continue with SR" : function() {
-					$('#srTypeID').val(srType.label + " - " +srType.hasJurisdictionCode);
-					setModel(bo, model, srType, type, false, isNew);
-					$("#sh_dialog_alert").dialog('close');
-				},
-				"Clear SR": function() {
-				  	$("#sh_dialog_alert").dialog('close');
-				}
-			  } 
-			});
-		}
+		  if(srType.hasServiceCaseAlert && bo.boid == "") {
+			 $("#sh_dialog_alert")[0].innerText = srType.hasServiceCaseAlert.label;
+			 $("#sh_dialog_alert").dialog({ height: 500, width: 500, modal: true, buttons: {
+  				"Continue with SR" : function() {
+  					$('#srTypeID').val(typeLabel);
+  					setModel(bo, model, srType, type, false, isNew);
+  					$("#sh_dialog_alert").dialog('close');
+  				},
+  				"Clear SR": function() {
+  				  	$("#sh_dialog_alert").dialog('close');
+  				}
+  			} 
+			 });
+		  }
 		else {
-			$('#srTypeID').val(srType.label + " - " +srType.hasJurisdictionCode);
+			$('#srTypeID').val(typeLabel);
 			setModel(bo, model, srType, type, false, isNew);
 			if (bo.boid() != "") {
 				approvalCheck(bo.properties().hasCaseNumber(), model);

@@ -145,7 +145,7 @@ public class QueryTranslator
 		Json paginationJson = Json.object();
 		Json paginationCriteria = Json.object();
 
-		get_Identifiers_Datatypes(ont, pattern, identifiers, datatypes, store);
+		identifiers.putAll(store.selectIDsAndEntitiesByIRIs(collectDatatypeEntities(ont, pattern, datatypes, store)));
 
 		OWLNamedIndividual reqTable = individual("CIRM_SR_REQUESTS");
 		Set<OWLNamedIndividual> reqColumnIRISet = columnIriPK(reqTable);
@@ -222,7 +222,7 @@ public class QueryTranslator
 		{
 			owlClassTypeList.add(type.asString());
 		}
-		if(!owlClassTypeList.contains("legacy:ServiceCase")) 
+		if (!owlClassTypeList.contains("legacy:ServiceCase")) 
 		{
 			select.AND();
 			if(owlClassTypeList.size() == 1)
@@ -390,9 +390,8 @@ public class QueryTranslator
 		if(pattern.has("boid"))
 			boid = pattern.at("boid");
 		if(boid == null)
-			get_Identifiers_Datatypes(ont, pattern, identifiers, datatypes, store);
-		
-		Set<OWLClassExpression> types = new HashSet<OWLClassExpression>();
+			identifiers.putAll(store.selectIDsAndEntitiesByIRIs(collectDatatypeEntities(ont, pattern, datatypes, store)));
+		Set<OWLClass> types = new HashSet<OWLClass>();
 		OWLClass rootClass = null;
 		if(type != null) {
 			if(type.isArray())
@@ -408,6 +407,7 @@ public class QueryTranslator
 			query.setRootClass(rootClass);
 			types.add(rootClass);
 		}
+		identifiers.putAll(store.selectIDsAndEntitiesByIRIs(types));
 		
 		OWLNamedIndividual table = table(types);
 		Set<OWLNamedIndividual> columnIRI = null;
@@ -686,8 +686,7 @@ public class QueryTranslator
 		}
 	}
 
-	private void get_Identifiers_Datatypes(OWLOntology ont, Json pattern, 
-									Map<OWLEntity, DbId> identifiers, 
+	private Set<OWLEntity> collectDatatypeEntities(OWLOntology ont, Json pattern, 
 									Map<OWLEntity, OWL2Datatype> datatypes, 
 									RelationalStore store) 
 	{
@@ -780,11 +779,10 @@ public class QueryTranslator
 					ent.add(objectProperty(value));
 			}
 		}
-		if(ent.size() > 0)
-			identifiers.putAll(store.selectIDsAndEntitiesByIRIs(ent));
-	
+		return ent;
 	}
 
+	
 	private void buildMappedObjectQuery(Sql select, Statement statement, 
 										Map<OWLProperty<?, ?>, OWLNamedIndividual> columns,
 										String key, Json value, Map<OWLEntity, DbId> identifiers) 

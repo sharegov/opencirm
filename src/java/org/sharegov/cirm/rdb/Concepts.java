@@ -27,7 +27,8 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual;
 public class Concepts
 {
 	// Classes Software_Object/DBObject 
-	public static final String BASE 			= "http://www.miamidade.gov/ontology#";
+	//public static final String BASE 			= "http://www.miamidade.gov/ontology#";
+	public static final String BASE 			= "http://opencirm.org#";
 	public static final String DBObject 		= BASE + "DBObject";
 	public static final String DBSchema 		= BASE + "DBSchema";
 	public static final String DBTable 			= BASE + "DBTable";

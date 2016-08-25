@@ -361,8 +361,9 @@ public class LegacyEmulator extends RestService
 		QueryTranslator qt = new QueryTranslator();
 		RelationalOWLPersister persister = getPersister();
 		RelationalStore store = persister.getStore();
-		Query q = qt.translate(Json.object("legacy:hasCaseNumber", 
-				 caseNumber, "type", "legacy:ServiceCase"), store);
+		Query q = qt.translate(Json.object("legacy:hasCaseNumber", caseNumber, 
+										   "type", "legacy:ServiceCase"), 
+							   store);
 		Set<Long> results = store.query(q, Refs.tempOntoManager.resolve().getOWLDataFactory());
 		if (results.size() == 0)
 			return Json.nil();

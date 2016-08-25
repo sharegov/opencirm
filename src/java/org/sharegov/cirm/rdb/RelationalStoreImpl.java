@@ -699,6 +699,8 @@ public class RelationalStoreImpl implements RelationalStore
 	public Map<OWLEntity, DbId> selectIDsAndEntitiesByIRIs(Set<? extends OWLEntity> entitiesWithIRIs, Connection conn, boolean shouldFindAll)
 	{
 		Map<OWLEntity, DbId> result = new HashMap<OWLEntity, DbId>(entitiesWithIRIs.size() * 2 + 1);
+		if (entitiesWithIRIs.isEmpty())
+			return result;
 		StringBuilder select = new StringBuilder();
 		select.append("SELECT ID FROM ").append(TABLE_IRI).append(" WHERE ")
 				.append("IRI = ? AND IRI_TYPE_ID = ? ");

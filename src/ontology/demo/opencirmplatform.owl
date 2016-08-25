@@ -335,6 +335,9 @@
         <ObjectProperty IRI="http://opencirm.org#hasTable"/>
     </Declaration>
     <Declaration>
+        <ObjectProperty IRI="http://opencirm.org#hasTypeMapping"/>
+    </Declaration>
+    <Declaration>
         <ObjectProperty IRI="http://opencirm.org#isJoinedWithTable"/>
     </Declaration>
     <Declaration>
@@ -446,6 +449,9 @@
         <NamedIndividual IRI="http://opencirm.org#OracleDatabase"/>
     </Declaration>
     <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#PlainLiteral"/>
+    </Declaration>
+    <Declaration>
         <NamedIndividual IRI="http://opencirm.org#PostgresDatabase"/>
     </Declaration>
     <Declaration>
@@ -477,6 +483,36 @@
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#base64Binary"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#boolean"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#date"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#dateTime"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#dateTimeStamp"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#double"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#float"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#int"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#integer"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#long"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.KeyValuePropertyMapper"/>
@@ -573,6 +609,9 @@
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.workflows.WebServiceCallTask"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#string"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#TestActivityAssignByGeoRule"/>
@@ -1076,6 +1115,10 @@
         <NamedIndividual IRI="http://opencirm.org#OracleDatabase"/>
     </ClassAssertion>
     <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWL2Datatype"/>
+        <NamedIndividual IRI="http://opencirm.org#PlainLiteral"/>
+    </ClassAssertion>
+    <ClassAssertion>
         <Class IRI="http://opencirm.org#DatabaseType"/>
         <NamedIndividual IRI="http://opencirm.org#PostgresDatabase"/>
     </ClassAssertion>
@@ -1118,6 +1161,46 @@
     <ClassAssertion>
         <Class IRI="http://opencirm.org#DBDataType"/>
         <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWL2Datatype"/>
+        <NamedIndividual IRI="http://opencirm.org#base64Binary"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWL2Datatype"/>
+        <NamedIndividual IRI="http://opencirm.org#boolean"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWL2Datatype"/>
+        <NamedIndividual IRI="http://opencirm.org#date"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWL2Datatype"/>
+        <NamedIndividual IRI="http://opencirm.org#dateTime"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWL2Datatype"/>
+        <NamedIndividual IRI="http://opencirm.org#dateTimeStamp"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWL2Datatype"/>
+        <NamedIndividual IRI="http://opencirm.org#double"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWL2Datatype"/>
+        <NamedIndividual IRI="http://opencirm.org#float"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWL2Datatype"/>
+        <NamedIndividual IRI="http://opencirm.org#int"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWL2Datatype"/>
+        <NamedIndividual IRI="http://opencirm.org#integer"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWL2Datatype"/>
+        <NamedIndividual IRI="http://opencirm.org#long"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="http://opencirm.org#JavaClass"/>
@@ -1250,6 +1333,10 @@
     <ClassAssertion>
         <Class IRI="http://opencirm.org#JavaClass"/>
         <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.workflows.WebServiceCallTask"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWL2Datatype"/>
+        <NamedIndividual IRI="http://opencirm.org#string"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="http://www.miamidade.gov/cirm/legacy#GeoBasedUserAssignment"/>
@@ -1893,9 +1980,69 @@
         <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.ListToJSONMapper"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTypeMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#PlainLiteral"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTypeMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#base64Binary"/>
+        <NamedIndividual IRI="http://opencirm.org#CLOB"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTypeMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#boolean"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTypeMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#date"/>
+        <NamedIndividual IRI="http://opencirm.org#TIMESTAMP"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTypeMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#dateTime"/>
+        <NamedIndividual IRI="http://opencirm.org#TIMESTAMP"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTypeMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#dateTimeStamp"/>
+        <NamedIndividual IRI="http://opencirm.org#TIMESTAMP"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTypeMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#double"/>
+        <NamedIndividual IRI="http://opencirm.org#DOUBLE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTypeMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#float"/>
+        <NamedIndividual IRI="http://opencirm.org#DOUBLE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTypeMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#int"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTypeMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#integer"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTypeMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#long"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#isJsonMapper"/>
         <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.ListToJSONMapper"/>
         <NamedIndividual IRI="http://opencirm.org#OWList"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTypeMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#string"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
     </ObjectPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
