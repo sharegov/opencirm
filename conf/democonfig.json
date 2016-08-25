@@ -1,5 +1,5 @@
 {
-   "workingDir":"/Users/borislav/code/opencirm",
+   "workingDir":"/home/opencirm/opencirm",
    "customIRIMappingFile":"conf/openontomap.properties",   
    "port":8182,
    "ssl-port":8183,   
