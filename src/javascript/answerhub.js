@@ -733,6 +733,9 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
     		var params = { query: query, 
     		              meta: {rows:self.maxResults(), 
     		                         address:ko.toJS(self.addressModel) }};
+        // TODO - temp, comment out because SOLR MDC documents are indexed
+        // with an ontology incompatible with the demo
+        /*
     		if (self.selectedAgency().value.length > 0 || self.selectedDepartment().value.length > 0)
     		{
     		    if (self.selectedAgency().value.length > 0)
@@ -744,36 +747,36 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
     		}
     		else if (self.addressModel.municipality())
     		    params.agency = cirm.refs.citiesByName[self.addressModel.municipality()].iri;
-    		cirm.search.postObject("/kb", params, 
-						function(r) {
-							self.hideProgress("#ah_dialog_keywords_search");
-						if (r.ok) {
-						    $.each(r.docs, function(i,doc) {
-					            if (typeof doc.ontology == "undefined") {
-					                doc.ontology = [];
-					            }
-			                    if(window.location.href.indexOf('.311.') > -1 ) {
-					                doc.url = doc.url.replace('kb.miamidade', 'kb.311.miamidade');
-					                //Determine the article viewer for COM URL + ?
-					                var comViewer = doc.url.match("(.*/).*\.html$")[1] + "com_viewer/kb-viewer.html?";
-					                //Add the article number as query string e.g. ...?411231 
-					                var viewArticleURL = comViewer + doc.url.match(".*kbarticle_([0-9]+)\.html.*")[1];
-					                doc.url = viewArticleURL;
-			                    }
-						    });
-						    console.log('results', r);
-						    self.totalResults(r.total);
-						    self.topics(r.docs);
-						    self.serviceRequests.removeAll();
-						    $.each(r.docs, function(i,doc) {
-						            $.each(doc.ontology, function(i,o) {
-						                    if (cirm.refs.serviceCases[o] != undefined &&
-						                        self.serviceRequests.indexOf(o) < 0) {
-    						                    self.serviceRequests.push(o);
-    						                   }
-						            });
-						    });
-						    $("#kb_results").show();
+          */
+    		cirm.search.postObject("/kb", params, function(r) {
+          self.hideProgress("#ah_dialog_keywords_search");
+					if (r.ok) {
+					   $.each(r.docs, function(i,doc) {
+					     if (typeof doc.ontology == "undefined") {
+					       doc.ontology = [];
+					     }
+               if (window.location.href.indexOf('.311.') > -1 ) {
+	                doc.url = doc.url.replace('kb.miamidade', 'kb.311.miamidade');
+	                //Determine the article viewer for COM URL + ?
+	                var comViewer = doc.url.match("(.*/).*\.html$")[1] + "com_viewer/kb-viewer.html?";
+	                //Add the article number as query string e.g. ...?411231 
+	                var viewArticleURL = comViewer + doc.url.match(".*kbarticle_([0-9]+)\.html.*")[1];
+	                doc.url = viewArticleURL;
+                  }
+						  });
+					    console.log('results', r);
+					    self.totalResults(r.total);
+					    self.topics(r.docs);
+					    self.serviceRequests.removeAll();
+					    $.each(r.docs, function(i,doc) {
+				            $.each(doc.ontology, function(i,o) {
+				                    if (cirm.refs.serviceCases[o] != undefined &&
+				                        self.serviceRequests.indexOf(o) < 0) {
+						                    self.serviceRequests.push(o);
+						                   }
+				            });
+						  });
+						  $("#kb_results").show();
 						}
 						else {
 						    alert(r.error);

@@ -89,7 +89,7 @@ public class SearchService extends RestService
 		{
 			//System.out.println(params);
 			Json ainfo = params.at("meta", object()).at("address");
-			Mapping<Json, Boolean> gisFilter = ainfo != null && 
+			Mapping<Json, Boolean> gisFilter = ainfo != null && ainfo.has("coorindates") &&
 							!ainfo.at("coordinates").asJsonMap().isEmpty() ? 
 					Refs.gisClient.resolve().makeGisFilter(ainfo, true, null) :
 						null;

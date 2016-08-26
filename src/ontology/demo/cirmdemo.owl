@@ -161,6 +161,9 @@
         <NamedIndividual IRI="http://opencirm.org#Indian_Creek_Village"/>
     </Declaration>
     <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#KeywordServiceService"/>
+    </Declaration>
+    <Declaration>
         <NamedIndividual IRI="http://opencirm.org#LocalPostgresDatabase"/>
     </Declaration>
     <Declaration>
@@ -174,6 +177,9 @@
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#OperationsLocalPostgresDB"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#SolrSearchService"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#Town_of_Bay_Harbor_Islands"/>
@@ -574,6 +580,10 @@
         <NamedIndividual IRI="http://opencirm.org#Indian_Creek_Village"/>
     </ClassAssertion>
     <ClassAssertion>
+        <Class IRI="http://opencirm.org#RestService"/>
+        <NamedIndividual IRI="http://opencirm.org#KeywordServiceService"/>
+    </ClassAssertion>
+    <ClassAssertion>
         <Class IRI="http://opencirm.org#DatabaseConnection"/>
         <NamedIndividual IRI="http://opencirm.org#LocalPostgresDatabase"/>
     </ClassAssertion>
@@ -600,6 +610,10 @@
     <ClassAssertion>
         <Class IRI="http://opencirm.org#ConfigParam"/>
         <NamedIndividual IRI="http://opencirm.org#OperationsLocalPostgresDB"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#ConfigParam"/>
+        <NamedIndividual IRI="http://opencirm.org#SolrSearchService"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="http://opencirm.org#City_Organization"/>
@@ -913,6 +927,11 @@
         <NamedIndividual IRI="#DBIDFactoryConfig"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasMember"/>
+        <NamedIndividual IRI="http://opencirm.org#DemoConfigSet"/>
+        <NamedIndividual IRI="http://opencirm.org#SolrSearchService"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#Value"/>
         <NamedIndividual IRI="http://opencirm.org#GisDemoConfig"/>
         <NamedIndividual IRI="http://opencirm.org#GisGoogle"/>
@@ -946,6 +965,11 @@
         <ObjectProperty IRI="http://opencirm.org#Value"/>
         <NamedIndividual IRI="http://opencirm.org#OperationsLocalPostgresDB"/>
         <NamedIndividual IRI="http://opencirm.org#LocalPostgresDatabase"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#Value"/>
+        <NamedIndividual IRI="http://opencirm.org#SolrSearchService"/>
+        <NamedIndividual IRI="http://opencirm.org#KeywordServiceService"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
@@ -1299,6 +1323,16 @@
         <Literal datatypeIRI="&xsd;string">Indian Creek Village</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#KeywordServiceService"/>
+        <Literal datatypeIRI="&xsd;string">SearchService</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasUrl"/>
+        <NamedIndividual IRI="http://opencirm.org#KeywordServiceService"/>
+        <Literal datatypeIRI="&xsd;string">http://localhost:8983/solr</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasPassword"/>
         <NamedIndividual IRI="http://opencirm.org#LocalPostgresDatabase"/>
         <Literal datatypeIRI="&xsd;string">password</Literal>
@@ -1342,6 +1376,11 @@
         <DataProperty IRI="http://opencirm.org#hasDataSourceClassName"/>
         <NamedIndividual IRI="http://opencirm.org#PostgresDatabase"/>
         <Literal datatypeIRI="&xsd;string">org.sharegov.cirm.rdb.impl.PostgresHook</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#SolrSearchService"/>
+        <Literal datatypeIRI="&xsd;string">SearchService</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
