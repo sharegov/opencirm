@@ -54,16 +54,22 @@ public class OwlRepo
 	 */
 	public static final int TIMEOUT_BROWSE_SECS = 180; //3 min timeout (prev was 1 min)
 	public static final int TIMEOUT_PULL_SECS = 600; //10 min timeout (prev was 3 min)
-	
+
+	public static final int FIND_ONTO_SERVER_MAX_ATTEMPTS = 10; //10 attampts with 1 sec pause
+
 	/**
 	 * Prefer Refs.owlRepo.resolve() as the correct method to get a reference to the repo.
 	 */
 	public static OwlRepo getInstance() { return instance; }
 	
-	private VDHGDBOntologyRepository repo;
-	private HGPeerIdentity ontoServer = null;
+	private volatile VDHGDBOntologyRepository repo;
+	private volatile HGPeerIdentity ontoServer = null;
 	
-	private void findOntoServer()
+	/**
+	 * Attempts to find the ontoServer as connected XMPP peer. 
+	 * @return HGPeerIdentity if ontoServer found, or null if not found yet.
+	 */
+	private HGPeerIdentity findOntoServer()
 	{
 		String ontoServerName = StartUp.config.at("network").at("ontoServer").asString();
 		for (HGPeerIdentity id : repo.getPeer().getConnectedPeers())
@@ -71,10 +77,10 @@ public class OwlRepo
 			String name = (String)repo.getPeer().getNetworkTarget(id);
 			if (name.startsWith(ontoServerName))
 			{
-				ontoServer = id;
-				return;
+				return id;
 			}
 		}
+		return null; //ontoServer not found
 	}
 	
 	private void ensureRepository() {
@@ -121,12 +127,14 @@ public class OwlRepo
 			}
 			if (ontoServer == null)
 			{
-				for (int i = 0; i < 30; i++)
+				int attempts = 0;
+				do 
 				{
-					findOntoServer();
+					attempts ++;
+					ontoServer = findOntoServer();
 					try { Thread.sleep(1000); }
 					catch (Throwable t) { }
-				}
+				} while (ontoServer == null && attempts < FIND_ONTO_SERVER_MAX_ATTEMPTS);
 			}
 			if (ontoServer == null)
 			{
@@ -134,6 +142,10 @@ public class OwlRepo
 				throw new RuntimeException("Ontology Server " + 
 						StartUp.config.at("network").at("ontoServer").asString() +
 						" is offline, please ensure server is started and try again.");
+			} 
+			else 
+			{
+				ThreadLocalStopwatch.now("Found ontoServer for OwlRepo: "  + ontoServer.getHostname() + " (" + ontoServer.getIpAddress() + ")");
 			}
 			return true;
 		}
