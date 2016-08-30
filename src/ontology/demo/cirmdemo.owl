@@ -47,6 +47,9 @@
         <Class IRI="http://opencirm.org#Software_Configuration"/>
     </Declaration>
     <Declaration>
+        <ObjectProperty IRI="http://opencirm.org#hasEmailAddress"/>
+    </Declaration>
+    <Declaration>
         <ObjectProperty IRI="#authenticatesWith"/>
     </Declaration>
     <Declaration>
@@ -54,6 +57,27 @@
     </Declaration>
     <Declaration>
         <ObjectProperty IRI="#hasUserBase"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#BusinessPhoneNumber"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#CellPhoneNumber"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#FaxNumber"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#FirstName"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#HomePhoneNumber"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#LastName"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#OtherPhoneNumber"/>
     </Declaration>
     <Declaration>
         <DataProperty IRI="http://opencirm.org#hasIdName"/>
@@ -952,6 +976,16 @@
         <NamedIndividual IRI="#OPEN"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceActor"/>
+        <NamedIndividual IRI="http://opencirm.org#Illegal_Dumping"/>
+        <NamedIndividual IRI="http://opencirm.org#Agency_Department_Actor"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceActor"/>
+        <NamedIndividual IRI="http://opencirm.org#Illegal_Dumping"/>
+        <NamedIndividual IRI="http://opencirm.org#Occupant_Actor"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceField"/>
         <NamedIndividual IRI="http://opencirm.org#Illegal_Dumping"/>
         <NamedIndividual IRI="#sqPropertyOwner"/>
@@ -1537,6 +1571,34 @@
     <FunctionalDataProperty>
         <DataProperty IRI="http://opencirm.org#hasTableName"/>
     </FunctionalDataProperty>
+    <DataPropertyRange>
+        <DataProperty IRI="http://opencirm.org#BusinessPhoneNumber"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://opencirm.org#CellPhoneNumber"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://opencirm.org#FaxNumber"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://opencirm.org#FirstName"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://opencirm.org#HomePhoneNumber"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://opencirm.org#LastName"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://opencirm.org#OtherPhoneNumber"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
         <IRI>http://opencirm.org#Bal_Harbour_Village</IRI>
