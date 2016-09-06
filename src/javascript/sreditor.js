@@ -239,6 +239,23 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			return target;		    
 		};
 		
+		/**
+		 * Use toolTipTitle as title attribute binding on char answer input fields
+		 * to suppress title tooltip to obstruct view while call takers are typing.
+		 * Bind hasfocus of input field to hasInputFocus.
+		 */
+		ko.extenders.charLiteralExtender = function(target, option) {
+		    target.hasInputFocus = ko.observable();
+		    target.toolTipTitle = ko.computed(function() {		    
+		    	if(target.hasInputFocus()) {
+		    		return "";
+		    	} else {
+		    		return target();
+		    	}
+		    });
+			return target;
+		};
+		
 		self.commonExtenderForAll = function(target, overrideMessage, type) {
 			target.hasError = ko.observable();
 			target.validationMessage = ko.observable();
@@ -565,10 +582,13 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 				v.hasAnswerValue().literal.extend({ phone_required : "Required"});
 			else if(v.hasDataType() == 'CHARLIST' || v.hasDataType() == 'CHARMULT' || v.hasDataType() == 'CHAROPT' || v.hasDataType == 'CHARLISTOPT' )
 				v.hasAnswerObject().iri.extend({ required: "Required" });
-			else if(v.hasDataType() == 'CHAR' && v.hasBusinessCodes && v.hasBusinessCodes().indexOf('EMAIL') != -1)
+			else if(v.hasDataType() == 'CHAR' && v.hasBusinessCodes && v.hasBusinessCodes().indexOf('EMAIL') != -1) {
 				v.hasAnswerValue().literal.extend({email_required: "Invalid"});
-			else
+				v.hasAnswerValue().literal.extend({charLiteralExtender: ""});
+			} else { 
 				v.hasAnswerValue().literal.extend({ required: "Required" });
+				v.hasAnswerValue().literal.extend({charLiteralExtender: ""});
+			}
 	    };
 	    
 	    self.serviceQuestionDataTypeExtenders = function(v) {
@@ -581,12 +601,14 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			else if(v.hasDataType() == 'TIME')
 				v.hasAnswerValue().literal.extend({ time: "Invalid format"});
 			else if(v.hasDataType() == 'CHAR') {
-				if(v.hasStandardizeStreetFormat)
+				if(v.hasStandardizeStreetFormat) {
 					v.hasAnswerValue().literal.extend({standardizeStreet: ""});
-				else if(v.hasBusinessCodes && v.hasBusinessCodes().indexOf('EMAIL') != -1)
+				} else if(v.hasBusinessCodes && v.hasBusinessCodes().indexOf('EMAIL') != -1) {
 					v.hasAnswerValue().literal.extend({email: "Invalid"});
-				else
-					v.hasAnswerValue().literal.extend({none: ""});
+				} else {
+					v.hasAnswerValue().literal.extend({none: ""}); 
+				}
+				v.hasAnswerValue().literal.extend({charLiteralExtender: ""});			
 			}
 		}
 	    
