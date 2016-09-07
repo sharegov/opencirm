@@ -20,7 +20,6 @@ import static org.sharegov.cirm.OWL.owlClass;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -415,7 +414,7 @@ public class MetaOntology
 		List<OWLOntologyChange> L = new ArrayList<OWLOntologyChange>();
 		
 		for (OWLOntology O: OWL.ontologies()){		
-//			for (OWLAxiom a : O.getDeclarationAxioms((OWLEntity)individual)) L.add(new RemoveAxiom(O, a));
+			for (OWLAxiom a : O.getDeclarationAxioms((OWLEntity)individual)) L.add(new RemoveAxiom(O, a));
 			for (OWLAxiom a : O.getReferencingAxioms((OWLEntity)individual)) L.add(new RemoveAxiom(O, a));			
 			for (OWLAxiom a : O.getDataPropertyAssertionAxioms(individual)) L.add(new RemoveAxiom(O, a));
 			for (OWLAxiom a : O.getObjectPropertyAssertionAxioms(individual)) L.add(new RemoveAxiom(O, a));

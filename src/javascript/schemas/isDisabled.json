@@ -1,4 +1,0 @@
-{
-"type": "string",
-"pattern": "^(true|false)$"
-}

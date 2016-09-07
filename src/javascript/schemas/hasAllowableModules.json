@@ -1,4 +1,0 @@
-{
-	"pattern": "^,(((SREINTAK|SRERESAC|SREMASS|SRSNGLWO|SRSUMMRY|WEBINTAK|SRSUMMRY|MD-WCSL),)*)+$",
-	"type": "string"
-}

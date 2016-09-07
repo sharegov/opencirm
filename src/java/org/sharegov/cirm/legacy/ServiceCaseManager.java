@@ -915,6 +915,30 @@ public class ServiceCaseManager extends OntoAdmin {
 	
 	}
 	
+	/**
+	 * 
+	 * 
+	 */
+	public Json getServiceCaseActivities (String srType){		
+
+		srType = MetaOntology.getIndividualIdentifier(srType);
+		
+		Json sr = getMetaIndividual(srType);			
+				
+		if (sr.has("hasActivity")){
+			
+			Json activities = MetaOntology.resolveIRIs(sr.at("hasActivity"));
+			
+			if (!activities.isArray()){
+				return Json.array().add(activities);						
+			} else {
+				return activities;
+			}
+			
+		} else return Json.nil();
+	
+	}
+	
 	public boolean doRollBack (List<Integer> revisionNumbers){		
 		boolean result = rollBackRevisions(revisionNumbers);
 		
@@ -1016,10 +1040,8 @@ public class ServiceCaseManager extends OntoAdmin {
 	
 	public boolean validateJson (String schemaUri, Json o){	
 		try {
-			Json.Schema schema = Json.schema(new URI(schemaUri));	
-//			validate method is failing. this must be corrected ASAP.
-//			Json errors = schema.validate(o);
-			Json errors = Json.object();
+			Json.Schema schema = Json.schema(new URI(schemaUri));
+			Json errors = schema.validate(o);
 			
 			if (errors.has("errors"))	{	
 				for (Json error : errors.at("errors").asJsonList())  System.out.println("Validation error " + error.asString());

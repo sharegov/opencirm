@@ -445,6 +445,34 @@ public class ServiceCaseAdmin extends RestService {
 		
 	}
 	
+	@GET
+	@Path("{srType}/activities")
+	public Response getActivities(@PathParam("srType") String srType)
+	{
+		
+		try
+		{ 
+			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");		     
+			
+			Json result = ServiceCaseManager.getInstance().getServiceCaseActivities(srType);
+			
+			if (result == Json.nil()) {
+				return Response
+						.status(Status.NOT_FOUND)
+						.type(MediaType.APPLICATION_JSON).build();
+			} else {			
+				return Response.ok(result, MediaType.APPLICATION_JSON).build();
+			}
+		}
+		catch(Exception e){
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
 	
 	@POST
 	@Path("/authorize")

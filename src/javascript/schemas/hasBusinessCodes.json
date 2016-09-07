@@ -1,4 +1,0 @@
-{
-	"pattern": "^,(((NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR),)*)+$",
-	"type": "string"
-}
