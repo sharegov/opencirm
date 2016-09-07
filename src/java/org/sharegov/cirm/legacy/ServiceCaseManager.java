@@ -970,72 +970,99 @@ public class ServiceCaseManager extends OntoAdmin {
 		String host = getHostIpAddress();		
 		
 		if (!host.isEmpty() && validateJson(host + "/javascript/schemas/service_field_compact.json", data)){
-
-			individualID = MetaOntology.getIndividualIdentifier(individualID);
 			
 			List<String> evictionList = new ArrayList<String>();
 			evictionList.add(individualID);
+			String propertyID = "hasServiceField";
+			String comment = "Create/Replace Questions for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID);	
 			
-			OwlRepo repo = getRepo();
-			synchronized (repo) {
-				repo.ensurePeerStarted();			
-				
-				String propertyID = "hasServiceField";
-				
-				// TO-DO: Create IRIs				
-				
-				Json oldQuestions = getServiceCaseQuestions(individualID);
-				
-				List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
-				
-				ThreadLocalStopwatch.now("---- Started Removing Old Questions.");
-				
-				if (oldQuestions.isArray()){
-					for (Json qx: oldQuestions.asJsonList()){
-						String iri = "";
-						if (qx.isObject())
-							if (qx.has("iri")){
-								iri = qx.at("iri").asString();
-							} else throw new IllegalArgumentException("Cannot find iri property for question: "+ qx.asString());
-						else {
-							iri = qx.asString();
-						}
-						
-						iri = MetaOntology.getIdFromUri(iri);
-						
-						OWLNamedIndividual ind = OWL.individual(PREFIX + iri);
-						evictionList.add(ind.getIRI().getFragment());
-//						changes.addAll(MetaOntology.getRemoveAllPropertiesIndividualChanges(ind));
-					}
-				} else {
-					// not so sure ask thomas
-					
-				}
-				ThreadLocalStopwatch.now("---- Ended Removing Old Questions.");
-				ThreadLocalStopwatch.now("---- Start Creating New Questions.");
-				
-				changes.addAll(MetaOntology.getAddIndividualObjectFromJsonChanges(individualID, propertyID, data));
-				
-				changes = MetaOntology.clearChanges(changes);
-				
-				ThreadLocalStopwatch.now("---- Ended Creating New Questions.");
+			
+			if (addObjectsToIndividualProperty (individualID, propertyID, data, userName, comment, evictionList)){
+				registerChange(individualID);
+				clearCache(evictionList);
+				return getServiceCaseQuestions(individualID);
+			} throw new IllegalArgumentException("Cannot update Questions to Service Case Type "+ PREFIX +  individualID);	
+
+		} else throw new IllegalArgumentException("Json object does not match questions schema: " + data.asString()); 	
+	}
 	
-				String comment = "Create/Replace questions for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID);	
-				ThreadLocalStopwatch.now("---- Start Commiting Changes.");
+	public Json addActivitesServiceCase (String individualID, Json data, String userName){	
+		String host = getHostIpAddress();		
+		
+		if (!host.isEmpty() && validateJson(host + "/javascript/schemas/activity_compact.json", data)){
+			
+			List<String> evictionList = new ArrayList<String>();
+			evictionList.add(individualID);
+			String propertyID = "hasActivity";
+			String comment = "Create/Replace Activities for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID);	
+			
+			
+			if (addObjectsToIndividualProperty (individualID, propertyID, data, userName, comment, evictionList)){
+				registerChange(individualID);
+				clearCache(evictionList);
+				return getServiceCaseQuestions(individualID);
+			} throw new IllegalArgumentException("Cannot update Activities to Service Case Type "+ PREFIX +  individualID);	
+
+		} else throw new IllegalArgumentException("Json object does not match activity schema: " + data.asString()); 	
+	}
+	
+	public boolean addObjectsToIndividualProperty (String individualID, String propertyID, Json data, String userName, String comment, List<String> evictionList){
+		individualID = MetaOntology.getIndividualIdentifier(individualID);						
+		
+		OwlRepo repo = getRepo();
+		synchronized (repo) {
+			repo.ensurePeerStarted();	
+		
+			Json oldQuestions = getServiceCaseQuestions(individualID);
+			
+			List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+			
+			ThreadLocalStopwatch.now("---- Started Removing Old Objects from individual: " + individualID + " property: " + propertyID);
+			
+			if (oldQuestions.isArray()){
+				for (Json ox: oldQuestions.asJsonList()){
+					removeObjectOnto (ox, evictionList);
+				}
+			} else {
+				removeObjectOnto (oldQuestions, evictionList);
 				
-				boolean r = commit(userName, comment, changes);
-//				boolean r = true;
-				
-				ThreadLocalStopwatch.now("---- Ended Commiting Changes.");
-				
-				if (r){
-					registerChange(individualID);
-					clearCache(evictionList);
-					return getServiceCaseQuestions(individualID);
-				} throw new IllegalArgumentException("Cannot update questions to Service Case Type "+ PREFIX +  individualID);
-								
 			}
-		} else throw new IllegalArgumentException("Json object does not match questions schema: " + data.asString()); 
+			ThreadLocalStopwatch.now("---- Ended Removing Old Objects from individual: " + individualID + " property: " + propertyID);
+			ThreadLocalStopwatch.now("---- Start Creating New Objects for individual: " + individualID + " property: " + propertyID);
+			
+			changes.addAll(MetaOntology.getAddIndividualObjectFromJsonChanges(individualID, propertyID, data));
+			
+			changes = MetaOntology.clearChanges(changes);
+			
+			ThreadLocalStopwatch.now("---- Ended Creating New Objects for individual: " + individualID + " property: " + propertyID);
+
+			
+			ThreadLocalStopwatch.now("---- Start Commiting Changes.");
+			
+			boolean r = commit(userName, comment, changes);
+			
+			ThreadLocalStopwatch.now("---- Ended Commiting Changes.");	
+			
+			return r;
+							
+		}
+	}
+	
+	private void removeObjectOnto (Json ox, List<String> evictionList){
+		String iri = "";
+		if (ox.isObject())
+			if (ox.has("iri")){
+				iri = ox.at("iri").asString();
+			} else throw new IllegalArgumentException("Cannot find iri property for object: "+ ox.asString());
+		else {
+			iri = ox.asString();
+		}
+		
+		iri = MetaOntology.getIdFromUri(iri);
+		
+		OWLNamedIndividual ind = OWL.individual(PREFIX + iri);
+		evictionList.add(ind.getIRI().getFragment());
+//		changes.addAll(MetaOntology.getRemoveAllPropertiesIndividualChanges(ind));
 	}
 	
 	public boolean validateJson (String schemaUri, Json o){	

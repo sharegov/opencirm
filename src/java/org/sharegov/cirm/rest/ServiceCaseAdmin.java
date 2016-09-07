@@ -473,6 +473,54 @@ public class ServiceCaseAdmin extends RestService {
 		}
 	}
 	
+	@POST
+	@Path("{srType}/activities")
+	public Response createActivities(@PathParam("srType") String srType, String aJsonStr)
+	{		
+		synchronized (cache){
+			Json result = cache.get(aJsonStr);
+			
+			if (result != null && !result.isNull()){
+				ThreadLocalStopwatch.now("Identical Request, cache results used as response. End Saving Activities.");
+				
+				return Response.ok(result, MediaType.APPLICATION_JSON).build();
+			}
+					
+			ThreadLocalStopwatch.startTop("Started Saving Activities.");
+			
+			Json aData = Json.read(aJsonStr);
+			
+			try
+			{ 
+				if (!(aData.has("userName") && aData.has("payload") && aData.at("payload").isArray())) throw new IllegalArgumentException("User Name or Activity data null/empty/Incomplete"); 
+				
+				String userName = aData.at("userName").asString();			
+	
+				if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
+				if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");	
+				
+				result = ServiceCaseManager.getInstance().addActivitesServiceCase(srType, aData.at("payload"), userName);			
+				
+				cache.put(aJsonStr, result);
+				
+				ThreadLocalStopwatch.now("End Saving Activities.");
+				
+				return Response.ok(result, MediaType.APPLICATION_JSON).build();
+			}
+			catch(Exception e){
+				ThreadLocalStopwatch.now("Error found Saving Activities.");
+				
+				e.printStackTrace();
+				return Response
+						.status(Status.INTERNAL_SERVER_ERROR)
+						.type(MediaType.APPLICATION_JSON)
+						.entity(Json.object().set("error", e.getClass().getName())
+								.set("message", e.getMessage())).build();
+			}
+		}
+		
+	}
+	
 	
 	@POST
 	@Path("/authorize")
