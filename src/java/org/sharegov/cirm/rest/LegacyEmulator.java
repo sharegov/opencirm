@@ -1247,7 +1247,7 @@ public class LegacyEmulator extends RestService
 			updateExistingActivities(uiActs, dbActs, mngr, bontology, boid, emailsToSend);
 
 		
-		
+		String srModifiedByStr = srModifiedBy == null? null : srModifiedBy.getLiteral();
 		//06-20-2013 syed - set the createdBy to the SR modifier.
 		for (final Json eachActivity : newActivities.asJsonList())
 		{
@@ -1257,6 +1257,8 @@ public class LegacyEmulator extends RestService
 					.at("legacy:hasDetails").asString() : null;
 			String assignedTo = eachActivity.has("legacy:isAssignedTo") ? eachActivity
 					.at("legacy:isAssignedTo").asString() : null;
+			String actCreatedBy = eachActivity.has("isCreatedBy") ? eachActivity
+							.at("isCreatedBy").asString() : srModifiedByStr;					
 			Json hasOutcome = eachActivity.has("legacy:hasOutcome") ? eachActivity
 					.at("legacy:hasOutcome") : null;
 			java.util.Date createdDate = eachActivity.has("hasDateCreated") ? 
@@ -1269,7 +1271,7 @@ public class LegacyEmulator extends RestService
 								    assignedTo, 
 								    bontology,
 								    createdDate, 
-								    (srModifiedBy != null)?srModifiedBy.getLiteral():null,
+								    actCreatedBy,
 								    emailsToSend);
 			else
 			{
@@ -1281,7 +1283,7 @@ public class LegacyEmulator extends RestService
 									bontology,
 									createdDate,
 									completedDate,
-									(srModifiedBy != null)?srModifiedBy.getLiteral():null,
+									actCreatedBy,
 									emailsToSend);
 			}
 			if (!eachActivity.has("legacy:hasOutcome") && eachActivity.is("legacy:isAccepted", true))

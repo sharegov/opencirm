@@ -25,22 +25,38 @@ MDCJSLIB.modules.gis = (function() {
 	// private methods
 	var addressCandidates = function(address, zip, municipality, callback, error) {
 		var path = _path  + "/candidates";
-		restClient.get(path,{street:address,zip:zip,municipality:municipality},function(data) {
-			  if(data.ok == true){
-                            var candidates = [];
-			    $.each(data.candidates, function(index,candidate){
-			    	candidates.push(candidate);
-    	                    });
-			    callback(candidates);
-                          }else
-                            error(data.message, null, "")
+		restClient.get(path, {street:address,zip:zip,municipality:municipality}, function(data) {
+	            if(data.ok == true){
+		            var candidates = [];
+				    $.each(data.candidates, function(index, candidate){
+				    	//Only use(push) intersection candidate if candidates array does not already contain equal address
+				    	//Purpose is to avoid infinite request loops when two equal intersection candidates are returned
+				    	//and behind the scenes is enabled as observed. Non intersection addresses are not affected.
+				    	//Needs further discussion with GIS experts
+				    	var useCandidate = true;
+				    	if (candidate.address && candidate.address.indexOf('&') > -1) {
+					    	var matchingCandidates = $.grep(candidates, function(candidate, gIndex) {
+					    		var cur = candidates[gIndex];
+					    		if (cur.address && cur.address === candidate.address) {
+					    			return true;
+					    		}
+					    	});
+					    	useCandidate = (matchingCandidates.length === 0);				    		
+				    	}
+					    if (useCandidate) {
+					    	candidates.push(candidate);
+					    }
+		    	       });
+				    callback(candidates);
+	            } else {
+	                error(data.message, null, "")
+	            }
 			},function(XMLHttpRequest, textStatus, errorThrown) {
 				var message = ajaxErrorMessage(XMLHttpRequest, textStatus);
 				if(error)
 					error(message, XMLHttpRequest, textStatus);
 			}
 		);
-
 	};
 	
     var commonLocationCandidates = function(name, callback, error) {
