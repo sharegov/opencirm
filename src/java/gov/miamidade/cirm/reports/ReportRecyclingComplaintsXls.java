@@ -105,7 +105,8 @@ import org.sharegov.cirm.utils.ThreadLocalStopwatch;
  * Gerardo.Cardona@progressivewaste.com; 
  * Jacqueson.Bernard@progressivewaste.com;
  * Kimberly.Diljohn@progressivewaste.com; 
- * Joe.Ruiz@progressivewaste.com
+ * Joe.Ruiz@progressivewaste.com;
+ * Maria.Suarez@progressivewaste.com
  * CC: same
  * 
  * To email to cirmtest@miamidade.gov, set MessageManager Test mode or set EMAIL_TESTMODE = true;
@@ -122,7 +123,8 @@ public class ReportRecyclingComplaintsXls
 						+ "Gerardo.Cardona@progressivewaste.com;" 
 						+ "Jacqueson.Bernard@progressivewaste.com;" 
 						+ "Kimberly.Diljohn@progressivewaste.com;" 
-						+ "Joe.Ruiz@progressivewaste.com";
+						+ "Joe.Ruiz@progressivewaste.com;"
+						+ "Maria.Suarez@progressivewaste.com";
 	public static final String EMAIL_CC12 = "swmcsu@miamidade.gov;massaj@miamidade.gov";
 	public static final String EMAIL_BCC12 = "cirmtest@miamidade.gov";
 	public static final String EMAIL_FROM12 = "cirm@miamidade.gov";
