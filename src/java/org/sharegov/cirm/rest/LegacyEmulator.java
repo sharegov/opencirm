@@ -1317,6 +1317,29 @@ public class LegacyEmulator extends RestService
 		{
 			Json result = bontology.toJSON();
 			addAddressData(result);
+			//Register Top Level Tx fire Update event
+			CirmTransaction.get().addTopLevelEventListener(new CirmTransactionListener() {
+			    public void transactionStateChanged(final CirmTransactionEvent e)
+			    {
+			    	if (e.isSucceeded())
+			    	{
+			    		try
+			    		{
+			    			EventDispatcher.get().dispatch(
+			    					OWL.individual("legacy:ServiceCaseUpdateEvent"), 
+						            bontology.getBusinessObject(), 
+						            OWL.individual("BO_Update"),
+						            Json.object("case", result.dup()));
+			    		}
+			    		catch (Exception ex)
+			    		{
+							ThreadLocalStopwatch.error("Error updateServiceCaseTransaction - Failed to dispatch update event for " + bontology.getObjectId());
+							ex.printStackTrace();
+			    		}
+			    	}
+			    }
+			});
+			//
 			//START : Emails to customers
 			if(actorEmails != null)
 			{
@@ -1365,6 +1388,7 @@ public class LegacyEmulator extends RestService
 		}
 		catch (Throwable e)
 		{
+			//Do not catch error here.
 			ThreadLocalStopwatch.fail("FAIL updateServiceCase (str)");
 			System.out.println("formData passed into updateServiceCase: "+ serviceCaseParam.toString());
 			e.printStackTrace();
