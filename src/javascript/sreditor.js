@@ -244,7 +244,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 		 * to suppress title tooltip to obstruct view while call takers are typing.
 		 * Bind hasfocus of input field to hasInputFocus.
 		 */
-		ko.extenders.charLiteralExtender = function(target, option) {
+		ko.extenders.charTemplateLiteralExtender = function(target, option) {
 		    target.hasInputFocus = ko.observable();
 		    target.toolTipTitle = ko.computed(function() {		    
 		    	if(target.hasInputFocus()) {
@@ -557,6 +557,10 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			patchPlaceholdersforIE();
 	    };
 	    
+	    /**
+	     * Adds knock out extender(s) to service answer literal.
+	     * Different extenders are used depending on required answer and question datatype. 
+	     */
 	    self.serviceQuestionExtenders = function(v){
 			if(v.isOldData && v.isOldData())
 				return true;
@@ -571,36 +575,46 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			}
 	    };
 	    
+	    /**
+	     * Adds knock out extender(s) for required (REQINTAK) service answer literal.
+	     */
 	    self.addServiceAnswerRequiredExtender = function(v) {
-			if(v.hasDataType() == 'DATE')
+			if(v.hasDataType() == 'DATE') {
 				v.hasAnswerValue().literal.extend({ valiDATE_required: "Required"});
-			else if(v.hasDataType() == 'NUMBER')
+			} else if(v.hasDataType() == 'NUMBER') {
 				v.hasAnswerValue().literal.extend({ numeric_required: "Required"});
-			else if(v.hasDataType() == 'TIME')
+				v.hasAnswerValue().literal.extend({charTemplateLiteralExtender: ""});
+	    	} else if(v.hasDataType() == 'TIME') {
 				v.hasAnswerValue().literal.extend({ time_required: "Required"});
-			else if(v.hasDataType() == 'PHONE' || v.hasDataType() == 'PHONENUM')
+    		} else if(v.hasDataType() == 'PHONE' || v.hasDataType() == 'PHONENUM') {
+				v.hasAnswerValue().literal.extend({charTemplateLiteralExtender: ""});
 				v.hasAnswerValue().literal.extend({ phone_required : "Required"});
-			else if(v.hasDataType() == 'CHARLIST' || v.hasDataType() == 'CHARMULT' || v.hasDataType() == 'CHAROPT' || v.hasDataType == 'CHARLISTOPT' )
+    		} else if(v.hasDataType() == 'CHARLIST' || v.hasDataType() == 'CHARMULT' || v.hasDataType() == 'CHAROPT' || v.hasDataType == 'CHARLISTOPT' ) {
 				v.hasAnswerObject().iri.extend({ required: "Required" });
-			else if(v.hasDataType() == 'CHAR' && v.hasBusinessCodes && v.hasBusinessCodes().indexOf('EMAIL') != -1) {
+    		} else if(v.hasDataType() == 'CHAR' && v.hasBusinessCodes && v.hasBusinessCodes().indexOf('EMAIL') != -1) {
 				v.hasAnswerValue().literal.extend({email_required: "Invalid"});
-				v.hasAnswerValue().literal.extend({charLiteralExtender: ""});
+				v.hasAnswerValue().literal.extend({charTemplateLiteralExtender: ""});
 			} else { 
 				v.hasAnswerValue().literal.extend({ required: "Required" });
-				v.hasAnswerValue().literal.extend({charLiteralExtender: ""});
+				v.hasAnswerValue().literal.extend({charTemplateLiteralExtender: ""});
 			}
 	    };
 	    
+	    /**
+	     * Add knock out extender(s) for not required service answer literal.
+	     */
 	    self.serviceQuestionDataTypeExtenders = function(v) {
-			if(v.hasDataType() == 'DATE')
+			if(v.hasDataType() == 'DATE') {
 				v.hasAnswerValue().literal.extend({ valiDATE: "Invalid"});
-			else if(v.hasDataType() == 'NUMBER')
+			} else if(v.hasDataType() == 'NUMBER') {
 				v.hasAnswerValue().literal.extend({ numeric: "Invalid"});
-			else if(v.hasDataType() == 'PHONE' || v.hasDataType() == 'PHONENUM')
+				v.hasAnswerValue().literal.extend({charTemplateLiteralExtender: ""});			
+			} else if(v.hasDataType() == 'PHONE' || v.hasDataType() == 'PHONENUM') {
 				v.hasAnswerValue().literal.extend({ phone: "Invalid"});
-			else if(v.hasDataType() == 'TIME')
+				v.hasAnswerValue().literal.extend({charTemplateLiteralExtender: ""});			
+			} else if(v.hasDataType() == 'TIME') {
 				v.hasAnswerValue().literal.extend({ time: "Invalid format"});
-			else if(v.hasDataType() == 'CHAR') {
+			} else if(v.hasDataType() == 'CHAR') {
 				if(v.hasStandardizeStreetFormat) {
 					v.hasAnswerValue().literal.extend({standardizeStreet: ""});
 				} else if(v.hasBusinessCodes && v.hasBusinessCodes().indexOf('EMAIL') != -1) {
@@ -608,7 +622,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 				} else {
 					v.hasAnswerValue().literal.extend({none: ""}); 
 				}
-				v.hasAnswerValue().literal.extend({charLiteralExtender: ""});			
+				v.hasAnswerValue().literal.extend({charTemplateLiteralExtender: ""});			
 			}
 		}
 	    
