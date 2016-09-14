@@ -1073,6 +1073,7 @@ public class ServiceCaseManager extends OntoAdmin {
 		} else throw new IllegalArgumentException("Json object does not match activity schema: " + data.asString()); 	
 	}
 	
+
 	public boolean addObjectsToIndividualProperty (String individualID, String propertyID, Json data, String userName, String comment, List<String> evictionList, Json toRemove){
 		individualID = MetaOntology.getIndividualIdentifier(individualID);						
 		
@@ -1111,6 +1112,52 @@ public class ServiceCaseManager extends OntoAdmin {
 			return r;
 							
 		}
+	}
+	
+	/**
+	 * Adds a single (existing) activity to a service case. No state changes are assumed for either the activity o
+	 * 
+	 * @param individualID
+	 * @param data
+	 * @param userName
+	 * @return
+	 */
+	public Json addActivityToServiceCase (String individualID, Json data, String userName){	
+		
+			List<String> evictionList = new ArrayList<String>();
+			evictionList.add(individualID);
+			String propertyID = "hasActivity";
+			String comment = "Create/Replace Activities for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID);	
+			;
+			
+			if (commit(userName, comment, MetaOntology.getAddIndividualObjectProperty (individualID, propertyID, data.at("iri").toString()))){
+				registerChange(individualID);
+				clearCache(evictionList);
+				return getServiceCaseQuestions(individualID);
+			} throw new IllegalArgumentException("Cannot update Activities to Service Case Type "+ PREFIX +  individualID);	
+	}
+	
+	/**
+	 * Remove a single (existing) activity to a service case. No state changes are assumed for either the activity o
+	 * 
+	 * @param individualID
+	 * @param data
+	 * @param userName
+	 * @return
+	 */
+	public Json removeActivityFromServiceCase (String individualID, Json data, String userName){	
+		
+			List<String> evictionList = new ArrayList<String>();
+			evictionList.add(individualID);
+			String propertyID = "hasActivity";
+			String comment = "Create/Replace Activities for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID);	
+			;
+			
+			if (commit(userName, comment, MetaOntology.getRemoveIndividualObjectProperty (individualID, propertyID, data.at("iri").toString()))){
+				registerChange(individualID);
+				clearCache(evictionList);
+				return getServiceCaseQuestions(individualID);
+			} throw new IllegalArgumentException("Cannot update Activities to Service Case Type "+ PREFIX +  individualID);	
 	}
 	
 	private void removeObjectOnto (Json ox, List<String> evictionList){
