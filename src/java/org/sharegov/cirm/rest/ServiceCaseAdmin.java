@@ -521,6 +521,110 @@ public class ServiceCaseAdmin extends RestService {
 		
 	}
 	
+	/**
+	 * Adds an existing activity to an existing SR.
+	 * 
+	 */
+	@PUT
+	@Path("{srType}/activity")
+	public Response addActivity(@PathParam("srType") String srType, String aJsonStr)
+	{		
+		synchronized (cache){
+			Json result = cache.get(aJsonStr);
+			
+			if (result != null && !result.isNull()){
+				ThreadLocalStopwatch.now("Identical Request, cache results used as response. End Saving Activities.");
+				
+				return Response.ok(result, MediaType.APPLICATION_JSON).build();
+			}
+					
+			ThreadLocalStopwatch.startTop("End Saving Activity.");
+			
+			Json aData = Json.read(aJsonStr);
+			
+			try
+			{ 
+				if (!(aData.has("userName") && aData.has("payload") && aData.at("payload").has("hasActivity") && aData.at("payload").at("hasActivity").has("iri"))) throw new IllegalArgumentException("User Name or Activity data null/empty/Incomplete"); 
+				
+				String userName = aData.at("userName").asString();			
+	
+				if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
+				if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");	
+				
+				result = ServiceCaseManager.getInstance().addActivityToServiceCase(srType, aData.at("payload").at("hasActivity"), userName);			
+				
+				cache.put(aJsonStr, result);
+				
+				ThreadLocalStopwatch.now("End Saving Activity.");
+				
+				return Response.ok(result, MediaType.APPLICATION_JSON).build();
+			}
+			catch(Exception e){
+				ThreadLocalStopwatch.now("Error found Saving Activity.");
+				
+				e.printStackTrace();
+				return Response
+						.status(Status.INTERNAL_SERVER_ERROR)
+						.type(MediaType.APPLICATION_JSON)
+						.entity(Json.object().set("error", e.getClass().getName())
+								.set("message", e.getMessage())).build();
+			}
+		}
+		
+	}
+	
+	/**
+	 * Removes an existing activity to an existing SR.
+	 * 
+	 */
+	@DELETE
+	@Path("{srType}/activity")
+	public Response removeActivity(@PathParam("srType") String srType, String aJsonStr)
+	{		
+		synchronized (cache){
+			Json result = cache.get(aJsonStr);
+			
+			if (result != null && !result.isNull()){
+				ThreadLocalStopwatch.now("Identical Request, cache results used as response. End Saving Activities.");
+				
+				return Response.ok(result, MediaType.APPLICATION_JSON).build();
+			}
+					
+			ThreadLocalStopwatch.startTop("End Removing Activity.");
+			
+			Json aData = Json.read(aJsonStr);
+			
+			try
+			{ 
+				if (!(aData.has("userName") && aData.has("payload") && aData.at("payload").has("hasActivity") && aData.at("payload").at("hasActivity").has("iri"))) throw new IllegalArgumentException("User Name or Activity data null/empty/Incomplete"); 
+				
+				String userName = aData.at("userName").asString();			
+	
+				if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
+				if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");	
+				
+				result = ServiceCaseManager.getInstance().removeActivityFromServiceCase(srType, aData.at("payload").at("hasActivity"), userName);			
+				
+				cache.put(aJsonStr, result);
+				
+				ThreadLocalStopwatch.now("End Removing Activity.");
+				
+				return Response.ok(result, MediaType.APPLICATION_JSON).build();
+			}
+			catch(Exception e){
+				ThreadLocalStopwatch.now("Error found Removing Activity.");
+				
+				e.printStackTrace();
+				return Response
+						.status(Status.INTERNAL_SERVER_ERROR)
+						.type(MediaType.APPLICATION_JSON)
+						.entity(Json.object().set("error", e.getClass().getName())
+								.set("message", e.getMessage())).build();
+			}
+		}
+		
+	}
+	
 	
 	@POST
 	@Path("/authorize")
