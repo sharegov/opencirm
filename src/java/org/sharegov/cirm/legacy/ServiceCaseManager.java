@@ -8,6 +8,8 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,6 +46,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	private static ServiceCaseManager instance = null; 
 	private Map<String, Json> cache;
 	private Map<String, Long> changes;
+	private Map<String, Set<Json>> activities;
 	
 	/**
 	 * private to defeat multiple instantiation
@@ -52,6 +55,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	private ServiceCaseManager() {
 		cache = new ConcurrentHashMap<String, Json>();
 		changes = new ConcurrentHashMap<String, Long>();
+		activities = new ConcurrentHashMap<String, Set<Json>>();
 		
 		ThreadLocalStopwatch.startTop("Started Service Case Admin Cache.");
 		getAll();
@@ -214,7 +218,7 @@ public class ServiceCaseManager extends OntoAdmin {
 		Json np = (p.isObject() && p.has("type") && (p.has("Name") || p.has("label"))) ? p : getSerializedIndividual(ind.getIRI().getFragment(), ind.getIRI().getScheme());
 		
 		if (np.has("type") && np.at("type").asString().toLowerCase().compareTo("division_county") != 0){
-			return Json.object().set("Name", np.has("Name")?np.at("Name").asString():np.at("label").asString()).set("Type", np.at("type").asString());
+			return Json.object().set("Name", np.has("Name")?np.at("Name").asString():np.at("label").asString()).set("Type", np.at("type").asString()).set("fragment", MetaOntology.getIdFromUri((np.at("iri").asString())));
 		} else {
 			return resolveDepartment(np);
 		}
@@ -252,12 +256,12 @@ public class ServiceCaseManager extends OntoAdmin {
 		Json np = (p.isObject() && p.has("type") && (p.has("Name")||p.has("label"))&&p.has("hasParentAgency")&&p.has("Department")) ? p: getDepartmentDivisionSerializedIndividual (p);
 		
 		if (np.has("type") && np.at("type").asString().toLowerCase().compareTo("division_county") == 0){
-			result.set("division",  Json.object().set("Name", np.has("Name")?np.at("Name").asString():np.at("label").asString()).set("Division_Code", np.at("Division_Code").asString()));
+			result.set("division",  Json.object().set("Name", np.has("Name")?np.at("Name").asString():np.at("label").asString()).set("Division_Code", np.at("Division_Code").asString()).set("fragment", MetaOntology.getIdFromUri(np.at("iri").asString())));
 			
 			result.set("department", resolveDepartment (np));					
 		} else {
-			result.set("division", Json.object().set("Name", Json.nil()).set("Division_Code", Json.nil()));
-			result.set("department", Json.object().set("Name", np.has("Name") ? np.at("Name").asString(): np.at("label").asString()).set("Type", np.has("type") ? np.at("type").asString(): Json.nil()));
+			result.set("division", Json.object().set("Name", Json.nil()).set("Division_Code", Json.nil()).set("fragment", Json.nil()));
+			result.set("department", Json.object().set("Name", np.has("Name") ? np.at("Name").asString(): np.at("label").asString()).set("Type", np.has("type") ? np.at("type").asString(): Json.nil()).set("fragment", MetaOntology.getIdFromUri(np.at("iri").asString())));
 		}		
 		
 		return result;
@@ -324,6 +328,9 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			result.with(depdiv);
 			
+			//caching activities by department
+			addActitivitesByDepartment(individual.getIRI().getFragment(), jIndividual, depdiv.at("department").at("fragment").asString());
+			
 			Json isInterfaceSR = Json.object().set("interface_sr", false);
 			if (jIndividual.has("hasLegacyInterface")){
 //				jIndividual.set("hasLegacyInterface", MetaOntology.resolveAllIris(jIndividual.at("hasLegacyInterface ")));
@@ -348,6 +355,9 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			result.with(isInterfaceSR);
 			
+			//caching activities by department
+			addActitivitesByDepartment(individual.getIRI().getFragment(), jIndividual, depdiv.at("department").at("fragment").asString());
+			
 		} catch (Exception e) {
 			System.out.println("Error while trying to resolve data for legacy:" + individual.getIRI().getFragment());
 			if (e.getMessage() != null ){
@@ -367,8 +377,63 @@ public class ServiceCaseManager extends OntoAdmin {
 		
 	}
 	
+	private void addActitivitesByDepartment(String srType, Json serializedSrType, String departmentIriFragment){
+		if (serializedSrType.has("hasActivity")){
+			
+//			Json srTypeActivities = MetaOntology.resolveIRIs(serializedSrType.at("hasActivity"));
+			Json srTypeActivities = serializedSrType.at("hasActivity");
+			
+			Set<Json> S = new HashSet<>();
+			
+			if (srTypeActivities.isArray()){
+				for (Json atx : srTypeActivities.asJsonList()){
+					if (!atx.isObject()){
+						atx = getSerializedIndividual(MetaOntology.getIdFromUri(atx.asString()), MetaOntology.getOntologyFromUri(atx.asString()));
+					}
+					S.add(atx);
+				}				
+			} else {
+				S.add(srTypeActivities);
+			}
+			
+			if (activities.containsKey(departmentIriFragment)){
+				activities.get(departmentIriFragment).addAll(S);
+			} else {
+				activities.put(departmentIriFragment, S);
+			}
+		}
+	}
+	
 	private boolean isInterfaceSR(Json interfaceDescription){
 		return (interfaceDescription.isObject() && interfaceDescription.has("isExternal") && interfaceDescription.at("isExternal").asString().compareToIgnoreCase("true")==0);
+	}
+	
+	/**
+	 * 
+	 * Get Activities by department, if department == ALL return all activities on cache
+	 * 
+	 * Empty array is returned if no results found.
+	 * 
+	 */
+	public Json getActivities (String departmentFragment){
+		Json result = Json.array();
+		
+		if (departmentFragment.compareToIgnoreCase("all") == 0){
+			for (Set <Json> ats : activities.values()){
+				for (Json atx : ats) {			
+					result.add(atx);
+				}
+			}
+		} else {			
+			if (activities.containsKey(departmentFragment)){
+				Set<Json> ats = activities.get(departmentFragment);
+				for (Json atx : ats) {			
+					result.add(atx);
+				}
+			}
+		}
+		
+		return result;
 	}
 	
 	/**
@@ -976,8 +1041,9 @@ public class ServiceCaseManager extends OntoAdmin {
 			String propertyID = "hasServiceField";
 			String comment = "Create/Replace Questions for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID);	
 			
+			Json oldQuestions = getServiceCaseQuestions(individualID);		
 			
-			if (addObjectsToIndividualProperty (individualID, propertyID, data, userName, comment, evictionList)){
+			if (addObjectsToIndividualProperty (individualID, propertyID, data, userName, comment, evictionList, oldQuestions)){
 				registerChange(individualID);
 				clearCache(evictionList);
 				return getServiceCaseQuestions(individualID);
@@ -996,35 +1062,34 @@ public class ServiceCaseManager extends OntoAdmin {
 			String propertyID = "hasActivity";
 			String comment = "Create/Replace Activities for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID);	
 			
+			Json oldActivities = getServiceCaseActivities(individualID);			
 			
-			if (addObjectsToIndividualProperty (individualID, propertyID, data, userName, comment, evictionList)){
+			if (addObjectsToIndividualProperty (individualID, propertyID, data, userName, comment, evictionList, oldActivities)){
 				registerChange(individualID);
 				clearCache(evictionList);
-				return getServiceCaseQuestions(individualID);
+				return getServiceCaseActivities(individualID);
 			} throw new IllegalArgumentException("Cannot update Activities to Service Case Type "+ PREFIX +  individualID);	
 
 		} else throw new IllegalArgumentException("Json object does not match activity schema: " + data.asString()); 	
 	}
 	
-	public boolean addObjectsToIndividualProperty (String individualID, String propertyID, Json data, String userName, String comment, List<String> evictionList){
+	public boolean addObjectsToIndividualProperty (String individualID, String propertyID, Json data, String userName, String comment, List<String> evictionList, Json toRemove){
 		individualID = MetaOntology.getIndividualIdentifier(individualID);						
 		
 		OwlRepo repo = getRepo();
 		synchronized (repo) {
-			repo.ensurePeerStarted();	
-		
-			Json oldQuestions = getServiceCaseQuestions(individualID);
+			repo.ensurePeerStarted();		
 			
 			List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 			
 			ThreadLocalStopwatch.now("---- Started Removing Old Objects from individual: " + individualID + " property: " + propertyID);
 			
-			if (oldQuestions.isArray()){
-				for (Json ox: oldQuestions.asJsonList()){
+			if (toRemove.isArray()){
+				for (Json ox: toRemove.asJsonList()){
 					removeObjectOnto (ox, evictionList);
 				}
 			} else {
-				removeObjectOnto (oldQuestions, evictionList);
+				removeObjectOnto (toRemove, evictionList);
 				
 			}
 			ThreadLocalStopwatch.now("---- Ended Removing Old Objects from individual: " + individualID + " property: " + propertyID);
