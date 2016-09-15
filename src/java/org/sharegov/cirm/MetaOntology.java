@@ -343,7 +343,7 @@ public class MetaOntology
 		}		
 		OWLOntologyManager manager = OWL.manager();
 		OWLDataFactory factory = manager.getOWLDataFactory();
-		OWLIndividual existingInd = factory.getOWLNamedIndividual(fullIri(PREFIX + propertyValue)); 
+		OWLIndividual existingInd = factory.getOWLNamedIndividual(fullIri(propertyValue)); 
 		OWLIndividual parent = factory.getOWLNamedIndividual(fullIri(PREFIX + parentID));
 		OWLObjectProperty property =  factory.getOWLObjectProperty(fullIri(PREFIX + propertyID));
 		return factory.getOWLObjectPropertyAssertionAxiom(property, parent, existingInd);
