@@ -1118,19 +1118,21 @@ public class ServiceCaseManager extends OntoAdmin {
 	 * Adds a single (existing) activity to a service case. No state changes are assumed for either the activity o
 	 * 
 	 * @param individualID
-	 * @param data
+	 * @param activityID
 	 * @param userName
 	 * @return
 	 */
-	public Json addActivityToServiceCase (String individualID, Json data, String userName){	
+	public Json addActivityToServiceCase (String individualID, String activityID, String userName){
+		
+			individualID = MetaOntology.getIndividualIdentifier(individualID);	
+			activityID = MetaOntology.getIndividualIdentifier(activityID);
 		
 			List<String> evictionList = new ArrayList<String>();
 			evictionList.add(individualID);
 			String propertyID = "hasActivity";
-			String comment = "Create/Replace Activities for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID);	
-			;
+			String comment = "Add Activity: " + activityID + " to SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID);	
 			
-			if (commit(userName, comment, MetaOntology.getAddIndividualObjectProperty (individualID, propertyID, data.at("iri").toString()))){
+			if (commit(userName, comment, MetaOntology.getAddIndividualObjectProperty (individualID, propertyID, activityID))){
 				registerChange(individualID);
 				clearCache(evictionList);
 				return getServiceCaseActivities(individualID);
@@ -1141,19 +1143,21 @@ public class ServiceCaseManager extends OntoAdmin {
 	 * Remove a single (existing) activity to a service case. No state changes are assumed for either the activity o
 	 * 
 	 * @param individualID
-	 * @param data
+	 * @param activityID
 	 * @param userName
 	 * @return
 	 */
-	public Json removeActivityFromServiceCase (String individualID, Json data, String userName){	
+	public Json removeActivityFromServiceCase (String individualID, String activityID, String userName){	
+		
+			individualID = MetaOntology.getIndividualIdentifier(individualID);
+			activityID = MetaOntology.getIndividualIdentifier(activityID);
 		
 			List<String> evictionList = new ArrayList<String>();
 			evictionList.add(individualID);
 			String propertyID = "hasActivity";
-			String comment = "Create/Replace Activities for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID);	
-			;
+			String comment = "Remove Activity: " + activityID + " to SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID);	
 			
-			if (commit(userName, comment, MetaOntology.getRemoveIndividualObjectProperty (individualID, propertyID, data.at("iri").toString()))){
+			if (commit(userName, comment, MetaOntology.getRemoveIndividualObjectProperty (individualID, propertyID, activityID))){
 				registerChange(individualID);
 				clearCache(evictionList);
 				return getServiceCaseActivities(individualID);

@@ -335,7 +335,7 @@ public class MetaOntology
 	}
 
 	
-	public static OWLAxiom getObjectPropertyAxiom(OWLOntology O, String parentID, String propertyID, String  propertyValue){
+	public static OWLAxiom getObjectPropertyAxiom(OWLOntology O, String parentID, String propertyID, String  objectPropertyValue){
 		
 		String ontologyIri = Refs.defaultOntologyIRI.resolve();
 		if (O == null) {
@@ -343,7 +343,7 @@ public class MetaOntology
 		}		
 		OWLOntologyManager manager = OWL.manager();
 		OWLDataFactory factory = manager.getOWLDataFactory();
-		OWLIndividual existingInd = factory.getOWLNamedIndividual(IRI.create(propertyValue)); 
+		OWLIndividual existingInd = factory.getOWLNamedIndividual(fullIri(PREFIX + objectPropertyValue)); 
 		OWLIndividual parent = factory.getOWLNamedIndividual(fullIri(PREFIX + parentID));
 		OWLObjectProperty property =  factory.getOWLObjectProperty(fullIri(PREFIX + propertyID));
 		return factory.getOWLObjectPropertyAssertionAxiom(property, parent, existingInd);
