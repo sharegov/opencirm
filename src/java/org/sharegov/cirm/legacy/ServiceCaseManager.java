@@ -419,10 +419,15 @@ public class ServiceCaseManager extends OntoAdmin {
 		Json result = Json.array();
 		
 		if (departmentFragment.compareToIgnoreCase("all") == 0){
+			Set <Json> uniques = new HashSet<Json>();
 			for (Set <Json> ats : activities.values()){
-				for (Json atx : ats) {			
-					result.add(atx);
+				for (Json atx : ats) {	
+					uniques.add(atx);
 				}
+			}
+			
+			for (Json atx : uniques) {	
+				result.add(atx);
 			}
 		} else {			
 			if (activities.containsKey(departmentFragment)){
@@ -992,7 +997,9 @@ public class ServiceCaseManager extends OntoAdmin {
 				
 		if (sr.has("hasActivity")){
 			
-			Json activities = MetaOntology.resolveIRIs(sr.at("hasActivity"));
+//			Json activities = MetaOntology.resolveIRIs(sr.at("hasActivity"));
+//			this is a temporary fix
+			Json activities = getSerializedActivities (sr.at("hasActivity"));
 			
 			if (!activities.isArray()){
 				return Json.array().add(activities);						
@@ -1002,6 +1009,24 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 		} else return Json.nil();
 	
+	}
+	
+	private Json getSerializedActivities (Json activities){
+		if (activities.isArray()){
+			Json result = Json.array();
+			for (Json actvx: activities.asJsonList()){
+				if (actvx.isObject()){
+					result.add(actvx);
+				} else {
+					result.add(getSerializedIndividual(actvx.asString(), "legacy"));
+				}
+			}			
+			return result;
+		} else if (activities.isObject()){
+			return Json.array().add(activities);
+		} else {
+			return Json.array().add(getSerializedIndividual(activities.asString(), "legacy"));
+		}
 	}
 	
 	public boolean doRollBack (List<Integer> revisionNumbers){		
