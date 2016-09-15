@@ -575,7 +575,7 @@ public class ServiceCaseAdmin extends RestService {
 				
 				ThreadLocalStopwatch.now("End Saving Activity.");
 				
-				return Response.ok(result, MediaType.APPLICATION_JSON).build();
+				return Response.ok(Json.object().set("message","ok"), MediaType.APPLICATION_JSON).build();
 			}
 			catch(Exception e){
 				ThreadLocalStopwatch.now("Error found Saving Activity.");
@@ -627,7 +627,7 @@ public class ServiceCaseAdmin extends RestService {
 				
 				ThreadLocalStopwatch.now("End Removing Activity.");
 				
-				return Response.ok(result, MediaType.APPLICATION_JSON).build();
+				return Response.ok(Json.object().set("message","ok"), MediaType.APPLICATION_JSON).build();
 			}
 			catch(Exception e){
 				ThreadLocalStopwatch.now("Error found Removing Activity.");

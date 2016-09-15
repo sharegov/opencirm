@@ -1133,7 +1133,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			if (commit(userName, comment, MetaOntology.getAddIndividualObjectProperty (individualID, propertyID, data.at("iri").toString()))){
 				registerChange(individualID);
 				clearCache(evictionList);
-				return getServiceCaseQuestions(individualID);
+				return getServiceCaseActivities(individualID);
 			} throw new IllegalArgumentException("Cannot update Activities to Service Case Type "+ PREFIX +  individualID);	
 	}
 	
@@ -1156,7 +1156,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			if (commit(userName, comment, MetaOntology.getRemoveIndividualObjectProperty (individualID, propertyID, data.at("iri").toString()))){
 				registerChange(individualID);
 				clearCache(evictionList);
-				return getServiceCaseQuestions(individualID);
+				return getServiceCaseActivities(individualID);
 			} throw new IllegalArgumentException("Cannot update Activities to Service Case Type "+ PREFIX +  individualID);	
 	}
 	
