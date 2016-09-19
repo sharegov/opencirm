@@ -365,17 +365,26 @@ public class ServiceCaseAdmin extends RestService {
 	}
 	
 	@GET
-	@Path("schemas/questionSchema")
-	public Response getFullQuestionSchema()
+	@Path("repo/schemas/{schema}")
+	public Response getFullQuestionSchema(@PathParam("schema") String schema)
 	{
 		try {			
 			String host = java.net.InetAddress.getLocalHost().getHostName();
 			String protocol = StartUp.config.at("ssl").asBoolean() ? "https://": "http://";
 			String port =  StartUp.config.at("ssl").asBoolean() ? StartUp.config.at("ssl-port").asInteger() != 443 ? ":" + StartUp.config.at("ssl-port").asString(): "": 
 																  StartUp.config.at("port").asInteger() != 80 ? ":" + StartUp.config.at("port").asString(): "";
+			String path = "";
 																  
-//			return Response.ok (Json.object().set("result", ServiceCaseManager.getInstance().getFullSchema(protocol + host + port + "/javascript/schemas/service_field_compact.json")), MediaType.APPLICATION_JSON).build();																  
-		    return Response.ok (Json.object().set("result", ServiceCaseManager.getInstance().getSchema(protocol + host + port + "/javascript/schemas/service_field_compact.json")), MediaType.APPLICATION_JSON).build();
+			switch (schema){
+				case "questions": path = "/javascript/schemas/service_field_compact.json";
+					break;
+				case "activities": path = "/javascript/schemas/activity_compact.json";
+					break;
+			}
+		
+			if (path == "") throw new IllegalArgumentException("Invalid schema identifier: " + schema);
+																		  
+		    return Response.ok (Json.object().set("result", ServiceCaseManager.getInstance().getSchema(protocol + host + port + path)), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Response
