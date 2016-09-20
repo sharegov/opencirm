@@ -1328,6 +1328,16 @@ public class ServiceCaseManager extends OntoAdmin {
 		return result;
 	}		
 	
+	/**
+	 * 
+	 * @return a list of individuals that belong to the class Activity
+	 */
+
+	private Set<OWLNamedIndividual> getAllActivityIndividuals() {
+		OWLReasoner reasoner = reasoner();
+		OWLClass activity = owlClass(PREFIX + "Activity");
+		return reasoner.getInstances(activity, false).getFlattened();
+	}
 	/*
 	 * Test by Syed
 	 * 
