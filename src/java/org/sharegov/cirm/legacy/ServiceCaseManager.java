@@ -46,7 +46,8 @@ public class ServiceCaseManager extends OntoAdmin {
 	private static ServiceCaseManager instance = null; 
 	private Map<String, Json> cache;
 	private Map<String, Long> changes;
-	private Map<String, Set<Json>> activities;
+	private Map<String, Set <String>> dptActivities;
+	private Map<String, Json> activities;
 	
 	/**
 	 * private to defeat multiple instantiation
@@ -55,7 +56,8 @@ public class ServiceCaseManager extends OntoAdmin {
 	private ServiceCaseManager() {
 		cache = new ConcurrentHashMap<String, Json>();
 		changes = new ConcurrentHashMap<String, Long>();
-		activities = new ConcurrentHashMap<String, Set<Json>>();
+		dptActivities = new ConcurrentHashMap<String, Set <String>>();
+		activities = new ConcurrentHashMap<String, Json>();
 		
 		ThreadLocalStopwatch.startTop("Started Service Case Admin Cache.");
 		getAll();
@@ -311,7 +313,7 @@ public class ServiceCaseManager extends OntoAdmin {
 								   .set("disabled", isSrDisabledOrDisabledCreate(individual));
 		
 		try {		
-			Json jIndividual = getMetaIndividual(individual.getIRI().getFragment());
+			Json jIndividual = getSerializedMetaIndividual(individual.getIRI().getFragment());
 			
 			String jurisdiction;		
 			if (jIndividual.has("hasJurisdictionDescription")){
@@ -380,26 +382,36 @@ public class ServiceCaseManager extends OntoAdmin {
 	private void addActitivitesByDepartment(String srType, Json serializedSrType, String departmentIriFragment){
 		if (serializedSrType.has("hasActivity")){
 			
-//			Json srTypeActivities = MetaOntology.resolveIRIs(serializedSrType.at("hasActivity"));
-			Json srTypeActivities = serializedSrType.at("hasActivity");
+			Json srTypeActivities = MetaOntology.resolveIRIs(serializedSrType.at("hasActivity"));
 			
-			Set<Json> S = new HashSet<>();
-			
+			Set <String> S = new HashSet<>();
+						
 			if (srTypeActivities.isArray()){
 				for (Json atx : srTypeActivities.asJsonList()){
 					if (!atx.isObject()){
 						atx = getSerializedIndividual(MetaOntology.getIdFromUri(atx.asString()), MetaOntology.getOntologyFromUri(atx.asString()));
 					}
-					S.add(atx);
+					
+					addActivityCache(atx, S);
 				}				
 			} else {
-				S.add(srTypeActivities);
+				addActivityCache(srTypeActivities, S);
 			}
 			
-			if (activities.containsKey(departmentIriFragment)){
-				activities.get(departmentIriFragment).addAll(S);
+			if (dptActivities.containsKey(departmentIriFragment)){
+				dptActivities.get(departmentIriFragment).addAll(S);
 			} else {
-				activities.put(departmentIriFragment, S);
+				dptActivities.put(departmentIriFragment, S);
+			}
+		}
+	}
+	
+	private void addActivityCache (Json atx, Set<String> S){
+		if (atx.has("iri")){
+			String iri = atx.at("iri").asString();
+			if (!activities.containsKey(iri)){
+				activities.put(iri, atx);
+				S.add(iri);
 			}
 		}
 	}
@@ -419,21 +431,26 @@ public class ServiceCaseManager extends OntoAdmin {
 		Json result = Json.array();
 		
 		if (departmentFragment.compareToIgnoreCase("all") == 0){
-			Set <Json> uniques = new HashSet<Json>();
-			for (Set <Json> ats : activities.values()){
-				for (Json atx : ats) {	
-					uniques.add(atx);
+						
+			Set<OWLNamedIndividual> all = getAllActivityIndividuals();
+			
+			for (OWLNamedIndividual indx: all){
+				String iri = indx.getIRI().toString();
+				if (!activities.containsKey(iri)){
+					Json atx = getSerializedIndividual(MetaOntology.getIdFromUri(iri), MetaOntology.getOntologyFromUri(iri));
+					if (atx.has("iri")){
+						activities.put(iri, atx);
+					}
 				}
 			}
 			
-			for (Json atx : uniques) {	
+			for (Json atx: activities.values()){
 				result.add(atx);
 			}
 		} else {			
-			if (activities.containsKey(departmentFragment)){
-				Set<Json> ats = activities.get(departmentFragment);
-				for (Json atx : ats) {			
-					result.add(atx);
+			if (dptActivities.containsKey(departmentFragment)){
+				for (String iri : dptActivities.get(departmentFragment)) {			
+					result.add(activities.get(iri));
 				}
 			}
 		}
@@ -670,11 +687,11 @@ public class ServiceCaseManager extends OntoAdmin {
 	 * @return a Json representation of the individual
 	 */
 	
-	public Json getMetaIndividual (String individualID){
+	public Json getSerializedMetaIndividual (String individualID){
 		return getSerializedIndividual(individualID, "legacy");						
 	}
 	
-	public Json getMetaIndividualFormatedIri (String individualID){
+	public Json getSerializedMetaIndividualFormatedIri (String individualID){
 		Json result = getSerializedIndividual(individualID, "legacy");
 		
 		result.set("iri", PREFIX + MetaOntology.getIdFromUri(result.at("iri").asString()));
@@ -686,7 +703,7 @@ public class ServiceCaseManager extends OntoAdmin {
 
 		srType = MetaOntology.getIndividualIdentifier(srType);
 		
-		Json sr = getMetaIndividual(srType);		
+		Json sr = getSerializedMetaIndividual(srType);		
 		
 		if (sr.has("hasServiceCaseAlert") && sr.at("hasServiceCaseAlert").isObject()){
 			String iri = sr.at("hasServiceCaseAlert").at("iri").asString();
@@ -808,7 +825,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			if (r){
 				registerChange(srIndividualID);
 				clearCache(evictionList);
-				return getMetaIndividualFormatedIri(alertIndividualID);
+				return getSerializedMetaIndividualFormatedIri(alertIndividualID);
 			} else throw new IllegalArgumentException("Cannot update alert label to Service Case Type "+ PREFIX +  srIndividualID);
 			
 		}
@@ -854,7 +871,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			if (r){
 				registerChange(individualID);
 				clearCache(evictionList);
-				return getMetaIndividualFormatedIri(data.at("iri").asString());
+				return getSerializedMetaIndividualFormatedIri(data.at("iri").asString());
 			} throw new IllegalArgumentException("Cannot update label to Service Case Type "+ PREFIX +  individualID);
 							
 		}
@@ -912,7 +929,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			if (r){
 				registerChange(individualID);
 				clearCache(evictionList);
-				return getMetaIndividualFormatedIri(data.at("iri").asString());
+				return getSerializedMetaIndividualFormatedIri(data.at("iri").asString());
 			} throw new IllegalArgumentException("Cannot update label to Service Case Type "+ PREFIX +  individualID);
 							
 		}
@@ -969,7 +986,7 @@ public class ServiceCaseManager extends OntoAdmin {
 
 		srType = MetaOntology.getIndividualIdentifier(srType);
 		
-		Json sr = getMetaIndividual(srType);			
+		Json sr = getSerializedMetaIndividual(srType);			
 				
 		if (sr.has("hasServiceField")){
 			
@@ -993,13 +1010,11 @@ public class ServiceCaseManager extends OntoAdmin {
 
 		srType = MetaOntology.getIndividualIdentifier(srType);
 		
-		Json sr = getMetaIndividual(srType);			
+		Json sr = getSerializedMetaIndividual(srType);			
 				
 		if (sr.has("hasActivity")){
 			
-//			Json activities = MetaOntology.resolveIRIs(sr.at("hasActivity"));
-//			this is a temporary fix
-			Json activities = getSerializedActivities (sr.at("hasActivity"));
+			Json activities = MetaOntology.resolveIRIs(sr.at("hasActivity"));
 			
 			if (!activities.isArray()){
 				return Json.array().add(activities);						
@@ -1151,7 +1166,7 @@ public class ServiceCaseManager extends OntoAdmin {
 		
 			individualID = MetaOntology.getIndividualIdentifier(individualID);	
 			activityID = MetaOntology.getIndividualIdentifier(activityID);
-		
+			
 			List<String> evictionList = new ArrayList<String>();
 			evictionList.add(individualID);
 			String propertyID = "hasActivity";

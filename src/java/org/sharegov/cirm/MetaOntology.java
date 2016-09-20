@@ -333,6 +333,12 @@ public class MetaOntology
 		result.add(new RemoveAxiom(O, getObjectPropertyAxiom( O,  parentID,  propertyID,  propertyValue) ));
 		return result;
 	}
+	
+	public static OWLNamedIndividual getMetaIndividual (String individualID){		
+		OWLOntologyManager manager = OWL.manager();
+		OWLDataFactory factory = manager.getOWLDataFactory();
+		return  factory.getOWLNamedIndividual(fullIri(PREFIX + individualID)); 
+	}
 
 	
 	public static OWLAxiom getObjectPropertyAxiom(OWLOntology O, String parentID, String propertyID, String  objectPropertyValue){
@@ -1034,7 +1040,9 @@ public class MetaOntology
 					j.with(objectMap.get(j.at("iri").asString()).dup());
 					return;
 				} else {
-					throw new IllegalArgumentException("Infinite recursive definition found for object : " + j.at("iri").asString());
+					j.set("recursive", true);
+					System.out.println("Infinite recursive definition found for object : " + j.at("iri").asString());
+					return;
 				}
 			} else {
 				resolutionMap.put(j.at("iri").asString(), false);

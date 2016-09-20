@@ -131,7 +131,7 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
 	 */
 	@Test
 	public void testSerialization(){
-		Json json = serviceCaseManager.getMetaIndividual("PW16"); 
+		Json json = serviceCaseManager.getSerializedMetaIndividual("PW16"); 
 		String comment = json.at("comment").asString(); 
 		assertTrue((!comment.isEmpty() && comment !=null));
 	}
@@ -143,7 +143,7 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
 	@Test(expected = RuntimeException.class)
 	
 	public void testSerialization2(){
-		Json json = serviceCaseManager.getMetaIndividual("zzzzzz"); 
+		Json json = serviceCaseManager.getSerializedMetaIndividual("zzzzzz"); 
 	}
 	
 
