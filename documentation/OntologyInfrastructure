@@ -8,6 +8,7 @@ D. Protege configuration
 Hilpold 2015.11.25 valid for mdCirm/OpenCirm v2.0.3b+ and CirmAdmin vC2.0.2+ (C...Configuration server)
 Hilpold 2016.01.29 update
 Hilpold 2016.08.05 update for v2.1.0
+Hilpold 2016.09.22 update for v2.3.1 (OpenFire now s0144818)
 ---------------------------------------------------------------------------------------------------------
 A. Introduction
 The ontology infrastructure consists of all application servers (prod and test), all configuration servers 
@@ -35,7 +36,7 @@ B. Network and Machines
 All communication between all infrastructure participants is conducted on an XMPP network, controlled by an 
 Openfire server. Which participant sees which data is controlled by XMPP user configuration and the users'
 
-Machine s0141667 hosts the openfire server, used for both production and test .
+Machine s0144818 (old s0141667) hosts the openfire server, used for both production and test .
  
 XMPP roster as follows:
 B.1 -------  XMPP user names for 311Hub production and 311Hub test ----------- 
@@ -116,8 +117,8 @@ sc \\s0020269 start owldbTest
 
 
 REM stop start chat server
-sc \\s0141667 stop Openfire
-sc \\s0141667 start Openfire
+sc \\s0144818 stop Openfire
+sc \\s0144818 start Openfire
 
 Refresh cirmadmin development environment with fresh ontos
 sc \\s0144654 stop cirmservices
