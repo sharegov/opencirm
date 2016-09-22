@@ -104,7 +104,7 @@ public class StartUp extends ServerResource
 			.set("network", Json.object(				
 					"user", "cirmservice_production",
 					"password","cirmsprod",
-					"serverUrl","s0141667",
+					"serverUrl","s0144818",
 					"ontoServer","ontology_server_production"))
 			.set("ontologyPrefixes", Json.object(
 					"legacy:", "http://www.miamidade.gov/cirm/legacy#",

@@ -15,7 +15,7 @@
        "ontoServer":"ontology_server_test",
        "password":"N/A",
        "user":"cirmservice_test",
-       "serverUrl":"s0141667"},
+       "serverUrl":"s0144818"},
    "keystore":"cirm.jks",
    "storePass":"password",
    "ontologyConfigSet":"http://www.miamidade.gov/ontology#TestConfigSet",
