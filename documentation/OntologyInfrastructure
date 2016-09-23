@@ -63,7 +63,7 @@ ontology_server_test          - This XMPP user is configured on the test ontolog
 cirmconfigservice_test        - This XMPP user is configured on the test configuration server (CirmAdmin)
 cirmservice_test              - Only used, if a special test application server is needed to help with 
                               - CirmAdmin modification testing.
-individuals (Tom, Camilo,...) - Only individuals who delvelop or maintain CirmAdmin will have access 
+individuals (Tom, Camilo,...) - Only individuals who develop or maintain CirmAdmin will have access 
                               - to ontology_server_test, ie have ontology_server_test in their roster.
 
 Which XMPP user has access to which server is defined in the users' rosters by subscription. Most individuals
