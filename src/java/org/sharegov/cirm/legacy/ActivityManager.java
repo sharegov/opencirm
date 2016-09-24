@@ -21,16 +21,21 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import javax.xml.datatype.DatatypeFactory;
 import mjson.Json;
+
+import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
@@ -43,6 +48,8 @@ import org.sharegov.cirm.rest.LegacyEmulator;
 import org.sharegov.cirm.utils.ActivityUtils;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
+
+import com.hp.hpl.jena.sparql.function.library.date;
 
 
 /**
@@ -179,14 +186,7 @@ public class ActivityManager
 			if (utils.isAutoCreate(activityType) && !utils.isDisabled(activityType)) 
 			{
 				Date completedDate = null;
-				OWLNamedIndividual outcome = null;
-                //TODO Discuss if autoassign activites should have their default outcomes set.
-				// Enable below if decision positive:
-				// Maybe introduce property.
-                //				if (utils.isAutoAssign(activityType)) {
-                //				    outcome = utils.getDefaultOutcome(activityType);
-                //				    //completedDate = createdDate;
-                //				}
+				OWLNamedIndividual outcome = null; 
     			List<CirmMessage> localMessages = new ArrayList<CirmMessage>();
     			createActivity(activityType, outcome, null, null, bo, createdDate, completedDate, null, localMessages);
     			for (CirmMessage lm : localMessages) 
@@ -300,10 +300,17 @@ public class ActivityManager
 			Calendar calcreated = Calendar.getInstance();
 			calcreated.setTime(createdDate != null ? createdDate : now.getTime());
 			boolean useWorkWeek = false;
+			float suspenseDaysConfiguredValue = determineSuspenseDays(activityType);
+			float occurDaysConfiguredValue = determineOccurDays(activityType);
+			//A) Check for immediate auto default outcome, if the activity type has it configured
+			if (outcome == null && suspenseDaysConfiguredValue == 0) {				
+				outcome = determineAutoDefaultOutcome(activityType);
+			}
+			//B) Check for user base date configured and user answer provided for occur or suspense usage.
+			Date occurOrSuspenseBaseDate = determineDueBaseDate(bo, activityType, now.getTime());			
 			Set<OWLLiteral> businessCodes = reasoner().getDataPropertyValues(
 					activityType,
 					dataProperty("legacy:hasBusinessCodes"));
-			
 			if(businessCodes.size() > 0)
 			{
 				useWorkWeek = businessCodes.iterator().next().getLiteral().contains("5DAYWORK");
@@ -312,25 +319,10 @@ public class ActivityManager
 			 * If activityType hasOccurDays > 0, the set a timer for delayed 
 			 * activity creation
 			 */
-			Set<OWLLiteral> occurDays = reasoner().getDataPropertyValues(
-					activityType,
-					dataProperty("legacy:hasOccurDays"));
-			if(occurDays.size() > 0 && !ignoreOccurDays)
+			if(occurDaysConfiguredValue > 0 && !ignoreOccurDays)
 			{
-				try
-				{
-					float occurDay = occurDays.iterator().next().parseFloat();
-					if (occurDay > 0)
-					{
-						scheduleActivityCreationOccurDays(bo, activityType, now, occurDay, useWorkWeek, details, isAssignedTo);
-						return;//activity creation will be delayed.
-					}
-				}catch(NumberFormatException nfe)
-				{
-					System.err.println("ActivityManager: " + activityType + " parseFloat problem - Delayed activity creation failed! bo: " + bo.getObjectId());
-					if (THROW_ALL_EXC) 
-						throw new RuntimeException(nfe);
-				}
+				scheduleActivityCreationOccurDays(bo, activityType, occurOrSuspenseBaseDate, occurDaysConfiguredValue, useWorkWeek, details, isAssignedTo);
+				return;//activity creation will be delayed.
 			}
 			OWLNamedIndividual serviceActivity = factory.getOWLNamedIndividual(
 					fullIri(activityTypeClass.getIRI().getFragment() + Refs.idFactory.resolve().newId(null)));
@@ -410,76 +402,53 @@ public class ActivityManager
 					messages.add(lm);
 				}
 			}
+			if (suspenseDaysConfiguredValue > 0)
+			{
+				Date calculatedDueDate = calculateScheduledDelayDate(occurOrSuspenseBaseDate, suspenseDaysConfiguredValue, useWorkWeek);
+				Calendar due = Calendar.getInstance();
+				due.setTime(calculatedDueDate);
+				OWLLiteral dueDate = factory.getOWLLiteral(DatatypeFactory.newInstance()
+						.newXMLGregorianCalendar((GregorianCalendar)due)
+						.toXMLFormat()
+						,OWL2Datatype.XSD_DATE_TIME_STAMP);
 
-			Set<OWLLiteral> suspenseDays = reasoner().getDataPropertyValues(
-					activityType,
-					dataProperty("legacy:hasSuspenseDays"));
-			if(suspenseDays.size() > 0)
-			{
-				try
+				manager.addAxiom(o,
+						factory.getOWLDataPropertyAssertionAxiom(
+								dataProperty("legacy:hasDueDate"), serviceActivity, 
+							dueDate
+						));
+				Set<OWLNamedIndividual> overdueActivity = reasoner().getObjectPropertyValues(
+						activityType,
+						objectProperty("legacy:hasOverdueActivity"))
+						.getFlattened();
+				if(overdueActivity.size() > 0)
 				{
-					float suspenseDaysValue = suspenseDays.iterator().next().parseFloat();
-					if (suspenseDaysValue > 0)
-					{
-    					Date calculatedDueDate = calculateScheduledDelayDate(now.getTime(), suspenseDaysValue, useWorkWeek);
-    					Calendar due = Calendar.getInstance();
-    					due.setTime(calculatedDueDate);
-    					OWLLiteral dueDate = factory.getOWLLiteral(DatatypeFactory.newInstance()
-    							.newXMLGregorianCalendar((GregorianCalendar)due)
-    							.toXMLFormat()
-    							,OWL2Datatype.XSD_DATE_TIME_STAMP);
-    
-    					manager.addAxiom(o,
-    							factory.getOWLDataPropertyAssertionAxiom(
-    									dataProperty("legacy:hasDueDate"), serviceActivity, 
-    								dueDate
-    							));
-    					Set<OWLNamedIndividual> overdueActivity = reasoner().getObjectPropertyValues(
-    							activityType,
-    							objectProperty("legacy:hasOverdueActivity"))
-    							.getFlattened();
-						if(overdueActivity.size() > 0)
-						{
-							OWLNamedIndividual overdueActivityType = overdueActivity.iterator().next();
-							scheduleOverdueActivityCreationAtDueDate(bo, overdueActivityType, due, serviceActivity, activityType);
-						}
-					}
-				} catch(NumberFormatException nfe)
-				{
-					if(DBG)
-						nfe.printStackTrace(System.err);
-					if (THROW_ALL_EXC) 
-						throw new RuntimeException(nfe);
+					OWLNamedIndividual overdueActivityType = overdueActivity.iterator().next();
+					scheduleOverdueActivityCreationAtDueDate(bo, overdueActivityType, due, serviceActivity, activityType);
 				}
-		}
-		manager.addAxiom(o, factory.getOWLObjectPropertyAssertionAxiom(
-						objectProperty("legacy:hasServiceActivity")
-						, bo.getBusinessObject(), serviceActivity));
-/*
-			float orderBy = o.getAxioms(objectProperty("legacy:hasServiceActivity")).size();
-			manager.addAxiom(o, factory.getOWLDataPropertyAssertionAxiom(
-						dataProperty("legacy:hasOrderBy")
-						, serviceActivity, factory.getOWLLiteral(orderBy)));
-*/		
-		OWLNamedIndividual emailTemplate = objectProperty(activityType, "legacy:hasEmailTemplate");
-		if(emailTemplate != null && USE_MESSAGE_MANAGER)
-		{
-			if (hasAssignActivityToOutcomeEmail(activityType) && isAssignedTo == null)
-			{
-				//prevent email creation for serviceActivity as it should be created on a later update, where an outcome email is found.
-				System.out.println("createActivity: email creation prevented, because serviceActivity " + serviceActivity + " Type: " + activityType + " hasAssignActivityToOutcomeEmail, was executed and still noone assigned.");
-			} else 
-			{
-				CirmMessage m = MessageManager.get().createMessageFromTemplate(bo, dataProperty(activityType, "legacy:hasLegacyCode"), emailTemplate);
-				if (m!= null) {
-					m.addExplanation("createActivity " + serviceActivity.getIRI().getFragment() 
-							+ " Tpl: " + emailTemplate.getIRI().getFragment());
-					messages.add(m);
-				}
-				else
-					System.err.println("ActivityManager: created Message was Null for " + (bo != null? bo.getObjectId() : bo) + "act: " + serviceActivity + " actT:" + activityType + " tmpl: " + emailTemplate);
-			}
-		} 
+			}	
+    		manager.addAxiom(o, factory.getOWLObjectPropertyAssertionAxiom(
+    						objectProperty("legacy:hasServiceActivity")
+    						, bo.getBusinessObject(), serviceActivity));
+    		OWLNamedIndividual emailTemplate = objectProperty(activityType, "legacy:hasEmailTemplate");
+    		if(emailTemplate != null && USE_MESSAGE_MANAGER)
+    		{
+    			if (hasAssignActivityToOutcomeEmail(activityType) && isAssignedTo == null)
+    			{
+    				//prevent email creation for serviceActivity as it should be created on a later update, where an outcome email is found.
+    				System.out.println("createActivity: email creation prevented, because serviceActivity " + serviceActivity + " Type: " + activityType + " hasAssignActivityToOutcomeEmail, was executed and still noone assigned.");
+    			} else 
+    			{
+    				CirmMessage m = MessageManager.get().createMessageFromTemplate(bo, dataProperty(activityType, "legacy:hasLegacyCode"), emailTemplate);
+    				if (m!= null) {
+    					m.addExplanation("createActivity " + serviceActivity.getIRI().getFragment() 
+    							+ " Tpl: " + emailTemplate.getIRI().getFragment());
+    					messages.add(m);
+    				}
+    				else
+    					System.err.println("ActivityManager: created Message was Null for " + (bo != null? bo.getObjectId() : bo) + "act: " + serviceActivity + " actT:" + activityType + " tmpl: " + emailTemplate);
+    			}
+    		}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -542,6 +511,22 @@ public class ActivityManager
 			updateActivity(serviceActivityIndividual, outcomeIndividual, details, assignedTo, modifiedBy, bo, messages);
 		}
 	}
+	/**
+	 * Updates the serviceActivity by setting auto default outcome if no outcome is set yet.
+	 * @param serviceActivity
+	 */
+	public void updateActivityIfAutoDefaultOutcome(OWLNamedIndividual serviceActivity, BOntology bo, List<CirmMessage> messages) {
+		OWLNamedIndividual existingOutcome = bo.getObjectProperty(serviceActivity, "legacy:hasOutcome");
+		if (existingOutcome == null) {
+    		OWLNamedIndividual activityType = objectProperty(serviceActivity, 
+    				 "legacy:hasActivity",
+    				 bo.getOntology());
+    		if (activityType != null) {
+    			OWLNamedIndividual autoDefaultOutcome = determineAutoDefaultOutcome(activityType);
+    			updateActivity(serviceActivity, autoDefaultOutcome, null, null, "auto", bo, messages);
+    		}
+		}
+	}	
 
 	/**
 	 * Updates the passed in Business Ontology's ServiceActivity Axioms with the passed in parameter values.
@@ -668,7 +653,6 @@ public class ActivityManager
 		}
 		
 	}
-	
 	
 	public void deleteActivity(OWLNamedIndividual serviceActivity, BOntology bo)
 	{
@@ -1128,17 +1112,62 @@ public class ActivityManager
 	}
 
 	/**
+	 * Determines the configured suspense days for an activity type.
+	 * 
+	 * @param activityType
+	 * @return days or 0 if not configured or parse error.
+	 */
+	private float determineSuspenseDays(OWLNamedIndividual activityType) {
+		float result = 0;
+		Set<OWLLiteral> suspenseDays = reasoner().getDataPropertyValues(
+				activityType,
+				dataProperty("legacy:hasSuspenseDays"));
+		if (suspenseDays.size() > 0) {
+			try	{
+				result = suspenseDays.iterator().next().parseFloat();
+			} catch (Exception e) {
+				result = 0;
+				System.err.println("Error: Could not parse suspense day float value for " + activityType);
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Determines the configured occur day value for an activity type.
+	 * @param activityType
+	 * @return days or 0 if not configured or error.
+	 */
+	private float determineOccurDays(OWLNamedIndividual activityType) {
+		float result = 0;
+		Set<OWLLiteral> occurDays = reasoner().getDataPropertyValues(
+				activityType,
+				dataProperty("legacy:hasOccurDays"));
+		if(occurDays.size() > 0) {
+			try {
+				result = occurDays.iterator().next().parseFloat();
+			} catch (Exception e) {
+				result = 0;
+				System.err.println("ActivityManager: " + activityType + " parseFloat problem - Delayed activity creation failed!");
+				if (THROW_ALL_EXC) 
+					throw new RuntimeException(e);
+			}
+		}
+		return result;
+	}
+	
+	/**
 	 * Schedules Activity Creation in OccurDays from now.
 	 * @param bo
 	 * @param activityType
-	 * @param now
+	 * @param occurBaseDate typically now unless configured and user provided
 	 * @param delayDays
 	 * @param useWorkWeek
 	 * @param details
 	 * @param isAssignedTo
 	 */
-	private void scheduleActivityCreationOccurDays(BOntology bo, OWLNamedIndividual activityType, Calendar now, float occurDays, boolean useWorkWeek, String details, String isAssignedTo) {
-		Date delayedCreationDate = OWL.addDaysToDate(now.getTime(), occurDays, useWorkWeek);
+	private void scheduleActivityCreationOccurDays(BOntology bo, OWLNamedIndividual activityType, Date occurBaseDate, float occurDays, boolean useWorkWeek, String details, String isAssignedTo) {
+		Date delayedCreationDate = calculateScheduledDelayDate(occurBaseDate, occurDays, useWorkWeek);
 		try
 		{
 			String serverUrl = getServerUrl();
@@ -1236,8 +1265,8 @@ public class ActivityManager
 	
 	/**
 	 * Converts daysToAdd to minutes (min 1 to max 10) and calculates a future date for workflow testing purposes.<br>
-	 * e.g. 6.5 days would be converted in 6.5 minutes.<br>
-	 * e.g. 90 days will be converted to 10 minutes.<br>
+	 * e.g. 6.5 days would be converted to 6.5 minutes.<br>
+	 * e.g. 90 days will be converted to 9 minutes.<br>
 	 * e.g. 0.5 days will be converted to 1 minute.<br>
 	 * <br>
 	 * @param now
@@ -1245,17 +1274,122 @@ public class ActivityManager
 	 * @return
 	 * @throws IllegalStateException if unintentionally called in 311Hub production mode.
 	 */
-	private Date calculateTimeLapseDelayDateForTest(Date now, float daysToAdd) {		
+	private Date calculateTimeLapseDelayDateForTest(Date now, float daysToAdd) {	
+		ThreadLocalStopwatch.now("TEST MODE: IGNORING PROVIDED BASE DATE " + now);
+		now = new Date();
 		if (StartUp.isProductionMode()) throw new IllegalStateException("Illegal use of test time lapse calculation in production");
 		//use minutes instead of days
 		float minutesToAddMax10 = daysToAdd;
-		if (minutesToAddMax10 > 10) {
-			minutesToAddMax10 = 10;
+		while (minutesToAddMax10 > 10) {
+			minutesToAddMax10 = minutesToAddMax10 / 10.0f;
 		}
 		if (minutesToAddMax10 < 1) {
 			minutesToAddMax10 = 1;
 		}
 		long milliSecondsToAdd = Math.round(minutesToAddMax10 * 60.0 * 1000.0);
-		return new Date(now.getTime() + milliSecondsToAdd);
+		Date result = new Date(now.getTime() + milliSecondsToAdd);
+		ThreadLocalStopwatch.now("TEST MODE: CALCULATED DATE " + result + " current time is " + now);
+		return result;
+	}
+	
+	/**
+	 * Gets the due base date by looking up if legacy:hasUserProvidedDueBaseDate is available in activityType or SR type.
+	 * If ServiceAnswer in BO has valid date & it is configured for the activity or SR type, it is returned.
+	 * If not configured, or not parseable, now is returned.
+	 * 
+	 * @param bo
+	 * @param activityType
+	 * @return
+	 */
+	private Date determineDueBaseDate(BOntology bo, OWLNamedIndividual activityType, Date defaultDate) {
+		Date result = defaultDate;
+		//Determine type
+		OWLNamedIndividual serviceRequestType = OWL.individual("legacy:" + bo.getTypeIRI().getFragment());
+		Set<OWLNamedIndividual> dateServiceQuestions = OWL.objectProperties(serviceRequestType, "legacy:hasUserProvidedDueBaseDate");
+		if (!dateServiceQuestions.isEmpty()) {
+			OWLNamedIndividual dateServiceQuestion = dateServiceQuestions.iterator().next();
+			OWLLiteral dataType = OWL.dataProperty(dateServiceQuestion, "legacy:hasDataType");
+			if ("DATE".equals(dataType.getLiteral())) {
+				Date userDate = findServiceAnswerDateForQuestion(bo, dateServiceQuestion);
+				if (userDate != null) {
+					result = userDate;
+				}
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Returns the default outcome for the activityType, if legacy:isAutoDefaultOutcome true and
+	 * hasDefaultOutcome is available. Null is returned otherwise.
+	 * 
+	 * @param bo
+	 * @return
+	 */
+	private OWLNamedIndividual determineAutoDefaultOutcome(OWLNamedIndividual activityType) {
+		OWLNamedIndividual result = null;
+		if (isAutoDefaultOutcomeTrue(activityType)) {
+			Set<OWLNamedIndividual> defaultOutcomeSet = OWL.objectProperties(activityType, "legacy:hasDefaultOutcome");
+			if (!defaultOutcomeSet.isEmpty()) {
+				result = defaultOutcomeSet.iterator().next();
+			}
+		}
+		return result;
+	}
+	
+	
+	/**
+	 * Determines if legacy:isAutoDefaultOutcome true is configured for an activity type.
+	 * 
+	 * @param activityType
+	 * @return
+	 */
+	private boolean isAutoDefaultOutcomeTrue(OWLNamedIndividual activityType) {
+		Set<OWLLiteral> booleanLiterals = OWL.dataProperties(activityType, "legacy:isAutoDefaultOutcome");
+		if (!booleanLiterals.isEmpty()) {
+			OWLLiteral booleanLiteral = booleanLiterals.iterator().next(); 
+			return (booleanLiteral.isBoolean() && booleanLiteral.parseBoolean());
+		} else {
+			return false;
+		}		
+	}
+	
+	private static OWLDataProperty hasAnswerValueDP = OWL.dataProperty(Model.legacy("hasAnswerValue"));  
+	
+	/**
+	 * Finds answer date to serviceQuestion in Bo, if available.
+	 *  
+	 * @param bo
+	 * @param serviceQuestion
+	 * @return parsedDate or null if invalid or not available.
+	 */
+	private Date findServiceAnswerDateForQuestion(BOntology bo, OWLNamedIndividual serviceQuestion) {
+		Date result = null;
+		OWLOntology o = bo.getOntology();
+		Set<OWLAxiom> referencingAxioms = o.getReferencingAxioms(serviceQuestion, false);
+		Iterator<OWLAxiom> it = referencingAxioms.iterator();
+		while (result == null && it.hasNext()) {
+			//Find axioms where serviceQuestion is Object
+			OWLAxiom cur = it.next();
+			if (cur instanceof OWLObjectPropertyAssertionAxiom) {
+				OWLObjectPropertyAssertionAxiom opa = (OWLObjectPropertyAssertionAxiom) cur;
+				if (serviceQuestion.equals(opa.getObject())) {
+					OWLIndividual answerCandidate = opa.getSubject();
+					Set<OWLLiteral> dateCandidates = answerCandidate.getDataPropertyValues(hasAnswerValueDP, o);
+					Iterator<OWLLiteral> itDateCand = dateCandidates.iterator();
+					while (result == null && itDateCand.hasNext()) {
+						//Find parseable date
+						OWLLiteral dateCandidate = itDateCand.next();
+						if (dateCandidate.getLiteral() != null && !dateCandidate.getLiteral().isEmpty())
+						try {
+							result = GenUtils.parseDate(dateCandidate);
+						} catch (Exception e) {
+							result = null;
+						}
+					} //inner while
+				}
+			}
+		} //outer while
+		return result;
 	}
 }

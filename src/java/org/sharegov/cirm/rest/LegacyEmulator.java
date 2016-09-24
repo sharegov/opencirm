@@ -2211,6 +2211,7 @@ public class LegacyEmulator extends RestService
                                 	   List<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();
                                 	   //TODO hilpold: this could be wrong if SR is closed!!!
                                 	   manager.createActivity(individual("legacy:"	+ overdueActivity), null, null, bo, null, null, emailsToSend);
+                                	   manager.updateActivityIfAutoDefaultOutcome(activityToCheck, bo, emailsToSend);
                                 	   persister.saveBusinessObjectOntology(bo.getOntology());
                                 	   for (CirmMessage m : emailsToSend) 
                                 		   m.addExplanation("LE.createWhenOverDue boid " + boid + " ACt: " + activityFragment);
