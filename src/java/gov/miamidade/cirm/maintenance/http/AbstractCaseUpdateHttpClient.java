@@ -80,7 +80,7 @@ public abstract class AbstractCaseUpdateHttpClient {
 	 */
 	public AbstractCaseUpdateHttpClient() {
 		StartupUtils.disableCertificateValidation();
-		StartUp.config.set("metaDatabaseLocation", META_DATABASE_LOCATION);
+		StartUp.getConfig().set("metaDatabaseLocation", META_DATABASE_LOCATION);
 		//Force init of ontologies early; this is slow; you may disable this for quick file parsing tests.
 		OWL.reasoner();
 	}

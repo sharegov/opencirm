@@ -80,7 +80,7 @@ public class BulkyCaseCloseHttpClient {
 	 */
 	public static void main(String[] args) {
 		StartupUtils.disableCertificateValidation();
-		StartUp.config.set("metaDatabaseLocation", "c:/temp/testontodbclient");
+		StartUp.getConfig().set("metaDatabaseLocation", "c:/temp/testontodbclient");
 		//Force init of ontologies early; this is slow; you may disable this for quick file parsing tests.
 		OWL.reasoner();
 		BulkyCaseCloseHttpClient c = new BulkyCaseCloseHttpClient();		

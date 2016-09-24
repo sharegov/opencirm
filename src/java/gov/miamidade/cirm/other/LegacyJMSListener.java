@@ -28,7 +28,6 @@ import gov.miamidade.cirm.AddressSearchService;
 import gov.miamidade.cirm.GisClient;
 import gov.miamidade.cirm.MDRefs;
 
-import java.io.File;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,8 +50,6 @@ import org.sharegov.cirm.CirmTransaction;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.RequestScopeFilter;
-import org.sharegov.cirm.StartUp;
-import org.sharegov.cirm.StartupUtils;
 import org.sharegov.cirm.legacy.CirmMessage;
 import org.sharegov.cirm.legacy.MessageManager;
 import org.sharegov.cirm.rest.LegacyEmulator;
@@ -1040,22 +1037,22 @@ public class LegacyJMSListener extends Thread
 //		return config;
 //	}
  
-	public static void main(String args[])
-	{
-		System.out.println("Starting JMS Listener");
-		if( (args.length > 0) )
-			StartUp.config = Json.read(GenUtils.readTextFile(new File(args[0])));
-		StartupUtils.disableCertificateValidation();
-		System.out.println("Using config " + StartUp.config.toString());
-		DepartmentListenerController ctrl = new DepartmentListenerController();
-		ctrl.traceMore();
-		try
-		{
-			ctrl.start();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
+//	public static void main(String args[])
+//	{
+//		System.out.println("Starting JMS Listener");
+//		if( (args.length > 0) )
+//			StartUp.getConfig() = Json.read(GenUtils.readTextFile(new File(args[0])));
+//		StartupUtils.disableCertificateValidation();
+//		System.out.println("Using config " + StartUp.getConfig().toString());
+//		DepartmentListenerController ctrl = new DepartmentListenerController();
+//		ctrl.traceMore();
+//		try
+//		{
+//			ctrl.start();
+//		}
+//		catch (Exception e)
+//		{
+//			e.printStackTrace();
+//		}
+//	}
 }

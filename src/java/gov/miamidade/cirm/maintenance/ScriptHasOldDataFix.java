@@ -52,9 +52,9 @@ public class ScriptHasOldDataFix
 		
 	public static void main(String[] args)
 	{
-		StartUp.config.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#ProdConfigSet");
+		StartUp.getConfig().set("ontologyConfigSet", "http://www.miamidade.gov/ontology#ProdConfigSet");
 		ScriptHasOldDataFix script = new ScriptHasOldDataFix();
-		//script.readFromFileAndSave(StartUp.config.at("workingDir").asString() + "/" + 24557709 + "-before.json");
+		//script.readFromFileAndSave(StartUp.getConfig().at("workingDir").asString() + "/" + 24557709 + "-before.json");
 		//script.run();
 		//script.runForOne(1311l);
 		//script.runForOne(24557709l);
@@ -189,7 +189,7 @@ public class ScriptHasOldDataFix
 			{
 				if(WRITE_BEFORE_AND_AFTER_TO_FILE)
 				{
-					writeToFile(StartUp.config.at("workingDir").asString() + "/" + srId + "-before.json", bo);
+					writeToFile(StartUp.getConfig().at("workingDir").asString() + "/" + srId + "-before.json", bo);
 				}
 				Json olddata = Json.read(bo.getDataProperty("legacy:hasOldData")
 						.getLiteral());
@@ -238,7 +238,7 @@ public class ScriptHasOldDataFix
 					}
 					if(WRITE_BEFORE_AND_AFTER_TO_FILE)
 					{
-						writeToFile(StartUp.config.at("workingDir").asString() + "/" + srId + "-after.json", bo);
+						writeToFile(StartUp.getConfig().at("workingDir").asString() + "/" + srId + "-after.json", bo);
 					}
 					if(isSomethingFixed)
 					{
@@ -255,7 +255,7 @@ public class ScriptHasOldDataFix
 			}
 		}catch(Throwable t)
 		{
-			writeToFile(StartUp.config.at("workingDir").asString() + "/" + srId + "-error.json", bo, t);
+			writeToFile(StartUp.getConfig().at("workingDir").asString() + "/" + srId + "-error.json", bo, t);
 		}finally
 		{
 			

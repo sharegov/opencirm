@@ -64,7 +64,7 @@ public class TimeMachineSimpleJobTest {
 	 * Creates 5 tasks and uses 5 threads to execute them concurrently over a period of 30 mins. 
 	 */
 	void executeTest() {	
-		if (!StartUp.config.at("ontologyConfigSet").asString().contains("#TestConfigSet")) {
+		if (!StartUp.getConfig().at("ontologyConfigSet").asString().contains("#TestConfigSet")) {
 			throw new RuntimeException("THIS TEST MUST ONLY BE RUN AGAINST THE TEST TIME MACHINE. CHECK YOUR CONFIGURATION.");
 		}
 		OWL.reasoner();
