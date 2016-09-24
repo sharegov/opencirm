@@ -49,8 +49,6 @@ import org.sharegov.cirm.utils.ActivityUtils;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
-import com.hp.hpl.jena.sparql.function.library.date;
-
 
 /**
  * The ActivityManager is responsible for creating and updating serviceActivities as well as executing configured triggers,
