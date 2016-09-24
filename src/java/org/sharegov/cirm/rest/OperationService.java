@@ -92,7 +92,7 @@ public class OperationService
 	{
 		String filename = ont.getOntologyID().getOntologyIRI().toString();
 		filename = filename.substring("http://www.miamidade.gov/".length()).replace('/', '_') + ".owl";
-		File dir = new File(StartUp.config.at("workingDir").asString() + "/src/ontology");
+		File dir = new File(StartUp.getConfig().at("workingDir").asString() + "/src/ontology");
 		File f = new File(dir, filename);		
 		manager.saveOntology(ont, new OWLFunctionalSyntaxOntologyFormat(), IRI.create(f));
 	}

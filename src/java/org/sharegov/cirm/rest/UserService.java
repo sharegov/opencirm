@@ -254,7 +254,7 @@ public class UserService extends RestService implements AutoConfigurable
 				return ko("User not found or invalid password.");
 			else if (!userdata.is("ok", true))
 				return userdata;
-			else if (!StartUp.config.is("ignorePasswords", true))
+			else if (!StartUp.getConfig().is("ignorePasswords", true))
 			{			  
 				if (!provider(form.at("provider").asString()).authenticate(
 				        userdata.at("profile").at("hasUsername").asString(), 

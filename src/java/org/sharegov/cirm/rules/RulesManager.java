@@ -229,7 +229,7 @@ public class RulesManager
 	
 	private File getFile(String type)
 	{
-		File f =  new File(new File(StartUp.config.at("workingDir").asString() + "/src/ontology"), 
+		File f =  new File(new File(StartUp.getConfig().at("workingDir").asString() + "/src/ontology"), 
 				type + ".swrl");
 		return f;
 	}

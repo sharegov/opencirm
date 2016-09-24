@@ -2168,7 +2168,7 @@ public class LegacyEmulator extends RestService
 	@GET
     @Path("/bo/{boid}/activity/{activityFragment}/overdue/create/{activityCode}")
     @Produces("application/json")
-    public Json createWhenOverdue(@PathParam("boid") Long boid,
+    public Json createActivityWhenOverdue(@PathParam("boid") Long boid,
                   @PathParam("activityFragment") String activityFragment,
                   @PathParam("activityCode") String overdueActivity)
     {	
@@ -2190,7 +2190,8 @@ public class LegacyEmulator extends RestService
                         	return ko("Permission denied.");
                         }
                         OWLOntology o = bo.getOntology();
-                        OWLNamedIndividual activityToCheck = individual(activityFragment); 
+                        
+                        OWLNamedIndividual activityToCheck = o.getOWLOntologyManager().getOWLDataFactory().getOWLNamedIndividual(OWL.fullIri(activityFragment)); 
                         if (o.getIndividualsInSignature(true).contains(activityToCheck))
                         {
                                OWLNamedIndividual status = bo.getObjectProperty("legacy:hasStatus");  
@@ -2209,8 +2210,8 @@ public class LegacyEmulator extends RestService
                                 	   ActivityManager manager = new ActivityManager();
                                 	   //TODO hilpold full method should be inside a transaction and SendEmailOnTxSuccessListener used
                                 	   List<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();
-                                	   //TODO hilpold: this could be wrong if SR is closed!!!
                                 	   manager.createActivity(individual("legacy:"	+ overdueActivity), null, null, bo, null, null, emailsToSend);
+                                	   manager.updateActivityIfAutoDefaultOutcome(activityToCheck, bo, emailsToSend);
                                 	   persister.saveBusinessObjectOntology(bo.getOntology());
                                 	   for (CirmMessage m : emailsToSend) 
                                 		   m.addExplanation("LE.createWhenOverDue boid " + boid + " ACt: " + activityFragment);
@@ -2305,7 +2306,7 @@ public class LegacyEmulator extends RestService
 
 			StreamSource xml = new StreamSource(
 					new StringReader(l.getLiteral()));
-			StreamSource xsl = new StreamSource(new File(StartUp.config.at(
+			StreamSource xsl = new StreamSource(new File(StartUp.getConfig().at(
 					"workingDir").asString()
 					+ "/src/resources/xml-2-json.xsl"));
 			TransformerFactory tFactory = TransformerFactory.newInstance();

@@ -71,7 +71,7 @@ public class OwlRepo
 	 */
 	private HGPeerIdentity findOntoServer()
 	{
-		String ontoServerName = StartUp.config.at("network").at("ontoServer").asString();
+		String ontoServerName = StartUp.getConfig().at("network").at("ontoServer").asString();
 		for (HGPeerIdentity id : repo.getPeer().getConnectedPeers())
 		{
 			String name = (String)repo.getPeer().getNetworkTarget(id);
@@ -118,7 +118,7 @@ public class OwlRepo
 		{
 			if (repo.getPeer() == null || !repo.getPeer().getPeerInterface().isConnected())
 			{
-				Json config = StartUp.config.at("network");
+				Json config = StartUp.getConfig().at("network");
 				if (config == null)
 					throw new RuntimeException("No network configured.");
 				repo.startNetworking(config.at("user").asString(), 
@@ -140,7 +140,7 @@ public class OwlRepo
 			{
 				repo.getPeer().stop();
 				throw new RuntimeException("Ontology Server " + 
-						StartUp.config.at("network").at("ontoServer").asString() +
+						StartUp.getConfig().at("network").at("ontoServer").asString() +
 						" is offline, please ensure server is started and try again.");
 			} 
 			else 

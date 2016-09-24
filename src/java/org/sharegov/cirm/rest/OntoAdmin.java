@@ -356,7 +356,7 @@ public class OntoAdmin extends RestService
 	@Path("/cachedReasonerQ1Populate")
 	public Json cachedReasonerQ1Populate()
 	{
-		String fileStr = StartUp.config.at("workingDir").asString() + CACHED_REASONER_POPULATE_GET_INSTANCES_CACHE_FILE;
+		String fileStr = StartUp.getConfig().at("workingDir").asString() + CACHED_REASONER_POPULATE_GET_INSTANCES_CACHE_FILE;
 		File f = new File(fileStr);
 		if (!f.exists()) 
 			return GenUtils.ko("Cannot populate: no file at :" + CACHED_REASONER_POPULATE_GET_INSTANCES_CACHE_FILE);

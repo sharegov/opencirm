@@ -84,16 +84,16 @@ public class GenUtils
 	{
 		try
 		{
-			if(StartUp.config.is("ssl",true))
+			if(StartUp.getConfig().is("ssl",true))
 			{
 				return new URL("https://"
 						+ InetAddress.getLocalHost().getHostName().toLowerCase()
-						+ ":" + StartUp.config.at("ssl-port") + relativePath);
+						+ ":" + StartUp.getConfig().at("ssl-port") + relativePath);
 			}else
 			{
 				return new URL("http://"
 						+ InetAddress.getLocalHost().getHostName().toLowerCase()
-						+ ":" + StartUp.config.at("port") + relativePath);
+						+ ":" + StartUp.getConfig().at("port") + relativePath);
 			}
 		}
 		catch (Exception e)
