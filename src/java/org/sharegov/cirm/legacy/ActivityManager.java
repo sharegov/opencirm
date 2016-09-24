@@ -520,7 +520,9 @@ public class ActivityManager
     				 bo.getOntology());
     		if (activityType != null) {
     			OWLNamedIndividual autoDefaultOutcome = determineAutoDefaultOutcome(activityType);
-    			updateActivity(serviceActivity, autoDefaultOutcome, null, null, "auto", bo, messages);
+    			if (autoDefaultOutcome != null) {
+    				updateActivity(serviceActivity, autoDefaultOutcome, null, null, "auto", bo, messages);
+    			}
     		}
 		}
 	}	
