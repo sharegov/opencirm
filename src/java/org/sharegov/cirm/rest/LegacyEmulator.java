@@ -2168,7 +2168,7 @@ public class LegacyEmulator extends RestService
 	@GET
     @Path("/bo/{boid}/activity/{activityFragment}/overdue/create/{activityCode}")
     @Produces("application/json")
-    public Json createWhenOverdue(@PathParam("boid") Long boid,
+    public Json createActivityWhenOverdue(@PathParam("boid") Long boid,
                   @PathParam("activityFragment") String activityFragment,
                   @PathParam("activityCode") String overdueActivity)
     {	
@@ -2305,7 +2305,7 @@ public class LegacyEmulator extends RestService
 
 			StreamSource xml = new StreamSource(
 					new StringReader(l.getLiteral()));
-			StreamSource xsl = new StreamSource(new File(StartUp.config.at(
+			StreamSource xsl = new StreamSource(new File(StartUp.getConfig().at(
 					"workingDir").asString()
 					+ "/src/resources/xml-2-json.xsl"));
 			TransformerFactory tFactory = TransformerFactory.newInstance();

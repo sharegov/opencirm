@@ -958,7 +958,7 @@ public class PDFViewReport
 	private void addWASDHeader(Chapter chapter) throws DocumentException
 	{
 		try {
-			String img = StartUp.config.at("workingDir").asString() + "/src/html/images/md-logo.png";
+			String img = StartUp.getConfig().at("workingDir").asString() + "/src/html/images/md-logo.png";
 			Image logo = Image.getInstance(img);
 			logo.scalePercent(67);
 			

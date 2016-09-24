@@ -185,12 +185,12 @@ public class RelationalOWLMapper
 	
 	private RelationalOWLMapper() 
 	{
-		SPARQL_HAS_COLUMN_MAPPING_DATA_PROPERTY = StartUp.config.at("workingDir").asString() + "/src/resources/" + "rdb/hasColumnMappingDP.sparql";
-		SPARQL_HAS_COLUMN_MAPPING_OBJECT_PROPERTY = StartUp.config.at("workingDir").asString() + "/src/resources/" + "rdb/hasColumnMappingOP.sparql";
-		SPARQL_HAS_TABLE_MAPPING = StartUp.config.at("workingDir").asString() + "/src/resources/" + "rdb/hasTableMapping.sparql";
-		SPARQL_PRIMARY_KEYS_PER_TABLE_NO_IRI = StartUp.config.at("workingDir").asString() + "/src/resources/" + "rdb/primaryKeysNoIRI.sparql";
-		SPARQL_PRIMARY_KEYS_PER_TABLE_IRI = StartUp.config.at("workingDir").asString() + "/src/resources/" + "rdb/primaryKeysIRI.sparql";
-		SPARQL_COLUMNS_BY_TABLE = StartUp.config.at("workingDir").asString() + "/src/resources/" + "rdb/tableColumns.sparql";
+		SPARQL_HAS_COLUMN_MAPPING_DATA_PROPERTY = StartUp.getConfig().at("workingDir").asString() + "/src/resources/" + "rdb/hasColumnMappingDP.sparql";
+		SPARQL_HAS_COLUMN_MAPPING_OBJECT_PROPERTY = StartUp.getConfig().at("workingDir").asString() + "/src/resources/" + "rdb/hasColumnMappingOP.sparql";
+		SPARQL_HAS_TABLE_MAPPING = StartUp.getConfig().at("workingDir").asString() + "/src/resources/" + "rdb/hasTableMapping.sparql";
+		SPARQL_PRIMARY_KEYS_PER_TABLE_NO_IRI = StartUp.getConfig().at("workingDir").asString() + "/src/resources/" + "rdb/primaryKeysNoIRI.sparql";
+		SPARQL_PRIMARY_KEYS_PER_TABLE_IRI = StartUp.getConfig().at("workingDir").asString() + "/src/resources/" + "rdb/primaryKeysIRI.sparql";
+		SPARQL_COLUMNS_BY_TABLE = StartUp.getConfig().at("workingDir").asString() + "/src/resources/" + "rdb/tableColumns.sparql";
 	}
 	
 	public static synchronized RelationalOWLMapper getInstance()

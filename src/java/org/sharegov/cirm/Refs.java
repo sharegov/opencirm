@@ -61,7 +61,7 @@ public class Refs
 	public static final String hasQueryExpression = Model.upper("hasQueryExpression").toString();
 	
 	public static final Ref<String> nameBase = new Ref<String>() {
-		public String resolve() { return StartUp.config.at("nameBase").asString(); }
+		public String resolve() { return StartUp.getConfig().at("nameBase").asString(); }
 	};
 	
 	public static final Ref<OWLOntology> topOntology = new Ref<OWLOntology>() {
@@ -81,7 +81,7 @@ public class Refs
 	public static final Ref<String> defaultOntologyIRI = new Ref<String>() {
 		public String resolve()
 		{
-			return StartUp.config.at("defaultOntologyIRI").asString();
+			return StartUp.getConfig().at("defaultOntologyIRI").asString();
 		}
 	};
 	
@@ -149,7 +149,7 @@ public class Refs
 			new SingletonRef<OWLSerialEntityCache>(new OWLSerialEntityCache());
 	
 	public static final Ref<OwlRepo> owlRepo = new SingletonRef<OwlRepo>(
-			StartUp.config.has("metaDatabaseLocation") ?
+			StartUp.getConfig().has("metaDatabaseLocation") ?
 			OwlRepo.getInstance() : null);
 	
 	public static final Ref<OntologyTransformer> ontologyTransformer =
