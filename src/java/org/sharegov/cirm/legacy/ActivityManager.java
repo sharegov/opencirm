@@ -36,11 +36,14 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.sharegov.cirm.BOntology;
 import org.sharegov.cirm.Refs;
+import org.sharegov.cirm.StartUp;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.owl.Model;
 import org.sharegov.cirm.rest.LegacyEmulator;
 import org.sharegov.cirm.utils.ActivityUtils;
 import org.sharegov.cirm.utils.GenUtils;
+import org.sharegov.cirm.utils.ThreadLocalStopwatch;
+
 
 /**
  * The ActivityManager is responsible for creating and updating serviceActivities as well as executing configured triggers,
@@ -319,42 +322,7 @@ public class ActivityManager
 					float occurDay = occurDays.iterator().next().parseFloat();
 					if (occurDay > 0)
 					{
-					Date delayedCreationDate = OWL.addDaysToDate(now.getTime(), occurDay, useWorkWeek);
-						try
-						{
-							String serverUrl = getServerUrl();
-							if(serverUrl != null)
-							{	
-									String path =  "/legacy/bo/"+ bo.getObjectId() + "/activities/create/"+ activityType.getIRI().getFragment();
-									String fullUrl = serverUrl + path; 
-									if (USE_TIME_MACHINE) 
-									{
-										Json post = Json.object();
-										if(details != null)
-											post.set("legacy:hasDetails", details);
-										if(isAssignedTo != null)
-											post.set("legacy:isAssignedTo",isAssignedTo);										
-										String taskId = getNextTimeMachineTaskIDFor(path);
-										if (DBG) System.out.println("ActManager: TM task " + taskId);
-										Calendar delayedDateCal = Calendar.getInstance();
-										delayedDateCal.setTime(delayedCreationDate);
-										Json j = GenUtils.timeTask(taskId, delayedDateCal, fullUrl, post);
-										if (j.is("ok", false))
-											throw new RuntimeException("Time machine post returned false");
-									}
-							} 
-							else
-							{
-								System.err.println("ActivityManager: " + activityType + " Server URL was NULL - Delayed activity creation failed! bo: " + bo.getObjectId());
-							}
-						}catch(Exception e)
-						{
-							System.out.println("Could not addTimer for activityType " + activityType.getIRI());
-							if(DBG)
-								e.printStackTrace(System.err);
-							if (THROW_ALL_EXC) 
-								throw new RuntimeException(e);
-						}						
+						scheduleActivityCreationOccurDays(bo, activityType, now, occurDay, useWorkWeek, details, isAssignedTo);
 						return;//activity creation will be delayed.
 					}
 				}catch(NumberFormatException nfe)
@@ -450,60 +418,33 @@ public class ActivityManager
 			{
 				try
 				{
-					float i = suspenseDays.iterator().next().parseFloat();
-					if (i > 0)
+					float suspenseDaysValue = suspenseDays.iterator().next().parseFloat();
+					if (suspenseDaysValue > 0)
 					{
-					Calendar due = Calendar.getInstance();
-					due.setTime(OWL.addDaysToDate(now.getTime(), i, useWorkWeek));
-					OWLLiteral dueDate = factory.getOWLLiteral(DatatypeFactory.newInstance()
-							.newXMLGregorianCalendar((GregorianCalendar)due)
-							.toXMLFormat()
-							,OWL2Datatype.XSD_DATE_TIME_STAMP);
-
-					manager.addAxiom(o,
-							factory.getOWLDataPropertyAssertionAxiom(
-									dataProperty("legacy:hasDueDate"),serviceActivity, 
-								dueDate
-							));
-					Set<OWLNamedIndividual> overdueActivity = reasoner().getObjectPropertyValues(
-							activityType,
-							objectProperty("legacy:hasOverdueActivity"))
-							.getFlattened();
+    					Date calculatedDueDate = calculateScheduledDelayDate(now.getTime(), suspenseDaysValue, useWorkWeek);
+    					Calendar due = Calendar.getInstance();
+    					due.setTime(calculatedDueDate);
+    					OWLLiteral dueDate = factory.getOWLLiteral(DatatypeFactory.newInstance()
+    							.newXMLGregorianCalendar((GregorianCalendar)due)
+    							.toXMLFormat()
+    							,OWL2Datatype.XSD_DATE_TIME_STAMP);
+    
+    					manager.addAxiom(o,
+    							factory.getOWLDataPropertyAssertionAxiom(
+    									dataProperty("legacy:hasDueDate"), serviceActivity, 
+    								dueDate
+    							));
+    					Set<OWLNamedIndividual> overdueActivity = reasoner().getObjectPropertyValues(
+    							activityType,
+    							objectProperty("legacy:hasOverdueActivity"))
+    							.getFlattened();
 						if(overdueActivity.size() > 0)
 						{
-							OWLNamedIndividual oa = overdueActivity.iterator().next();
-							
-							try
-							{
-								String serverUrl = getServerUrl();
-								if(serverUrl != null)
-								{	
-									String path = "/legacy/bo/"+ 
-											bo.getObjectId()
-											+"/activity/"+serviceActivity.getIRI().getFragment()+"/overdue/create/"+ oa.getIRI().getFragment();
-									String fullUrl = serverUrl + path;
-									if (USE_TIME_MACHINE) 
-									{
-										//cannot use task, as serviceActivity will get new id on each retry. oa is type and therefore constant across retries.
-										String almostTaskId = bo.getObjectId() + "act: " + activityType.getIRI().getFragment() + "/overdue/create/" + oa.getIRI().getFragment();  
-										String taskId = getNextTimeMachineTaskIDFor(almostTaskId);
-										if (DBG) System.out.println("ActManager: TM task " + taskId);
-										Json j = GenUtils.timeTask(taskId, due, fullUrl, null);
-										if (j.is("ok", false))
-											throw new RuntimeException("Time machine post returned false");
-									}
-								}
-							}catch(Exception e)
-							{
-								System.out.println("Could not addTimer for serviceActivity" + serviceActivity.getIRI().toString());
-								if(DBG)
-									e.printStackTrace(System.out);
-								if (THROW_ALL_EXC) 
-									throw new RuntimeException(e);
-							}
+							OWLNamedIndividual overdueActivityType = overdueActivity.iterator().next();
+							scheduleOverdueActivityCreationAtDueDate(bo, overdueActivityType, due, serviceActivity, activityType);
 						}
 					}
-				}catch(NumberFormatException nfe)
+				} catch(NumberFormatException nfe)
 				{
 					if(DBG)
 						nfe.printStackTrace(System.err);
@@ -1186,9 +1127,135 @@ public class ActivityManager
 		return false;
 	}
 
+	/**
+	 * Schedules Activity Creation in OccurDays from now.
+	 * @param bo
+	 * @param activityType
+	 * @param now
+	 * @param delayDays
+	 * @param useWorkWeek
+	 * @param details
+	 * @param isAssignedTo
+	 */
+	private void scheduleActivityCreationOccurDays(BOntology bo, OWLNamedIndividual activityType, Calendar now, float occurDays, boolean useWorkWeek, String details, String isAssignedTo) {
+		Date delayedCreationDate = OWL.addDaysToDate(now.getTime(), occurDays, useWorkWeek);
+		try
+		{
+			String serverUrl = getServerUrl();
+			if(serverUrl != null)
+			{	
+					String path =  "/legacy/bo/"+ bo.getObjectId() + "/activities/create/"+ activityType.getIRI().getFragment();
+					String fullUrl = serverUrl + path; 
+					if (USE_TIME_MACHINE) 
+					{
+						Json post = Json.object();
+						if(details != null)
+							post.set("legacy:hasDetails", details);
+						if(isAssignedTo != null)
+							post.set("legacy:isAssignedTo",isAssignedTo);										
+						String taskId = getNextTimeMachineTaskIDFor(path);
+						if (DBG) System.out.println("ActManager: TM task " + taskId);
+						Calendar delayedDateCal = Calendar.getInstance();
+						delayedDateCal.setTime(delayedCreationDate);
+						Json j = GenUtils.timeTask(taskId, delayedDateCal, fullUrl, post);
+						if (j.is("ok", false))
+							throw new RuntimeException("Time machine post returned false");
+					}
+			} 
+			else
+			{
+				System.err.println("ActivityManager: " + activityType + " Server URL was NULL - Delayed activity creation failed! bo: " + bo.getObjectId());
+			}
+		}catch(Exception e)
+		{
+			System.out.println("Could not addTimer for activityType " + activityType.getIRI());
+			if(DBG)
+				e.printStackTrace(System.err);
+			if (THROW_ALL_EXC) 
+				throw new RuntimeException(e);
+		}						
+
+	}
 	
-	public static void main(String [] argv)
-	{
-		
+	/**
+	 * Schedules creation of an Overdue Activity at a specified due date.
+	 * @param bo
+	 * @param overdueActivityType
+	 * @param due
+	 * @param activity activity for which this overdue activity should be created
+	 * @param activityType type of activity for which this overdue activity should be created
+	 */
+	private void scheduleOverdueActivityCreationAtDueDate(BOntology bo, OWLNamedIndividual overdueActivityType, Calendar due, OWLNamedIndividual activity, OWLNamedIndividual activityType) {
+		try
+		{
+			String serverUrl = getServerUrl();
+			if(serverUrl != null)
+			{	
+				String path = "/legacy/bo/"+ bo.getObjectId()
+						+ "/activity/"+ activity.getIRI().getFragment() 
+						+ "/overdue/create/" + overdueActivityType.getIRI().getFragment();
+				String fullUrl = serverUrl + path;
+				if (USE_TIME_MACHINE) 
+				{
+					//cannot use task, as serviceActivity will get new id on each retry. oa is type and therefore constant across retries.
+					String almostTaskId = bo.getObjectId() + "act: " + activityType.getIRI().getFragment() + "/overdue/create/" + overdueActivityType.getIRI().getFragment();  
+					String taskId = getNextTimeMachineTaskIDFor(almostTaskId);
+					if (DBG) System.out.println("ActManager: TM task " + taskId);
+					Json j = GenUtils.timeTask(taskId, due, fullUrl, null);
+					if (j.is("ok", false))
+						throw new RuntimeException("Time machine post returned false");
+				}
+			}
+		} catch(Exception e)
+		{
+			ThreadLocalStopwatch.error("Could not addTimer for serviceActivity" + activity.getIRI().toString());
+			if(DBG)
+				e.printStackTrace(System.out);
+			if (THROW_ALL_EXC) 
+				throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Calculates the scheduled date by adding daysToAdd to now and optionally using workweek.<br>
+	 * <br>
+	 * In test mode this will time lapse days to minutes for workflow testing.<br>
+	 * <br>
+	 * @param now
+	 * @param daysToAdd days to add to now (in test mode, minutes will be added)
+	 * @param useWorkWeek skip sat/sun and holidays.
+	 * @return
+	 */
+	private Date calculateScheduledDelayDate(Date now, float daysToAdd, boolean useWorkWeek) {
+		if (StartUp.isProductionMode()) {
+			return OWL.addDaysToDate(now, daysToAdd, useWorkWeek);
+		} else {
+			return calculateTimeLapseDelayDateForTest(now, daysToAdd);
+		}
+	}
+	
+	/**
+	 * Converts daysToAdd to minutes (min 1 to max 10) and calculates a future date for workflow testing purposes.<br>
+	 * e.g. 6.5 days would be converted in 6.5 minutes.<br>
+	 * e.g. 90 days will be converted to 10 minutes.<br>
+	 * e.g. 0.5 days will be converted to 1 minute.<br>
+	 * <br>
+	 * @param now
+	 * @param daysToAdd days to convert to minutes 
+	 * @return
+	 * @throws IllegalStateException if unintentionally called in 311Hub production mode.
+	 */
+	private Date calculateTimeLapseDelayDateForTest(Date now, float daysToAdd) {		
+		if (StartUp.isProductionMode()) throw new IllegalStateException("Illegal use of test time lapse calculation in production");
+		//use minutes instead of days
+		float minutesToAddMax10 = daysToAdd;
+		if (minutesToAddMax10 > 10) {
+			minutesToAddMax10 = 10;
+		}
+		if (minutesToAddMax10 < 1) {
+			minutesToAddMax10 = 1;
+		}
+		long milliSecondsToAdd = Math.round(minutesToAddMax10 * 60.0 * 1000.0);
+		return new Date(now.getTime() + milliSecondsToAdd);
 	}
 }

@@ -128,6 +128,10 @@ public class StartUp extends ServerResource
 	 */
 	private static volatile RequestScopeFilter requestScopeFilter = null;
 	
+	/**
+	 * Gets the global json configuration.
+	 * @return
+	 */
 	public static Json getConfig() {
 	        return config;
     }
@@ -146,6 +150,10 @@ public class StartUp extends ServerResource
         return server != null && server.isStarted();
     }
     
+    /**
+     * Check if this instance running in production mode.
+     * @return false if any test or dev mode
+     */
     public static boolean isProductionMode() {
     	return productionMode;
     }
@@ -153,6 +161,7 @@ public class StartUp extends ServerResource
     private static void setProductionMode(boolean prodMode) {
     	productionMode = prodMode;
     }
+    
 	public static class CirmServerResource extends DirectoryServerResource 
 	{
 	    public Representation handle() {
@@ -279,7 +288,7 @@ public class StartUp extends ServerResource
 		if (STRESS_TEST_CONFIG)
 			stressTestConfig();
 		if( (args.length > 0) ) {
-			config = Json.read(GenUtils.readTextFile(new File(args[0])));
+			setConfig(Json.read(GenUtils.readTextFile(new File(args[0]))));
 		}
 		boolean productionMode = config.at(MODE_CONFIG_PARAM).asString().equals(PRODUCTION_MODE_IDENTIFIER);
 		setProductionMode(productionMode);
