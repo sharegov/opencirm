@@ -2190,7 +2190,8 @@ public class LegacyEmulator extends RestService
                         	return ko("Permission denied.");
                         }
                         OWLOntology o = bo.getOntology();
-                        OWLNamedIndividual activityToCheck = individual(activityFragment); 
+                        
+                        OWLNamedIndividual activityToCheck = o.getOWLOntologyManager().getOWLDataFactory().getOWLNamedIndividual(OWL.fullIri(activityFragment)); 
                         if (o.getIndividualsInSignature(true).contains(activityToCheck))
                         {
                                OWLNamedIndividual status = bo.getObjectProperty("legacy:hasStatus");  
@@ -2209,7 +2210,6 @@ public class LegacyEmulator extends RestService
                                 	   ActivityManager manager = new ActivityManager();
                                 	   //TODO hilpold full method should be inside a transaction and SendEmailOnTxSuccessListener used
                                 	   List<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();
-                                	   //TODO hilpold: this could be wrong if SR is closed!!!
                                 	   manager.createActivity(individual("legacy:"	+ overdueActivity), null, null, bo, null, null, emailsToSend);
                                 	   manager.updateActivityIfAutoDefaultOutcome(activityToCheck, bo, emailsToSend);
                                 	   persister.saveBusinessObjectOntology(bo.getOntology());

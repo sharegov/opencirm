@@ -380,7 +380,7 @@ public class ActivityManager
 					outcome = OWL.individual("legacy:OUTCOME_COMPLETE");
 				manager.addAxiom(o,factory.getOWLObjectPropertyAssertionAxiom(
 							 objectProperty("legacy:hasOutcome")
-							, serviceActivity,outcome ));
+							, serviceActivity, outcome));
 				Calendar calcompleted = Calendar.getInstance();
 				calcompleted.setTime(completedDate != null ? completedDate : calcreated.getTime()); 
 				OWLLiteral completedDateLiteral = factory.getOWLLiteral(DatatypeFactory.newInstance()
@@ -468,8 +468,7 @@ public class ActivityManager
 				throw new RuntimeException(e);
 			else
 				return null;
-		}
-		
+		}		
 	}
 
 	/**
@@ -1175,11 +1174,12 @@ public class ActivityManager
 					String fullUrl = serverUrl + path; 
 					if (USE_TIME_MACHINE) 
 					{
-						Json post = Json.object();
-						if(details != null)
-							post.set("legacy:hasDetails", details);
-						if(isAssignedTo != null)
-							post.set("legacy:isAssignedTo",isAssignedTo);										
+						//Json post = Json.object();
+						Json post = null;
+						//if(details != null)
+						//	post.set("legacy:hasDetails", details);
+						//if(isAssignedTo != null)
+						//	post.set("legacy:isAssignedTo", isAssignedTo);										
 						String taskId = getNextTimeMachineTaskIDFor(path);
 						if (DBG) System.out.println("ActManager: TM task " + taskId);
 						Calendar delayedDateCal = Calendar.getInstance();

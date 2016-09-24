@@ -2730,8 +2730,10 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 
 		self.hasDefaultOutcome = function(el) {
 			var defaultOutcomeList = $.map(self.srType().hasActivity, function(v,i) {
-				if(el.hasActivity().iri() == v.iri && v.hasDefaultOutcome != undefined) 
-					return v;
+				if(el.hasActivity().iri() == v.iri && v.hasDefaultOutcome != undefined)
+					if (!v.isAutoDefaultOutcome) {
+						return v;
+					}
 			});
 			if(defaultOutcomeList.length > 0)
 				return true;
