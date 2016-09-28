@@ -56,6 +56,7 @@ import org.semanticweb.owlapi.reasoner.BufferingMode;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.sharegov.cirm.event.ClearOWLEntityCacheForSrTypeModification;
+import org.sharegov.cirm.legacy.ServiceCaseManager;
 import org.sharegov.cirm.rest.OWLIndividuals;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
@@ -75,6 +76,34 @@ public class MetaOntology
 
 	private static String PREFIX = "legacy:";
 	public static final int RESOLVE_ALL_IRI_MAX_DEPTH = 5;
+	private static MetaOntology instance = null; 
+	private Map<String, Json> objectMap;
+	private Map<String, Boolean> resolutionMap;
+	/**
+	 * private to defeat multiple instantiation
+	 * 
+	 */
+	private MetaOntology() {
+		objectMap = new ConcurrentHashMap<String, Json>();
+		resolutionMap = new ConcurrentHashMap<String, Boolean>();
+	}
+
+	/**
+	 * Singleton instance getter. Synchronized to defeat multiple instantiation when instance == null
+	 *  
+	 * @return the same unique instance of the class 
+	 */
+	public synchronized static MetaOntology getInstance(){
+		if (instance == null){
+			instance = new MetaOntology ();
+		}
+		return instance;
+	}
+	
+	public synchronized void clearObjectCache (){
+		objectMap.clear();
+		resolutionMap.clear();
+	}
 	/*
 	 * Generic Ontology handling functions.
 	 */
@@ -765,7 +794,7 @@ public class MetaOntology
 	 * TODO hilpold find the right class for this method.
 	 * 
 	 */	
-	public static void clearCacheAndSynchronizeReasoner() {
+	public void clearCacheAndSynchronizeReasoner() {
 		synchronized (OWL.reasoner()) {
 			ThreadLocalStopwatch.startTop("START clearCache");
 			clearCache();
@@ -773,6 +802,7 @@ public class MetaOntology
 			ThreadLocalStopwatch.now("START syncReasoner");
 			synchronizeReasoner();
 			ThreadLocalStopwatch.now("END syncReasoner");
+			clearObjectCache();
 		}		
 	}
 	
@@ -924,7 +954,7 @@ public class MetaOntology
 			try {
 				
 				S = q.getOWLIndividualByName("legacy:" + individualID);		
-				
+				System.out.println("Resolved: legacy:" + individualID);
 				
 			} catch (Exception ex){
 				System.out.println("Unable to resolve Object: legacy:" + individualID);
@@ -945,10 +975,8 @@ public class MetaOntology
 		return S;
 	}
 	
-	public static Json resolveIRIs(Json j){
+	public Json resolveIRIs(Json j){
 		Json result = j.dup();
-		
-		Map<String, Json> objectMap = new ConcurrentHashMap<String, Json>();
 		
 		mapJsonObject(result, objectMap);
 		
@@ -959,9 +987,7 @@ public class MetaOntology
 		if (!checkAllObjects(objectMap, error)){
 			throw new IllegalArgumentException("Unable to resolve object: " + error);
 		}
-		
-		Map<String, Boolean> resolutionMap = new ConcurrentHashMap<String, Boolean>();
-		
+				
 		expandJson(result, objectMap, resolutionMap);
 		
 		return result;
@@ -1040,7 +1066,7 @@ public class MetaOntology
 					j.with(objectMap.get(j.at("iri").asString()).dup());
 					return;
 				} else {
-					j.set("recursive", true);
+					j.set("reference", true);
 					System.out.println("Infinite recursive definition found for object : " + j.at("iri").asString());
 					return;
 				}

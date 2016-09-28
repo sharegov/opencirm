@@ -107,7 +107,7 @@ public class StartUp extends ServerResource
 			.set("network", Json.object(				
 					"user", "cirmconfigservice_test",
 					"password","ccstest",
-					"serverUrl","s0141667",
+					"serverUrl","s0144818",
 					"ontoServer","ontology_server_test"))
 //			.set("network", Json.object(				
 //					"user", "cirmservice_production",

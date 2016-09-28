@@ -139,6 +139,7 @@
 									"iri",
 									"label",
 									"hasLegacyEvent",
+									"hasAnswerObject",
 									"type"
 								],
 								"type": "object"
