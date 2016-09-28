@@ -56,7 +56,6 @@ import org.semanticweb.owlapi.reasoner.BufferingMode;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.sharegov.cirm.event.ClearOWLEntityCacheForSrTypeModification;
-import org.sharegov.cirm.legacy.ServiceCaseManager;
 import org.sharegov.cirm.rest.OWLIndividuals;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
@@ -976,6 +975,15 @@ public class MetaOntology
 	}
 	
 	public Json resolveIRIs(Json j){
+		return resolveIRIs(j, true);
+	}
+	
+	public Json resolveIRIs(Json j, boolean clearCache){
+		
+		if (clearCache){
+			clearObjectCache();
+		}
+		
 		Json result = j.dup();
 		
 		mapJsonObject(result, objectMap);
@@ -999,8 +1007,10 @@ public class MetaOntology
 			for (Map.Entry<String, Json> propKeyValue : properties.entrySet()) {
 				Json value = propKeyValue.getValue();
 				
-				if (propKeyValue.getKey().equals("iri")){					
-					map.put(value.asString(), j.dup());
+				if (propKeyValue.getKey().equals("iri")){	
+					if (!map.containsKey(value.asString()) || (map.containsKey(value.asString()) && map.get(value.asString()) == Json.nil())){
+						map.put(value.asString(), j.dup());
+					}
 				} else if (isFullIriString(value)) {
 					if (!map.containsKey(value.asString())){
 						map.put(value.asString(), Json.nil());

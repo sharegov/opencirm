@@ -381,7 +381,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	private void addActitivitesByDepartment(String srType, Json serializedSrType, String departmentIriFragment){
 		if (serializedSrType.has("hasActivity")){
 			
-			Json srTypeActivities = MetaOntology.getInstance().resolveIRIs(serializedSrType.at("hasActivity"));
+			Json srTypeActivities = MetaOntology.getInstance().resolveIRIs(serializedSrType.at("hasActivity"), false);
 			
 			Set <String> S = new HashSet<>();
 						
