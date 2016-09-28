@@ -11,15 +11,15 @@
 
 <Ontology xmlns="http://www.w3.org/2002/07/owl#"
      xml:base="http://opencirm.org/demo"
-     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      ontologyIRI="http://opencirm.org/demo">
-    <Prefix name="" IRI="http://www.w3.org/2002/07/owl#"/>
     <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
     <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
     <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
+    <Prefix name="" IRI="http://www.w3.org/2002/07/owl#"/>
     <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
     <Import>http://opencirm.org/cirm</Import>
     <Declaration>
@@ -176,10 +176,97 @@
         <NamedIndividual IRI="http://opencirm.org#Florida"/>
     </Declaration>
     <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PERSCNTC"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PICKUP"/>
+    </Declaration>
+    <Declaration>
         <NamedIndividual IRI="http://opencirm.org#GisDemoConfig"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#GisGoogle"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_DUMPNOTIF_GENASSIG"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_NOTIFICATION"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_PERSCNTC"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_ALLEY"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_BULKYSCHPILE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_COMMPROP"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_OTHER"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_RESIDPROP"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_RIGHTOFWAYINF"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_RIGHTOFWAYNOTINF"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_STBLOCKTRAFF"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_VACANTLOT"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_RIGHTOFWAYINF_ALERT"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_RIGHTOFWAYINF_TRIGGER"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES_LEGRESPROP"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES_OTHER"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES_PROPOWNER"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES_TENANT"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q3"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q3_CHOICES"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q3_CHOICES_NO"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q3_CHOICES_YES"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q4"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#Indian_Creek_Village"/>
@@ -197,13 +284,94 @@
         <NamedIndividual IRI="http://opencirm.org#North_Bay_Village"/>
     </Declaration>
     <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#O-OPEN"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#OUTCOME_COMPLETE"/>
+    </Declaration>
+    <Declaration>
         <NamedIndividual IRI="http://opencirm.org#Occupant_Actor"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#OperationsLocalPostgresDB"/>
     </Declaration>
     <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#PHONE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES_AREA"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES_CORRI"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES_INTER"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES_LOCPROP"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PERSCNTC"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PWSTATUS"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PWSTATUS_OUTCOME_STUMP"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PWSTATUS_OUTCOME_TRAFF"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q2"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q3"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q4"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q5"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q6"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_SR_ALERT"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#POTHOME_PWSTATUS_OUTCOME_DEBRIS"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#STANDARD"/>
+    </Declaration>
+    <Declaration>
         <NamedIndividual IRI="http://opencirm.org#SolrSearchService"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_PERSCNTC"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q2"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q2_CHOICES"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q2_CHOICES_NO"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q2_CHOICES_YES"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#Town_of_Bay_Harbor_Islands"/>
@@ -285,6 +453,9 @@
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.utils.JsonEntityProvider"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="#BusinessObjectIRIPrefixConfig"/>
@@ -588,12 +759,128 @@
         <NamedIndividual IRI="http://opencirm.org#DemoConfigSet"/>
     </ClassAssertion>
     <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#Activity"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PERSCNTC"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#Activity"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PICKUP"/>
+    </ClassAssertion>
+    <ClassAssertion>
         <Class IRI="http://opencirm.org#ConfigParam"/>
         <NamedIndividual IRI="http://opencirm.org#GisDemoConfig"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="http://opencirm.org#RestService"/>
         <NamedIndividual IRI="http://opencirm.org#GisGoogle"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#MessageTemplate"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_DUMPNOTIF_GENASSIG"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#Activity"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_NOTIFICATION"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#Activity"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_PERSCNTC"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ServiceQuestion"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValueList"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_ALLEY"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_BULKYSCHPILE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_COMMPROP"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_OTHER"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_RESIDPROP"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_RIGHTOFWAYINF"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_RIGHTOFWAYNOTINF"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_STBLOCKTRAFF"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_VACANTLOT"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ServiceFieldAlert"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_RIGHTOFWAYINF_ALERT"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#QuestionTrigger"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_RIGHTOFWAYINF_TRIGGER"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ServiceQuestion"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValueList"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES_LEGRESPROP"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES_OTHER"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES_PROPOWNER"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES_TENANT"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ServiceQuestion"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q3"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValueList"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q3_CHOICES"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q3_CHOICES_NO"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q3_CHOICES_YES"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ServiceQuestion"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q4"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="http://opencirm.org#City_Organization"/>
@@ -628,6 +915,14 @@
         <NamedIndividual IRI="http://opencirm.org#North_Bay_Village"/>
     </ClassAssertion>
     <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#AnyStatus"/>
+        <NamedIndividual IRI="http://opencirm.org#O-OPEN"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#Outcome"/>
+        <NamedIndividual IRI="http://opencirm.org#OUTCOME_COMPLETE"/>
+    </ClassAssertion>
+    <ClassAssertion>
         <Class IRI="http://opencirm.org/cirm#ServiceActor"/>
         <NamedIndividual IRI="http://opencirm.org#Occupant_Actor"/>
     </ClassAssertion>
@@ -636,8 +931,108 @@
         <NamedIndividual IRI="http://opencirm.org#OperationsLocalPostgresDB"/>
     </ClassAssertion>
     <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#IntakeMethod"/>
+        <NamedIndividual IRI="http://opencirm.org#PHONE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValueList"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES_AREA"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES_CORRI"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES_INTER"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES_LOCPROP"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#Activity"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PERSCNTC"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#Activity"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PWSTATUS"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#Outcome"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PWSTATUS_OUTCOME_STUMP"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#Outcome"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PWSTATUS_OUTCOME_TRAFF"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ServiceQuestion"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q1"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ServiceQuestion"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q2"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ServiceQuestion"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q3"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ServiceQuestion"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q4"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ServiceQuestion"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q5"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ServiceQuestion"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q6"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ServiceCaseAlert"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_SR_ALERT"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#Outcome"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOME_PWSTATUS_OUTCOME_DEBRIS"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#Priority"/>
+        <NamedIndividual IRI="http://opencirm.org#STANDARD"/>
+    </ClassAssertion>
+    <ClassAssertion>
         <Class IRI="http://opencirm.org#ConfigParam"/>
         <NamedIndividual IRI="http://opencirm.org#SolrSearchService"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#Activity"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_PERSCNTC"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ServiceQuestion"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q1"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ServiceQuestion"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q2"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValueList"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q2_CHOICES"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q2_CHOICES_NO"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q2_CHOICES_YES"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="http://opencirm.org#City_Organization"/>
@@ -782,6 +1177,10 @@
     <ClassAssertion>
         <Class IRI="http://opencirm.org#JavaClass"/>
         <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.utils.JsonEntityProvider"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#ServiceRequestType"/>
+        <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="http://opencirm.org#ConfigParam"/>
@@ -858,22 +1257,12 @@
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
         <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.UserService"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.UiService"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
         <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.SystemMonitorService"/>
-    </ObjectPropertyAssertion>
-    <ObjectPropertyAssertion>
-        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
-        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.RestServiceAdmin"/>
-    </ObjectPropertyAssertion>
-    <ObjectPropertyAssertion>
-        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
-        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OWLTypes"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.services.OWLWebServices"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
@@ -888,17 +1277,27 @@
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
         <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.LegacyEmulator"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OWLTypes"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
         <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.UiService"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.SearchService"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
         <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OntoAdmin"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.SystemMonitorService"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.RestServiceAdmin"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.UserService"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
@@ -913,17 +1312,17 @@
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
         <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.SearchService"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OntoAdmin"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.LegacyEmulator"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
         <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
         <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OperationService"/>
-    </ObjectPropertyAssertion>
-    <ObjectPropertyAssertion>
-        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
-        <NamedIndividual IRI="http://opencirm.org#CIRMApplication"/>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.services.OWLWebServices"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#Street_Address_State"/>
@@ -933,7 +1332,12 @@
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#hasMember"/>
         <NamedIndividual IRI="http://opencirm.org#DemoConfigSet"/>
-        <NamedIndividual IRI="http://opencirm.org#GisDemoConfig"/>
+        <NamedIndividual IRI="http://opencirm.org#OperationsLocalPostgresDB"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasMember"/>
+        <NamedIndividual IRI="http://opencirm.org#DemoConfigSet"/>
+        <NamedIndividual IRI="http://opencirm.org#SolrSearchService"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#hasMember"/>
@@ -943,22 +1347,187 @@
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#hasMember"/>
         <NamedIndividual IRI="http://opencirm.org#DemoConfigSet"/>
-        <NamedIndividual IRI="http://opencirm.org#OperationsLocalPostgresDB"/>
-    </ObjectPropertyAssertion>
-    <ObjectPropertyAssertion>
-        <ObjectProperty IRI="http://opencirm.org#hasMember"/>
-        <NamedIndividual IRI="http://opencirm.org#DemoConfigSet"/>
         <NamedIndividual IRI="#DBIDFactoryConfig"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#hasMember"/>
         <NamedIndividual IRI="http://opencirm.org#DemoConfigSet"/>
-        <NamedIndividual IRI="http://opencirm.org#SolrSearchService"/>
+        <NamedIndividual IRI="http://opencirm.org#GisDemoConfig"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasAllowableOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PERSCNTC"/>
+        <NamedIndividual IRI="http://opencirm.org#OUTCOME_COMPLETE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasDefaultOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PERSCNTC"/>
+        <NamedIndividual IRI="http://opencirm.org#OUTCOME_COMPLETE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasActivity"/>
+        <NamedIndividual IRI="http://opencirm.org#Garbage_Missed_Complaint"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PERSCNTC"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceActor"/>
+        <NamedIndividual IRI="http://opencirm.org#Garbage_Missed_Complaint"/>
+        <NamedIndividual IRI="http://opencirm.org#Agency_Department_Actor"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceActor"/>
+        <NamedIndividual IRI="http://opencirm.org#Garbage_Missed_Complaint"/>
+        <NamedIndividual IRI="http://opencirm.org#Citizen_Actor"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceActor"/>
+        <NamedIndividual IRI="http://opencirm.org#Garbage_Missed_Complaint"/>
+        <NamedIndividual IRI="http://opencirm.org#Occupant_Actor"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#Value"/>
         <NamedIndividual IRI="http://opencirm.org#GisDemoConfig"/>
         <NamedIndividual IRI="http://opencirm.org#GisGoogle"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasAllowableOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_NOTIFICATION"/>
+        <NamedIndividual IRI="http://opencirm.org#OUTCOME_COMPLETE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasDefaultOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_NOTIFICATION"/>
+        <NamedIndividual IRI="http://opencirm.org#OUTCOME_COMPLETE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasEmailTemplate"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_NOTIFICATION"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_DUMPNOTIF_GENASSIG"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasAllowableOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_PERSCNTC"/>
+        <NamedIndividual IRI="http://opencirm.org#OUTCOME_COMPLETE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasDefaultOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_PERSCNTC"/>
+        <NamedIndividual IRI="http://opencirm.org#OUTCOME_COMPLETE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValueList"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceFieldAlert"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_RIGHTOFWAYINF_TRIGGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_OTHER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_RIGHTOFWAYINF"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_RESIDPROP"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_COMMPROP"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_BULKYSCHPILE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_ALLEY"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_RIGHTOFWAYNOTINF"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_VACANTLOT"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_STBLOCKTRAFF"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_RIGHTOFWAYINF_TRIGGER"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_RIGHTOFWAYINF"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasLegacyEvent"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_RIGHTOFWAYINF_TRIGGER"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_RIGHTOFWAYINF_ALERT"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValueList"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES_LEGRESPROP"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES_PROPOWNER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES_TENANT"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES_OTHER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValueList"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q3"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q3_CHOICES"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q3_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q3_CHOICES_NO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q3_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q3_CHOICES_YES"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasActivity"/>
+        <NamedIndividual IRI="http://opencirm.org#Illegal_Dumping"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_PERSCNTC"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasActivity"/>
+        <NamedIndividual IRI="http://opencirm.org#Illegal_Dumping"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_NOTIFICATION"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org/cirm#hasDefaultIntakeMethod"/>
@@ -991,6 +1560,26 @@
         <NamedIndividual IRI="#sqPropertyOwner"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceField"/>
+        <NamedIndividual IRI="http://opencirm.org#Illegal_Dumping"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceField"/>
+        <NamedIndividual IRI="http://opencirm.org#Illegal_Dumping"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceField"/>
+        <NamedIndividual IRI="http://opencirm.org#Illegal_Dumping"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q4"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceField"/>
+        <NamedIndividual IRI="http://opencirm.org#Illegal_Dumping"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q3"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#hasDatabaseType"/>
         <NamedIndividual IRI="http://opencirm.org#LocalPostgresDatabase"/>
         <NamedIndividual IRI="http://opencirm.org#PostgresDatabase"/>
@@ -1001,9 +1590,134 @@
         <NamedIndividual IRI="http://opencirm.org#LocalPostgresDatabase"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES_LOCPROP"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES_CORRI"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES_AREA"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES_INTER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasAllowableOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PERSCNTC"/>
+        <NamedIndividual IRI="http://opencirm.org#OUTCOME_COMPLETE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasDefaultOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PERSCNTC"/>
+        <NamedIndividual IRI="http://opencirm.org#OUTCOME_COMPLETE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasAllowableOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PWSTATUS"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PWSTATUS_OUTCOME_STUMP"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasAllowableOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PWSTATUS"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PWSTATUS_OUTCOME_TRAFF"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasAllowableOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PWSTATUS"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOME_PWSTATUS_OUTCOME_DEBRIS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasAllowableOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PWSTATUS"/>
+        <NamedIndividual IRI="http://opencirm.org#OUTCOME_COMPLETE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValueList"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q1"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#Value"/>
         <NamedIndividual IRI="http://opencirm.org#SolrSearchService"/>
         <NamedIndividual IRI="http://opencirm.org#KeywordServiceService"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasAllowableOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_PERSCNTC"/>
+        <NamedIndividual IRI="http://opencirm.org#OUTCOME_COMPLETE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasDefaultOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_PERSCNTC"/>
+        <NamedIndividual IRI="http://opencirm.org#OUTCOME_COMPLETE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValueList"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q2"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q2_CHOICES"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q2_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q2_CHOICES_YES"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q2_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q2_CHOICES_NO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasActivity"/>
+        <NamedIndividual IRI="http://opencirm.org#Tree_Fallen"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_PERSCNTC"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasDefaultIntakeMethod"/>
+        <NamedIndividual IRI="http://opencirm.org#Tree_Fallen"/>
+        <NamedIndividual IRI="http://opencirm.org#PHONE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasDefaultPriority"/>
+        <NamedIndividual IRI="http://opencirm.org#Tree_Fallen"/>
+        <NamedIndividual IRI="http://opencirm.org#O-OPEN"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasDefaultStatus"/>
+        <NamedIndividual IRI="http://opencirm.org#Tree_Fallen"/>
+        <NamedIndividual IRI="http://opencirm.org#STANDARD"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceActor"/>
+        <NamedIndividual IRI="http://opencirm.org#Tree_Fallen"/>
+        <NamedIndividual IRI="http://opencirm.org#Citizen_Actor"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceActor"/>
+        <NamedIndividual IRI="http://opencirm.org#Tree_Fallen"/>
+        <NamedIndividual IRI="http://opencirm.org#Occupant_Actor"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceActor"/>
+        <NamedIndividual IRI="http://opencirm.org#Tree_Fallen"/>
+        <NamedIndividual IRI="http://opencirm.org#Agency_Department_Actor"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceField"/>
+        <NamedIndividual IRI="http://opencirm.org#Tree_Fallen"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q1"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceField"/>
+        <NamedIndividual IRI="http://opencirm.org#Tree_Fallen"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q2"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
@@ -1031,6 +1745,81 @@
         <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.search.GoogleSearchEngine"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasActivity"/>
+        <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PERSCNTC"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasActivity"/>
+        <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PWSTATUS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasDefaultIntakeMethod"/>
+        <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
+        <NamedIndividual IRI="http://opencirm.org#PHONE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasDefaultPriority"/>
+        <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
+        <NamedIndividual IRI="http://opencirm.org#STANDARD"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasDefaultStatus"/>
+        <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
+        <NamedIndividual IRI="http://opencirm.org#O-OPEN"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceActor"/>
+        <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
+        <NamedIndividual IRI="http://opencirm.org#Citizen_Actor"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceActor"/>
+        <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
+        <NamedIndividual IRI="http://opencirm.org#Occupant_Actor"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceActor"/>
+        <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
+        <NamedIndividual IRI="http://opencirm.org#Agency_Department_Actor"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceCaseAlert"/>
+        <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_SR_ALERT"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceField"/>
+        <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q4"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceField"/>
+        <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q5"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceField"/>
+        <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q3"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceField"/>
+        <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q6"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceField"/>
+        <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q1"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceField"/>
+        <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q2"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#Value"/>
         <NamedIndividual IRI="#DBIDFactoryConfig"/>
         <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rdb.DBIDFactory"/>
@@ -1048,12 +1837,7 @@
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
         <NamedIndividual IRI="#choicesResidence"/>
-        <NamedIndividual IRI="#PropertyTenant"/>
-    </ObjectPropertyAssertion>
-    <ObjectPropertyAssertion>
-        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
-        <NamedIndividual IRI="#choicesResidence"/>
-        <NamedIndividual IRI="#PropertyLegallyResponsible"/>
+        <NamedIndividual IRI="#PropertyOwner"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
@@ -1063,7 +1847,12 @@
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
         <NamedIndividual IRI="#choicesResidence"/>
-        <NamedIndividual IRI="#PropertyOwner"/>
+        <NamedIndividual IRI="#PropertyTenant"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="#choicesResidence"/>
+        <NamedIndividual IRI="#PropertyLegallyResponsible"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValueList"/>
@@ -1337,6 +2126,61 @@
         <Literal datatypeIRI="&xsd;string"></Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasBusinessCodes"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PERSCNTC"/>
+        <Literal datatypeIRI="&xsd;string">,INSSPEC,</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PERSCNTC"/>
+        <Literal datatypeIRI="&xsd;string">PERSCNTC</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOccurDays"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PERSCNTC"/>
+        <Literal datatypeIRI="&xsd;float">0.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasSuspenseDays"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PERSCNTC"/>
+        <Literal datatypeIRI="&xsd;float">0.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#isAutoCreate"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PERSCNTC"/>
+        <Literal datatypeIRI="&xsd;string">N</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PICKUP"/>
+        <Literal datatypeIRI="&xsd;string">PICKUP</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasGeoAreaRequired"/>
+        <NamedIndividual IRI="http://opencirm.org#Garbage_Missed_Complaint"/>
+        <Literal datatypeIRI="&xsd;string">Y</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasJurisdictionCode"/>
+        <NamedIndividual IRI="http://opencirm.org#Garbage_Missed_Complaint"/>
+        <Literal datatypeIRI="&xsd;string">MD</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasJurisdictionDescription"/>
+        <NamedIndividual IRI="http://opencirm.org#Garbage_Missed_Complaint"/>
+        <Literal datatypeIRI="&xsd;string">MIAMI-DADE COUNTY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#Garbage_Missed_Complaint"/>
+        <Literal datatypeIRI="&xsd;string">GARBAGEMISSEDCOMP</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasShowLocation"/>
+        <NamedIndividual IRI="http://opencirm.org#Garbage_Missed_Complaint"/>
+        <Literal datatypeIRI="&xsd;string">ALLOWLOC</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#GisDemoConfig"/>
         <Literal datatypeIRI="&xsd;string">GisConfig</Literal>
@@ -1345,6 +2189,383 @@
         <DataProperty IRI="http://opencirm.org#hasUrl"/>
         <NamedIndividual IRI="http://opencirm.org#GisGoogle"/>
         <Literal datatypeIRI="&xsd;string">http://maps.google.com/maps/api/js?v=3&amp;sensor=false</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasBody"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_DUMPNOTIF_GENASSIG"/>
+        <Literal datatypeIRI="&xsd;string">TEST</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasCc"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_DUMPNOTIF_GENASSIG"/>
+        <Literal datatypeIRI="&xsd;string">egov.miamidade@gmail.com</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyBody"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_DUMPNOTIF_GENASSIG"/>
+        <Literal datatypeIRI="&xsd;string">&quot;Greetings,
+
+You have received a </Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasSubject"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_DUMPNOTIF_GENASSIG"/>
+        <Literal datatypeIRI="&xsd;string">TEST</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasTo"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_DUMPNOTIF_GENASSIG"/>
+        <Literal datatypeIRI="&xsd;string">egov.miamidade@gmail.com</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasBusinessCodes"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_NOTIFICATION"/>
+        <Literal datatypeIRI="&xsd;string">NOTIFICATION</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasBusinessCodes"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_NOTIFICATION"/>
+        <Literal datatypeIRI="&xsd;string">,SUCCESSR,5DAYWORK,</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOccurDays"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_NOTIFICATION"/>
+        <Literal datatypeIRI="&xsd;float">0.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasSuspenseDays"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_NOTIFICATION"/>
+        <Literal datatypeIRI="&xsd;float">0.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#isAutoCreate"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_NOTIFICATION"/>
+        <Literal datatypeIRI="&xsd;string">N</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasBusinessCodes"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_PERSCNTC"/>
+        <Literal datatypeIRI="&xsd;string">,INSSPEC,</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_PERSCNTC"/>
+        <Literal datatypeIRI="&xsd;string">PERSCNTC</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOccurDays"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_PERSCNTC"/>
+        <Literal datatypeIRI="&xsd;float">0.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasSuspenseDays"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_PERSCNTC"/>
+        <Literal datatypeIRI="&xsd;float">0.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#isAutoCreate"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_PERSCNTC"/>
+        <Literal datatypeIRI="&xsd;string">N</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasAllowableModules"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1"/>
+        <Literal datatypeIRI="&xsd;string">SREINTAK,SREMASS,SRERESAC,SRSNGLWO,SRSUMMRY,</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasBusinessCodes"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1"/>
+        <Literal datatypeIRI="&xsd;string">SUCCESSR,FQ_ALERT,REQINTAK,</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasDataType"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1"/>
+        <Literal datatypeIRI="&xsd;string">CHARLIST</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1"/>
+        <Literal datatypeIRI="&xsd;string">Q1</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1"/>
+        <Literal datatypeIRI="&xsd;float">1.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_ALLEY"/>
+        <Literal datatypeIRI="&xsd;string">ALLEY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_ALLEY"/>
+        <Literal datatypeIRI="&xsd;float">1.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_BULKYSCHPILE"/>
+        <Literal datatypeIRI="&xsd;string">BULKYSCHPILE</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_BULKYSCHPILE"/>
+        <Literal datatypeIRI="&xsd;float">2.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_COMMPROP"/>
+        <Literal datatypeIRI="&xsd;string">COMMPROP</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_COMMPROP"/>
+        <Literal datatypeIRI="&xsd;float">3.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_OTHER"/>
+        <Literal datatypeIRI="&xsd;string">OTHER</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_OTHER"/>
+        <Literal datatypeIRI="&xsd;float">9.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_RESIDPROP"/>
+        <Literal datatypeIRI="&xsd;string">RESIDPROP</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_RESIDPROP"/>
+        <Literal datatypeIRI="&xsd;float">4.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_RIGHTOFWAYINF"/>
+        <Literal datatypeIRI="&xsd;string">RIGHTOFWAYINF</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_RIGHTOFWAYINF"/>
+        <Literal datatypeIRI="&xsd;float">5.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_RIGHTOFWAYNOTINF"/>
+        <Literal datatypeIRI="&xsd;string">RIGHTOFWAYNOTINF</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_RIGHTOFWAYNOTINF"/>
+        <Literal datatypeIRI="&xsd;float">6.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_STBLOCKTRAFF"/>
+        <Literal datatypeIRI="&xsd;string">STBLOCKTRAFF</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_STBLOCKTRAFF"/>
+        <Literal datatypeIRI="&xsd;float">7.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_VACANTLOT"/>
+        <Literal datatypeIRI="&xsd;string">VACANTLOT</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_VACANTLOT"/>
+        <Literal datatypeIRI="&xsd;float">8.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasAllowableModules"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2"/>
+        <Literal datatypeIRI="&xsd;string">SREINTAK,SRERESAC,SRSNGLWO,SRSUMMRY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasBusinessCodes"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2"/>
+        <Literal datatypeIRI="&xsd;string">SUCCESSR,FQ_ALERT,</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasDataType"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2"/>
+        <Literal datatypeIRI="&xsd;string">CHARLIST</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2"/>
+        <Literal datatypeIRI="&xsd;string">Q2</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2"/>
+        <Literal datatypeIRI="&xsd;float">2.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES_LEGRESPROP"/>
+        <Literal datatypeIRI="&xsd;string">LEGRESPROP</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES_LEGRESPROP"/>
+        <Literal datatypeIRI="&xsd;float">1.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES_OTHER"/>
+        <Literal datatypeIRI="&xsd;float">OTHER</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES_OTHER"/>
+        <Literal datatypeIRI="&xsd;float">4.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES_PROPOWNER"/>
+        <Literal datatypeIRI="&xsd;string">PROPOWNER</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES_PROPOWNER"/>
+        <Literal datatypeIRI="&xsd;float">2.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES_TENANT"/>
+        <Literal datatypeIRI="&xsd;string">TENANT</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES_TENANT"/>
+        <Literal datatypeIRI="&xsd;float">3.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasAllowableModules"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q3"/>
+        <Literal datatypeIRI="&xsd;string">SREINTAK,SRERESAC,SRSNGLWO,SRSUMMRY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasDataType"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q3"/>
+        <Literal datatypeIRI="&xsd;string">CHARLIST</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q3"/>
+        <Literal datatypeIRI="&xsd;string">Q3</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q3"/>
+        <Literal datatypeIRI="&xsd;float">3.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q3_CHOICES_NO"/>
+        <Literal datatypeIRI="&xsd;string">NO</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q3_CHOICES_NO"/>
+        <Literal datatypeIRI="&xsd;float">2.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q3_CHOICES_YES"/>
+        <Literal datatypeIRI="&xsd;string">YES</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q3_CHOICES_YES"/>
+        <Literal datatypeIRI="&xsd;float">1.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasAllowableModules"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q4"/>
+        <Literal datatypeIRI="&xsd;string">SREINTAK,SRERESAC,SRSNGLWO,SRSUMMRY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasDataType"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q4"/>
+        <Literal datatypeIRI="&xsd;string">CHAR</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q4"/>
+        <Literal datatypeIRI="&xsd;string">Q4</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_Q4"/>
+        <Literal datatypeIRI="&xsd;float">4.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasDurationDays"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGAL_Dumping"/>
+        <Literal datatypeIRI="&xsd;float">90.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasGeoAreaCode"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGAL_Dumping"/>
+        <Literal datatypeIRI="&xsd;string">SWENFMUN</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasGeoAreaRequired"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGAL_Dumping"/>
+        <Literal datatypeIRI="&xsd;string">Y</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasJurisdictionCode"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGAL_Dumping"/>
+        <Literal datatypeIRI="&xsd;string">MD</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasJurisdictionDescription"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGAL_Dumping"/>
+        <Literal datatypeIRI="&xsd;string">MIAMI-DADE COUNTY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGAL_Dumping"/>
+        <Literal datatypeIRI="&xsd;string">ILLEGALDUMPING</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasShowLocation"/>
+        <NamedIndividual IRI="http://opencirm.org#ILLEGAL_Dumping"/>
+        <Literal datatypeIRI="&xsd;string">ALLOWLOC</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasGeoAreaRequired"/>
+        <NamedIndividual IRI="http://opencirm.org#Illegal_Dumping"/>
+        <Literal datatypeIRI="&xsd;string">Y</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasJurisdictionCode"/>
+        <NamedIndividual IRI="http://opencirm.org#Illegal_Dumping"/>
+        <Literal datatypeIRI="&xsd;string">MD</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasJurisdictionDescription"/>
+        <NamedIndividual IRI="http://opencirm.org#Illegal_Dumping"/>
+        <Literal datatypeIRI="&xsd;string">MIAMI-DADE COUNTY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#Illegal_Dumping"/>
+        <Literal datatypeIRI="&xsd;string">ILLEGALDUMPING</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasShowLocation"/>
+        <NamedIndividual IRI="http://opencirm.org#Illegal_Dumping"/>
+        <Literal datatypeIRI="&xsd;string">ALLOWLOC</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -1402,9 +2623,224 @@
         <Literal datatypeIRI="&xsd;string">North Bay Village</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#O-OPEN"/>
+        <Literal datatypeIRI="&xsd;string">OPEN</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#OUTCOME_COMPLETE"/>
+        <Literal datatypeIRI="&xsd;string">COMPLETE</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#OperationsLocalPostgresDB"/>
         <Literal datatypeIRI="&xsd;string">OperationsDatabaseConfig</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#PHONE"/>
+        <Literal datatypeIRI="&xsd;string">PHONE</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES_AREA"/>
+        <Literal datatypeIRI="&xsd;string">AREA</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES_CORRI"/>
+        <Literal datatypeIRI="&xsd;string">CORRI</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES_INTER"/>
+        <Literal datatypeIRI="&xsd;string">INTER</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES_LOCPROP"/>
+        <Literal datatypeIRI="&xsd;string">LOCPROP</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasBusinessCodes"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PERSCNTC"/>
+        <Literal datatypeIRI="&xsd;string">,INSSPEC,</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PERSCNTC"/>
+        <Literal datatypeIRI="&xsd;string">PERSCNTC</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOccurDays"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PERSCNTC"/>
+        <Literal datatypeIRI="&xsd;float">0.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PERSCNTC"/>
+        <Literal datatypeIRI="&xsd;float">100.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasSuspenseDays"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PERSCNTC"/>
+        <Literal datatypeIRI="&xsd;float">0.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#isAutoCreate"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PERSCNTC"/>
+        <Literal datatypeIRI="&xsd;string">N</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PWSTATUS"/>
+        <Literal datatypeIRI="&xsd;string">PWSTATUS</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOccurDays"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PWSTATUS"/>
+        <Literal datatypeIRI="&xsd;float">0.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PWSTATUS"/>
+        <Literal datatypeIRI="&xsd;float">1.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasSuspenseDays"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PWSTATUS"/>
+        <Literal datatypeIRI="&xsd;float">0.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#isAutoCreate"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_PWSTATUS"/>
+        <Literal datatypeIRI="&xsd;string">N</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasAllowableModules"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q1"/>
+        <Literal datatypeIRI="&xsd;string">,SREINTAK,SREMASS,SRERESAC,SRSNGLWO,SRSUMMARY,WEBINTAK,</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasBusinessCodes"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q1"/>
+        <Literal datatypeIRI="&xsd;string">,REQINTAK,WEBQREQD,FQ_ALERT, SUCCESSR,</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasDataType"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q1"/>
+        <Literal datatypeIRI="&xsd;string">CHARLIST</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q1"/>
+        <Literal datatypeIRI="&xsd;string">Q1</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q1"/>
+        <Literal datatypeIRI="&xsd;float">1.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasAllowableModules"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q2"/>
+        <Literal datatypeIRI="&xsd;string">,SREINTAK,SREMASS,SRERESAC,SRSNGLWO,SRSUMMARY,WEBINTAK,</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasDataType"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q2"/>
+        <Literal datatypeIRI="&xsd;string">CHAR</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q2"/>
+        <Literal datatypeIRI="&xsd;string">Q2</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q2"/>
+        <Literal datatypeIRI="&xsd;float">2.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasAllowableModules"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q3"/>
+        <Literal datatypeIRI="&xsd;string">,SREINTAK,SREMASS,SRERESAC,SRSNGLWO,SRSUMMARY,WEBINTAK,</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasDataType"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q3"/>
+        <Literal datatypeIRI="&xsd;string">CHAR</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q3"/>
+        <Literal datatypeIRI="&xsd;string">Q3</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q3"/>
+        <Literal datatypeIRI="&xsd;float">3.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasAllowableModules"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q4"/>
+        <Literal datatypeIRI="&xsd;string">,SREINTAK,SREMASS,SRERESAC,SRSNGLWO,SRSUMMARY,WEBINTAK,</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasDataType"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q4"/>
+        <Literal datatypeIRI="&xsd;string">CHAR</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q4"/>
+        <Literal datatypeIRI="&xsd;string">Q4</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q4"/>
+        <Literal datatypeIRI="&xsd;float">4.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasAllowableModules"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q5"/>
+        <Literal datatypeIRI="&xsd;string">,SREINTAK,SREMASS,SRERESAC,SRSNGLWO,SRSUMMARY,WEBINTAK,</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasDataType"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q5"/>
+        <Literal datatypeIRI="&xsd;string">CHAR</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q5"/>
+        <Literal datatypeIRI="&xsd;string">Q5</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q5"/>
+        <Literal datatypeIRI="&xsd;float">5.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasAllowableModules"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q6"/>
+        <Literal datatypeIRI="&xsd;string">,SREINTAK,SREMASS,SRERESAC,SRSNGLWO,SRSUMMARY,WEBINTAK,</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasDataType"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q6"/>
+        <Literal datatypeIRI="&xsd;string">CHAR</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q6"/>
+        <Literal datatypeIRI="&xsd;string">Q6</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#POTHOLE_Q6"/>
+        <Literal datatypeIRI="&xsd;float">5.0</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasDataSourceClassName"/>
@@ -1412,9 +2848,104 @@
         <Literal datatypeIRI="&xsd;string">org.sharegov.cirm.rdb.impl.PostgresHook</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#STANDARD"/>
+        <Literal datatypeIRI="&xsd;string">STANDARD</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#SolrSearchService"/>
         <Literal datatypeIRI="&xsd;string">SearchService</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasBusinessCodes"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_PERSCNTC"/>
+        <Literal datatypeIRI="&xsd;string">,INSSPEC,</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_PERSCNTC"/>
+        <Literal datatypeIRI="&xsd;string">PERSCNTC</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOccurDays"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_PERSCNTC"/>
+        <Literal datatypeIRI="&xsd;float">0.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasSuspenseDays"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_PERSCNTC"/>
+        <Literal datatypeIRI="&xsd;float">0.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#isAutoCreate"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_PERSCNTC"/>
+        <Literal datatypeIRI="&xsd;string">N</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasAllowableModules"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q1"/>
+        <Literal datatypeIRI="&xsd;string">SREINTAK,SREMASS,SRERESAC,SRSNGLWO,SRSUMMRY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasBusinessCodes"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q1"/>
+        <Literal datatypeIRI="&xsd;string">REQINTAK</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasDataType"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q1"/>
+        <Literal datatypeIRI="&xsd;string">CHAR</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q1"/>
+        <Literal datatypeIRI="&xsd;string">Q1</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q1"/>
+        <Literal datatypeIRI="&xsd;float">1.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasAllowableModules"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q2"/>
+        <Literal datatypeIRI="&xsd;string">SREINTAK,SREMASS,SRERESAC,SRSNGLWO,SRSUMMRY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasDataType"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q2"/>
+        <Literal datatypeIRI="&xsd;string">CHARLIST</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q2"/>
+        <Literal datatypeIRI="&xsd;string">Q2</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q2"/>
+        <Literal datatypeIRI="&xsd;float">2.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q2_CHOICES_NO"/>
+        <Literal datatypeIRI="&xsd;string">NO</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q2_CHOICES_NO"/>
+        <Literal datatypeIRI="&xsd;float">2.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q2_CHOICES_YES"/>
+        <Literal datatypeIRI="&xsd;string">YES</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q2_CHOICES_YES"/>
+        <Literal datatypeIRI="&xsd;float">1.0</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -1455,6 +2986,31 @@
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#Town_of_Medley"/>
         <Literal datatypeIRI="&xsd;string">Town of Medley</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasGeoAreaRequired"/>
+        <NamedIndividual IRI="http://opencirm.org#Tree_Fallen"/>
+        <Literal datatypeIRI="&xsd;string">Y</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasJurisdictionCode"/>
+        <NamedIndividual IRI="http://opencirm.org#Tree_Fallen"/>
+        <Literal datatypeIRI="&xsd;string">MD</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasJurisdictionDescription"/>
+        <NamedIndividual IRI="http://opencirm.org#Tree_Fallen"/>
+        <Literal datatypeIRI="&xsd;string">MIAMI-DADE COUNTY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#Tree_Fallen"/>
+        <Literal datatypeIRI="&xsd;string">TREEFALLEN</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasShowLocation"/>
+        <NamedIndividual IRI="http://opencirm.org#Tree_Fallen"/>
+        <Literal datatypeIRI="&xsd;string">ALLOWLOC</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -1505,6 +3061,41 @@
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#Village_of_Virginia_Gardens"/>
         <Literal datatypeIRI="&xsd;string">Village of Virginia Gardens</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasDurationDays"/>
+        <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
+        <Literal datatypeIRI="&xsd;float">3.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasGeoAreaCode"/>
+        <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
+        <Literal datatypeIRI="&xsd;string">CMAINT</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasGeoAreaRequired"/>
+        <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
+        <Literal datatypeIRI="&xsd;string">Y</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasJurisdictionCode"/>
+        <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
+        <Literal datatypeIRI="&xsd;string">MD</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasJurisdictionDescription"/>
+        <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
+        <Literal datatypeIRI="&xsd;string">MIAMI-DADE COUNTY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
+        <Literal datatypeIRI="&xsd;string">POTHOLE</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasShowLocation"/>
+        <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
+        <Literal datatypeIRI="&xsd;string">ALLOWLOC</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -1726,6 +3317,126 @@
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#GARBAGEMISSEDCOMP_PERSCNTC</IRI>
+        <Literal datatypeIRI="&xsd;string">Personal Contact</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#GARBAGEMISSEDCOMP_PICKUP</IRI>
+        <Literal datatypeIRI="&xsd;string">Pick-Up Garbage</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#ILLEGALDUMPING_NOTIFICATION</IRI>
+        <Literal datatypeIRI="&xsd;string">Illegal Dumping Notification</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#ILLEGALDUMPING_PERSCNTC</IRI>
+        <Literal datatypeIRI="&xsd;string">Personal Contact</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#ILLEGALDUMPING_Q1</IRI>
+        <Literal datatypeIRI="&xsd;string">Where is the ILLEGAL Dumping taking place?</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_ALLEY</IRI>
+        <Literal datatypeIRI="&xsd;string">ALLEY</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_BULKYSCHPILE</IRI>
+        <Literal datatypeIRI="&xsd;string">Bulky Scheduled Pile</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_COMMPROP</IRI>
+        <Literal datatypeIRI="&xsd;string">Commerical Property</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_OTHER</IRI>
+        <Literal datatypeIRI="&xsd;string">Other</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_RESIDPROP</IRI>
+        <Literal datatypeIRI="&xsd;string">Residental Property</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_RIGHTOFWAYINF</IRI>
+        <Literal datatypeIRI="&xsd;string">Right of Way/Swale (In front of a residence)</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_RIGHTOFWAYNOTINF</IRI>
+        <Literal datatypeIRI="&xsd;string">RIght of Way/Swale (NOT in front of a residence)</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_STBLOCKTRAFF</IRI>
+        <Literal datatypeIRI="&xsd;string">Street Blocking Traffic</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#ILLEGALDUMPING_Q1_CHOICES_VACANTLOT</IRI>
+        <Literal datatypeIRI="&xsd;string">Vacant Lot</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#ILLEGALDUMPING_Q1_RIGHTOFWAYINF_ALERT</IRI>
+        <Literal datatypeIRI="&xsd;string">An Investigation will be conducted by Miami-Dade Department of Solid Waste Management.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#ILLEGALDUMPING_Q2</IRI>
+        <Literal datatypeIRI="&xsd;string">Are you the Property Owner/Tenant/Other?</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES_LEGRESPROP</IRI>
+        <Literal datatypeIRI="&xsd;string">Legally Responsible for Property</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES_OTHER</IRI>
+        <Literal datatypeIRI="&xsd;string">Other</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES_PROPOWNER</IRI>
+        <Literal datatypeIRI="&xsd;string">Property Owner</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#ILLEGALDUMPING_Q2_CHOICES_TENANT</IRI>
+        <Literal datatypeIRI="&xsd;string">Tenant</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#ILLEGALDUMPING_Q3</IRI>
+        <Literal datatypeIRI="&xsd;string">Are you calling to schedule a bulky pick up?</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#ILLEGALDUMPING_Q3_CHOICES_NO</IRI>
+        <Literal datatypeIRI="&xsd;string">No</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#ILLEGALDUMPING_Q3_CHOICES_YES</IRI>
+        <Literal datatypeIRI="&xsd;string">Yes</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#ILLEGALDUMPING_Q4</IRI>
+        <Literal datatypeIRI="&xsd;string">Describe the debris being dumped.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
         <IRI>http://opencirm.org#Indian_Creek_Village</IRI>
         <Literal datatypeIRI="&xsd;string">Indian Creek Village</Literal>
     </AnnotationAssertion>
@@ -1738,6 +3449,131 @@
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
         <IRI>http://opencirm.org#North_Bay_Village</IRI>
         <Literal datatypeIRI="&xsd;string">North Bay Village</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#O-OPEN</IRI>
+        <Literal datatypeIRI="&xsd;string">Open</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#OUTCOME_COMPLETE</IRI>
+        <Literal datatypeIRI="&xsd;string">Completed.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#PHONE</IRI>
+        <Literal datatypeIRI="&xsd;string">Phone</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES_AREA</IRI>
+        <Literal datatypeIRI="&xsd;string">Area</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES_CORRI</IRI>
+        <Literal datatypeIRI="&xsd;string">Corridor</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES_INTER</IRI>
+        <Literal datatypeIRI="&xsd;string">Intersection</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES_LOCPROP</IRI>
+        <Literal datatypeIRI="&xsd;string">Location/Property</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#POTHOLE_PERSCNTC</IRI>
+        <Literal datatypeIRI="&xsd;string">Personal Contact</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#POTHOLE_PWSTATUS</IRI>
+        <Literal datatypeIRI="&xsd;string">PW - Status</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#POTHOLE_PWSTATUS_OUTCOME_STUMP</IRI>
+        <Literal datatypeIRI="&xsd;string">Stump &amp; Grinding</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#POTHOLE_PWSTATUS_OUTCOME_TRAFF</IRI>
+        <Literal datatypeIRI="&xsd;string">Traffic Signals Repair</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#POTHOLE_Q1</IRI>
+        <Literal datatypeIRI="&xsd;string">Location Type</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#POTHOLE_Q2</IRI>
+        <Literal datatypeIRI="&xsd;string">Street 1</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#POTHOLE_Q3</IRI>
+        <Literal datatypeIRI="&xsd;string">Street 2</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#POTHOLE_Q4</IRI>
+        <Literal datatypeIRI="&xsd;string">Street 3</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#POTHOLE_Q5</IRI>
+        <Literal datatypeIRI="&xsd;string">Street 4</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#POTHOLE_Q6</IRI>
+        <Literal datatypeIRI="&xsd;string">Where is the pothole? (roadway, driving lane, driveway)?</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#POTHOLE_SR_ALERT</IRI>
+        <Literal datatypeIRI="&xsd;string">POTHOLE(S) IS NOT AN EMERGENCY AND DOES NOT NEED TO BE REPORTED TO THE ALARM OFFICE OR THE ROAD &amp; BRIDGE DIVISION.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#POTHOME_PWSTATUS_OUTCOME_DEBRIS</IRI>
+        <Literal datatypeIRI="&xsd;string">Debris Removal &amp; Roadway Cleaning</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#STANDARD</IRI>
+        <Literal datatypeIRI="&xsd;string">Standard</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#TREEFALLEN_PERSCNTC</IRI>
+        <Literal datatypeIRI="&xsd;string">Personal Contact</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#TREEFALLEN_Q1</IRI>
+        <Literal datatypeIRI="&xsd;string">Where is the tree located?</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#TREEFALLEN_Q2</IRI>
+        <Literal datatypeIRI="&xsd;string">Has the tree fallen on your property?</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#TREEFALLEN_Q2_CHOICES_NO</IRI>
+        <Literal datatypeIRI="&xsd;string">No</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#TREEFALLEN_Q2_CHOICES_YES</IRI>
+        <Literal datatypeIRI="&xsd;string">Yes</Literal>
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
@@ -1826,6 +3662,11 @@
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org/#Pothole</IRI>
+        <Literal datatypeIRI="&xsd;string">Pothole</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
         <IRI>#EmailIntake</IRI>
         <Literal datatypeIRI="&rdf;PlainLiteral">Email</Literal>
     </AnnotationAssertion>
@@ -1888,5 +3729,5 @@
 
 
 
-<!-- Generated by the OWL API (version 3.4.2) http://owlapi.sourceforge.net -->
+<!-- Generated by the OWL API (version 3.2.3.1824) http://owlapi.sourceforge.net -->
 
