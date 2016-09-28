@@ -1060,9 +1060,9 @@ public class ServiceCaseManager extends OntoAdmin {
 			   port = "";
 		try {
 			host = java.net.InetAddress.getLocalHost().getHostName();
-			protocol = StartUp.config.at("ssl").asBoolean() ? "https://": "http://";
-			port =  StartUp.config.at("ssl").asBoolean() ? StartUp.config.at("ssl-port").asInteger() != 443 ? ":" + StartUp.config.at("ssl-port").asString(): "": 
-														   StartUp.config.at("port").asInteger() != 80 ? ":" + StartUp.config.at("port").asString(): "";
+			protocol = StartUp.getConfig().at("ssl").asBoolean() ? "https://": "http://";
+			port =  StartUp.getConfig().at("ssl").asBoolean() ? StartUp.getConfig().at("ssl-port").asInteger() != 443 ? ":" + StartUp.getConfig().at("ssl-port").asString(): "": 
+														   StartUp.getConfig().at("port").asInteger() != 80 ? ":" + StartUp.getConfig().at("port").asString(): "";
 		} catch (Exception e) {
 			System.out.println("Cannot retreive IP address for localhost");
 			e.printStackTrace();

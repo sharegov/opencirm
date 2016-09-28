@@ -71,7 +71,7 @@ public class ConfigSet
 		if (activeInstance == null)
 		{
 		    	ConfigSet newConfigSet = new ConfigSet();
-			String instanceName = StartUp.config.at("ontologyConfigSet").asString();
+			String instanceName = StartUp.getConfig().at("ontologyConfigSet").asString();
 			loadInstance(instanceName, newConfigSet);
 			//safe publication
 			activeInstance = newConfigSet;

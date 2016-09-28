@@ -370,9 +370,9 @@ public class ServiceCaseAdmin extends RestService {
 	{
 		try {			
 			String host = java.net.InetAddress.getLocalHost().getHostName();
-			String protocol = StartUp.config.at("ssl").asBoolean() ? "https://": "http://";
-			String port =  StartUp.config.at("ssl").asBoolean() ? StartUp.config.at("ssl-port").asInteger() != 443 ? ":" + StartUp.config.at("ssl-port").asString(): "": 
-																  StartUp.config.at("port").asInteger() != 80 ? ":" + StartUp.config.at("port").asString(): "";
+			String protocol = StartUp.getConfig().at("ssl").asBoolean() ? "https://": "http://";
+			String port =  StartUp.getConfig().at("ssl").asBoolean() ? StartUp.getConfig().at("ssl-port").asInteger() != 443 ? ":" + StartUp.getConfig().at("ssl-port").asString(): "": 
+																  StartUp.getConfig().at("port").asInteger() != 80 ? ":" + StartUp.getConfig().at("port").asString(): "";
 			String path = "";
 																  
 			switch (schema){

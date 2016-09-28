@@ -9,7 +9,7 @@
 {
     "user" : "CiRMDevelopmentOntology",
     "password" : "cirm",
-    "serverUrl"	: "s0141667.miamidade.gov",
+    "serverUrl"	: "s0144818.miamidade.gov",
     "autoRegister" : true,
     "ignoreRoster" : false
 }

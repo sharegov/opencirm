@@ -218,7 +218,7 @@ public class RestService
 
 	public boolean isClientExempt()
 	{
-		if (StartUp.config.is("allClientsExempt", true) || Boolean.TRUE.equals(Refs.configSet.resolve().get("areAllClientsExempt")))
+		if (StartUp.getConfig().is("allClientsExempt", true) || Boolean.TRUE.equals(Refs.configSet.resolve().get("areAllClientsExempt")))
 		{
 			return true;
 		}

@@ -108,7 +108,7 @@ public class OWLIndividuals extends RestService
 	@Path("/predefined/configset")
 	public Json getSameAsIndividual() throws OWLException
 	{
-		OWLNamedIndividual ind = individual(StartUp.config.at("ontologyConfigSet").asString());
+		OWLNamedIndividual ind = individual(StartUp.getConfig().at("ontologyConfigSet").asString());
 		try
 		{
 			Json el = OWL.toJSON(ontology(), ind);

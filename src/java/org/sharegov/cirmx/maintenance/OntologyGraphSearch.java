@@ -214,7 +214,7 @@ public class OntologyGraphSearch {
 	
 	public static void main(String []argv)
 	{
-		StartUp.config.set("metaDatabaseLocation", "c:/temp/testontodb_clone");		
+		StartUp.getConfig().set("metaDatabaseLocation", "c:/temp/testontodb_clone");		
 		breadthFirstObjectGraph(OWL.individual("legacy:COMPWPH"), OWL.ontology());
 	}
 }

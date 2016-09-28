@@ -65,7 +65,7 @@ public class PrepareDeploymentEnvironment
 	static void importOntology() throws Exception
 	{
 		//Initialisation of repository location before everything else:
-		HGDBOntologyRepository.setHypergraphDBLocation(StartUp.config.at("metaDatabaseLocation").asString());
+		HGDBOntologyRepository.setHypergraphDBLocation(StartUp.getConfig().at("metaDatabaseLocation").asString());
 		//This will also create the repository.
 		HGDBOntologyManager manager = HGDBOWLManager.createOWLOntologyManager();
 		new OntologyLoader(manager); // add file->IRI mappings to manager
@@ -79,7 +79,7 @@ public class PrepareDeploymentEnvironment
 //		
 //		onto = manager.loadOntologyFromOntologyDocument(
 //				IRI.create(new File("c:/work/cirmservices/src/ontology/csr.owl")));
-//				//IRI.create(StartUp.config.at("defaultOntologyIRI").asString()));
+//				//IRI.create(StartUp.getConfig().at("defaultOntologyIRI").asString()));
 		
 		//Define a repository document IRI for our ontology
 		IRI targetIRI = getHGDBIRI(onto.getOntologyID().getOntologyIRI());
@@ -192,7 +192,7 @@ public class PrepareDeploymentEnvironment
 		try
 		{
 			if( (args.length > 0) )
-				StartUp.config = Json.read(GenUtils.readTextFile(new File(args[0])));
+				StartUp.setConfig(Json.read(GenUtils.readTextFile(new File(args[0]))));
 			initDatabase(); 
 			// populateDatabase();
 			//testWithFiles();

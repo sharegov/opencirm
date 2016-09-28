@@ -69,13 +69,13 @@ public class OntologyLoader
 	{
 		// TODO: all this should be in customIRIMappings file only..
 		locations.put(IRI.create("http://www.miamidade.gov/cirm/legacy"), 
-				  new File(StartUp.config.at("workingDir").asString() + "/src/ontology/legacy.owl"));		
+				  new File(StartUp.getConfig().at("workingDir").asString() + "/src/ontology/legacy.owl"));		
 		locations.put(IRI.create("http://www.miamidade.gov/ontology"), 
-			      new File(StartUp.config.at("workingDir").asString() + "/src/ontology/County_Working.owl"));
+			      new File(StartUp.getConfig().at("workingDir").asString() + "/src/ontology/County_Working.owl"));
 		locations.put(IRI.create("http://www.miamidade.gov/ontology/pkbi"), 
-			      new File(StartUp.config.at("workingDir").asString() + "/src/County_Working_PKBI.owl"));			
+			      new File(StartUp.getConfig().at("workingDir").asString() + "/src/County_Working_PKBI.owl"));			
 		locations.put(IRI.create("http://www.miamidade.gov/users/enet"), 
-				  new File(StartUp.config.at("workingDir").asString() + "/src/ontology/enet.owl"));
+				  new File(StartUp.getConfig().at("workingDir").asString() + "/src/ontology/enet.owl"));
 		
 		this.manager = manager;
 		boolean hgdbManager = false;
@@ -120,7 +120,7 @@ public class OntologyLoader
 			return f;
 		String prefix = Refs.nameBase.resolve() + "/swrl/";
 		if (iriString.startsWith(prefix))
-			return new File(new File(StartUp.config.at("workingDir").asString() + "/src/ontology"), 
+			return new File(new File(StartUp.getConfig().at("workingDir").asString() + "/src/ontology"), 
 					iriString.substring(prefix.length()) + ".swrl");
 		f = new File(iriString);
 		return f.exists() ? f : null;
@@ -137,7 +137,7 @@ public class OntologyLoader
 	public synchronized OWLOntology get(String iriString)
 	{ 
 		IRI iri = IRI.create(iriString);
-		if (StartUp.config.has("metaDatabaseLocation"))
+		if (StartUp.getConfig().has("metaDatabaseLocation"))
 		{
 			try
 			{
@@ -242,7 +242,7 @@ public class OntologyLoader
 	{
 		
 		Set<IRI> result = new HashSet<IRI>();
-		String dir = StartUp.config.at("workingDir").asString() + "/src/ontology";
+		String dir = StartUp.getConfig().at("workingDir").asString() + "/src/ontology";
 		String[] files = new File(dir).list(new FilenameFilter()
 		{
 			@Override

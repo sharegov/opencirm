@@ -800,7 +800,7 @@ HTML templates
 		<label data-bind="text: hasServiceField().label(), css: {highlight_text : $root.isHighlighted($data)} "></label>
 	</div>
 	<div class="grid_5 alpha">
-		<input placeholder="" class="tooltip" data-bind="value: hasAnswerValue().literal, valueUpdate: 'afterkeydown', css: { error: hasAnswerValue().literal.hasError }, attr :{title: hasAnswerValue().literal }" ></input>
+		<input placeholder="" class="tooltip" data-bind="value: hasAnswerValue().literal, valueUpdate: 'afterkeydown', hasfocus: hasAnswerValue().literal.hasInputFocus, css: { error: hasAnswerValue().literal.hasError }, attr :{title: hasAnswerValue().literal.toolTipTitle }" ></input>
 	</div>
 	<div class="grid_1 omega">
 		<label data-bind='visible: hasAnswerValue().literal.hasError, text: hasAnswerValue().literal.validationMessage, css: { red_text: hasAnswerValue().literal.hasError }' />
@@ -814,7 +814,7 @@ HTML templates
 	</div>
 	<div class="grid_5 alpha">
        	<span class="input_clear">
-			<input placeholder="" class="ic_field tooltip" style="width:340px" data-bind="value: hasAnswerValue().literal, valueUpdate: 'afterkeydown', event: {keydown: $root.standardizeStreet}, css: { error: hasAnswerValue().literal.hasError }, attr :{title: hasAnswerValue().literal, id:hasLegacyCode }" ></input>
+			<input placeholder="" class="ic_field tooltip" style="width:340px" data-bind="value: hasAnswerValue().literal, valueUpdate: 'afterkeydown', hasfocus: hasAnswerValue().literal.hasInputFocus, event: {keydown: $root.standardizeStreet}, css: { error: hasAnswerValue().literal.hasError }, attr :{title: hasAnswerValue().literal.toolTipTitle, id:hasLegacyCode }" ></input>
 			<input class="submit" type="button" value="Search" data-bind="click: $root.getStandardizeStreet" title="Click to validate the Street">
         </span>
 	</div>

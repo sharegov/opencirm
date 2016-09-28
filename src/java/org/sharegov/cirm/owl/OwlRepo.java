@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import mjson.Json;
 
@@ -30,15 +32,17 @@ import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowseRepository
 import org.hypergraphdb.app.owl.versioning.distributed.activity.PullActivity;
 import org.hypergraphdb.app.owl.versioning.distributed.activity.BrowseRepositoryActivity.BrowseEntry;
 import org.hypergraphdb.peer.HGPeerIdentity;
+import org.hypergraphdb.peer.workflow.ActivityResult;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntologyID;
 import org.sharegov.cirm.StartUp;
+import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
 /**
  * Encapsulate the OWL repository and networking services with some
  * convenience operations needed by the application;
  * 
- * @author boris
+ * @author boris, Thomas Hilpold
  *
  */
 public class OwlRepo
@@ -46,25 +50,37 @@ public class OwlRepo
 	private static final OwlRepo instance = new OwlRepo();
 	
 	/**
+	 * The timeout to use for activities that interact with the ontology server.
+	 */
+	public static final int TIMEOUT_BROWSE_SECS = 180; //3 min timeout (prev was 1 min)
+	public static final int TIMEOUT_PULL_SECS = 600; //10 min timeout (prev was 3 min)
+
+	public static final int FIND_ONTO_SERVER_MAX_ATTEMPTS = 10; //10 attampts with 1 sec pause
+
+	/**
 	 * Prefer Refs.owlRepo.resolve() as the correct method to get a reference to the repo.
 	 */
 	public static OwlRepo getInstance() { return instance; }
 	
-	VDHGDBOntologyRepository repo; //= VDHGDBOntologyRepository.getInstance();
-	HGPeerIdentity ontoServer = null;
+	private volatile VDHGDBOntologyRepository repo;
+	private volatile HGPeerIdentity ontoServer = null;
 	
-	private void findOntoServer()
+	/**
+	 * Attempts to find the ontoServer as connected XMPP peer. 
+	 * @return HGPeerIdentity if ontoServer found, or null if not found yet.
+	 */
+	private HGPeerIdentity findOntoServer()
 	{
-		String ontoServerName = StartUp.config.at("network").at("ontoServer").asString();
+		String ontoServerName = StartUp.getConfig().at("network").at("ontoServer").asString();
 		for (HGPeerIdentity id : repo.getPeer().getConnectedPeers())
 		{
 			String name = (String)repo.getPeer().getNetworkTarget(id);
 			if (name.startsWith(ontoServerName))
 			{
-				ontoServer = id;
-				return;
+				return id;
 			}
 		}
+		return null; //ontoServer not found
 	}
 	
 	private void ensureRepository() {
@@ -87,6 +103,12 @@ public class OwlRepo
 		return repo; 
 	}
 	
+	/**
+	 * Starts XMPP networking if needed by connecting this instance to the network and also attempting to find the ontology server.
+	 * The XMPP chat server must be available, and the configured ontology server must be on the roster of this instance's XMPP user for this method to return. 
+	 * 
+	 * @return always true, fails with various RuntimeExceptions if any problem is detected.
+	 */
 	public boolean ensurePeerStarted()
 	{
 		ensureRepository();
@@ -96,7 +118,7 @@ public class OwlRepo
 		{
 			if (repo.getPeer() == null || !repo.getPeer().getPeerInterface().isConnected())
 			{
-				Json config = StartUp.config.at("network");
+				Json config = StartUp.getConfig().at("network");
 				if (config == null)
 					throw new RuntimeException("No network configured.");
 				repo.startNetworking(config.at("user").asString(), 
@@ -105,20 +127,25 @@ public class OwlRepo
 			}
 			if (ontoServer == null)
 			{
-				// Now, we need to wait for peers to connect
-				for (int i = 0; i < 5; i++)
+				int attempts = 0;
+				do 
 				{
-					findOntoServer();
+					attempts ++;
+					ontoServer = findOntoServer();
 					try { Thread.sleep(1000); }
 					catch (Throwable t) { }
-				}
+				} while (ontoServer == null && attempts < FIND_ONTO_SERVER_MAX_ATTEMPTS);
 			}
 			if (ontoServer == null)
 			{
 				repo.getPeer().stop();
 				throw new RuntimeException("Ontology Server " + 
-						StartUp.config.at("network").at("ontoServer").asString() +
+						StartUp.getConfig().at("network").at("ontoServer").asString() +
 						" is offline, please ensure server is started and try again.");
+			} 
+			else 
+			{
+				ThreadLocalStopwatch.now("Found ontoServer for OwlRepo: "  + ontoServer.getHostname() + " (" + ontoServer.getIpAddress() + ")");
 			}
 			return true;
 		}
@@ -147,6 +174,7 @@ public class OwlRepo
 	 *  
 	 * @param ontologyIRIs
 	 * @throws IllegalStateException if any ontology already exists locally or does not exist remotely.
+	 * @throws RuntimeException on Timeouts, or if any processing error occurred.
 	 */
 	public void pullNewFromDefaultPeer(final Set<IRI> ontologyIRIs) {
 		repo.getHyperGraph().getTransactionManager().ensureTransaction(new Callable<Object>()
@@ -159,11 +187,18 @@ public class OwlRepo
 					}
 				}
 				ensurePeerStarted();
-				System.out.println("Connected to Ontology Server " + getDefaultPeer());
+				ThreadLocalStopwatch.now("Connected to Ontology Server " + getDefaultPeer());
 				BrowseRepositoryActivity browseAct = repo.browseRemote(ontoServer);
+				ActivityResult actResult;
 				try
 				{
-					browseAct.getFuture().get(60, TimeUnit.SECONDS);
+					Future<ActivityResult> browseActFuture = browseAct.getFuture();  
+					actResult = browseActFuture.get(TIMEOUT_BROWSE_SECS, TimeUnit.SECONDS);
+					if (!browseActFuture.isDone()) {
+						throw new TimeoutException("browsing for ontologies at the ontology server timed out after " + TIMEOUT_BROWSE_SECS + " secs");
+					} else if (actResult.getException() != null) {
+						throw new RuntimeException("browsing for ontologies at the ontology server failed", actResult.getException());
+					}
 					List<BrowseEntry> remoteEntries = findRemoteEntriesFor(ontologyIRIs, browseAct.getRepositoryBrowseEntries());
 					for(BrowseEntry remoteEntry : remoteEntries) {
 						if (repo.getHyperGraph().get(remoteEntry.getUuid()) != null) {
@@ -171,24 +206,25 @@ public class OwlRepo
 						}
 					}
 					for(BrowseEntry remoteEntry : remoteEntries) {
-						System.out.println("Pulling new ontology from remote: " + remoteEntry.getOwlOntologyIRI() + " (" + remoteEntry.getUuid() + ")" + " Mode: " + remoteEntry.getDistributionMode());
-						PullActivity a = repo.pullNew(remoteEntry.getUuid(), ontoServer);
-						a.getFuture().get(160, TimeUnit.SECONDS);
-						System.out.println("Pulling new completed: " + a.getCompletedMessage());
+						ThreadLocalStopwatch.now("Pulling new ontology from remote: " + remoteEntry.getOwlOntologyIRI() + " (" + remoteEntry.getUuid() + ")" + " Mode: " + remoteEntry.getDistributionMode());
+						PullActivity pullNewAct = repo.pullNew(remoteEntry.getUuid(), ontoServer);
+						Future<ActivityResult> pullNewActFuture = pullNewAct.getFuture();  
+						actResult = pullNewActFuture.get(TIMEOUT_PULL_SECS, TimeUnit.SECONDS);
+						if (!pullNewActFuture.isDone()) {
+							throw new TimeoutException("PullActivity for new ontology " + remoteEntry.getOwlOntologyIRI() + " timed out after " + TIMEOUT_PULL_SECS + " secs");
+						} else if (actResult.getException() != null) {
+							throw new RuntimeException("PullActivity for new ontology  " + remoteEntry.getOwlOntologyIRI() + " failed", actResult.getException());
+						}
+						ThreadLocalStopwatch.now("Pulling new completed: " + pullNewAct.getCompletedMessage());
 					}					
 				}
 				catch (Exception e)
 				{
-					throw new RuntimeException(e);
+					throw new RuntimeException("Exception in pullNewFromDefaultPeer. Please kill the process manually.", e);
 				}
 				return null;
 			}
 		});
-	}
-
-	public void pushWorkingToDefaultPEer(final IRI ontologyIRI)
-	{
-		// TODO..
 	}
 	
 	/**
