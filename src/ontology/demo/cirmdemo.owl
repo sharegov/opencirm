@@ -182,6 +182,63 @@
         <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PICKUP"/>
     </Declaration>
     <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_APART"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_BUS"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_DUPLEX"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_HOUSE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_MORE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_MULTI3"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_MULTI4"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_OFFBUILD"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q2"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q2_CHOICES"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q2_CHOICES_GARB"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q2_CHOICES_TRASH"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q3"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q3_CHOICES"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q3_CHOICES_NO"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q3_CHOICES_YES"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q4"/>
+    </Declaration>
+    <Declaration>
         <NamedIndividual IRI="http://opencirm.org#GisDemoConfig"/>
     </Declaration>
     <Declaration>
@@ -756,6 +813,82 @@
     <ClassAssertion>
         <Class IRI="http://opencirm.org/cirm#Activity"/>
         <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PICKUP"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ServiceQuestion"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValueList"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_APART"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_BUS"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_DUPLEX"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_HOUSE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_MORE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_MULTI3"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_MULTI4"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_OFFBUILD"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ServiceQuestion"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q2"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValueList"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q2_CHOICES"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q2_CHOICES_GARB"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q2_CHOICES_TRASH"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ServiceQuestion"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q3"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValueList"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q3_CHOICES"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q3_CHOICES_NO"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q3_CHOICES_YES"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ServiceQuestion"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q4"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="http://opencirm.org#ConfigParam"/>
@@ -1344,6 +1477,81 @@
         <NamedIndividual IRI="http://opencirm.org#OUTCOME_COMPLETE"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValueList"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_DUPLEX"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_APART"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_OFFBUILD"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_MULTI4"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_MULTI3"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_HOUSE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_MORE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_BUS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValueList"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q2"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q2_CHOICES"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q2_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q2_CHOICES_GARB"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q2_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q2_CHOICES_TRASH"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValueList"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q3"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q3_CHOICES"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q3_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q3_CHOICES_NO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q3_CHOICES"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q3_CHOICES_YES"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org/cirm#hasActivity"/>
         <NamedIndividual IRI="http://opencirm.org#Garbage_Missed_Complaint"/>
         <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PERSCNTC"/>
@@ -1377,6 +1585,26 @@
         <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceActor"/>
         <NamedIndividual IRI="http://opencirm.org#Garbage_Missed_Complaint"/>
         <NamedIndividual IRI="http://opencirm.org#Occupant_Actor"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceField"/>
+        <NamedIndividual IRI="http://opencirm.org#Garbage_Missed_Complaint"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceField"/>
+        <NamedIndividual IRI="http://opencirm.org#Garbage_Missed_Complaint"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q2"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceField"/>
+        <NamedIndividual IRI="http://opencirm.org#Garbage_Missed_Complaint"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q4"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceField"/>
+        <NamedIndividual IRI="http://opencirm.org#Garbage_Missed_Complaint"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q3"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#Value"/>
@@ -2148,6 +2376,151 @@
         <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
         <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PICKUP"/>
         <Literal datatypeIRI="&xsd;string">PICKUP</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasAllowableModules"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1"/>
+        <Literal datatypeIRI="&xsd;string">SREINTAK,SRERESAC,SRSNGLWO,SRSUMMRY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasBusinessCodes"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1"/>
+        <Literal datatypeIRI="&xsd;string">REQINTAK</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasDataType"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1"/>
+        <Literal datatypeIRI="&xsd;string">CHARLIST</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1"/>
+        <Literal datatypeIRI="&xsd;string">Q1</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1"/>
+        <Literal datatypeIRI="&xsd;float">1.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_APART"/>
+        <Literal datatypeIRI="&xsd;string">APART</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_BUS"/>
+        <Literal datatypeIRI="&xsd;string">BUS</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_DUPLEX"/>
+        <Literal datatypeIRI="&xsd;string">DUPLEX</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_HOUSE"/>
+        <Literal datatypeIRI="&xsd;string">HOUSE</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_MORE"/>
+        <Literal datatypeIRI="&xsd;string">MORE</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_MULTI3"/>
+        <Literal datatypeIRI="&xsd;string">MULTI3</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_MULTI4"/>
+        <Literal datatypeIRI="&xsd;string">MULTI4</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_OFFBUILD"/>
+        <Literal datatypeIRI="&xsd;string">OFFBUILD</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasAllowableModules"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q2"/>
+        <Literal datatypeIRI="&xsd;string">SREINTAK,SRERESAC,SRSNGLWO,SRSUMMRY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasBusinessCodes"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q2"/>
+        <Literal datatypeIRI="&xsd;string">REQINTAK</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasDataType"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q2"/>
+        <Literal datatypeIRI="&xsd;string">CHARLIST</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q2"/>
+        <Literal datatypeIRI="&xsd;string">Q2</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q2"/>
+        <Literal datatypeIRI="&xsd;float">2.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q2_CHOICES_GARB"/>
+        <Literal datatypeIRI="&xsd;string">GARB</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q2_CHOICES_TRASH"/>
+        <Literal datatypeIRI="&xsd;string">TRASH</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasAllowableModules"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q3"/>
+        <Literal datatypeIRI="&xsd;string">SREINTAK,SRERESAC,SRSNGLWO,SRSUMMRY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasDataType"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q3"/>
+        <Literal datatypeIRI="&xsd;string">CHARLIST</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q3"/>
+        <Literal datatypeIRI="&xsd;string">Q3</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q3"/>
+        <Literal datatypeIRI="&xsd;float">3.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasAllowableModules"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q4"/>
+        <Literal datatypeIRI="&xsd;string">SREINTAK,SRERESAC,SRSNGLWO,SRSUMMRY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasBusinessCodes"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q4"/>
+        <Literal datatypeIRI="&xsd;string">REQINTAK</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasDataType"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q4"/>
+        <Literal datatypeIRI="&xsd;string">CHAR</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q4"/>
+        <Literal datatypeIRI="&xsd;string">Q4</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOrderBy"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q4"/>
+        <Literal datatypeIRI="&xsd;float">4.0</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org/cirm#hasGeoAreaRequired"/>
@@ -3303,6 +3676,76 @@ You have received a </Literal>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
         <IRI>http://opencirm.org#GARBAGEMISSEDCOMP_PICKUP</IRI>
         <Literal datatypeIRI="&xsd;string">Pick-Up Garbage</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#GARBAGEMISSEDCOMP_Q1</IRI>
+        <Literal datatypeIRI="&xsd;string">Type of Property</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_APART</IRI>
+        <Literal datatypeIRI="&xsd;string">Apartment Building</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_BUS</IRI>
+        <Literal datatypeIRI="&xsd;string">Business</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_DUPLEX</IRI>
+        <Literal datatypeIRI="&xsd;string">Duplex</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_HOUSE</IRI>
+        <Literal datatypeIRI="&xsd;string">House</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_MORE</IRI>
+        <Literal datatypeIRI="&xsd;string">Multi-Family (More Than 4 Units)</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_MULTI3</IRI>
+        <Literal datatypeIRI="&xsd;string">Multi-Family 3 Units</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_MULTI4</IRI>
+        <Literal datatypeIRI="&xsd;string">Multi-Family 4 Units</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES_OFFBUILD</IRI>
+        <Literal datatypeIRI="&xsd;string">Office Building</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#GARBAGEMISSEDCOMP_Q2</IRI>
+        <Literal datatypeIRI="&xsd;string">Are you calling about Garbage (kitchen) or Trash (yard waste)?</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#GARBAGEMISSEDCOMP_Q2_CHOICES_GARB</IRI>
+        <Literal datatypeIRI="&xsd;string">Garbage</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#GARBAGEMISSEDCOMP_Q2_CHOICES_TRASH</IRI>
+        <Literal datatypeIRI="&xsd;string">Trash</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#GARBAGEMISSEDCOMP_Q3</IRI>
+        <Literal datatypeIRI="&xsd;string">Is the citizen&#39;s address serviced by one of the routes that are delayed today?</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#GARBAGEMISSEDCOMP_Q4</IRI>
+        <Literal datatypeIRI="&xsd;string">What day was your garbage missed?</Literal>
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
