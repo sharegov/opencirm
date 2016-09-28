@@ -50,7 +50,7 @@ public abstract class ReportingJob
 		@Override
 		public void initConfig() 
 		{
-			StartUp.config.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#TestConfigSet");
+			StartUp.getConfig().set("ontologyConfigSet", "http://www.miamidade.gov/ontology#TestConfigSet");
 			setBaseWorkingDirectory("C:/Work/cirmservices_etl_test");
 			setBatchJobCommand("ReportingJobControl_Test2Test_0.2/ReportingJobControl_Test2Test/ReportingJobControl_Test2Test_run.bat");
 			setDeploymentEndpoint("http://cirm.miamidade.gov");
@@ -63,7 +63,7 @@ public abstract class ReportingJob
 		@Override
 		public void initConfig()
 		{
-			StartUp.config.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#ProdConfigSet");
+			StartUp.getConfig().set("ontologyConfigSet", "http://www.miamidade.gov/ontology#ProdConfigSet");
 			setBaseWorkingDirectory("C:/Work/cirmservices_etl_prod");
 			setBatchJobCommand("ReportingJobControl_Prod2Prod/ReportingJobControl_Prod2Prod_run.bat");
 			setDeploymentEndpoint("https://311hub.miamidade.gov");
@@ -153,7 +153,7 @@ public abstract class ReportingJob
 //		Json deployedVersion = GenUtils.
 		if(USE_FILE_ONTOS)
 		{
-			StartUp.config.set("_metaDatabaseLocation", getOntoDBDirectory());
+			StartUp.getConfig().set("_metaDatabaseLocation", getOntoDBDirectory());
 		}
 		else 
 		{
@@ -161,7 +161,7 @@ public abstract class ReportingJob
 			{
 				FileUtils.cleanDirectory(new File(getOntoDBDirectory()));
 			}
-			StartUp.config.set("metaDatabaseLocation", getOntoDBDirectory());
+			StartUp.getConfig().set("metaDatabaseLocation", getOntoDBDirectory());
 		}
 		
 	}

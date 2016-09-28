@@ -9,7 +9,7 @@ package gov.miamidade.cirm.other;
  */
 public class LiveReportingStatus
 {
-	private volatile boolean isEnabled = false;
+	private volatile boolean isEnabled = true;
 	
 	public boolean isEnabled() {
 		return isEnabled;

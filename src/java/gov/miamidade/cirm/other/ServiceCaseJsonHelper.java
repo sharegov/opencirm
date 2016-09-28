@@ -17,7 +17,9 @@ package gov.miamidade.cirm.other;
 
 import gov.miamidade.cirm.GisClient;
 
+import java.util.Calendar;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -32,8 +34,10 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
+import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.JsonUtil;
 import org.sharegov.cirm.utils.Mapping;
+import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
 /**
  * <p>
@@ -367,27 +371,34 @@ public class ServiceCaseJsonHelper
     
     public static void mergeInto(Json src, Json dest)
     {
-    	for (Map.Entry<String, Json> e : src.asJsonMap().entrySet())
+    	for (Map.Entry<String, Json> srcEntry : src.asJsonMap().entrySet())
     	{
-    		if (e.getValue().isNull())
-    			dest.delAt(e.getKey());
-    		else if (!dest.has(e.getKey()))
-    			dest.set(e.getKey(), e.getValue());
-    		else if (e.getValue().isObject())
-    			mergeInto(e.getValue(), dest.at(e.getKey()));
-    		else if (e.getValue().isArray())
+    		String srcEntryKey = srcEntry.getKey();
+    		Json srcEntryValue = srcEntry.getValue();
+    		
+    		if (srcEntryValue.isNull())
+    			dest.delAt(srcEntryKey);
+    		else if (!dest.has(srcEntryKey))
+    			dest.set(srcEntryKey, srcEntryValue);
+    		else if (srcEntryValue.isObject()) {
+    			//Json Object values could be shared among many referring properties after assignIRIs.
+    			//Therefore ensure an exclusive duplicate prior to modifications.
+    			ensureExclusivePropertyValueObject(dest, srcEntryKey);
+    			mergeInto(srcEntryValue, dest.at(srcEntryKey));    			
+    		}
+    		else if (srcEntryValue.isArray())
     		{
-    			Comparator<Json> comp = arrayElementComparators.get(e.getKey());
+    			Comparator<Json> comp = arrayElementComparators.get(srcEntryKey);
     			if (comp == null)
     				comp = defaultJsonCompare;
-    			Json A = dest.at(e.getKey());
+    			Json A = dest.at(srcEntryKey);
     			if (A == null)
-    				dest.set(e.getKey(), e.getValue());
+    				dest.set(srcEntryKey, srcEntryValue);
     			else if (!A.isArray())
     				throw new RuntimeException("Attempt to merge array element into a scalar or an object.");
     			else
     			{
-    				for (Json srcel : e.getValue().asJsonList())
+    				for (Json srcel : srcEntryValue.asJsonList())
     				{
     					int idx = -1;
     					for (int i = 0; i < A.asJsonList().size() && idx < 0; i++)
@@ -401,11 +412,32 @@ public class ServiceCaseJsonHelper
     			}
     		}
     		else
-    			dest.set(e.getKey(), e.getValue());
+    			dest.set(srcEntryKey, srcEntryValue);
     	}
     }
 	
-    public static Json findUSStateObject(String abbreviation)
+    /**
+     * Ensures that a jsonObject has an exclusive object value at propertyName by duplicating that value.
+     * Thereby references to that object which may occur in the Json structure are eliminated.
+     * Method will check if JsonObject is in fact a non-null Json object and return without throwing an error if 
+     * the check fails.
+     * 
+     * @param jsonObject a json object. null, non object or object not having property will return without modifying jsonObject
+     * @param propertyName a propertyName which jsonObject may have.
+     */
+    public static void ensureExclusivePropertyValueObject(Json jsonObject, String propertyName) {
+		if (jsonObject == null || !jsonObject.isObject()) return;
+		if (!jsonObject.has(propertyName)) return;
+		//1 inspect dest at key
+		Json propertyValue = jsonObject.at(propertyName);
+		if (propertyValue!= null && propertyValue.isObject()) {
+			//2 Duplicate object and replace with duplicate.
+			Json destAtKeyExclusive = propertyValue.dup();
+			jsonObject.set(propertyName, destAtKeyExclusive);
+		}
+	}
+
+	public static Json findUSStateObject(String abbreviation)
     {
     	for (OWLNamedIndividual ind : OWL.queryIndividuals("State__U.S._"))
     		if (OWL.dataProperties(ind, "USPS_Abbrevation").contains(OWL.literal(abbreviation)))
@@ -489,4 +521,70 @@ public class ServiceCaseJsonHelper
     	}
     }
     
+    /**
+     * Determines a created date for a new activity based on the number of activities with created dates in the zero hour for the given day.
+     * Interfaces provide timestamps with zero hours, zero minutes; to maintain order, we add one minute to each new activity.
+     * 
+     * Expects to find zero, one or more serviceActivites in properties.hasServiceActivity 
+     * 
+     * @param sr in load format without legacy: prefixes of full iris.
+     * @param createdDate
+     * @return
+     */
+    public static Date calculateNextActivityCreatedDate(Json sr, Date createdDate) {    	
+    	Calendar createdCal = Calendar.getInstance();
+    	createdCal.setTime(createdDate);
+    	if (createdCal.get(Calendar.HOUR_OF_DAY) != 0) 
+    	{
+    		//meaningful timestamp, not date only, use it.
+    		return createdDate;
+    	}    	
+    	createdCal.set(Calendar.MINUTE, 0);
+    	Date minDate = createdCal.getTime();
+    	Date maxDate = new Date(minDate.getTime() + 60 * 60 * 1000); // 1 hour
+    	if (sr.has("properties") && sr.at("properties").has("hasServiceActivity")) {
+    		Json hasServiceActivity = sr.at("properties").at("hasServiceActivity");
+    		int nrOfMinutesToAdd = getNrOfServiceActivitiesCreatedBetween(hasServiceActivity, minDate, maxDate);
+    		createdCal.add(Calendar.MINUTE, nrOfMinutesToAdd);
+    		return createdCal.getTime();
+    	} else {
+    		return createdDate;
+    	}
+    }    
+    
+    /**
+     * Determines the number of service activities created between min and max (inclusive).
+     * 
+     * @param hasServiceActivity json object or array; null allowed. 
+     * @param minDate
+     * @param maxDate
+     * @return the number of SAs created in the specified time frame or 0 if none or error.
+     */
+    public static int getNrOfServiceActivitiesCreatedBetween(Json hasServiceActivity, Date minDate, Date maxDate) {
+    	if (hasServiceActivity == null || hasServiceActivity.isNull()) return 0;
+    	Json serviceActivityArray = hasServiceActivity;
+    	if (!serviceActivityArray.isArray()) {
+    		serviceActivityArray = Json.array(hasServiceActivity);
+    	}
+    	int counter = 0;
+    	for (Json sa : serviceActivityArray.asJsonList()) {
+    		if (!sa.isObject()) continue;
+    		if (!sa.has("hasDateCreated")) continue;
+    		if (!sa.at("hasDateCreated").isString()) continue;
+    		String saCreatedDateStr = sa.at("hasDateCreated").asString();    		
+    		try {
+    			Date saCreatedDate = GenUtils.parseDate(saCreatedDateStr);
+    			if ((minDate.before(saCreatedDate) || minDate.equals(saCreatedDate)) 
+    					&& (maxDate.after(saCreatedDate) || maxDate.equals(saCreatedDate)) 
+    			   )
+    			{
+    				counter ++;
+    			}
+    		} catch(Exception e) 
+    		{
+    			ThreadLocalStopwatch.error("Failed to parse created date in getNrOfActivitieWithCreatedBetween for " + sa);
+    		}
+    	}
+    	return counter;
+    }
 }

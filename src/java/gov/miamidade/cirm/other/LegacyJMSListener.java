@@ -28,10 +28,10 @@ import gov.miamidade.cirm.AddressSearchService;
 import gov.miamidade.cirm.GisClient;
 import gov.miamidade.cirm.MDRefs;
 
-import java.io.File;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -50,8 +50,6 @@ import org.sharegov.cirm.CirmTransaction;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.RequestScopeFilter;
-import org.sharegov.cirm.StartUp;
-import org.sharegov.cirm.StartupUtils;
 import org.sharegov.cirm.legacy.CirmMessage;
 import org.sharegov.cirm.legacy.MessageManager;
 import org.sharegov.cirm.rest.LegacyEmulator;
@@ -216,18 +214,42 @@ public class LegacyJMSListener extends Thread
     	cleanup();
     }
     
-            
-    public void timeStamp(Json A)
+    /**
+     * Recursively time stamps each Json Object by applying a hasDateCreated property with value NOW,
+     * only if such object does not yet have a hasDateCreated Property.
+     * 
+     * @param anyJson any Json or null.
+     */
+    public void timeStamp(Json anyJson) 
     {
-    	//java.text.DateFormat format = new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm:ss a");
-    	if (A == null || A.isPrimitive())
+    	timeStamp(anyJson, new Date());
+    }
+    
+    /**
+     * Recursively time stamps each Json Object by applying a hasDateCreated property with value timeStampDate,
+     * only if such object does not yet have a hasDateCreated Property.<br>
+     * Only Objects passed in directly or found in recursive Arrays are time stamped.<br>
+     * Objects or arrays found as value of properties are not time stamped or traversed.<br>
+     * <br>
+     * Typically used for activities received from departmental interfaces.<br>
+     * <br>
+     * @param anyJson any Json or null;
+     * @param timeStampDate the date to be used for time stamping Json Objects
+     */
+    public void timeStamp(Json anyJson, Date timeStampDate)
+    {
+    	if (timeStampDate == null) {
+    		throw new IllegalArgumentException("timeStampDate was null error, timestamp json: " + anyJson);
+    	}
+    	if (anyJson == null || anyJson.isPrimitive()) {
     		return;
-    	else if (A.isObject() && !A.has("hasDateCreated"))
-    		A.set("hasDateCreated",  GenUtils.formatDate(new java.util.Date()));
-    	else if (A.isArray())
-    		for (Json x : A.asJsonList())
-    			timeStamp(x);
-    		//A.set("hasDateCreate", new Date().)
+    	} else if (anyJson.isObject() && !anyJson.has("hasDateCreated")) {
+    		anyJson.set("hasDateCreated",  GenUtils.formatDate(timeStampDate));
+    	} else if (anyJson.isArray()) {
+    		for (Json x : anyJson.asJsonList()) {
+    			timeStamp(x, timeStampDate);
+    		}
+    	}
     }
     	
 	private void gisToAtAddress(Json gis, Json addr)
@@ -377,6 +399,11 @@ public class LegacyJMSListener extends Thread
 		Json data = Json.object("properties", jmsg.at("data").dup());
 		Json props = data.at("properties");
 		data.set("type", props.atDel("type"));
+		//2016.02.19 hilpold all interface messages changed to never have empty hasDetails (mdcirm 2547)
+		if (!props.has("hasDetails")) 
+		{
+			props.set("hasDetails", "");
+		}
 		timeStamp(props.at("hasServiceCaseActor"));
 		timeStamp(props.at("hasServiceActivity"));
 		try
@@ -452,14 +479,60 @@ public class LegacyJMSListener extends Thread
 	{
 		Json result;
 		Json original = sr.dup();
+		boolean createdDateProvided = false;
+		Date updateDate = new Date();
+		//1. if sr was already modified, we use that date as updatedDate
+		if (original.has("properties") && original.at("properties").has("hasDateLastModified")) {	
+			try {
+				updateDate = GenUtils.parseDate(original.at("properties").at("hasDateLastModified").asString());				
+			} catch(Exception e) {
+				ThreadLocalStopwatch.error("Failed to parse sr last modified date in newActivityTxn for SR " + original);
+			}
+		}
+		//2. use create activity date as update date if after last sr modification.
+		if (activity.has("hasDateCreated")) {
+			createdDateProvided = true;
+			try {
+    			Date actCreated = GenUtils.parseDate(activity.at("hasDateCreated").asString());
+    			if (actCreated.after(updateDate)) {
+    				updateDate = actCreated;
+    				sr.at("properties").set("isModifiedBy", "department");
+    			}
+			} catch (Exception e) {
+				ThreadLocalStopwatch.error("Failed to parse new activity hasDateCreated in newActivityTxn for act " + activity);
+			}
+		}
+		//3. use activity calculated act created =~ act completed date as update date if after sr modification 
+		//Timestamp activity if needed to set created date at completed date
+		if (activity.has("hasCompletedTimestamp")) {
+			try {
+				Date completedDate = GenUtils.parseDate(activity.at("hasCompletedTimestamp").asString());
+				//Add one minute for each existing activity with same completed date to retain order
+				//in case multiple activities are received for the same day and hasCompletedTimestamp from interface has zero hours.
+				Date calcCreatedDate = ServiceCaseJsonHelper.calculateNextActivityCreatedDate(original, completedDate);
+				if (!createdDateProvided) {
+					timeStamp(activity, calcCreatedDate);
+				} 
+				if (calcCreatedDate.after(updateDate)) {
+					updateDate = calcCreatedDate;
+					sr.at("properties").set("isModifiedBy", "department");
+				}
+			} catch(Exception e) {
+				ThreadLocalStopwatch.error("Failed to parse sr last modified date in newActivityTxn for SR " + original);
+			}
+		}
+		//4. act created by "department" if not provided by interface.
+		if (!activity.has("isCreatedBy")) {
+			activity.set("isCreatedBy", "department");
+		}
+		
 		ServiceCaseJsonHelper.insertIriFromCode(activity.at("hasActivity"), sr.at("type").asString() + "_");
 		ServiceCaseJsonHelper.insertIriFromCode(activity.at("hasOutcome"), "OUTCOME_");		
 		sr.at("properties").at("hasServiceActivity").add(activity);
 		ServiceCaseJsonHelper.cleanUpProperties(sr);
 		ServiceCaseJsonHelper.assignIris(sr);
-		System.out.println(sr);
-		OWL.resolveIris(sr.at("properties"), null);			
-		result = emulator.updateServiceCaseTransaction(sr, original, null, new ArrayList<CirmMessage>(), "department");
+		OWL.resolveIris(sr.at("properties"), null);
+		result = emulator.updateServiceCaseTransaction(sr, original, updateDate, new ArrayList<CirmMessage>(), "department");
 		if (result.has("ok") && result.is("ok", true)) 
 		{
 			srStatsReporter.succeeded("newActivityTxn", result);
@@ -481,9 +554,44 @@ public class LegacyJMSListener extends Thread
 	private Json updateTxn(LegacyEmulator emulator, Json existing, Json newdata) throws JMSException
 	{
 		Json result;
-		Json existingSave = existing.dup();		
+		Json preUpdateSr = existing.dup();				
+		Json postUpdateSr = existing;
+		Json updateDateJson = newdata.atDel("updateDate");
+		Date updateDate = null;
+		if (updateDateJson != null) 
+		{
+			updateDate = GenUtils.parseDate(updateDateJson.asString());
+		}
+		//Note that postUpdateSr and newdata will be modified in next line.
+		updateExistingCase(postUpdateSr, newdata, updateDate);
+		result = emulator.updateServiceCaseTransaction(postUpdateSr, 
+													 preUpdateSr,
+													 updateDate,
+													 new ArrayList<CirmMessage>(),
+													 "department");
+		if (result.has("ok") && result.is("ok", true)) 
+		{
+			srStatsReporter.succeeded("updateCaseTxn", result);
+		} else
+		{
+			srStatsReporter.failed("updateCaseTxn", result, "updateServiceCaseTransaction ko", "" + result.at("error"));
+		}
+		return result;
+	}
+	
+	/**
+	 * Updates an existing case json by applying new data received from an interface update message to the passed in existing case json.
+	 * Existing and newData will be modified by this method.
+	 * 
+	 * To be used inside of a transaction.
+	 * @param existing case SR loaded from the DB.
+	 * @param newdata data received from an interface.
+	 */
+	 void updateExistingCase(Json existing, Json newdata, Date updateDate) {
+		 if (updateDate == null) {
+			 updateDate = new Date();
+		 }
 		Json props = existing.at("properties");
-		Json updateDate = newdata.atDel("updateDate");
 		if (newdata.has("hasXCoordinate") && (
 					  !props.has("hasXCoordinate") || !newdata.is("hasXCoordinate", props.at("hasXCoordinate")))
 			||  
@@ -522,10 +630,12 @@ public class LegacyJMSListener extends Thread
 			// the flex questions for that new type as well.
 			existing.at("properties").delAt("hasServiceAnswer");
 		}
-		if (!newdata.has("isModifiedBy"))
+		if (!newdata.has("isModifiedBy")) {
 			newdata.set("isModifiedBy", "department");
-		timeStamp(newdata.at("hasServiceCaseActor", Json.array()));
-		timeStamp(newdata.at("hasServiceActivity", Json.array()));
+		}
+		timeStamp(newdata.at("hasServiceCaseActor", Json.array()), updateDate);
+		Date activiyCreatedDate = ServiceCaseJsonHelper.calculateNextActivityCreatedDate(existing, updateDate);
+		timeStamp(newdata.at("hasServiceActivity", Json.array()), activiyCreatedDate);
 		ServiceCaseJsonHelper.insertIriFromCode(newdata.at("hasServiceCaseActor", Json.array()), "hasServiceActor", "");
 		ServiceCaseJsonHelper.insertIriFromCode(newdata.at("hasServiceAnswer",Json.array()), "hasServiceField", existing.at("type").asString() + "_");
 		ServiceCaseJsonHelper.insertIriFromCode(newdata.at("hasServiceActivity"), "hasActivity", existing.at("type").asString() + "_");
@@ -536,27 +646,14 @@ public class LegacyJMSListener extends Thread
 		ServiceCaseJsonHelper.cleanUpProperties(existing);
 		ServiceCaseJsonHelper.assignIris(existing);
 		ServiceCaseJsonHelper.replaceAnswerLabelsWithValues(newdata.at("legacy:hasServiceAnswer"));
-		OWL.resolveIris(existing.at("properties"), null);				
+		OWL.resolveIris(existing.at("properties"), null);		
+		// hilpold: After resolveIRIs, the json implementation will point hasOutcome and HasStatus to the same status {"iri", "....O-LOCKED"} object.
+		// Therefore during the merge, where the value of "iri" in the status object is updated to C-CLOSED, both references are updated.
+		// Pointing two property values at the same json object first happens in Owl.resolveIRIs, where the gathering knows only the {"iri","...O-LOCKED} object 
+		// and that same object will be referred to from all occurances of a "O-LOCKED" string iri as value.
+		// Resolution: change merge to never update a possibly shared object.
 		ServiceCaseJsonHelper.mergeInto(newdata, existing.at("properties"));			
 		trace("Merged: " + existing + "\n\n");
-		// The following is to remove the "temp" IRIs which interfering with newly added answers,
-		// the end up having duplicate temp IRIs. 
-		// Shouldn't be needed anymore as BOntology is not returning them...
-//		for (Json x : existing.at("properties").at("legacy:hasServiceAnswer").asJsonList())
-//			x.delAt("iri");
-		result = emulator.updateServiceCaseTransaction(existing, 
-													 existingSave,
-													 updateDate == null ? null : GenUtils.parseDate(updateDate.asString()),
-													 new ArrayList<CirmMessage>(),
-													 "department");
-		if (result.has("ok") && result.is("ok", true)) 
-		{
-			srStatsReporter.succeeded("updateCaseTxn", result);
-		} else
-		{
-			srStatsReporter.failed("updateCaseTxn", result, "updateServiceCaseTransaction ko", "" + result.at("error"));
-		}
-		return result;
 	}
 
 	/**
@@ -592,25 +689,27 @@ public class LegacyJMSListener extends Thread
 			TraceUtils.error(new Exception(errmsg));
 			return GenUtils.ko(errmsg);					
 		}
-		else
+		else 
+		{
 			scase = scase.at("bo");
-		Json existingSave = scase.dup();
+		}
+		Json preUpdateSr = scase.dup();
+		//Update scase
 		OWL.resolveIris(scase, null);		
 		ServiceCaseJsonHelper.cleanUpProperties(scase);
 		ServiceCaseJsonHelper.assignIris(scase);
-//		System.out.println("*******************************");
-//		System.out.println("Before Status Change:");
-//		System.out.println(scase);
-//		System.out.println("*******************************");
 		if (jmsg.at("response").is("ok", true))
 		{
-			if (orig.is("messageType", "NewCase"))
+			if (orig.is("messageType", "NewCase")) 
+			{
+				ServiceCaseJsonHelper.ensureExclusivePropertyValueObject(scase.at("properties"), "legacy:hasStatus");
 				scase.at("properties").at("legacy:hasStatus").set("iri", 
-						fullIri("legacy:O-LOCKED").toString());	
-			System.out.println("After Status Change:");
-			System.out.println(scase);
-			if (jmsg.at("response").has("hasLegacyId"))
+						fullIri("legacy:O-LOCKED").toString());
+			}
+			if (jmsg.at("response").has("hasLegacyId")) 
+			{
 				scase.at("properties").set("legacy:hasLegacyId", jmsg.at("response").at("hasLegacyId"));
+			}	
 			if (jmsg.at("response").has("data"))
 			{
 				Json data = jmsg.at("response").at("data");
@@ -621,6 +720,7 @@ public class LegacyJMSListener extends Thread
 		}
 		else
 		{
+			ServiceCaseJsonHelper.ensureExclusivePropertyValueObject(scase.at("properties"), "legacy:hasStatus");
 			scase.at("properties").at("legacy:hasStatus").set("iri", fullIri("legacy:X-ERROR").toString());
 			scase.at("properties").set("legacy:hasDepartmentError", jmsg.at("response").at("error"));				
 		}				
@@ -632,7 +732,7 @@ public class LegacyJMSListener extends Thread
 		OWL.resolveIris(scase.at("properties").at("legacy:hasServiceActivity"), null);								
 		trace("Saving " + scase + "\n\n");
 		Json result = emulator.updateServiceCaseTransaction(scase, 
-														    existingSave, 
+														    preUpdateSr, 
 														    null, 
 														    emailsToSend,
 														    "department");
@@ -667,16 +767,17 @@ public class LegacyJMSListener extends Thread
 				ThreadLocalStopwatch.now("LegacyJMSListener.process NewCase ");
 				Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
 				public Json call() throws JMSException
-				{							
-					MessageValidationResult validationResult = validator.validateNewCase(jmsg);
+				{				
+					Json jmsgForTx = jmsg.dup();
+					MessageValidationResult validationResult = validator.validateNewCase(jmsgForTx);
 					Json R;
 					if (validationResult.isValid()) 
 					{
-						R = newCaseTxn(emulator, jmsg);
+						R = newCaseTxn(emulator, jmsgForTx);
 						if (!R.is("ok", true)) 
 						{
 							ThreadLocalStopwatch.error("LegacyJMSListener.process NewCase txn failed");
-							System.err.println(R.at("error") + " for " + jmsg);
+							System.err.println(R.at("error") + " for " + jmsgForTx);
 						}
 						srStatsReporter.succeeded("process-NewCase", R);
 					} else
@@ -688,7 +789,7 @@ public class LegacyJMSListener extends Thread
 						{	//respond ok, despite error to not allow interface retry 
 							R = Json.object("ok", true, "error", validationResult.getResponseMessage());
 						}
-						srStatsReporter.failed("process-NewCase", jmsg, "invalid message", "" + validationResult.getResponseMessage());
+						srStatsReporter.failed("process-NewCase", jmsgForTx, "invalid message", "" + validationResult.getResponseMessage());
 					}
 					return R;
 				}});
@@ -701,34 +802,35 @@ public class LegacyJMSListener extends Thread
 				public Json call() throws JMSException
 				{							
 					ThreadLocalStopwatch.now("LegacyJMSListener.process lookup case for update or new activity");
+					Json jmsgForTx = jmsg.dup();
 					MessageValidationResult validationResult;
 					validationResult = (messageType == LegacyMessageType.NewActivity)? 
-							validator.validateNewActivity(jmsg) : validator.validateCaseUpdate(jmsg);
+							validator.validateNewActivity(jmsgForTx) : validator.validateCaseUpdate(jmsgForTx);
 					Json R;
 					if (validationResult.isValid()) 
 					{
-						Json sr = validationResult.getExistingSR();
-						sr = sr.at("bo");
+						Json origSr = validationResult.getExistingSR();
+						Json origSrForTxn = origSr.at("bo").dup(); //Dup needed for idempotent retries!
 						// This should be done already by the framework, but we are not there
 						// yet...not clear on strategy, maybe "all non-functional properties
 						// should be turned into arrays".
-						sr.at("properties").delAt("extendedTypes");
-						sr.at("properties").delAt("gisAddressData");
-						trace("Existing: " + sr + "\n\n");
+						origSrForTxn.at("properties").delAt("extendedTypes");
+						origSrForTxn.at("properties").delAt("gisAddressData");
+						trace("Existing: " + origSrForTxn + "\n\n");
 						if (messageType == LegacyMessageType.NewActivity) 
 						{
 							ThreadLocalStopwatch.now("LegacyJMSListener.process newActivityTxn ");					
-							R = newActivityTxn(emulator, sr, jmsg.at("data").at("hasServiceActivity").at(0));
+							R = newActivityTxn(emulator, origSrForTxn, jmsgForTx.at("data").at("hasServiceActivity").at(0));
 						}
 						else
 						{ //update service case
 							ThreadLocalStopwatch.now("LegacyJMSListener.process updateTxn ");					
-							R = updateTxn(emulator, sr, jmsg.at("data").dup().delAt("boid"));
+							R = updateTxn(emulator, origSrForTxn, jmsgForTx.at("data").dup().delAt("boid"));
 						}
 						if (R.is("ok", false)) 
 						{
 							ThreadLocalStopwatch.error("ERROR: LegacyJMSListener.process newActivityTxn or updateTxn failed, responding");
-							System.err.println(R.at("error") + " for " + jmsg);
+							System.err.println(R.at("error") + " for " + jmsgForTx);
 						}
 					}
 					else 
@@ -740,12 +842,12 @@ public class LegacyJMSListener extends Thread
 						{	//respond ok, despite error to not allow interface retry 
 							R = Json.object("ok", true, "error", validationResult.getResponseMessage());
 						}
-						srStatsReporter.failed("process-NewActivityOrCaseUpdate", jmsg, "invalid message ", "" + validationResult.getResponseMessage());
+						srStatsReporter.failed("process-NewActivityOrCaseUpdate", jmsgForTx, "invalid message ", "" + validationResult.getResponseMessage());
 						ThreadLocalStopwatch.error("ERROR: LegacyJMSListener.process lookup for update or new activity: case not found, responding that");							
 					}
 					try
 					{
-						JMSClient.connectAndRespond(jmsg, R);
+						JMSClient.connectAndRespond(jmsgForTx, R);
 					}
 					// TODO: we should re-implement this to ask the TimeServer to call back and retry sending the response
 					catch (Exception ex) { throw new RuntimeException(ex); }					
@@ -760,7 +862,7 @@ public class LegacyJMSListener extends Thread
 				final ArrayList<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();				
 				Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
 				public Json call() throws JMSException
-				{							
+				{												
 					Json R = responseTxn(emulator, jmsg, emailsToSend);
 					if (R.is("ok", false))
 					{
@@ -935,22 +1037,22 @@ public class LegacyJMSListener extends Thread
 //		return config;
 //	}
  
-	public static void main(String args[])
-	{
-		System.out.println("Starting JMS Listener");
-		if( (args.length > 0) )
-			StartUp.config = Json.read(GenUtils.readTextFile(new File(args[0])));
-		StartupUtils.disableCertificateValidation();
-		System.out.println("Using config " + StartUp.config.toString());
-		DepartmentListenerController ctrl = new DepartmentListenerController();
-		ctrl.traceMore();
-		try
-		{
-			ctrl.start();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
+//	public static void main(String args[])
+//	{
+//		System.out.println("Starting JMS Listener");
+//		if( (args.length > 0) )
+//			StartUp.getConfig() = Json.read(GenUtils.readTextFile(new File(args[0])));
+//		StartupUtils.disableCertificateValidation();
+//		System.out.println("Using config " + StartUp.getConfig().toString());
+//		DepartmentListenerController ctrl = new DepartmentListenerController();
+//		ctrl.traceMore();
+//		try
+//		{
+//			ctrl.start();
+//		}
+//		catch (Exception e)
+//		{
+//			e.printStackTrace();
+//		}
+//	}
 }

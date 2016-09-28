@@ -1,74 +1,216 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<bmtcustomdata><namespace name="visuals"><object name="[]"><property name="BMTFW_Layout_Version">long:50</property><property name="BMTFW_Layout"><![CDATA[string:[Operations].[Service Requests]
+<bmtcustomdata><namespace name="visuals"><object name="[]"><property name="BMTFW_Layout_Version">long:54</property><property name="BMTFW_Layout"><![CDATA[string:[Imported View (Do Not Touch)].[CIRM_SERVICE_ACTION]
+	dx=207,100
+	expanded=t
+	parent=Imported View (Do Not Touch)
+	x=844,62
+[Imported View (Do Not Touch)].[CIRM_SERVICE_CALL]
+	dx=192,118
+	expanded=t
+	parent=Imported View (Do Not Touch)
+	x=1108,59
+[Imported View (Do Not Touch)].[CIRM_SRREQ_SRACTOR]
+	dx=210,64
+	expanded=t
+	parent=Imported View (Do Not Touch)
+	x=217,1082
+[Imported View (Do Not Touch)].[CIRM_SR_ACTIVITY]
+	dx=178,208
+	expanded=t
+	parent=Imported View (Do Not Touch)
+	x=1046,971
+[Imported View (Do Not Touch)].[CIRM_SR_ACTIVITY_TYPE]
+	dx=194,64
+	expanded=t
+	parent=Imported View (Do Not Touch)
+	x=1044,1436
+[Imported View (Do Not Touch)].[CIRM_SR_ACTOR]
+	dx=206,208
+	expanded=t
+	parent=Imported View (Do Not Touch)
+	x=695,889
+[Imported View (Do Not Touch)].[CIRM_SR_INTAKE_METHOD]
+	dx=229,64
+	expanded=t
+	parent=Imported View (Do Not Touch)
+	x=10,734
+[Imported View (Do Not Touch)].[CIRM_SR_OUTCOME]
+	dx=185,64
+	expanded=t
+	parent=Imported View (Do Not Touch)
+	x=117,1323
+[Imported View (Do Not Touch)].[CIRM_SR_PRIORITY]
+	dx=187,64
+	expanded=t
+	parent=Imported View (Do Not Touch)
+	x=170,931
+[Imported View (Do Not Touch)].[CIRM_SR_REQUESTS]
+	dx=190,208
+	expanded=t
+	parent=Imported View (Do Not Touch)
+	x=712,203
+[Imported View (Do Not Touch)].[CIRM_SR_STATUS]
+	dx=178,64
+	expanded=t
+	parent=Imported View (Do Not Touch)
+	x=336,1545
+[Imported View (Do Not Touch)].[CIRM_SR_STATUS_HISTORY]
+	dx=233,82
+	expanded=t
+	parent=Imported View (Do Not Touch)
+	x=857,1488
+[Imported View (Do Not Touch)].[CIRM_SR_TYPE]
+	dx=163,82
+	expanded=t
+	parent=Imported View (Do Not Touch)
+	x=698,1189
+[Imported View (Do Not Touch)].[CIRM_SR_TYPE_QUESTION]
+	dx=226,136
+	expanded=t
+	parent=Imported View (Do Not Touch)
+	x=1454,1207
+[Imported View (Do Not Touch)].[CIRM_USER]
+	dx=132,82
+	expanded=t
+	parent=Imported View (Do Not Touch)
+	x=833,1338
+[Imported View (Do Not Touch)].[CIRM_GIS_INFO]
+	dx=156,208
+	expanded=t
+	parent=Imported View (Do Not Touch)
+	x=105,231
+[Imported View (Do Not Touch)].[CIRM_SR_CREATED_BY]
+	dx=206,82
+	expanded=t
+	parent=Imported View (Do Not Touch)
+	x=236,148
+[Imported View (Do Not Touch)].[CIRM_SR_UPDATED_BY]
+	dx=206,82
+	expanded=t
+	parent=Imported View (Do Not Touch)
+	x=563,47
+[Imported View (Do Not Touch)].[CIRM_SR_STAFF_ASSIGNED]
+	dx=202,82
+	expanded=t
+	parent=Imported View (Do Not Touch)
+	x=69,42
+[Imported View (Do Not Touch)].[CIRM_ACTOR_ADDRESS]
+	dx=263,208
+	expanded=t
+	parent=Imported View (Do Not Touch)
+	x=1003,776
+[Imported View (Do Not Touch)].[CIRMDW_ALL_PROPERTY_VIEW]
+	dx=256,208
+	expanded=t
+	parent=Imported View (Do Not Touch)
+	x=1583,879
+[Imported View (Do Not Touch)]
+	c=d8a77d
+	dx=1261,1843
+	expanded=t
+	parent=Cirm
+	view=0,460
+	x=10,57
+	zoom=1.000000
+[Cirm]
+	view=90,48
+	zoom=0.750000
+[]
+	Notation=4
+	ShowGrid=1
+	Snap=1
+	font=Arial Narrow
+	lod=33
+	tc=323232
+	viewStyle=2
+[Operations].[Service Requests]
 	dx=172,208
+	expanded=t
 	parent=Service Request Data
-	x=10,942
+	x=10,1001
 [Operations].[Type]
 	dx=188,64
+	expanded=t
 	parent=Service Request Data
-	x=22,873
+	x=22,932
 [Operations].[Status]
 	dx=120,64
+	expanded=t
 	parent=Service Request Data
-	x=20,809
+	x=20,868
 [Operations].[Gis Info]
 	dx=195,208
-	parent=Service Request Data
-	x=20,573
-[Operations].[Intake Method]
-	dx=143,64
-	parent=Service Request Data
-	x=20,514
-[Operations].[Owner]
-	dx=122,64
-	parent=Service Request Data
-	x=20,455
-[Operations].[Priority]
-	dx=123,64
-	parent=Service Request Data
-	x=20,396
-[Operations].[Activities]
-	dx=124,208
+	expanded=t
 	parent=Service Request Data
 	x=20,632
-[Operations].[Activity Type]
-	dx=136,64
+[Operations].[Intake Method]
+	dx=143,64
+	expanded=t
+	parent=Service Request Data
+	x=20,573
+[Operations].[Owner]
+	dx=122,64
+	expanded=t
+	parent=Service Request Data
+	x=20,514
+[Operations].[Priority]
+	dx=123,64
+	expanded=t
+	parent=Service Request Data
+	x=20,455
+[Operations].[Activities]
+	dx=124,208
+	expanded=t
 	parent=Service Request Data
 	x=20,691
+[Operations].[Activity Type]
+	dx=136,64
+	expanded=t
+	parent=Service Request Data
+	x=20,750
 [Operations].[Outcome]
 	dx=134,64
+	expanded=t
 	parent=Service Request Data
-	x=20,337
+	x=20,396
 [Operations].[Customer]
 	dx=108,208
+	expanded=t
 	parent=Service Request Data
-	x=31,352
+	x=31,411
 [Operations].[Created By]
 	dx=87,64
+	expanded=t
 	parent=Service Request Data
-	x=20,278
+	x=20,337
 [Operations].[Updated By]
 	dx=128,64
+	expanded=t
 	parent=Service Request Data
-	x=20,219
+	x=20,278
 [Operations].[Staff Assigned]
 	dx=146,64
+	expanded=t
 	parent=Service Request Data
-	x=20,160
+	x=20,219
 [Operations].[Questions]
 	dx=120,136
+	expanded=t
 	parent=Service Request Data
-	x=20,42
+	x=20,101
 [Operations].[Answers]
 	dx=121,82
+	expanded=t
 	parent=Service Request Data
-	x=50,131
+	x=50,190
 [Operations].[Service Request Data]
 	c=89c6fd
-	dx=225,1160
+	dx=297,1219
 	expanded=t
 	parent=Operations
+	view=0,0
 	x=20,101
+	zoom=1.000000
 [Operations]
 	c=9bdfc4
 	dx=255,1153
@@ -87,153 +229,72 @@
 	zoom=1.000000
 [Imported View (Do Not Touch)].[CIRM_CLASSIFICATION]
 	dx=202,100
+	expanded=t
 	parent=Imported View (Do Not Touch)
-	x=236,1445
+	x=285,1445
 [Imported View (Do Not Touch)].[CIRM_IRI]
 	dx=114,100
+	expanded=t
 	parent=Imported View (Do Not Touch)
-	x=266,1475
+	x=315,1475
 [Imported View (Do Not Touch)].[CIRM_IRI_TYPE]
 	dx=153,64
+	expanded=t
 	parent=Imported View (Do Not Touch)
-	x=296,1505
+	x=345,1505
 [Imported View (Do Not Touch)].[CIRM_MDC_ADDRESS]
 	dx=194,208
+	expanded=t
 	parent=Imported View (Do Not Touch)
-	x=956,321
+	x=1005,321
 [Imported View (Do Not Touch)].[CIRM_ORG_UNIT]
 	dx=170,64
+	expanded=t
 	parent=Imported View (Do Not Touch)
-	x=518,1346
+	x=567,1346
 [Imported View (Do Not Touch)].[CIRM_OWL_DATA_PROPERTY]
 	dx=243,136
+	expanded=t
 	parent=Imported View (Do Not Touch)
-	x=806,1587
+	x=855,1587
 [Imported View (Do Not Touch)].[CIRM_OWL_DATA_VAL_CLOB]
 	dx=242,100
+	expanded=t
 	parent=Imported View (Do Not Touch)
-	x=1340,1577
+	x=1389,1577
 [Imported View (Do Not Touch)].[CIRM_OWL_DATA_VAL_DATE]
 	dx=240,64
+	expanded=t
 	parent=Imported View (Do Not Touch)
-	x=1651,1628
+	x=1700,1628
 [Imported View (Do Not Touch)].[CIRM_OWL_DATA_VAL_DOUBLE]
 	dx=259,64
+	expanded=t
 	parent=Imported View (Do Not Touch)
-	x=416,1625
+	x=465,1625
 [Imported View (Do Not Touch)].[CIRM_OWL_DATA_VAL_INTEGER]
 	dx=262,64
+	expanded=t
 	parent=Imported View (Do Not Touch)
-	x=446,1655
+	x=495,1655
 [Imported View (Do Not Touch)].[CIRM_OWL_DATA_VAL_STRING]
 	dx=253,64
+	expanded=t
 	parent=Imported View (Do Not Touch)
-	x=476,1685
+	x=525,1685
 [Imported View (Do Not Touch)].[CIRM_OWL_OBJECT_PROPERTY]
 	dx=259,118
-	parent=Imported View (Do Not Touch)
-	x=506,1715
-[Imported View (Do Not Touch)].[CIRM_SERVICE_ACTION]
-	dx=207,100
-	parent=Imported View (Do Not Touch)
-	x=795,62
-[Imported View (Do Not Touch)].[CIRM_SERVICE_CALL]
-	dx=192,118
-	parent=Imported View (Do Not Touch)
-	x=1059,59
-[Imported View (Do Not Touch)].[CIRM_SRREQ_SRACTOR]
-	dx=210,64
-	parent=Imported View (Do Not Touch)
-	x=168,1082
-[Imported View (Do Not Touch)].[CIRM_SR_ACTIVITY]
-	dx=178,208
-	parent=Imported View (Do Not Touch)
-	x=997,971
-[Imported View (Do Not Touch)].[CIRM_SR_ACTIVITY_TYPE]
-	dx=194,64
-	parent=Imported View (Do Not Touch)
-	x=995,1436
-[Imported View (Do Not Touch)].[CIRM_SR_ACTOR]
-	dx=206,208
-	parent=Imported View (Do Not Touch)
-	x=646,889
-[Imported View (Do Not Touch)].[CIRM_SR_INTAKE_METHOD]
-	dx=229,64
-	parent=Imported View (Do Not Touch)
-	x=20,709
-[Imported View (Do Not Touch)].[CIRM_SR_OUTCOME]
-	dx=185,64
-	parent=Imported View (Do Not Touch)
-	x=68,1323
-[Imported View (Do Not Touch)].[CIRM_SR_PRIORITY]
-	dx=187,64
-	parent=Imported View (Do Not Touch)
-	x=121,931
-[Imported View (Do Not Touch)].[CIRM_SR_REQUESTS]
-	dx=190,208
-	parent=Imported View (Do Not Touch)
-	x=663,203
-[Imported View (Do Not Touch)].[CIRM_SR_STATUS]
-	dx=178,64
-	parent=Imported View (Do Not Touch)
-	x=287,1545
-[Imported View (Do Not Touch)].[CIRM_SR_STATUS_HISTORY]
-	dx=233,82
-	parent=Imported View (Do Not Touch)
-	x=808,1488
-[Imported View (Do Not Touch)].[CIRM_SR_TYPE]
-	dx=163,82
-	parent=Imported View (Do Not Touch)
-	x=649,1189
-[Imported View (Do Not Touch)].[CIRM_SR_TYPE_QUESTION]
-	dx=226,136
-	parent=Imported View (Do Not Touch)
-	x=1405,1207
-[Imported View (Do Not Touch)].[CIRM_USER]
-	dx=132,82
-	parent=Imported View (Do Not Touch)
-	x=784,1338
-[Imported View (Do Not Touch)].[CIRM_GIS_INFO]
-	dx=156,208
-	parent=Imported View (Do Not Touch)
-	x=56,231
-[Imported View (Do Not Touch)].[CIRM_SR_CREATED_BY]
-	dx=206,82
-	parent=Imported View (Do Not Touch)
-	x=187,148
-[Imported View (Do Not Touch)].[CIRM_SR_UPDATED_BY]
-	dx=206,82
-	parent=Imported View (Do Not Touch)
-	x=514,47
-[Imported View (Do Not Touch)].[CIRM_SR_STAFF_ASSIGNED]
-	dx=202,82
-	parent=Imported View (Do Not Touch)
-	x=20,42
-[Imported View (Do Not Touch)].[CIRM_ACTOR_ADDRESS]
-	dx=263,208
-	parent=Imported View (Do Not Touch)
-	x=954,776
-[Imported View (Do Not Touch)].[CIRMDW_ALL_PROPERTY_VIEW]
-	dx=256,208
-	parent=Imported View (Do Not Touch)
-	x=1534,879
-[Imported View (Do Not Touch)]
-	c=d8a77d
-	dx=1261,1843
 	expanded=t
-	parent=Cirm
-	view=1136,876
-	x=10,57
-	zoom=1.000000
-[Cirm]
-	view=90,48
-	zoom=0.750000
-[]
-	Notation=4
-	ShowGrid=1
-	Snap=1
-	font=Arial Narrow
-	lod=33
-	tc=323232
-	viewStyle=2
+	parent=Imported View (Do Not Touch)
+	x=555,1715
+[Imported View (Do Not Touch)].[LIVE_SR_REQUEST]
+	dx=178,208
+	expanded=t
+	parent=Imported View (Do Not Touch)
+	x=380,627
+[Operations].[Service Requests (Live - New Only)]
+	dx=267,208
+	expanded=t
+	parent=Service Request Data
+	x=20,42
 ]]></property></object></namespace></bmtcustomdata>

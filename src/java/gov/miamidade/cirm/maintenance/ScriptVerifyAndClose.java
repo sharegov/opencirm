@@ -166,9 +166,9 @@ public class ScriptVerifyAndClose
 	
 	public static void main(String[] args)
 	{
-		StartUp.config.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#ProdConfigSet");
+		StartUp.getConfig().set("ontologyConfigSet", "http://www.miamidade.gov/ontology#ProdConfigSet");
 		System.out.println(
-				StartUp.config.at("ontologyConfigSet").toString()
+				StartUp.getConfig().at("ontologyConfigSet").toString()
 				);
 		
 		

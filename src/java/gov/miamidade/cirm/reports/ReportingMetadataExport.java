@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -441,10 +442,33 @@ public class ReportingMetadataExport
 		{
 			List<String> outcomeRow = new ArrayList<String>();
 			outcomeRow.add(outcome.getIRI().getFragment());
-			outcomeRow.add(OWL.getEntityLabel(outcome));
+			outcomeRow.add(getEntityLabel(outcome));
 			outcomeTable.add(outcomeRow);
 		}
 		toCSV(outcomeTable, new File(getExportDirectory() + "sr_outcome_metadata.csv"));
+	}
+	
+	
+	private static synchronized String getEntityLabel(OWLEntity entity)
+	{
+		for (OWLOntology o : OWL.ontologies())
+		{
+			Set<OWLAnnotation> anns = entity.getAnnotations(o, 
+					OWL.annotationProperty("http://www.w3.org/2000/01/rdf-schema#label"));
+			if (!anns.isEmpty())
+				return ((OWLLiteral)anns.iterator().next().getValue()).getLiteral();
+			
+			anns = entity.getAnnotations(o, 
+					OWL.annotationProperty("http://www.miamidade.gov/ontology#label"));
+			if (!anns.isEmpty())
+				return ((OWLLiteral)anns.iterator().next().getValue()).getLiteral();	
+			anns = entity.getAnnotations(o, 
+					OWL.annotationProperty("http://www.miamidade.gov/cirm/legacy#label"));
+			if (!anns.isEmpty())
+				return ((OWLLiteral)anns.iterator().next().getValue()).getLiteral();
+				
+		}
+		return entity.getIRI().getFragment();
 	}
 	
 	private void dumpIntakeMethods()
@@ -635,4 +659,10 @@ public class ReportingMetadataExport
 		this.exportDirectory = exportDirectory;
 	}
 
+	
+	public static void main(String[] args) throws Throwable{
+		
+		ReportingMetadataExport e = new ReportingMetadataExport();
+		e.execute();
+	}
 }

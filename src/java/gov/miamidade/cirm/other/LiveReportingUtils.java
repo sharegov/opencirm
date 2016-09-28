@@ -27,7 +27,7 @@ public class LiveReportingUtils
 	 * This is important as a modification of srWithMeta might affect interface processing.
 	 * 
 	 * All this information will NOT be added to the case property, which might be expected as is later during processing.
-	 * Instead, we add a property liveReportingMeta, where the inforamation will be added.
+	 * Instead, we add a property liveReportingMeta, where the information will be added.
 	 * 
 	 * <br/>In particular:
 	 * <br/>liveReportingMeta/type will be an object with an iri and a label property

@@ -55,7 +55,7 @@ public class DepartmentListenerController
 	{
 		if (out != null)
 			return out;
-		File outfile = new File (StartUp.config.at("workingDir").asString() + "/logs");
+		File outfile = new File (StartUp.getConfig().at("workingDir").asString() + "/logs");
 		outfile.mkdir();
 		String timestamp = new SimpleDateFormat("yyMMdd-HHmmss").format(new java.util.Date());
 		outfile = new File(outfile, config.at("logFile").asString() + "_" + timestamp + ".log");
