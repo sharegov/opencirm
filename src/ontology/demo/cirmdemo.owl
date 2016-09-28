@@ -284,9 +284,6 @@
         <NamedIndividual IRI="http://opencirm.org#North_Bay_Village"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#O-OPEN"/>
-    </Declaration>
-    <Declaration>
         <NamedIndividual IRI="http://opencirm.org#OUTCOME_COMPLETE"/>
     </Declaration>
     <Declaration>
@@ -294,9 +291,6 @@
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#OperationsLocalPostgresDB"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#PHONE"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#POTHOLE_LOCATIONTYPE_CHOICES"/>
@@ -348,9 +342,6 @@
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#POTHOME_PWSTATUS_OUTCOME_DEBRIS"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#STANDARD"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#SolrSearchService"/>
@@ -915,10 +906,6 @@
         <NamedIndividual IRI="http://opencirm.org#North_Bay_Village"/>
     </ClassAssertion>
     <ClassAssertion>
-        <Class IRI="http://opencirm.org/cirm#AnyStatus"/>
-        <NamedIndividual IRI="http://opencirm.org#O-OPEN"/>
-    </ClassAssertion>
-    <ClassAssertion>
         <Class IRI="http://opencirm.org/cirm#Outcome"/>
         <NamedIndividual IRI="http://opencirm.org#OUTCOME_COMPLETE"/>
     </ClassAssertion>
@@ -929,10 +916,6 @@
     <ClassAssertion>
         <Class IRI="http://opencirm.org#ConfigParam"/>
         <NamedIndividual IRI="http://opencirm.org#OperationsLocalPostgresDB"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class IRI="http://opencirm.org/cirm#IntakeMethod"/>
-        <NamedIndividual IRI="http://opencirm.org#PHONE"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="http://opencirm.org/cirm#ChoiceValueList"/>
@@ -1001,10 +984,6 @@
     <ClassAssertion>
         <Class IRI="http://opencirm.org/cirm#Outcome"/>
         <NamedIndividual IRI="http://opencirm.org#POTHOME_PWSTATUS_OUTCOME_DEBRIS"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class IRI="http://opencirm.org/cirm#Priority"/>
-        <NamedIndividual IRI="http://opencirm.org#STANDARD"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="http://opencirm.org#ConfigParam"/>
@@ -1370,6 +1349,21 @@
         <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PERSCNTC"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasDefaultIntakeMethod"/>
+        <NamedIndividual IRI="http://opencirm.org#Garbage_Missed_Complaint"/>
+        <NamedIndividual IRI="#PhoneIntake"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasDefaultPriority"/>
+        <NamedIndividual IRI="http://opencirm.org#Garbage_Missed_Complaint"/>
+        <NamedIndividual IRI="#Standard"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasDefaultStatus"/>
+        <NamedIndividual IRI="http://opencirm.org#Garbage_Missed_Complaint"/>
+        <NamedIndividual IRI="#OPEN"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceActor"/>
         <NamedIndividual IRI="http://opencirm.org#Garbage_Missed_Complaint"/>
         <NamedIndividual IRI="http://opencirm.org#Agency_Department_Actor"/>
@@ -1682,17 +1676,17 @@
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org/cirm#hasDefaultIntakeMethod"/>
         <NamedIndividual IRI="http://opencirm.org#Tree_Fallen"/>
-        <NamedIndividual IRI="http://opencirm.org#PHONE"/>
+        <NamedIndividual IRI="#PhoneIntake"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org/cirm#hasDefaultPriority"/>
         <NamedIndividual IRI="http://opencirm.org#Tree_Fallen"/>
-        <NamedIndividual IRI="http://opencirm.org#O-OPEN"/>
+        <NamedIndividual IRI="#Standard"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org/cirm#hasDefaultStatus"/>
         <NamedIndividual IRI="http://opencirm.org#Tree_Fallen"/>
-        <NamedIndividual IRI="http://opencirm.org#STANDARD"/>
+        <NamedIndividual IRI="#OPEN"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceActor"/>
@@ -1757,17 +1751,17 @@
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org/cirm#hasDefaultIntakeMethod"/>
         <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
-        <NamedIndividual IRI="http://opencirm.org#PHONE"/>
+        <NamedIndividual IRI="#PhoneIntake"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org/cirm#hasDefaultPriority"/>
         <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
-        <NamedIndividual IRI="http://opencirm.org#STANDARD"/>
+        <NamedIndividual IRI="#Standard"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org/cirm#hasDefaultStatus"/>
         <NamedIndividual IRI="http://opencirm.org/#Pothole"/>
-        <NamedIndividual IRI="http://opencirm.org#O-OPEN"/>
+        <NamedIndividual IRI="#OPEN"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org/cirm#hasServiceActor"/>
@@ -2624,11 +2618,6 @@ You have received a </Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
-        <NamedIndividual IRI="http://opencirm.org#O-OPEN"/>
-        <Literal datatypeIRI="&xsd;string">OPEN</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
         <NamedIndividual IRI="http://opencirm.org#OUTCOME_COMPLETE"/>
         <Literal datatypeIRI="&xsd;string">COMPLETE</Literal>
     </DataPropertyAssertion>
@@ -2636,11 +2625,6 @@ You have received a </Literal>
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#OperationsLocalPostgresDB"/>
         <Literal datatypeIRI="&xsd;string">OperationsDatabaseConfig</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
-        <NamedIndividual IRI="http://opencirm.org#PHONE"/>
-        <Literal datatypeIRI="&xsd;string">PHONE</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
@@ -2846,11 +2830,6 @@ You have received a </Literal>
         <DataProperty IRI="http://opencirm.org#hasDataSourceClassName"/>
         <NamedIndividual IRI="http://opencirm.org#PostgresDatabase"/>
         <Literal datatypeIRI="&xsd;string">org.sharegov.cirm.rdb.impl.PostgresHook</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
-        <NamedIndividual IRI="http://opencirm.org#STANDARD"/>
-        <Literal datatypeIRI="&xsd;string">STANDARD</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -3452,18 +3431,8 @@ You have received a </Literal>
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
-        <IRI>http://opencirm.org#O-OPEN</IRI>
-        <Literal datatypeIRI="&xsd;string">Open</Literal>
-    </AnnotationAssertion>
-    <AnnotationAssertion>
-        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
         <IRI>http://opencirm.org#OUTCOME_COMPLETE</IRI>
         <Literal datatypeIRI="&xsd;string">Completed.</Literal>
-    </AnnotationAssertion>
-    <AnnotationAssertion>
-        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
-        <IRI>http://opencirm.org#PHONE</IRI>
-        <Literal datatypeIRI="&xsd;string">Phone</Literal>
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
@@ -3544,11 +3513,6 @@ You have received a </Literal>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
         <IRI>http://opencirm.org#POTHOME_PWSTATUS_OUTCOME_DEBRIS</IRI>
         <Literal datatypeIRI="&xsd;string">Debris Removal &amp; Roadway Cleaning</Literal>
-    </AnnotationAssertion>
-    <AnnotationAssertion>
-        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
-        <IRI>http://opencirm.org#STANDARD</IRI>
-        <Literal datatypeIRI="&xsd;string">Standard</Literal>
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
