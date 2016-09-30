@@ -1,26 +1,10 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "description": "schema for an Activity",
-    "type": "object",
-	"properties": {
-		"label": {"$ref": "#/definitions/label"},
-		"type": {
-					"enum": ["Activity"]
-				},
-		"iri": {"$ref": "#/definitions/iri"},
-		"hasLegacyCode": {"$ref": "#/definitions/hasLegacyCode"},
-		"hasOrderBy": {"$ref": "#/definitions/hasOrderBy"},
-		"hasBusinessCodes": {"$ref": "#/definitions/hasBusinessCodes"},
-		"hasOccurDays": {"$ref": "#/definitions/floatNumber"},
-		"hasSuspenseDays": {"$ref": "#/definitions/floatNumber"},
-		"isAutoCreate": {"$ref": "#/definitions/ynQuestion"},
-		"isAutoAssign": {"$ref": "#/definitions/booleanValue"},
-		"hasAllowableOutcome": {"$ref": "#/definitions/Outcome"},
-		"hasDefaultOutcome": {"$ref": "#/definitions/Outcome"},
-		"hasAssignmentRule": {"$ref": "#/definitions/hasAssignmentRule"},
-		"hasActivityAssignment": {"$ref": "#/definitions/hasActivityAssignment"}
-		
-	},
+    "description": "schema for an Service Case Activities list",
+    "items": { "$ref": "#/definitions/Activity"},
+    "minItems": 1,
+    "uniqueItems": true,
+    "type": "array",
 	"definitions":{
 		"ServiceField": {
 							"type": "object",

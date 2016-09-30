@@ -376,9 +376,11 @@ public class ServiceCaseAdmin extends RestService {
 			String path = "";
 																  
 			switch (schema){
-				case "questions": path = "/javascript/schemas/service_field_compact.json";
+				case "questions": path = "/javascript/schemas/service_field_list_compact.json";
 					break;
-				case "activities": path = "/javascript/schemas/activity_compact.json";
+				case "activities": path = "/javascript/schemas/activity_list_compact.json";
+					break;
+				case "activity": path = "/javascript/schemas/activity_compact.json";
 					break;
 			}
 		
