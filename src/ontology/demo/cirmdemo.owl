@@ -176,6 +176,15 @@
         <NamedIndividual IRI="http://opencirm.org#Florida"/>
     </Declaration>
     <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_OUTCOME_BADADDRESS"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_OUTCOME_CONBLOVK"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_OUTCOME_CONTREE"/>
+    </Declaration>
+    <Declaration>
         <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PERSCNTC"/>
     </Declaration>
     <Declaration>
@@ -402,6 +411,45 @@
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#SolrSearchService"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_DENIALDE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_DENIALDE_ACT_TRIGGER"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1_TRIGGER_1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1_TRIGGER_2"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_NOTINET"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_NOTINET_ACT_TRIGGER"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_NOTINET_GENASSIG"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OUTCOME_SENDDEN"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OUTCOME_TREEAPP"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OUTCOME_TREEDEN"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OVERDUE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OVERDUE_GENASSIG"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_PERSCNTC"/>
@@ -807,6 +855,18 @@
         <NamedIndividual IRI="http://opencirm.org#DemoConfigSet"/>
     </ClassAssertion>
     <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#Outcome"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_OUTCOME_BADADDRESS"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#Outcome"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_OUTCOME_CONBLOVK"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#Outcome"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_OUTCOME_CONTREE"/>
+    </ClassAssertion>
+    <ClassAssertion>
         <Class IRI="http://opencirm.org/cirm#Activity"/>
         <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PERSCNTC"/>
     </ClassAssertion>
@@ -1121,6 +1181,58 @@
     <ClassAssertion>
         <Class IRI="http://opencirm.org#ConfigParam"/>
         <NamedIndividual IRI="http://opencirm.org#SolrSearchService"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#Activity"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_DENIALDE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ActivityAssignment"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_DENIALDE_ACT_TRIGGER"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#Activity"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ActivityTrigger"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1_TRIGGER_1"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ActivityTrigger"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1_TRIGGER_2"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#Activity"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_NOTINET"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#ActivityAssignment"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_NOTINET_ACT_TRIGGER"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#MessageTemplate"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_NOTINET_GENASSIG"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#Outcome"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OUTCOME_SENDDEN"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#Outcome"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OUTCOME_TREEAPP"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#Outcome"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OUTCOME_TREEDEN"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#Activity"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OVERDUE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org/cirm#MessageTemplate"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OVERDUE_GENASSIG"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="http://opencirm.org/cirm#Activity"/>
@@ -1477,6 +1589,21 @@
         <NamedIndividual IRI="http://opencirm.org#OUTCOME_COMPLETE"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasAllowableOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PICKUP"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_OUTCOME_CONBLOVK"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasAllowableOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PICKUP"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_OUTCOME_BADADDRESS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasAllowableOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PICKUP"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_OUTCOME_CONTREE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValueList"/>
         <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1"/>
         <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q1_CHOICES"/>
@@ -1550,6 +1677,11 @@
         <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
         <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q3_CHOICES"/>
         <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_Q3_CHOICES_YES"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasActivity"/>
+        <NamedIndividual IRI="http://opencirm.org#Garbage_Missed_Complaint"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PICKUP"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org/cirm#hasActivity"/>
@@ -1873,6 +2005,111 @@
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org/cirm#hasAllowableOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_DENIALDE"/>
+        <NamedIndividual IRI="http://opencirm.org#OUTCOME_COMPLETE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasDefaultOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_DENIALDE"/>
+        <NamedIndividual IRI="http://opencirm.org#OUTCOME_COMPLETE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasActivity"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_DENIALDE_ACT_TRIGGER"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_DENIALDE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasActivityAssignment"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1_TRIGGER_2"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasActivityAssignment"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1_TRIGGER_1"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasAllowableOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OUTCOME_TREEAPP"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasAllowableOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OUTCOME_TREEDEN"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasOverdueActivity"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OVERDUE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasActivity"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1_TRIGGER_1"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasLegacyEvent"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1_TRIGGER_1"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_DENIALDE_ACT_TRIGGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1_TRIGGER_1"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OUTCOME_TREEDEN"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasActivity"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1_TRIGGER_2"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasActivityAssignment"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1_TRIGGER_2"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_NOTINET_ACT_TRIGGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1_TRIGGER_2"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OUTCOME_TREEAPP"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasActivityAssignment"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_NOTINET"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_NOTINET_ACT_TRIGGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasAllowableOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_NOTINET"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OUTCOME_SENDDEN"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasEmailTemplate"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_NOTINET"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_NOTINET_GENASSIG"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasActivity"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_NOTINET_ACT_TRIGGER"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_NOTINET"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_NOTINET_ACT_TRIGGER"/>
+        <NamedIndividual IRI="http://opencirm.org#OUTCOME_COMPLETE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasAllowableOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OVERDUE"/>
+        <NamedIndividual IRI="http://opencirm.org#OUTCOME_COMPLETE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasEmailTemplate"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OVERDUE"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OVERDUE_GENASSIG"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasAllowableOutcome"/>
         <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_PERSCNTC"/>
         <NamedIndividual IRI="http://opencirm.org#OUTCOME_COMPLETE"/>
     </ObjectPropertyAssertion>
@@ -1895,6 +2132,26 @@
         <ObjectProperty IRI="http://opencirm.org/cirm#hasChoiceValue"/>
         <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q2_CHOICES"/>
         <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_Q2_CHOICES_NO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasActivity"/>
+        <NamedIndividual IRI="http://opencirm.org#Tree_Fallen"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_DENIALDE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasActivity"/>
+        <NamedIndividual IRI="http://opencirm.org#Tree_Fallen"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasActivity"/>
+        <NamedIndividual IRI="http://opencirm.org#Tree_Fallen"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OVERDUE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org/cirm#hasActivity"/>
+        <NamedIndividual IRI="http://opencirm.org#Tree_Fallen"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_NOTINET"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org/cirm#hasActivity"/>
@@ -2348,6 +2605,21 @@
         <Literal datatypeIRI="&xsd;string"></Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_OUTCOME_BADADDRESS"/>
+        <Literal datatypeIRI="&xsd;string">BADADDRESS</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_OUTCOME_CONBLOVK"/>
+        <Literal datatypeIRI="&xsd;string">CONBLOVK</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_OUTCOME_CONTREE"/>
+        <Literal datatypeIRI="&xsd;string">CONTREE</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org/cirm#hasBusinessCodes"/>
         <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PERSCNTC"/>
         <Literal datatypeIRI="&xsd;string">,INSSPEC,</Literal>
@@ -2373,9 +2645,29 @@
         <Literal datatypeIRI="&xsd;string">N</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasBusinessCodes"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PICKUP"/>
+        <Literal datatypeIRI="&xsd;string">5DAYWORK,DUPSTAFF,SUCCESSR,</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
         <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PICKUP"/>
         <Literal datatypeIRI="&xsd;string">PICKUP</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOccurDays"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PICKUP"/>
+        <Literal datatypeIRI="&xsd;float">0.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasSuspenseDays"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PICKUP"/>
+        <Literal datatypeIRI="&xsd;float">1.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#isAutoCreate"/>
+        <NamedIndividual IRI="http://opencirm.org#GARBAGEMISSEDCOMP_PICKUP"/>
+        <Literal datatypeIRI="&xsd;string">N</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org/cirm#hasAllowableModules"/>
@@ -3211,6 +3503,179 @@ You have received a </Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org/cirm#hasBusinessCodes"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_DENIALDE"/>
+        <Literal datatypeIRI="&xsd;string">,SUCCESSR,</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_DENIALDE"/>
+        <Literal datatypeIRI="&xsd;string">DENIALDE</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOccurDays"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_DENIALDE"/>
+        <Literal datatypeIRI="&xsd;float">0.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasSuspenseDays"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_DENIALDE"/>
+        <Literal datatypeIRI="&xsd;float">0.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#isAutoCreate"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_DENIALDE"/>
+        <Literal datatypeIRI="&xsd;string">N</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasBusinessCodes"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1"/>
+        <Literal datatypeIRI="&xsd;string">5DAYWORK,DUPSTAFF,SUCCESSR,</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1"/>
+        <Literal datatypeIRI="&xsd;string">INSPECT1</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOccurDays"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1"/>
+        <Literal datatypeIRI="&xsd;float">0.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasSuspenseDays"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1"/>
+        <Literal datatypeIRI="&xsd;float">20.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#isAutoCreate"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_INSPECT1"/>
+        <Literal datatypeIRI="&xsd;string">N</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasBusinessCodes"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_NOTINET"/>
+        <Literal datatypeIRI="&xsd;string">,SUCCESSR,</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_NOTINET"/>
+        <Literal datatypeIRI="&xsd;string">NOTINET</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOccurDays"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_NOTINET"/>
+        <Literal datatypeIRI="&xsd;float">0.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasSuspenseDays"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_NOTINET"/>
+        <Literal datatypeIRI="&xsd;float">5.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#isAutoCreate"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_NOTINET"/>
+        <Literal datatypeIRI="&xsd;string">N</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasBody"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_NOTINET_GENASSIG"/>
+        <Literal datatypeIRI="&xsd;string">Greetings,
+
+Public Works has performed an inspection for $$SR_NUMBER$$, $$SR_TYPE$$, located at $$SR_LOCATION_STRING$$.
+
+It has been determined by Public Works that this location has not been approved for a tree planting for the reason(s) listed below:
+
+Reason: $$SR_DENIALDE_DETAILS$$
+
+Please inform the requestor of the denial of the tree request.
+
+Citizen: $$CITIZENS_NAME$$
+Citizen address: $$CITIZENS_ADDRESS1$$, $$CITIZENS_ADDRESS2$$
+Citizen phone number: $$CITIZENS_PHONE$$
+Citizen email address:  $$CITIZENS_EMAIL$$
+
+Thank you.</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasCc"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_NOTINET_GENASSIG"/>
+        <Literal datatypeIRI="&xsd;string">egov.miamidade@gmail.com</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasTo"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_NOTINET_GENASSIG"/>
+        <Literal datatypeIRI="&xsd;string">biordanov@liquidoperations.com</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OUTCOME_SENDDEN"/>
+        <Literal datatypeIRI="&xsd;string">SENDDEN</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OUTCOME_TREEAPP"/>
+        <Literal datatypeIRI="&xsd;string">TREEAPP</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OUTCOME_TREEDEN"/>
+        <Literal datatypeIRI="&xsd;string">TREEDEN</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasBusinessCodes"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OVERDUE"/>
+        <Literal datatypeIRI="&xsd;string">,NOUPDATE,</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasLegacyCode"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OVERDUE"/>
+        <Literal datatypeIRI="&xsd;string">OVERDUE</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasOccurDays"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OVERDUE"/>
+        <Literal datatypeIRI="&xsd;float">0.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasSuspenseDays"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OVERDUE"/>
+        <Literal datatypeIRI="&xsd;float">0.0</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#isAutoCreate"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OVERDUE"/>
+        <Literal datatypeIRI="&xsd;string">N</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasBody"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OVERDUE_GENASSIG"/>
+        <Literal datatypeIRI="&xsd;string">Greetings,
+
+A new $$SR_TYPE$$ Service Request, $$SR_NUMBER$$ was created on $$SR_CREATED_DATE$$. An inspection of  the location was due on, $$ACTVTY_INSPECT1_DUE_DTE$$.
+
+This request is now overdue in the CSR system.
+
+Please perform the inspection and update the system as soon as possible.
+
+Thank you.</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasCc"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OVERDUE_GENASSIG"/>
+        <Literal datatypeIRI="&xsd;string">egov.miamidade@gmail.com</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasSubject"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OVERDUE_GENASSIG"/>
+        <Literal datatypeIRI="&xsd;string">OVERDUE PUBLIC WORKS INSPECTION -SR#: $$SR_NUMBER$$</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasTo"/>
+        <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_OVERDUE_GENASSIG"/>
+        <Literal datatypeIRI="&xsd;string">biordanov@liquidoperations.com</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org/cirm#hasBusinessCodes"/>
         <NamedIndividual IRI="http://opencirm.org#TREEFALLEN_PERSCNTC"/>
         <Literal datatypeIRI="&xsd;string">,INSSPEC,</Literal>
     </DataPropertyAssertion>
@@ -3669,6 +4134,21 @@ You have received a </Literal>
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#GARBAGEMISSEDCOMP_OUTCOME_BADADDRESS</IRI>
+        <Literal datatypeIRI="&xsd;string">Bad or incorrect property address</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#GARBAGEMISSEDCOMP_OUTCOME_CONBLOVK</IRI>
+        <Literal datatypeIRI="&xsd;string">Container too close to a Vehicle / Car (5 feet)</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#GARBAGEMISSEDCOMP_OUTCOME_CONTREE</IRI>
+        <Literal datatypeIRI="&xsd;string">Container too close to a Tree (5 feet)</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
         <IRI>http://opencirm.org#GARBAGEMISSEDCOMP_PERSCNTC</IRI>
         <Literal datatypeIRI="&xsd;string">Personal Contact</Literal>
     </AnnotationAssertion>
@@ -3956,6 +4436,41 @@ You have received a </Literal>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
         <IRI>http://opencirm.org#POTHOME_PWSTATUS_OUTCOME_DEBRIS</IRI>
         <Literal datatypeIRI="&xsd;string">Debris Removal &amp; Roadway Cleaning</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#TREEFALLEN_DENIALDE</IRI>
+        <Literal datatypeIRI="&xsd;string">Add Denial Details</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#TREEFALLEN_INSPECT1</IRI>
+        <Literal datatypeIRI="&xsd;string">Assigned to Public Works for Inspection</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#TREEFALLEN_NOTINET</IRI>
+        <Literal datatypeIRI="&xsd;string">Notify NET of Denial</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#TREEFALLEN_OUTCOME_SENDDEN</IRI>
+        <Literal datatypeIRI="&xsd;string">Send Denial Letter to Requester</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#TREEFALLEN_OUTCOME_TREEAPP</IRI>
+        <Literal datatypeIRI="&xsd;string">Tree Approved</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#TREEFALLEN_OUTCOME_TREEDEN</IRI>
+        <Literal datatypeIRI="&xsd;string">Tree Denied</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#TREEFALLEN_OVERDUE</IRI>
+        <Literal datatypeIRI="&xsd;string">Overdue Inspection Results</Literal>
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
