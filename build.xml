@@ -15,6 +15,7 @@
 	<path id="compile-classpath">
 		<fileset dir="lib">
 			<include name="**/*.jar" />
+      <exclude name="HermiT.jar"/>
 		</fileset>
 		<pathelement path="${java.class.path}" />
 	</path>
