@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfaceValidation", "text!../html/srmarkup.ht"], 
+define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", 
+        "interfaceValidation", "text!../html/srmarkup.ht"], 
    function($, U, rest, ui, store, cirm, legacy, interfaceValidation, srmarkupText)   {
 	
    
@@ -26,30 +27,30 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 	
     function AddressBluePrint() {
     	var self = this;
-		self.Street_Number = "";
-		self.Street_Name = "";
-		self.fullAddress = ""; 
-		self.Street_Unit_Number = ""; 
-		self.Zip_Code = "";
-		self.folio = "";
-		self.hasLocationName = "";
-		self.type = "Street_Address";
-		self.Street_Address_City = {"iri":"", "label":"" };
-		self.Street_Address_State = {"iri":"http://www.miamidade.gov/ontology#Florida", "label":"Florida" };
-		self.Street_Direction = {"label":"", "iri":""};
-		self.hasStreetType = {"label":"", "iri":""};
-		self.addressType = "";
+		  self.Street_Number = "";
+  		self.Street_Name = "";
+  		self.fullAddress = ""; 
+  		self.Street_Unit_Number = ""; 
+  		self.Zip_Code = "";
+  		self.folio = "";
+  		self.hasLocationName = "";
+  		self.type = "Street_Address";
+  		self.Street_Address_City = {"iri":"", "label":"" };
+  		self.Street_Address_State = {"iri":"http://www.miamidade.gov/ontology#Florida", "label":"Florida" };
+  		self.Street_Direction = {"label":"", "iri":""};
+  		self.hasStreetType = {"label":"", "iri":""};
+  		self.addressType = "";
     }
     
     function ServiceActorAddressBluePrint()
     {
     	var self = this;
-		self.fullAddress = ""; 
-		self.Street_Unit_Number = ""; 
-		self.Zip_Code = "";
-		self.type = "Street_Address";
-		self.Street_Address_City = {"iri":"", "label":"" };
-		self.Street_Address_State = {"iri":"http://www.miamidade.gov/ontology#Florida", "label":"Florida" };
+  		self.fullAddress = ""; 
+  		self.Street_Unit_Number = ""; 
+  		self.Zip_Code = "";
+  		self.type = "Street_Address";
+  		self.Street_Address_City = {"iri":"", "label":"" };
+  		self.Street_Address_State = {"iri":"http://www.miamidade.gov/ontology#Florida", "label":"Florida" };
     }
     
     function ServiceActor(iri, label, username, serverDate, isNew) {
@@ -65,11 +66,11 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
     	self.hasEmailAddress = {"iri":"", "label":"", "type":"EmailAddress"};
     	self.atAddress = new ServiceActorAddressBluePrint();
     	self.type = "legacy:ServiceCaseActor";
-		if(!isNew) {
-			self.hasUpdatedDate = serverDate;
-			self.isModifiedBy = username;
-    		self.isCreatedBy = "";
-		}
+  		if(!isNew) {
+  			self.hasUpdatedDate = serverDate;
+  			self.isModifiedBy = username;
+      		self.isCreatedBy = "";
+  		}
     	else if(isNew) {
     		self.hasDateCreated = serverDate;
     		self.isCreatedBy = username;
@@ -79,9 +80,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 	    		self.isAnonymous = false;
     }
     
-	function isCitizenActor(iri) {
-		return (iri === 'http://www.miamidade.gov/cirm/legacy#CITIZEN');
-	}
+  	function isCitizenActor(iri) {
+  		return (iri === 'http://www.miamidade.gov/cirm/legacy#CITIZEN');
+  	}
 
     function ServiceActivity(iri, label, username, serverDate, isNew) {
     	var self = this;
@@ -732,8 +733,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 	    };
 	    
 	    self.startNewServiceRequest = function(type) {
-			var typeiri = !type.startsWith("http:") ?
-					    'http://www.miamidade.gov/cirm/legacy#' + type : type;	        
+			 var typeiri = cirm.refs.fulliri(type);
+      // !type.startsWith("http:") ? 'http://www.miamidade.gov/cirm/legacy#' + type : type;	        
 			if (cirm.user.isConfigAllowed()) {
 				//hilpold Check server for new version of SR type 
 				cirm.refs.reloadServiceCaseTypeIfNeeded(type);
@@ -778,9 +779,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 
 			//TODO Trigger type change event
 			$(document).trigger(legacy.InteractionEvents.SrTypeSelection, [type]);
-			
-			var typeiri = !type.startsWith("http:") ?
-					    'http://www.miamidade.gov/cirm/legacy#' + type : type;
+			var typeiri = cirm.refs.fulliri(type);
+//			var typeiri = !type.startsWith("http:") ?
+//					    'http://www.miamidade.gov/cirm/legacy#' + type : type;
 
 			//TODO hilpold - Refactor and simplify below code  
 			if(!U.isEmptyString(self.data().type()))

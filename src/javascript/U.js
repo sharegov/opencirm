@@ -253,13 +253,18 @@ function objectRecurse(obj, f) {
 
 // Utility functions for manipulating IRIs
 var IRI = {
+    // return the fragment part (after the '#')
     name : function(iri) {
         return iri.split('#')[1];
     },
+    // return the next to last part of the URI, which by convention will
+    // be the type of the object
     type : function(iri) {
         var A = iri.split('#')[0].split('/');
         return A[A.length-2];            
     },
+    // return the last part of the URI, which by convention will
+    // be the operational ID of the object
     id : function(iri) {
         var A = iri.split('#')[0].split('/');
         return A[A.length-1];                    

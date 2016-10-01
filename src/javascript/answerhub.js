@@ -755,35 +755,40 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 					     if (typeof doc.ontology == "undefined") {
 					       doc.ontology = [];
 					     }
-               if (window.location.href.indexOf('.311.') > -1 ) {
-	                doc.url = doc.url.replace('kb.miamidade', 'kb.311.miamidade');
-	                //Determine the article viewer for COM URL + ?
-	                var comViewer = doc.url.match("(.*/).*\.html$")[1] + "com_viewer/kb-viewer.html?";
-	                //Add the article number as query string e.g. ...?411231 
-	                var viewArticleURL = comViewer + doc.url.match(".*kbarticle_([0-9]+)\.html.*")[1];
-	                doc.url = viewArticleURL;
-                  }
-						  });
-					    console.log('results', r);
-					    self.totalResults(r.total);
-					    self.topics(r.docs);
-					    self.serviceRequests.removeAll();
-					    $.each(r.docs, function(i,doc) {
-				            $.each(doc.ontology, function(i,o) {
-				                    if (cirm.refs.serviceCases[o] != undefined &&
-				                        self.serviceRequests.indexOf(o) < 0) {
-						                    self.serviceRequests.push(o);
-						                   }
-				            });
-						  });
-						  $("#kb_results").show();
-						}
-						else {
-						    alert(r.error);
-						    console.log(r);
-						}
-						$('#kb_results').scrollTop(0);
+               // some 311/ city of miami hack that we are ignoring in the demo to 
+               // simplify
+               // if (window.location.href.indexOf('.311.') > -1 ) {
+	              //   doc.url = doc.url.replace('kb.miamidade', 'kb.311.miamidade');
+	              //   //Determine the article viewer for COM URL + ?
+	              //   var comViewer = doc.url.match("(.*/).*\.html$")[1] + "com_viewer/kb-viewer.html?";
+	              //   //Add the article number as query string e.g. ...?411231 
+	              //   var viewArticleURL = comViewer + doc.url.match(".*kbarticle_([0-9]+)\.html.*")[1];
+	              //   doc.url = viewArticleURL;
+               // }       
+              var replacePrefix = "http://kb.miamidade.gov:8400/pkbi/content/";       
+              if (doc.url.startsWith(replacePrefix))
+                doc.url = "/html/kb/" + doc.url.substring(replacePrefix.length)
 						});
+					  console.log('results', r);
+					  self.totalResults(r.total);
+					  self.topics(r.docs);
+					  self.serviceRequests.removeAll();
+				    $.each(r.docs, function(i,doc) {
+	            $.each(doc.ontology, function(i,o) {
+                if (cirm.refs.serviceCases[o] != undefined &&
+                    self.serviceRequests.indexOf(o) < 0) {
+                    self.serviceRequests.push(o);
+                   }
+	            });
+					  });
+						$("#kb_results").show();
+					}
+					else {
+  			    alert(r.error);
+  			    console.log(r);
+					}
+					$('#kb_results').scrollTop(0);
+				});
 		}
 		
 		self.showProgress = function(id) {

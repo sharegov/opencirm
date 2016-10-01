@@ -92,7 +92,7 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
                     var key = v.label;
                     if (v.hasJurisdictionCode)
                         key += ' - ' + v.hasJurisdictionCode;
-                    x[key]=v.hasLegacyCode ? v.hasLegacyCode : v.iri;
+                    x[key]=v.iri; //v.hasLegacyCode ? v.hasLegacyCode : v.iri;
                  });
                  return x;
             }},
@@ -266,8 +266,24 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
             return serviceCase;
         } 
         
-        
-        
+        // This is a TODO: prefixes need to be loaded from the server, from
+        // the main ontology itself, those are hard-coded for demo purposes.
+        //         
+        self.fulliri = function(iri) {
+            if (iri.startsWith("http:") || iri.startsWith("https:"))
+                return iri;
+            var parts = iri.split(":");
+            if (parts.length == 1)
+                return "http://opencirm.org#" + iri;
+            else if (parts[0] == "platform")
+                return "http://opencirm.org/platform#" + iri;
+            else if (parts[0] == "upper")
+                return "http://opencirm.org/upper#" + iri;
+            else if (parts[0] == "cirm")
+                return "http://opencirm.org/cirm#" + iri;
+            else if (parts[0] == "demo")
+                return "http://opencirm.org/demo#" + iri;            
+        };
         
     }
 
