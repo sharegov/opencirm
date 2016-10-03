@@ -1070,7 +1070,7 @@ public class ServiceCaseManager extends OntoAdmin {
 		return protocol + host + port;
 	}
 	
-	public Json addQuestionsServiceCase (String individualID, Json data, String userName){
+	public Json addQuestionsServiceCase (String individualID, Json data, String userName, String comment){
 		String host = getHostIpAddress();		
 		
 		if (!host.isEmpty() && validateJson(host + "/javascript/schemas/service_field_compact.json", data)){
@@ -1078,7 +1078,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			List<String> evictionList = new ArrayList<String>();
 			evictionList.add(individualID);
 			String propertyID = "hasServiceField";
-			String comment = "Create/Replace Questions for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID);	
+			comment = (comment==null)?"Create/Replace Questions for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID):comment;	
 			
 			Json oldQuestions = getServiceCaseQuestions(individualID);		
 			
