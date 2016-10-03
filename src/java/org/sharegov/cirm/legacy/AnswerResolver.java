@@ -15,7 +15,10 @@
  ******************************************************************************/
 package org.sharegov.cirm.legacy;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -25,6 +28,7 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.sharegov.cirm.OWL;
+import org.sharegov.cirm.utils.GenUtils;
 
 import mjson.Json;
 
@@ -34,11 +38,18 @@ import mjson.Json;
  * If hasLegacyCode is no REGEXP, one answer for a question, whose IRI fragments ends with the legacy code will be returned. 
  * Else if hasLegacyCode starts with REGEX_DETECT_STR "(", the result will contain answers to all questions matching the regex pattern by iri fragment in the given sr.
  * (Separarted by ";", no ")
+ * 
+ * Date answer literals will be formatted.
  *  
  * @author Thomas Hilpold
  */
 public class AnswerResolver implements VariableResolver
 {
+	public static final String[] DATE_FORMAT_PATTERNS = new String[]
+			{ 	"MMM d, yyyy", //'Mon DD, YYYY'
+				"MM-dd-yyyy h:mm aa"  //'MON-DD-YYYY HH:MI AM '
+			};	
+	
 	public static boolean DBG = true;
 	public static final String HAS_LEGACY_CODE_DP = "legacy:hasLegacyCode";
 	public static final char ANSWER_SEPARATOR_CHAR = ';';
@@ -124,7 +135,12 @@ public class AnswerResolver implements VariableResolver
 					for (Json answerObject : hasAnswerObjectlist) 
 					{
 						result += answerObject.at("label", "").asString();
-						if (i == hasAnswerObjectlist.size() - 2) result += " and ";
+						if (i == hasAnswerObjectlist.size() - 2) {
+							if (hasAnswerObjectlist.size() > 2) {
+								result += ",";
+							}
+							result += " and ";
+						}
 						else if (i < hasAnswerObjectlist.size() - 1) result += ", ";
 						i++;
 					}
@@ -132,6 +148,7 @@ public class AnswerResolver implements VariableResolver
 				else if (tempObj.has("hasAnswerValue")) 
 				{
 					result = tempObj.at("hasAnswerValue", "").asString();
+					result = tryDateFormat(result);
 				}
 				// else not valid 
 			}
@@ -164,7 +181,12 @@ public class AnswerResolver implements VariableResolver
 					for (Json answerObject : hasAnswerObjectlist) 
 					{
 						result += answerObject.at("label", "").asString();
-						if (i == hasAnswerObjectlist.size() - 2) result += " and ";
+						if (i == hasAnswerObjectlist.size() - 2) {
+							if (hasAnswerObjectlist.size() > 2) {
+								result += ",";
+							}
+							result += " and ";
+						}
 						else if (i < hasAnswerObjectlist.size() - 1) result += ", ";
 						i++;
 					}
@@ -181,5 +203,33 @@ public class AnswerResolver implements VariableResolver
 		} 
 		return result;
 	}
-
+	
+	/**
+	 * Attempt to detect if a string is a date and formats it accordingly.
+	 * Day only format is used if hours and minutes are zero.
+	 * 
+	 * @param dateLiteralCandidate
+	 * @return
+	 */
+	String tryDateFormat(String dateLiteralCandidate) {
+		if (dateLiteralCandidate == null) return dateLiteralCandidate;
+		String result = dateLiteralCandidate;
+		if (dateLiteralCandidate.contains("T") && dateLiteralCandidate.contains("0:00")) {
+			try {
+				Date date = GenUtils.parseDate(dateLiteralCandidate.trim());
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(date);
+				SimpleDateFormat dFormat;
+				if (cal.get(Calendar.HOUR_OF_DAY) == 0 && cal.get(Calendar.MINUTE) == 0) {
+					dFormat = new SimpleDateFormat(DATE_FORMAT_PATTERNS[0]);
+				} else {
+					dFormat = new SimpleDateFormat(DATE_FORMAT_PATTERNS[1]);
+				}
+				result = dFormat.format(date);
+			} catch (Exception  e) {
+				System.err.println("Ignored that date parsing failed for " + dateLiteralCandidate);
+			}
+		}
+		return result;
+	}
 }

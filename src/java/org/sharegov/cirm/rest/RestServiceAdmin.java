@@ -39,12 +39,11 @@ public class RestServiceAdmin extends RestService
 	@Path("/sysinfo")
 	public Json sysInfo()
 	{
-		System.out.println("in RestServiceAdmin.syinfo, remove this trace");
 		try
 		{
 			Json info = Json.object();
 			info.set("host", java.net.InetAddress.getLocalHost().getHostName());
-			info.set("config", StartUp.config);
+			info.set("config", StartUp.getConfig());
 			// add whatever else may be needed...JVM sys properties, memory data, 
 			// other stats collected somewhere (in RESTlet filters or whatever)
 			return info;

@@ -124,6 +124,7 @@ import org.sharegov.cirm.rdb.Statement;
 import org.sharegov.cirm.stats.CirmStatistics;
 import org.sharegov.cirm.stats.CirmStatisticsFactory;
 import org.sharegov.cirm.stats.SRCirmStatsDataReporter;
+import org.sharegov.cirm.utils.ConcurrentLockedToOpenException;
 import org.sharegov.cirm.utils.ExcelExportUtil;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.JsonUtil;
@@ -1056,12 +1057,43 @@ public class LegacyEmulator extends RestService
 //		}
 	}
 
+	/**
+	 * UpdateHistoric allows updating a serviceCase in the past for exempt clients.
+	 * e.g. close a locked case at a date provided by a department.
+	 * 
+	 * @param updatedServiceCase a prefixed service case json with updates applied.
+	 * @param updatedDateStr a date in ISO (Genutils) standard.
+	 * @return
+	 */
+	@POST
+	@Path("updateHistoric")
+	@Consumes("application/json")
+	@Produces("application/json")
+	public Json updateServiceCaseHistoric(Json updatedServiceCase, @QueryParam("updatedDate") final String updatedDateStr)
+	{
+		if (!isClientCirmAdmin()) {
+			return ko("Permission denied for non CirmAdmin client.");
+		}
+		ThreadLocalStopwatch.startTop("START updateServiceCaseHistoric");
+		System.out.println(updatedServiceCase.toString());
+		Date updatedDate = GenUtils.parseDate(updatedDateStr);
+		Json result = updateServiceCase(updatedServiceCase, updatedDate, "department");
+		if (result.is("ok", true)) {
+			srStatsReporter.succeeded("updateServiceCaseHistoric restcall", updatedServiceCase);
+		} else {
+			srStatsReporter.failed("updateServiceCaseHistoric restcall", updatedServiceCase, result.at("error").toString(), result.at("stackTrace").toString());
+		}
+		ThreadLocalStopwatch.stop("END updateServiceCaseHistoric");
+		return result;
+	}
+	
 	@POST
 	//@Encoded 2372 Java8 hilpold
 	@Path("update")
 	@Produces("application/json")
 	public Json updateServiceCase(@FormParam("data") final String formData)
 	{
+		ThreadLocalStopwatch.startTop("START updateServiceCase data");
 		Json form = read(formData);
 		
 		// Not sure if this is needed anymore (Boris)
@@ -1071,17 +1103,21 @@ public class LegacyEmulator extends RestService
 		if (!isClientExempt()
 				&& !Permissions.check(individual("BO_Update"),
 						individual(form.at("type").asString()),
-						getUserActors()))
+						getUserActors())) {
+			ThreadLocalStopwatch.stop("DENIED updateServiceCase data");
 			return ko("Permission denied.");
+		}
 		else
 		{
 			Json result = updateServiceCase(form, "cirmuser");
 			if (result.is("ok", true)) 
 			{
+				ThreadLocalStopwatch.stop("END updateServiceCase data");
 				srStatsReporter.succeeded("updateServiceCase restcall", form);
 			}
 			else
 			{
+				ThreadLocalStopwatch.fail("FAIL updateServiceCase data");
 				srStatsReporter.failed("updateServiceCase restcall", form, result.at("error").toString(), result.at("stackTrace").toString());
 			}
 			return result;
@@ -1190,16 +1226,28 @@ public class LegacyEmulator extends RestService
 		///T2 END
 		//06-20-2013 syed - Check for a status change.
 		if(currentStatus != null && 
-				newStatus != null	&&
-				!currentStatus.equals(newStatus))
-			mngr.changeStatus(newStatus, updatedDate, (srModifiedBy != null)?srModifiedBy.getLiteral():null, bontology, emailsToSend);
+				!currentStatus.equals(newStatus)) 
+		{
+			if ("cirmuser".equals(originator) 
+				&& currentStatus.equals(individual("legacy:O-LOCKED"))
+				&& newStatus.equals(individual("legacy:O-OPEN"))) 
+			{
+				//2016.07.08 hilpold mdcirm 2639 
+				// We prevent a very specific concurrent SR modification problem:
+				// only if a user saves an SR in OPEN status, which is already locked, we prevent 
+				// an overwrite of interface changes.
+				throw new ConcurrentLockedToOpenException();
+			} else {
+				mngr.changeStatus(currentStatus, newStatus, updatedDate, (srModifiedBy != null)?srModifiedBy.getLiteral():null, bontology, emailsToSend);
+			}
+		}
 
 		//Update those existing Activities for which Outcome is set in current request
 		if(uiActs.asJsonList().size() > 0)
 			updateExistingActivities(uiActs, dbActs, mngr, bontology, boid, emailsToSend);
 
 		
-		
+		String srModifiedByStr = srModifiedBy == null? null : srModifiedBy.getLiteral();
 		//06-20-2013 syed - set the createdBy to the SR modifier.
 		for (final Json eachActivity : newActivities.asJsonList())
 		{
@@ -1209,6 +1257,8 @@ public class LegacyEmulator extends RestService
 					.at("legacy:hasDetails").asString() : null;
 			String assignedTo = eachActivity.has("legacy:isAssignedTo") ? eachActivity
 					.at("legacy:isAssignedTo").asString() : null;
+			String actCreatedBy = eachActivity.has("isCreatedBy") ? eachActivity
+							.at("isCreatedBy").asString() : srModifiedByStr;					
 			Json hasOutcome = eachActivity.has("legacy:hasOutcome") ? eachActivity
 					.at("legacy:hasOutcome") : null;
 			java.util.Date createdDate = eachActivity.has("hasDateCreated") ? 
@@ -1221,7 +1271,7 @@ public class LegacyEmulator extends RestService
 								    assignedTo, 
 								    bontology,
 								    createdDate, 
-								    (srModifiedBy != null)?srModifiedBy.getLiteral():null,
+								    actCreatedBy,
 								    emailsToSend);
 			else
 			{
@@ -1233,7 +1283,7 @@ public class LegacyEmulator extends RestService
 									bontology,
 									createdDate,
 									completedDate,
-									(srModifiedBy != null)?srModifiedBy.getLiteral():null,
+									actCreatedBy,
 									emailsToSend);
 			}
 			if (!eachActivity.has("legacy:hasOutcome") && eachActivity.is("legacy:isAccepted", true))
@@ -1267,6 +1317,29 @@ public class LegacyEmulator extends RestService
 		{
 			Json result = bontology.toJSON();
 			addAddressData(result);
+			//Register Top Level Tx fire Update event
+			CirmTransaction.get().addTopLevelEventListener(new CirmTransactionListener() {
+			    public void transactionStateChanged(final CirmTransactionEvent e)
+			    {
+			    	if (e.isSucceeded())
+			    	{
+			    		try
+			    		{
+			    			EventDispatcher.get().dispatch(
+			    					OWL.individual("legacy:ServiceCaseUpdateEvent"), 
+						            bontology.getBusinessObject(), 
+						            OWL.individual("BO_Update"),
+						            Json.object("case", result.dup()));
+			    		}
+			    		catch (Exception ex)
+			    		{
+							ThreadLocalStopwatch.error("Error updateServiceCaseTransaction - Failed to dispatch update event for " + bontology.getObjectId());
+							ex.printStackTrace();
+			    		}
+			    	}
+			    }
+			});
+			//
 			//START : Emails to customers
 			if(actorEmails != null)
 			{
@@ -1283,7 +1356,11 @@ public class LegacyEmulator extends RestService
 			return updateResult;
 	}
 	
-	public Json updateServiceCase(final Json serviceCaseParam, final String originator)
+	public Json updateServiceCase(final Json serviceCaseParam, final String originator) {
+		return updateServiceCase(serviceCaseParam, null, originator);
+	}
+	
+	public Json updateServiceCase(final Json serviceCaseParam, final Date updateDate, final String originator)
 	{
 		if (originator == null) throw new NullPointerException("originator");
 		//wrap the entire update in a transaction block.
@@ -1302,7 +1379,7 @@ public class LegacyEmulator extends RestService
 				Long boid = serviceCaseParam.at("boid").asLong();
 				Json bo = findServiceCaseOntology(boid).toJSON();
 				//TODO hilpold not always cirmuser, could be CityOfMIamiClient or DepartmentIntegration also!
-				Json result = updateServiceCaseTransaction(serviceCaseParam, bo, null, emailsToSend, originator); //"cirmuser"
+				Json result = updateServiceCaseTransaction(serviceCaseParam, bo, updateDate, emailsToSend, originator); //"cirmuser"
 				Response.setCurrent(current);
 				return result;
 			}});			
@@ -1311,6 +1388,7 @@ public class LegacyEmulator extends RestService
 		}
 		catch (Throwable e)
 		{
+			//Do not catch error here.
 			ThreadLocalStopwatch.fail("FAIL updateServiceCase (str)");
 			System.out.println("formData passed into updateServiceCase: "+ serviceCaseParam.toString());
 			e.printStackTrace();
@@ -1563,7 +1641,7 @@ public class LegacyEmulator extends RestService
 	@Produces("application/json")
 	public Json createNewKOSR(@FormParam("data") final String formData)
 	{
-		ThreadLocalStopwatch.start("START createNewKOSR");
+		ThreadLocalStopwatch.startTop("START createNewKOSR");
 		final Json legacyForm = read(formData);		
 		try
 		{
@@ -1987,10 +2065,16 @@ public class LegacyEmulator extends RestService
 
 	}
 
+	/**
+	 * Creates an activity now, ignoring possible occur day settings.
+	 * @param boid
+	 * @param activityCode
+	 * @return
+	 */
 	@GET
 	@Path("/bo/{boid}/activities/create/{activityCode}")
 	@Produces("application/json")
-	public Json createActivity(@PathParam("boid") Long boid,
+	public Json createActivityNow(@PathParam("boid") Long boid,
 			@PathParam("activityCode") String activityCode)
 	{
 		try
@@ -2019,7 +2103,8 @@ public class LegacyEmulator extends RestService
 				OWLNamedIndividual activity = individual("legacy:" + activityCode);
 				//hilpold whole algorithm should be inside a transaction and SendEmailOnTxSuccessListener used
 				List<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();
-				manager.createActivity(activity, null, null, bo, null, null, emailsToSend);
+				//Create the activity ignoring occur day settings on TM callback.
+				manager.createActivityOccurNow(activity, bo, emailsToSend);
 				persister.saveBusinessObjectOntology(bo.getOntology());
 				for (CirmMessage m : emailsToSend) 
 				{
@@ -2083,7 +2168,7 @@ public class LegacyEmulator extends RestService
 	@GET
     @Path("/bo/{boid}/activity/{activityFragment}/overdue/create/{activityCode}")
     @Produces("application/json")
-    public Json createWhenOverdue(@PathParam("boid") Long boid,
+    public Json createActivityWhenOverdue(@PathParam("boid") Long boid,
                   @PathParam("activityFragment") String activityFragment,
                   @PathParam("activityCode") String overdueActivity)
     {	
@@ -2105,7 +2190,8 @@ public class LegacyEmulator extends RestService
                         	return ko("Permission denied.");
                         }
                         OWLOntology o = bo.getOntology();
-                        OWLNamedIndividual activityToCheck = individual(activityFragment); 
+                        
+                        OWLNamedIndividual activityToCheck = o.getOWLOntologyManager().getOWLDataFactory().getOWLNamedIndividual(OWL.fullIri(activityFragment)); 
                         if (o.getIndividualsInSignature(true).contains(activityToCheck))
                         {
                                OWLNamedIndividual status = bo.getObjectProperty("legacy:hasStatus");  
@@ -2124,8 +2210,8 @@ public class LegacyEmulator extends RestService
                                 	   ActivityManager manager = new ActivityManager();
                                 	   //TODO hilpold full method should be inside a transaction and SendEmailOnTxSuccessListener used
                                 	   List<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();
-                                	   //TODO hilpold: this could be wrong if SR is closed!!!
                                 	   manager.createActivity(individual("legacy:"	+ overdueActivity), null, null, bo, null, null, emailsToSend);
+                                	   manager.updateActivityIfAutoDefaultOutcome(activityToCheck, bo, emailsToSend);
                                 	   persister.saveBusinessObjectOntology(bo.getOntology());
                                 	   for (CirmMessage m : emailsToSend) 
                                 		   m.addExplanation("LE.createWhenOverDue boid " + boid + " ACt: " + activityFragment);
@@ -2220,7 +2306,7 @@ public class LegacyEmulator extends RestService
 
 			StreamSource xml = new StreamSource(
 					new StringReader(l.getLiteral()));
-			StreamSource xsl = new StreamSource(new File(StartUp.config.at(
+			StreamSource xsl = new StreamSource(new File(StartUp.getConfig().at(
 					"workingDir").asString()
 					+ "/src/resources/xml-2-json.xsl"));
 			TransformerFactory tFactory = TransformerFactory.newInstance();
@@ -2362,7 +2448,7 @@ public class LegacyEmulator extends RestService
 			String locationName = address.has("hasLocationName") ? address.at(
 					"hasLocationName").asString() : null;
 
-			if (addrType.equals("StreetAddress") || addrType.equals("Address"))
+			if (addrType.equals("PointAddress") || addrType.equals("StreetAddress") || addrType.equals("Address"))
 			{
 				Long streetNumber = address.at("Street_Number").asLong();
 				String streetName = address.at("Street_Name").asString();
@@ -2847,6 +2933,7 @@ public class LegacyEmulator extends RestService
 	@Consumes("application/json")
 	public Json approveCase(Json legacyform)
 	{
+		ThreadLocalStopwatch.startTop("START approveCase");
 		try{
 			//We could optionally choose to lookup the current SR in the DB to ensure approval state
 			//is still APPROVAL_PENDING
@@ -2859,9 +2946,11 @@ public class LegacyEmulator extends RestService
 			approvalProcess.getSideEffects().add(new CreateNewSREmail());
 			approvalProcess.getSideEffects().add(new AddTxnListenerForNewSR());
 			approvalProcess.approve();
+			ThreadLocalStopwatch.stop("END approveCase");
 			return ok().set("bo", approvalProcess.getBOntology().toJSON());
 		}catch(Exception e)
 		{
+			ThreadLocalStopwatch.fail("FAIL approveCase");
 			return ko(e);
 		}
 			

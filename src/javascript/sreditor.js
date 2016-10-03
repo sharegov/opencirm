@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../html/srmarkup.ht"], 
-   function($, U, rest, ui, store, cirm, legacy, srmarkupText)   {
+define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfaceValidation", "text!../html/srmarkup.ht"], 
+   function($, U, rest, ui, store, cirm, legacy, interfaceValidation, srmarkupText)   {
 	
    
     
@@ -146,8 +146,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
           defaultSCAnswerUpdateTimeoutMins:"",
           emailData:{"subject":"", "to":"", "cc":"", "bcc":"","comments":""},
           currentServerTime: {}
-        };
+        }; //emptyModel end
 		
+        //START: Basic RequestModel initialization
 		$.extend(self, emptyModel);		
 		U.visit(self, U.makeObservableTrimmed);
 		
@@ -158,13 +159,12 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		self.hasTypeMapping(cirm.refs.typeToXSDMappings);
 		if (cirm.refs.serviceCaseClass && cirm.refs.serviceCaseClass.hasAnswerUpdateTimeout) {
 			self.defaultSCAnswerUpdateTimeoutMins(parseInt(cirm.refs.serviceCaseClass.hasAnswerUpdateTimeout.hasValue));
-		} 
-		else
-		{
+		} else {
 			self.defaultSCAnswerUpdateTimeoutMins(0);
 		}
+        //END: Basic RequestModel initialization
 		
-		//START: extenders
+		//START: define knockoutjs extenders for emptyModel -----------------------------------------
 		ko.extenders.required = function(target, overrideMessage) {
 			self.commonExtenderForAll(target, overrideMessage);
 		};
@@ -213,30 +213,78 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		ko.extenders.standardizeStreet = function(target, overrideMessage) {
 			self.commonExtenderForAll(target, overrideMessage, "STANDARDIZE_STREET");
 		};
-		ko.extenders.TextLengthConstraint = function(target, constraints) {
+		
+		/**
+		 * This extender function for string constraints can be applied to ServiceAnswer literals
+		 * or other SR properties (e.g. hasDetails) that allow single or multi-line char user input.
+		 * Param stringConstraint may have a combination of hasMax int, hasMin int or hasRegexPattern string data properties.
+		 * 
+		 * hilpold: in the future hasRegexPattern should be accompanied by hasRegexPatternDescription 
+		 * 			to show a more meaningful error message to the user.
+		 */
+		var charDataConstraintExtenderFunction = function(target, stringConstraint) {
+			if (ko.isObservable(stringConstraint)) {
+				stringConstraint = ko.toJS(stringConstraint);
+			}
 		    target.hasError = ko.observable();
 		    target.validationMessage = ko.observable();
-			function validate(newValue) {
-			    if (!newValue) {
-			        //console.log('new value falsy', newValue);
+			function validate(value) {
+			    if (!value || value == "") {
 			        return true;
 			    }
-			    //console.log('new value of TextLengthConstraint', newValue);
 			    target.hasError(false);
 			    target.validationMessage("");
-			    if (constraints.hasMax && newValue.length > constraints.hasMax) {
+			    // A) hasMax int optional
+			    if (stringConstraint.hasMax && value.length > stringConstraint.hasMax) {
 			        target.hasError(true);
-			        target.validationMessage("Text exceeds maximum length allowed of " + constraints.hasMax);
+			        target.validationMessage("Please reduce text from " + value.length + " to less than " + stringConstraint.hasMax + " characters.");
 			    }
-			    if (constraints.hasMin && newValue.length < constraints.hasMax) {
+			    // B) hasMin int optional, effective after first char was entered 
+			    //	  (in contrast to independent required (REQINTAK) evaluation)
+			    if (stringConstraint.hasMin && value.length < stringConstraint.hasMin) {
 			        target.hasError(true);
-			        target.validationMessage("Text is too short, minimum allowed length is " + constraints.hasMax);
-			    }			    
+			        target.validationMessage("Mininum required length is " + stringConstraint.hasMin + " characters.");
+			    }
+			    // C) hasRegexPattern string optional
+			    if (stringConstraint.hasRegexPattern) {
+			    	var pattern = stringConstraint.hasRegexPattern;
+			    	var isValid = true;
+			    	try {
+			    		var matcher = new RegExp(pattern, "im" ); //im = ignore case & multiline
+			    		isValid = matcher.test(value);
+			    	} catch(err) {
+			    		isValid = true;
+			    		console.log("Ignoring Exception in charDataConstraintExtenderFunction while evaluating pattern " + stringConstraint.hasRegexPattern);
+			    	}
+			    	if(!isValid) {
+				        target.hasError(true);
+				        target.validationMessage("Please correct text in this field to match " + pattern + " pattern");
+			    	}
+			    }
 			    return true;
-			}
+			} // end function
 			validate(target());
 			target.subscribe(validate);
 			return target;		    
+		};
+		ko.extenders.TextLengthConstraint = charDataConstraintExtenderFunction;
+		ko.extenders.serviceAnswerConstraint = charDataConstraintExtenderFunction;
+		
+		/**
+		 * Use toolTipTitle as title attribute binding on char answer input fields
+		 * to suppress title tooltip to obstruct view while call takers are typing.
+		 * Bind hasfocus of input field to hasInputFocus.
+		 */
+		ko.extenders.charTemplateLiteralExtender = function(target, option) {
+		    target.hasInputFocus = ko.observable();
+		    target.toolTipTitle = ko.computed(function() {		    
+		    	if(target.hasInputFocus()) {
+		    		return "";
+		    	} else {
+		    		return target();
+		    	}
+		    });
+			return target;
 		};
 		
 		self.commonExtenderForAll = function(target, overrideMessage, type) {
@@ -289,8 +337,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 						target.hasError(true);
 						target.validationMessage("");
 					}else{
-					target.hasError(false);
-					target.validationMessage("");
+						target.hasError(false);
+						target.validationMessage("");
 					}
 					return true;
 				}
@@ -306,8 +354,6 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 	   				return true;
 				}
 				else if(type == "TIME" || type == "TIME_REQ") {
-					//var timeFilter = /(0[1-9]|1[0-2]):([0-5][0-9]) (AM|am|PM|pm)/;
-					//hilpold allowing single digit hour:
 					var timeFilter = /(^[0-9]|0[1-9]|1[0-2]):([0-5][0-9]) (AM|am|PM|pm)/;
 					if(timeFilter.test(newValue)) {
 						target.hasError(false);
@@ -408,12 +454,11 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 					return true;
 				}
 			}
-
 			validate(target());
 			target.subscribe(validate);
 			return target;
 		}
-		//END: extenders
+		//END: define knockoutjs extenders -----------------------------------------
 
         //
         // Client-side event listeners associated with this model. They are updated during the 'bindData'
@@ -425,58 +470,50 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 	    self.bindData = function(type, request, original) {
 	    	self.data(emptyModel.data);
 	    	self.srType(ko.toJS(emptyModel.srType));
-	    	self.originalData(emptyModel.originalData);
-			
+	    	self.originalData(emptyModel.originalData);			
 			self.currentServerTime(self.getServerDateTime(true));
-			
 			if (type) {
-			    //console.log('set type', type, ko.toJS(type));
 				self.srType(type);
 			}
 			if (request) {
-			    //console.log('set request', request, ko.toJS(request));
-				//START : various extenders
-				//Extend all required questions
-				self.isNew = U.isEmptyString(request.boid());
-				$.each(self.srType().hasDataConstraint, function(i,constraint) {
-				      var propname = constraint.appliesTo.iri.split('#')[1];
-				      var extensions = {};
-				      extensions[constraint.type] = constraint;
-				      //console.log('Applying constraint ', constraint, propname, extensions,' to ', self.data().properties());				      
-				      request.properties()[propname].extend(extensions);
-				      //request.properties()['hasDetails'].extend({required:"Mandatory"});				      
+			    self.isNew = U.isEmptyString(request.boid());
+			    //START: apply knockoutjs extenders ----------------------------------------------------------------------
+				// A) Extend SR type level properties with data contraints (e.g. hasDetails for PW types)
+			    $.each(self.srType().hasDataConstraint, function(i, constraint) {
+					if (constraint.appliesTo !== undefined) {
+						var propname = constraint.appliesTo.iri.split('#')[1];				      
+						var extensions = {};
+						extensions[constraint.type] = constraint;
+						request.properties()[propname].extend(extensions);
+					}
 				});
-				//request.properties()['hasDetails'].extend({required:"Mandatory"});
+				// B) Extend all required questions
 				$.each(request.properties().hasServiceAnswer(), function(i,v) {
-					self.serviceQuestionExtenders(v);
+					self.addServiceQuestionExtenders(v);
             	});
-           		//Extend email and Phone numbers of each Actor to check for validity
-           		// Why only new SRs and not existing SRs ? May be a BUG. All new and existing SRs have to be checked.
-           		//if(U.isEmptyString(request.boid()))
-           		//{
-            		var firstCitizen = self.getFirstCitizenActor(request.properties().hasServiceCaseActor());
-	            	$.each(request.properties().hasServiceCaseActor(), function(i,v) {
-	            		//Check if first Citizen actor, make first cellphone required
-            			if(firstCitizen != null && isCitizenActor(v.hasServiceActor().iri())) {
-            				if(!self.isNew && !self.isCustomerLocked() && firstCitizen.iri() == v.iri())
-            					self.addExtendersToActor(v, true);
-            				else if(self.isNew && !self.isCustomerLocked())
-            					self.addExtendersToActor(v, true);
-            				else
-            					self.addExtendersToActor(v);
-            			}
-            			else
-            				self.addExtendersToActor(v);
-	            	});
-           		//}
-            	//Status, Priority, Method Received are required fields
+           		// C) Extend email and Phone numbers of each Actor to check for validity
+        		var firstCitizen = self.getFirstCitizenActor(request.properties().hasServiceCaseActor());
+            	$.each(request.properties().hasServiceCaseActor(), function(i,v) {
+            		//Check if first Citizen actor, make first cellphone required
+        			if(firstCitizen != null && isCitizenActor(v.hasServiceActor().iri())) {
+        				if(!self.isNew && !self.isCustomerLocked() && firstCitizen.iri() == v.iri())
+        					self.addExtendersToActor(v, true);
+        				else if(self.isNew && !self.isCustomerLocked())
+        					self.addExtendersToActor(v, true);
+        				else
+        					self.addExtendersToActor(v);
+        			}
+        			else
+        				self.addExtendersToActor(v);
+            	});
+            	// D) Status, Priority, Method Received are required fields
             	request.properties().hasStatus().iri.extend({ required: "Required" });
             	request.properties().hasPriority().iri.extend({ required: "Required" });
             	request.properties().hasIntakeMethod().iri.extend({ required: "Required" });
             	//Extend fullAddress, City and Zip fields
 				self.addAddressExtenders(request);				
 				
-				//END : various extenders
+			    //End: apply knockoutjs extenders ----------------------------------------------------------------------
 				self.data(request);
 				
 				if(!self.isNew && !U.isEmptyString(request.properties().atAddress().fullAddress()))
@@ -540,53 +577,83 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 			patchPlaceholdersforIE();
 	    };
 	    
-	    self.serviceQuestionExtenders = function(v){
-			if(v.isOldData && v.isOldData())
+	    /**
+	     * Adds knock out extender(s) to service answer literal.
+	     * Different extenders are used depending on required answer and question datatype. 
+	     */
+	    self.addServiceQuestionExtenders = function(v){
+			if(v.isOldData && v.isOldData()) {
 				return true;
+			}
 			if(v.hasBusinessCodes && !v.isDisabled) {
-				if(self.isNew && v.hasBusinessCodes().indexOf("REQINTAK") != -1)
+				if(self.isNew && v.hasBusinessCodes().indexOf("REQINTAK") != -1) {
 					self.addServiceAnswerRequiredExtender(v);
-				else
-					self.serviceQuestionDataTypeExtenders(v);
-			}
-			else {
-				self.serviceQuestionDataTypeExtenders(v);
+				} else {
+					self.addServiceAnswerNotRequiredExtender(v);
+				}
+			} else {
+				self.addServiceAnswerNotRequiredExtender(v);
 			}
 	    };
 	    
+	    /**
+	     * Adds knock out extender(s) for required (REQINTAK) service answer literal.
+	     */
 	    self.addServiceAnswerRequiredExtender = function(v) {
-			if(v.hasDataType() == 'DATE')
+			if(v.hasDataType() == 'DATE') {
 				v.hasAnswerValue().literal.extend({ valiDATE_required: "Required"});
-			else if(v.hasDataType() == 'NUMBER')
+			} else if(v.hasDataType() == 'NUMBER') {
 				v.hasAnswerValue().literal.extend({ numeric_required: "Required"});
-			else if(v.hasDataType() == 'TIME')
+				v.hasAnswerValue().literal.extend({charTemplateLiteralExtender: ""});
+	    	} else if(v.hasDataType() == 'TIME') {
 				v.hasAnswerValue().literal.extend({ time_required: "Required"});
-			else if(v.hasDataType() == 'PHONE' || v.hasDataType() == 'PHONENUM')
+    		} else if(v.hasDataType() == 'PHONE' || v.hasDataType() == 'PHONENUM') {
+				v.hasAnswerValue().literal.extend({charTemplateLiteralExtender: ""});
 				v.hasAnswerValue().literal.extend({ phone_required : "Required"});
-			else if(v.hasDataType() == 'CHARLIST' || v.hasDataType() == 'CHARMULT' || v.hasDataType() == 'CHAROPT' || v.hasDataType == 'CHARLISTOPT' )
+    		} else if(v.hasDataType() == 'CHARLIST' || v.hasDataType() == 'CHARMULT' || v.hasDataType() == 'CHAROPT' || v.hasDataType == 'CHARLISTOPT' ) {
 				v.hasAnswerObject().iri.extend({ required: "Required" });
-			else if(v.hasDataType() == 'CHAR' && v.hasBusinessCodes && v.hasBusinessCodes().indexOf('EMAIL') != -1)
-				v.hasAnswerValue().literal.extend({email_required: "Invalid"});
-			else
+    		} else if(v.hasDataType() == 'CHAR') {
+    			if (v.hasBusinessCodes && v.hasBusinessCodes().indexOf('EMAIL') != -1) {
+    				v.hasAnswerValue().literal.extend({email_required: "Invalid"});
+    			} else {
+    				v.hasAnswerValue().literal.extend({ required: "Required" });
+    			}
+				v.hasAnswerValue().literal.extend({charTemplateLiteralExtender: ""});
+				if (v.hasAnswerConstraint) {
+					v.hasAnswerValue().literal.extend({serviceAnswerConstraint: v.hasAnswerConstraint});
+				}
+			} else { 
 				v.hasAnswerValue().literal.extend({ required: "Required" });
+				v.hasAnswerValue().literal.extend({charTemplateLiteralExtender: ""});
+			}
 	    };
 	    
-	    self.serviceQuestionDataTypeExtenders = function(v) {
-			if(v.hasDataType() == 'DATE')
+	    /**
+	     * Add knock out extender(s) for not required service answer literal.
+	     */
+	    self.addServiceAnswerNotRequiredExtender = function(v) {
+			if(v.hasDataType() == 'DATE') {
 				v.hasAnswerValue().literal.extend({ valiDATE: "Invalid"});
-			else if(v.hasDataType() == 'NUMBER')
+			} else if(v.hasDataType() == 'NUMBER') {
 				v.hasAnswerValue().literal.extend({ numeric: "Invalid"});
-			else if(v.hasDataType() == 'PHONE' || v.hasDataType() == 'PHONENUM')
+				v.hasAnswerValue().literal.extend({charTemplateLiteralExtender: ""});			
+			} else if(v.hasDataType() == 'PHONE' || v.hasDataType() == 'PHONENUM') {
 				v.hasAnswerValue().literal.extend({ phone: "Invalid"});
-			else if(v.hasDataType() == 'TIME')
+				v.hasAnswerValue().literal.extend({charTemplateLiteralExtender: ""});			
+			} else if(v.hasDataType() == 'TIME') {
 				v.hasAnswerValue().literal.extend({ time: "Invalid format"});
-			else if(v.hasDataType() == 'CHAR') {
-				if(v.hasStandardizeStreetFormat)
+			} else if(v.hasDataType() == 'CHAR') {
+				if(v.hasStandardizeStreetFormat) {
 					v.hasAnswerValue().literal.extend({standardizeStreet: ""});
-				else if(v.hasBusinessCodes && v.hasBusinessCodes().indexOf('EMAIL') != -1)
+				} else if(v.hasBusinessCodes && v.hasBusinessCodes().indexOf('EMAIL') != -1) {
 					v.hasAnswerValue().literal.extend({email: "Invalid"});
-				else
-					v.hasAnswerValue().literal.extend({none: ""});
+				} else {
+					v.hasAnswerValue().literal.extend({none: ""}); 
+				}
+				v.hasAnswerValue().literal.extend({charTemplateLiteralExtender: ""});
+				if (v.hasAnswerConstraint) {
+					v.hasAnswerValue().literal.extend({serviceAnswerConstraint: v.hasAnswerConstraint});
+				}
 			}
 		}
 	    
@@ -680,14 +747,17 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 			$.each(type.hasServiceField, function(i,f) {
 			  //var a = {hasAnswerValue:{literal:'', type:''}, hasServiceField:{iri:f.iri, label:f.label}};
 			  var a = {hasServiceField:{iri:f.iri, label:f.label}};
-			  if(f.hasDataType == 'CHARLIST' || f.hasDataType == 'CHARMULT' || f.hasDataType == 'CHAROPT' || f.hasDatatype == 'CHARLISTOPT')
+			  if(f.hasDataType == 'CHARLIST' || f.hasDataType == 'CHARMULT' || f.hasDataType == 'CHAROPT' || f.hasDatatype == 'CHARLISTOPT') {
 			    a.hasAnswerObject = {"iri":undefined};
-			  else
+			  } else {
 			  	a.hasAnswerValue = {literal:'', type:''};
+			  }
+			  //Directly refer to some serviceField properties in ServiceAnswer
 			  if (f.hasOrderBy) a.hasOrderBy = f.hasOrderBy;
 			  if (f.hasDataType) a.hasDataType = f.hasDataType;
 			  if (f.hasBusinessCodes) a.hasBusinessCodes = f.hasBusinessCodes;
 			  if (f.hasAllowableModules) a.hasAllowableModules = f.hasAllowableModules;
+			  if (f.hasAnswerConstraint) a.hasAnswerConstraint = f.hasAnswerConstraint;
 			  P.hasServiceAnswer.push(a); 
 			});
 			P.hasServiceAnswer.sort(function(x,y) {
@@ -1193,7 +1263,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		function showErrorDialog(errorMsg)
 		{
 			$("#sh_dialog_sr_err")[0].innerHTML= errorMsg;
-			$("#sh_dialog_sr_err").dialog({height: 140, width: 500, modal: true});
+			$("#sh_dialog_sr_err").dialog({height: 200, width: 500, modal: true});
 		};
 
 		self.getProfile = function() {
@@ -1249,23 +1319,15 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 					result.details.sort(function (a,b) {
 						return a.hasDateCreated - b.hasDateCreated;
 					});
-					var boidList = [];
+					var srDisplayedIsNew = U.isEmptyString(self.data().boid());
 					var filteredDetails = $.map(result.details, function(v,i) { 
-						if((v.hasStatus == 'O-OPEN' || v.hasStatus == 'O-LOCKED' || v.hasStatus == 'O-WIP') && $.inArray(v.boid, boidList) == -1)
-						{
-							boidList.push(v.boid);
-							return v; 
+						if (!srDisplayedIsNew && v.boid == self.data().boid()) {
+							return null;
+						} else {
+							return v;
 						}
 					});
-					if(!U.isEmptyString(self.data().boid()))
-					{
-						if(filteredDetails.length > 0)
-							filteredDetails = $.map(filteredDetails, function(v,i) { 
-								if(v.boid != self.data().boid())
-									return v; 
-							});
-					}
-					else
+					if(srDisplayedIsNew)					
 					{
 						self.data().properties().hasStatus().iri("http://www.miamidade.gov/cirm/legacy#O-DUP");
 						self.data().properties().hasStatus().label("O-DUP");
@@ -1292,14 +1354,17 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 
 		self.showAnonymousAlert = function(data, event) {
 			var citizen = self.getFirstCitizenActor();
+			var user = cirm.user;
 			if (citizen != null && citizen.isAnonymous()) {
-				$("#sh_dialog_alert")[0].innerText = "Advise caller that even though report can be submitted anonymously, "
-										+ " the audio recording can be provided if a public records request is submitted.";
-				$("#sh_dialog_alert").dialog({ height: 170, width: 350, modal: true, buttons: {
-					"I advised caller" : function() {
-						$("#sh_dialog_alert").dialog('close');
-					}
-				}});
+				if (user && user.mdcDepartment !== "COM") {
+					$("#sh_dialog_alert")[0].innerText = "Advise caller that even though report can be submitted anonymously, "
+											+ " the audio recording can be provided if a public records request is submitted.";
+					$("#sh_dialog_alert").dialog({ height: 170, width: 350, modal: true, buttons: {
+						"I advised caller" : function() {
+							$("#sh_dialog_alert").dialog('close');
+						}
+					}});
+				}
 			}
 			return true;
 		};
@@ -1576,8 +1641,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 			    	delete jsondata.properties.atAddress.Street_Name;
 			    }
 			    //Remove Street_Direction and hasStreetType if addressType is not StreetAddress or Address
-			    if(jsondata.properties.atAddress.addressType != "StreetAddress" && 
-			    	jsondata.properties.atAddress.addressType != "Address")
+			    if(jsondata.properties.atAddress.addressType != "StreetAddress" 
+			    	&& jsondata.properties.atAddress.addressType != "Address" 
+			    	&& jsondata.properties.atAddress.addressType != "PointAddress")
 			    {
 			    	delete jsondata.properties.atAddress.Street_Direction;
 			    	delete jsondata.properties.atAddress.hasStreetType;
@@ -1701,7 +1767,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 		    	"hasDataType", "hasOrderBy", "hasAnswerUpdateTimeout", "transient$protected", "description", 
 		        "description2", "description3", "description4", "description5", "description6", "comment", "isOldData", 
 		        "participantEntityTable", "hasBusinessCodes", "hasAllowableModules", "folio" , "isDisabled", "isAlwaysPublic",
-		        "extendedTypes", "hasAllowableStatuses", "isHighlighted", "isAutoAssign", "fromDiffSRType", "hasStandardizeStreetFormat");
+		        "extendedTypes", "hasAllowableStatuses", "isHighlighted", "isAutoAssign", "fromDiffSRType", "hasStandardizeStreetFormat", "hasAnswerConstraint");
 		    
 		    return U.visit(jsondata, function(n,v,parent) {
 		            if (toignore[n])
@@ -2138,6 +2204,11 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 				msg = msg + "Don't forget to scroll through all the Questions or open the SR Customers tab to see which fields are mandatory. \n";
 				msg = msg + " Also, please select a valid Unit Number when 'MULTI'";
 				alertDialog(msg);
+				return;
+			}			
+			if (!interfaceValidation.isValidForInterface(jsondata)) {
+				//This service request was an interface service request and specific validation for it's interface failed.
+				alertDialog('Interface Validation for this Service Request failed: \n\n' + interfaceValidation.getValidationMessage())
 				return;
 			}
 			if(jsondata.properties.hasServiceCaseActor.length > 0) {
@@ -2659,8 +2730,10 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 
 		self.hasDefaultOutcome = function(el) {
 			var defaultOutcomeList = $.map(self.srType().hasActivity, function(v,i) {
-				if(el.hasActivity().iri() == v.iri && v.hasDefaultOutcome != undefined) 
-					return v;
+				if(el.hasActivity().iri() == v.iri && v.hasDefaultOutcome != undefined)
+					if (!v.isAutoDefaultOutcome) {
+						return v;
+					}
 			});
 			if(defaultOutcomeList.length > 0)
 				return true;
@@ -3281,7 +3354,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
 				if(this.hasActivity().label() == 'StatusChangeActivity' && this.hasOutcome().iri().indexOf('#C-') > -1 )
 				{
 					var date = this.hasCompletedTimestamp;
-					if(closedDate == null || closedDate > date)
+					if(closedDate == null || closedDate() > date())
 					{ 
 						closedDate = date;
 					}
@@ -3659,6 +3732,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "text!../
             	serviceAnswer.hasStandardizeStreetFormat = serviceField.hasStandardizeStreetFormat;
             if(serviceField.hasLegacyCode)
             	serviceAnswer.hasLegacyCode = serviceField.hasLegacyCode;
+            if(serviceField.hasAnswerConstraint)
+            	serviceAnswer.hasAnswerConstraint = serviceField.hasAnswerConstraint;
     	}
 		
         //Delete the questions which are not associated with this view from hasServiceAnswers

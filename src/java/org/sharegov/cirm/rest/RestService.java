@@ -218,7 +218,7 @@ public class RestService
 
 	public boolean isClientExempt()
 	{
-		if (StartUp.config.is("allClientsExempt", true) || Boolean.TRUE.equals(Refs.configSet.resolve().get("areAllClientsExempt")))
+		if (StartUp.getConfig().is("allClientsExempt", true) || Boolean.TRUE.equals(Refs.configSet.resolve().get("areAllClientsExempt")))
 		{
 			return true;
 		}
@@ -226,7 +226,7 @@ public class RestService
 		{
 			return true;
 		} 
-		else if (Arrays.asList(getUserGroups()).contains(UserService.CIRM_ADMIN))
+		else if (isClientCirmAdmin())
 		{
 			return true;
 		}
@@ -244,5 +244,9 @@ public class RestService
 			}
 			return exemptHostName != null;
 		}
+	}
+	
+	public boolean isClientCirmAdmin() {
+		return Arrays.asList(getUserGroups()).contains(UserService.CIRM_ADMIN);
 	}
 }

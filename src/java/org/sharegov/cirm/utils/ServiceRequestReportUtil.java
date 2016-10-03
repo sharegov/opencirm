@@ -417,7 +417,7 @@ public class ServiceRequestReportUtil
 		try {
 			String fileName = "RecyclingCarts"+formatDate(new Date())+".txt";
 //			File f = new File("C:\\"+fileName);
-	        File f = new File(StartUp.config.at("workingDir").asString() + "/RecyclingReports", fileName);
+	        File f = new File(StartUp.getConfig().at("workingDir").asString() + "/RecyclingReports", fileName);
 	    	fos = new FileOutputStream(f);
 			bos = new BufferedOutputStream(fos);
 			bos.write(content.getBytes());

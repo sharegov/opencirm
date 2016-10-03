@@ -146,14 +146,14 @@ public class OWL
 	{
 		if (!initialized) 
 		{
-			if (StartUp.config.has("metaDatabaseLocation"))
+			if (StartUp.getConfig().has("metaDatabaseLocation"))
 			{
 				if (!VDHGDBOntologyRepository.hasInstance())
 				{
 					//Initialisation of repository location before everything else:
-					if (HGEnvironment.exists(StartUp.config.at("metaDatabaseLocation").asString()))
+					if (HGEnvironment.exists(StartUp.getConfig().at("metaDatabaseLocation").asString()))
 					{
-						VDHGDBOntologyRepository.setHypergraphDBLocation(StartUp.config.at("metaDatabaseLocation").asString());
+						VDHGDBOntologyRepository.setHypergraphDBLocation(StartUp.getConfig().at("metaDatabaseLocation").asString());
 					}
 					else
 					{
@@ -163,10 +163,9 @@ public class OWL
 						{
 							// TODO: hard-coded list, we need to have this in bootstrap JSON config.
 							repo.createRepositoryFromDefaultPeer(
-								StartUp.config.at("metaDatabaseLocation").asString(), 
+								StartUp.getConfig().at("metaDatabaseLocation").asString(), 
 								new HashSet<IRI>(Arrays.asList(
 										IRI.create("http://www.miamidade.gov/ontology"),
-										IRI.create("http://www.miamidade.gov/cirm/legacy/exported"),
 										IRI.create("http://www.miamidade.gov/cirm/legacy"))));
 						}
 					}
@@ -184,9 +183,9 @@ public class OWL
 			//Assert Factory is SynchronizedOWLDataFactory or HGDB and threadsafe.
 			OWLDataFactoryHGDB.getInstance().ignoreOntologyScope(true);
 			loader = new OntologyLoader(manager);	
-			if (StartUp.config.has("customIRIMappingFile"))
+			if (StartUp.getConfig().has("customIRIMappingFile"))
 			{
-				String customIRIMappingFile = StartUp.config.at("customIRIMappingFile").asString();
+				String customIRIMappingFile = StartUp.getConfig().at("customIRIMappingFile").asString();
 				manager.addIRIMapper(CustomOWLOntologyIRIMapper.createFrom(new File(customIRIMappingFile)));
 			}		
 			DEFAULT_STOP_EXPANSION_CONDITION = getInitializedDefaultStopExpansionCondition(factory); 
@@ -198,9 +197,9 @@ public class OWL
 	{
 	
 		Set<OWLObjectProperty> stopExpansionProps = new HashSet<OWLObjectProperty>();
-		if (StartUp.config.has("stopExpansionConditionIRI"))
+		if (StartUp.getConfig().has("stopExpansionConditionIRI"))
 		{
-			for(Object iri : StartUp.config.at("stopExpansionConditionIRI").asList())
+			for(Object iri : StartUp.getConfig().at("stopExpansionConditionIRI").asList())
 			{
 				stopExpansionProps.add(factory.getOWLObjectProperty(IRI.create((String)iri)));
 			}
@@ -219,20 +218,20 @@ public class OWL
 		{
 			
 			DefaultPrefixManager pm = new DefaultPrefixManager(manager.getOntologyFormat(ontology()).asPrefixOWLOntologyFormat());
-			if (StartUp.config.has("ontologyPrefixes"))
-				for (Map.Entry<String, Json> e : StartUp.config.at("ontologyPrefixes", Json.object()).asJsonMap().entrySet())
+			if (StartUp.getConfig().has("ontologyPrefixes"))
+				for (Map.Entry<String, Json> e : StartUp.getConfig().at("ontologyPrefixes", Json.object()).asJsonMap().entrySet())
 					if (!e.getKey().equals(":") && pm.getPrefix(e.getKey()) != null && !e.getValue().asString().equals(pm.getPrefix(e.getKey())))
 						throw new RuntimeException("Prefix clash between default ontology and startup configuration: " + e.getKey());
 					else
 						pm.setPrefix(e.getKey(), e.getValue().asString());
 			prefixManager = pm;
-//			if (!StartUp.config.has("metaDatabaseLocation") && manager.getOntologyFormat(ontology()) != null && 
+//			if (!StartUp.getConfig().has("metaDatabaseLocation") && manager.getOntologyFormat(ontology()) != null && 
 //					manager.getOntologyFormat(ontology()).isPrefixOWLOntologyFormat())
 //				prefixManager = new DefaultPrefixManager(manager.getOntologyFormat(ontology()).asPrefixOWLOntologyFormat());
 //			else
 //			{
 //				DefaultPrefixManager pm = new DefaultPrefixManager();
-//				for (Map.Entry<String, Json> e : StartUp.config.at("ontologyPrefixes", Json.object()).asJsonMap().entrySet())
+//				for (Map.Entry<String, Json> e : StartUp.getConfig().at("ontologyPrefixes", Json.object()).asJsonMap().entrySet())
 //					pm.setPrefix(e.getKey(), e.getValue().asString());
 //				prefixManager = pm;
 //			}
@@ -314,7 +313,7 @@ public class OWL
 		{
 			return prefixManager().getIRI(s);
 		}
-		return fullIri(s, StartUp.config.at("nameBase").asString());
+		return fullIri(s, StartUp.getConfig().at("nameBase").asString());
 	}
 	
 	public static IRI fullIri(String s, String ontologyIri)
@@ -436,7 +435,7 @@ public class OWL
 	 * @return the found NamedIndividual or NULL if not found.
 	 */
 	public static OWLNamedIndividual findNamedIndividualByFragment(String iRIfragment) {
-		Map<String, Object> ontoPrefixes = StartUp.config.at("ontologyPrefixes").asMap();
+		Map<String, Object> ontoPrefixes = StartUp.getConfig().at("ontologyPrefixes").asMap();
 		for (Object prefixIri : ontoPrefixes.values()) {
 			IRI indIRI = IRI.create("" + prefixIri + iRIfragment);
 			if (ontology().containsIndividualInSignature(indIRI, true)) {
@@ -963,7 +962,7 @@ public class OWL
 		return dataFactory().getOWLClassAssertionAxiom(e, i);
 	}
 	
-	public static Date add(Date start, float days, boolean useWorkWeek)
+	public static Date addDaysToDate(Date start, float days, boolean useWorkWeek)
 	{
 		Date result = null;
 		int seconds = (int) (86400 * days);
@@ -1713,8 +1712,8 @@ public class OWL
 	public static void main(String [] args)
 	{
 	//	if( (args.length > 0) )
-//			StartUp.config = Json.read(GenUtils.readTextFile(new File("c:/work/cirmservices/conf/devconfig.json")));
-//		System.out.println("Using config " + StartUp.config.toString());
+//			StartUp.getConfig() = Json.read(GenUtils.readTextFile(new File("c:/work/cirmservices/conf/devconfig.json")));
+//		System.out.println("Using config " + StartUp.getConfig().toString());
 //		System.out.println(OWL.queryIndividuals("hasLegacyInterface value MDC-CMS"));
 		OWL.init();
 		OWLOntology O = ontology();

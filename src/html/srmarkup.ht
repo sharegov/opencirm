@@ -446,7 +446,7 @@
 				<a data-bind="if:address().addressData().recyclingCalendarUrl, attr:{ href: address().addressData().recyclingCalendarUrl}" target="_blank">Calendar</a>
 		      </li>
 		      <li><label>Recycling Pickup Day:</label><span data-bind="text: address().addressData().recyclingWeekDay"></span></li>
-		      <li><label>COM Bulky Day:</label><span data-bind="text: address().addressData().bulkyTrashPickupDayAlias"></span></li>
+		      <li><label>COM Bulky/Trash Day:</label><span data-bind="text: address().addressData().bulkyTrashPickupDayAlias"></span></li>
 		    </ul>
 		  </div>
 		  <div id="publicWorks">
@@ -466,13 +466,16 @@
 		  </div>
 		  <div id="wastePickup_continued">
 		    <ul class="modal_infolist">		
-		      <li><label>City Commissioner Name:</label><span data-bind="text: address().addressData().cityCommissionerName"></span></li>
-		      <li><label>Net Office Name:</label><span data-bind="text: address().addressData().netOfficeName"></span></li>
+		      <li><label>COM City Commissioner Name:</label><span data-bind="text: address().addressData().cityCommissionerName"></span></li>
+		      <li><label>COM District Number:</label><span data-bind="text: address().addressData().cityDistrictNumber"></span></li>
+		      <li><label>COM Net Office Name:</label><span data-bind="text: address().addressData().netOfficeName"></span></li>
+		      <li><label>COM Net Office Area:</label><span data-bind="text: address().addressData().netAreaId"></span></li>
 		      <li>
-		      	<label>Code Enforcement Zone:</label>
+		      	<label>COM Code Enforcement Zone:</label>
 		      	<span data-bind="text: $root.getCodeEnforcementZonePhone(address().addressData().codeEnforcementZone)"></span>
 		      </li>
-		      <li><label>Miami Neighborhood:</label><span data-bind="text: address().addressData().miamiNeighborhood"></span></li>		      
+		      <li><label>COM Neighborhood:</label><span data-bind="text: address().addressData().miamiNeighborhood"></span></li>		      
+		      <li><label>COM Fire District:</label><span data-bind="text: address().addressData().firePreventionBureauDistrict"></span></li>		      
 		    </ul>		    
 		  </div>
 		  <div id="hurricane">
@@ -797,7 +800,7 @@ HTML templates
 		<label data-bind="text: hasServiceField().label(), css: {highlight_text : $root.isHighlighted($data)} "></label>
 	</div>
 	<div class="grid_5 alpha">
-		<input placeholder="" class="tooltip" data-bind="value: hasAnswerValue().literal, valueUpdate: 'afterkeydown', css: { error: hasAnswerValue().literal.hasError }, attr :{title: hasAnswerValue().literal }" ></input>
+		<input placeholder="" class="tooltip" data-bind="value: hasAnswerValue().literal, valueUpdate: 'afterkeydown', hasfocus: hasAnswerValue().literal.hasInputFocus, css: { error: hasAnswerValue().literal.hasError }, attr :{title: hasAnswerValue().literal.toolTipTitle }" ></input>
 	</div>
 	<div class="grid_1 omega">
 		<label data-bind='visible: hasAnswerValue().literal.hasError, text: hasAnswerValue().literal.validationMessage, css: { red_text: hasAnswerValue().literal.hasError }' />
@@ -811,7 +814,7 @@ HTML templates
 	</div>
 	<div class="grid_5 alpha">
        	<span class="input_clear">
-			<input placeholder="" class="ic_field tooltip" style="width:340px" data-bind="value: hasAnswerValue().literal, valueUpdate: 'afterkeydown', event: {keydown: $root.standardizeStreet}, css: { error: hasAnswerValue().literal.hasError }, attr :{title: hasAnswerValue().literal, id:hasLegacyCode }" ></input>
+			<input placeholder="" class="ic_field tooltip" style="width:340px" data-bind="value: hasAnswerValue().literal, valueUpdate: 'afterkeydown', hasfocus: hasAnswerValue().literal.hasInputFocus, event: {keydown: $root.standardizeStreet}, css: { error: hasAnswerValue().literal.hasError }, attr :{title: hasAnswerValue().literal.toolTipTitle, id:hasLegacyCode }" ></input>
 			<input class="submit" type="button" value="Search" data-bind="click: $root.getStandardizeStreet" title="Click to validate the Street">
         </span>
 	</div>

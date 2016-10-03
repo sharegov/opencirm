@@ -61,6 +61,7 @@ import org.sharegov.cirm.rest.MainRestApplication;
 import org.sharegov.cirm.rest.OntoAdmin;
 import org.sharegov.cirm.utils.AdaptiveClassLoader;
 import org.sharegov.cirm.utils.GenUtils;
+import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 import org.sharegov.cirm.utils.UploadToCloudServerResource;
 
 /**
@@ -71,22 +72,16 @@ import org.sharegov.cirm.utils.UploadToCloudServerResource;
  */
 public class StartUp extends ServerResource
 { 
-
-	/**
-	 * Switch for stress testing. If true, disables most external calls and dbg output.
-	 */
-	public static boolean STRESS_TEST_CONFIG = false;
-
-	public static Level LOGGING_LEVEL = Level.INFO;
-
-	public volatile static Json config = Json.object()
+	public final static String PRODUCTION_MODE_IDENTIFIER = "http://www.miamidade.gov/ontology#ProdConfigSet";
+	public final static String MODE_CONFIG_PARAM = "ontologyConfigSet";
+	public final static Json DEFAULT_CONFIG = Json.object()
 			.set("workingDir", "C:/work/opencirm")
 			.set("mainApplication", "http://www.miamidade.gov/ontology#CIRMApplication") 
 			.set("port", 8182)
 			.set("ignorePasswords", true)
 			.set("ssl-port", 8183)
 			.set("ssl", true)
-			.set("keystore", "cirm84.jks")
+			.set("keystore", "cirm.jks")
 			.set("storePass", "password")
 			.set("keyPass", "password")
 			.set("defaultOntologyIRI", "http://www.miamidade.gov/cirm/legacy")
@@ -104,7 +99,7 @@ public class StartUp extends ServerResource
 			.set("network", Json.object(				
 					"user", "cirmservice_production",
 					"password","cirmsprod",
-					"serverUrl","s0141667",
+					"serverUrl","s0144818",
 					"ontoServer","ontology_server_production"))
 			.set("ontologyPrefixes", Json.object(
 					"legacy:", "http://www.miamidade.gov/cirm/legacy#",
@@ -112,19 +107,39 @@ public class StartUp extends ServerResource
 					":", "http://www.miamidade.gov/ontology#"
 					))
 			.set("cachedReasonerPopulate", false);
-			//.set("NOT IN USE SINCE 2442 customIRIMappingFile", "C:/work/mdcirm/customIRIMap.properties");
-			
+
+	/**
+	 * Switch for stress testing. If true, disables most external calls and dbg output.
+	 */
+	public static boolean STRESS_TEST_CONFIG = false;
+
+	public static Level LOGGING_LEVEL = Level.INFO;
+
+	private volatile static Json config = DEFAULT_CONFIG;		
 	
 	public static Component server = null; 
 	public static Component redirectServer = null;
 	public static PaddedJSONFilter jsonpFilter = null;
-	public static Encoder encoder = null;	
+	public static Encoder encoder = null;
+	private static boolean productionMode = false;
 	
 	/**
 	 * Just for registration
 	 */
 	private static volatile RequestScopeFilter requestScopeFilter = null;
 	
+	/**
+	 * Gets the global json configuration.
+	 * @return
+	 */
+	public static Json getConfig() {
+	        return config;
+    }
+
+	public static void setConfig(Json configObject) {
+		if (server != null) throw new IllegalStateException("Server was already created. Setting new config prevented.");
+        config = configObject;
+	}
 
     /**
      * Returns true if and only if the http/s server is fully initialized and ready to serve requests.
@@ -135,7 +150,18 @@ public class StartUp extends ServerResource
         return server != null && server.isStarted();
     }
     
+    /**
+     * Check if this instance running in production mode.
+     * @return false if any test or dev mode
+     */
+    public static boolean isProductionMode() {
+    	return productionMode;
+    }
 
+    private static void setProductionMode(boolean prodMode) {
+    	productionMode = prodMode;
+    }
+    
 	public static class CirmServerResource extends DirectoryServerResource 
 	{
 	    public Representation handle() {
@@ -261,9 +287,18 @@ public class StartUp extends ServerResource
 	{
 		if (STRESS_TEST_CONFIG)
 			stressTestConfig();
-		if( (args.length > 0) )
-			config = Json.read(GenUtils.readTextFile(new File(args[0])));
+		if( (args.length > 0) ) {
+			setConfig(Json.read(GenUtils.readTextFile(new File(args[0]))));
+		}
+		boolean productionMode = config.at(MODE_CONFIG_PARAM).asString().equals(PRODUCTION_MODE_IDENTIFIER);
+		setProductionMode(productionMode);
 		System.out.println("Using config " + config.toString());
+		if (isProductionMode()) {
+			ThreadLocalStopwatch.now("************************* 311Hub PRODUCTION MODE *************************");
+		} else {
+			ThreadLocalStopwatch.now("------------------------- 311Hub TEST OR DEV MODE: " + config.at(MODE_CONFIG_PARAM).asString()
+					+ "-------------------------");
+		}
 		try
 		{
 			ConfigSet.getInstance();

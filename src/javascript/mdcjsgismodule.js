@@ -25,23 +25,45 @@ MDCJSLIB.modules.gis = (function() {
 	// private methods
 	var addressCandidates = function(address, zip, municipality, callback, error) {
 		var path = _path  + "/candidates";
-		restClient.get(path,{street:address,zip:zip,municipality:municipality},function(data) {
-			  if(data.ok == true){
-                            var candidates = [];
-			    $.each(data.candidates, function(index,candidate){
-			    	candidates.push(candidate);
-    	                    });
-			    callback(candidates);
-                          }else
-                            error(data.message, null, "")
-			},function(XMLHttpRequest, textStatus, errorThrown) {
+		restClient.get(path, {street:address,zip:zip,municipality:municipality}, function(data) {
+	            if(data.ok == true){
+	            	var uniqueCandidates = uniqueAddressesIntersection(data.candidates);
+				    callback(uniqueCandidates);
+	            } else {
+	                error(data.message, null, "")
+	            }
+			}, function(XMLHttpRequest, textStatus, errorThrown) {
 				var message = ajaxErrorMessage(XMLHttpRequest, textStatus);
 				if(error)
 					error(message, XMLHttpRequest, textStatus);
 			}
 		);
-
 	};
+	
+	//ensure unique candidates for intersection addresses
+	//Non intersection addresses are not checked for uniqueness 
+	var uniqueAddressesIntersection = function(candidates) {
+        var uniqueCandidates = [];
+	    $.each(candidates, function(index, candidate){
+	    	//Only use(push) intersection candidate if uniqueCandidates array does not already contain equal address
+	    	//Purpose is to avoid infinite request loops when two equal intersection candidates are returned
+	    	//and behind the scenes is enabled as observed. Non intersection addresses are not affected.
+	    	//Needs further discussion with GIS experts
+	    	var isUnique = true;
+	    	if (candidate.address && candidate.address.indexOf('&') > -1) {
+		    	var matchingCandidates = $.grep(uniqueCandidates, function(cur, gIndex) {
+		    		if (cur.address && cur.address === candidate.address) {
+		    			return true;
+		    		}
+		    	});
+		    	isUnique = (matchingCandidates.length === 0);				    		
+	    	}
+		    if (isUnique) {
+		    	uniqueCandidates.push(candidate);
+		    }
+	       });
+	    return uniqueCandidates;
+	}
 	
     var commonLocationCandidates = function(name, callback, error) {
 		var path = _path  + "/commonlocationcandidates";
@@ -171,7 +193,7 @@ MDCJSLIB.modules.gis = (function() {
 	    getAddressCandidates : addressCandidates,
 	    getCommonLocationCandidates: commonLocationCandidates,
 	    getCommonLocation : commonLocation,
-      getAddressByFolio: addressByFolio,
+	    getAddressByFolio: addressByFolio,
 	    getCondoAddress: condoAddress,
 	    getStandardizedStreet: standardizeStreet,
 	    initConnection : initConnection,
