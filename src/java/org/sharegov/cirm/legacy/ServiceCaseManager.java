@@ -575,7 +575,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	 * @return commit success true or false
 	 */
 
-	public Json disable(String srType, String userName) {
+	public Json disable(String srType, String userName, String comment) {
 
 		srType = MetaOntology.getIndividualIdentifier(srType);
 		
@@ -592,7 +592,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			changes.add(isDisabledCreateAddAxiom);
 			
-			String comment = "Disable Service Request "+PREFIX+srType + " - " + getIndividualLabel(srType);
+			comment = (comment==null)?"Disable Service Request "+PREFIX+srType + " - " + getIndividualLabel(srType):comment;
 			
 			boolean r = commit(userName, comment, changes);
 			
@@ -613,7 +613,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	 */
 	
 
-	public Json enable(String srType, String userName) {
+	public Json enable(String srType, String userName, String comment) {
 
 		srType = MetaOntology.getIndividualIdentifier(srType);
 		
@@ -630,7 +630,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			changes.add(isDisabledCreateAddAxiom);
 			
-			String comment = "Enable Service Request "+PREFIX+srType + " - " + getIndividualLabel(srType);
+			comment = (comment==null)?"Enable Service Request "+PREFIX+srType + " - " + getIndividualLabel(srType):comment;
 			
 			boolean r = commit(userName, comment, changes);
 			
@@ -830,7 +830,7 @@ public class ServiceCaseManager extends OntoAdmin {
 		}
 	}
 	
-	public Json replaceAlertServiceCase (String individualID,  String alertIndividualID, String newLabelContent, String userName){
+	public Json replaceAlertServiceCase (String individualID,  String alertIndividualID, String newLabelContent, String userName, String comment){
 
 		individualID = MetaOntology.getIndividualIdentifier(individualID);
 		
@@ -863,7 +863,7 @@ public class ServiceCaseManager extends OntoAdmin {
 				changes = MetaOntology.getAddIndividualObjectFromJsonChanges(individualID, propertyID, data);
 			}		
 
-			String comment = "Replace Alert Message for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID);	
+			comment = (comment==null)?"Replace Alert Message for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID):comment;	
 			
 			boolean r = commit(userName, comment, changes);
 			
@@ -885,7 +885,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	 * @return
 	 */
 	
-	public Json addNewAlertServiceCase (String individualID, Json data, String userName){
+	public Json addNewAlertServiceCase (String individualID, Json data, String userName, String comment){
 
 		individualID = MetaOntology.getIndividualIdentifier(individualID);
 		
@@ -921,7 +921,7 @@ public class ServiceCaseManager extends OntoAdmin {
 				changes = MetaOntology.getAddIndividualObjectFromJsonChanges(individualID, propertyID, data);
 			}		
 
-			String comment = "Create new Alert Message for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID);	
+			comment = (comment==null)?"Create new Alert Message for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID):comment;	
 			
 			boolean r = commit(userName, comment, changes);
 			
@@ -1091,7 +1091,7 @@ public class ServiceCaseManager extends OntoAdmin {
 		} else throw new IllegalArgumentException("Json object does not match questions schema: " + data.asString()); 	
 	}
 	
-	public Json addActivitesServiceCase (String individualID, Json data, String userName){	
+	public Json addActivitesServiceCase (String individualID, Json data, String userName, String comment){	
 		String host = getHostIpAddress();		
 		
 		if (!host.isEmpty() && validateJson(host + "/javascript/schemas/activity_compact.json", data)){
@@ -1099,7 +1099,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			List<String> evictionList = new ArrayList<String>();
 			evictionList.add(individualID);
 			String propertyID = "hasActivity";
-			String comment = "Create/Replace Activities for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID);	
+			comment = (comment==null)?"Create/Replace Activities for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID):comment;	
 			
 			Json oldActivities = getServiceCaseActivities(individualID);			
 			
@@ -1161,7 +1161,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	 * @param userName
 	 * @return
 	 */
-	public Json addActivityToServiceCase (String individualID, String activityID, String userName){
+	public Json addActivityToServiceCase (String individualID, String activityID, String userName, String comment){
 		
 			individualID = MetaOntology.getIndividualIdentifier(individualID);	
 			activityID = MetaOntology.getIndividualIdentifier(activityID);
@@ -1169,7 +1169,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			List<String> evictionList = new ArrayList<String>();
 			evictionList.add(individualID);
 			String propertyID = "hasActivity";
-			String comment = "Add Activity: " + activityID + " to SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID);	
+			comment = (comment==null)?"Add Activity: " + activityID + " to SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID):comment;	
 			
 			if (commit(userName, comment, MetaOntology.getAddIndividualObjectProperty (individualID, propertyID, activityID))){
 				registerChange(individualID);
