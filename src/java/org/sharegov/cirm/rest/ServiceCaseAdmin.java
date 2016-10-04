@@ -102,6 +102,24 @@ public class ServiceCaseAdmin extends RestService {
 	}
 	
 	@GET
+	@Path("/outcomes/{department}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getOutcomes(@PathParam("department") String aDepartment) {		
+		try
+		{		
+			if (aDepartment == null || aDepartment.isEmpty()) throw new IllegalArgumentException("department null or empty");
+			
+			return Response.ok(ServiceCaseManager.getInstance().getOutcomes(aDepartment), MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
+	@GET
 	@Path("/ontology/{ontologyname}/diff")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response compareOntos(@PathParam("ontologyname") String ontologyName) {

@@ -47,7 +47,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	private Map<String, Long> changes;
 	private Map<String, Set <String>> dptActivities;
 	private Map<String, Set <String>> dptOutcomes;
-	private Map<String, Json> outcomes;
+	private Map<String, Json> activities;
 	private Map<String, Json> outcomes;
 	
 	/**
@@ -58,7 +58,8 @@ public class ServiceCaseManager extends OntoAdmin {
 		cache = new ConcurrentHashMap<String, Json>();
 		changes = new ConcurrentHashMap<String, Long>();
 		dptActivities = new ConcurrentHashMap<String, Set <String>>();
-		outcomes = new ConcurrentHashMap<String, Json>();
+		dptOutcomes = new ConcurrentHashMap<String, Set <String>>();
+		activities = new ConcurrentHashMap<String, Json>();
 		outcomes = new ConcurrentHashMap<String, Json>();
 		
 		ThreadLocalStopwatch.startTop("Started Service Case Admin Cache.");
@@ -394,11 +395,11 @@ public class ServiceCaseManager extends OntoAdmin {
 						atx = getSerializedIndividual(MetaOntology.getIdFromUri(atx.asString()), MetaOntology.getOntologyFromUri(atx.asString()));
 					}
 					
-					addToCache(atx, S, outcomes);
+					addToCache(atx, S, activities);
 					addOutcomesByDepartment (srType, atx, departmentIriFragment);
 				}				
 			} else {
-				addToCache(srTypeActivities, S, outcomes);
+				addToCache(srTypeActivities, S, activities);
 				addOutcomesByDepartment (srType, srTypeActivities, departmentIriFragment);
 			}
 			
@@ -441,8 +442,8 @@ public class ServiceCaseManager extends OntoAdmin {
 			String iri = atx.at("iri").asString();
 			if (!cachePtr.containsKey(iri)){
 				cachePtr.put(iri, atx);
-				S.add(iri);
 			}
+			S.add(iri);
 		}
 	}
 	
@@ -466,21 +467,21 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			for (OWLNamedIndividual indx: all){
 				String iri = indx.getIRI().toString();
-				if (!outcomes.containsKey(iri)){
+				if (!activities.containsKey(iri)){
 					Json atx = getSerializedIndividual(MetaOntology.getIdFromUri(iri), MetaOntology.getOntologyFromUri(iri));
 					if (atx.has("iri")){
-						outcomes.put(iri, atx);
+						activities.put(iri, atx);
 					}
 				}
 			}
 			
-			for (Json atx: outcomes.values()){
+			for (Json atx: activities.values()){
 				result.add(atx);
 			}
 		} else {			
 			if (dptActivities.containsKey(departmentFragment)){
 				for (String iri : dptActivities.get(departmentFragment)) {			
-					result.add(outcomes.get(iri));
+					result.add(activities.get(iri));
 				}
 			}
 		}
