@@ -73,10 +73,10 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
 		String userName = "automated test";
 		String comment = "test";
         //make sure the test is disabled
-		serviceCaseManager.enable(srType, userName);
+		serviceCaseManager.enable(srType, userName, comment);
 		assertTrue(isSRDisabled("legacy:PW16",false));
 	
-		Json result = serviceCaseManager.disable(srType, userName);
+		Json result = serviceCaseManager.disable(srType, userName, comment);
 		System.out.println("Hello from test2");
 		assertTrue(isSRDisabled("legacy:PW16",true));
 		assertTrue(result.at("disabled").asBoolean());
@@ -90,7 +90,7 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
 		String srType = "zzzz";
 		String userName = "automated test";
 		String comment = "test";
-		Json result = serviceCaseManager.disable(srType, userName);
+		Json result = serviceCaseManager.disable(srType, userName, comment);
 		
 		assertFalse(result.isNull());
 	}
@@ -103,7 +103,7 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
 		String srType = null;
 		String userName = "automated test";
 		String comment = "test";
-		Json result = serviceCaseManager.disable(srType, userName);
+		Json result = serviceCaseManager.disable(srType, userName, null);
 		
 		
 	}
@@ -115,11 +115,12 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
 		
 		String srType = "legacy:PW16";
 		String userName = "automated test";
+		String comment = "test";
 		
-		serviceCaseManager.disable(srType, userName);
+		serviceCaseManager.disable(srType, userName, null);
 		assertTrue(isSRDisabled("legacy:PW16",true));
 	
-		Json result = serviceCaseManager.enable(srType, userName);
+		Json result = serviceCaseManager.enable(srType, userName, comment);
 		
 		
 		assertTrue(isSRDisabled("legacy:PW16", false));

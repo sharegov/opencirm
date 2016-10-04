@@ -132,6 +132,7 @@ public class ServiceCaseAdmin extends RestService {
 			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
 			if (revisions == null || !revisions.isArray()) throw new IllegalArgumentException("Revisions List null or empty");
 			
+			
 			List<Integer> intRevisions = new ArrayList<>();
 			for(Object o : revisions.asList()) intRevisions.add(Integer.valueOf(o.toString()));
 						
@@ -156,10 +157,12 @@ public class ServiceCaseAdmin extends RestService {
 			if (!(aData.has("userName"))) throw new IllegalArgumentException("User Name not found"); 
 			
 			String userName = aData.at("userName").asString();
+			String comment = aData.has("comment")?aData.at("comment").asString():null;
+			
 			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
 			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
 						
-			return Response.ok(ServiceCaseManager.getInstance().disable(srType, userName), MediaType.APPLICATION_JSON).build();
+			return Response.ok(ServiceCaseManager.getInstance().disable(srType, userName, comment), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
 			return Response
@@ -179,10 +182,12 @@ public class ServiceCaseAdmin extends RestService {
 			if (!(aData.has("userName"))) throw new IllegalArgumentException("User Name not found"); 
 			
 			String userName = aData.at("userName").asString();
+			String comment = aData.has("comment")?aData.at("comment").asString():null;
+			
 			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
 			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
 						
-			return Response.ok(ServiceCaseManager.getInstance().enable(srType, userName), MediaType.APPLICATION_JSON).build();
+			return Response.ok(ServiceCaseManager.getInstance().enable(srType, userName, comment), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
 			return Response
@@ -290,6 +295,7 @@ public class ServiceCaseAdmin extends RestService {
 			if (!(aData.has("userName") && aData.has("payload") && aData.at("payload").has("iri") && aData.at("payload").has("label"))) throw new IllegalArgumentException("User Name or Alert data null or empty"); 
 			
 			String userName = aData.at("userName").asString();
+			String comment = aData.has("comment")?aData.at("comment").asString():null;
 			String alertUri = aData.at("payload").at("iri").asString();
 			String newLabel = aData.at("payload").at("label").asString();						
 
@@ -299,7 +305,7 @@ public class ServiceCaseAdmin extends RestService {
 			if (newLabel == null || newLabel.isEmpty()) throw new IllegalArgumentException("new label null or empty");
 		     
 //			return Response.ok(ServiceCaseManager.getInstance().replaceAlertLabel(srType, alertUri, newLabel, userName), MediaType.APPLICATION_JSON).build();
-			return Response.ok(ServiceCaseManager.getInstance().replaceAlertServiceCase(srType, alertUri, newLabel, userName), MediaType.APPLICATION_JSON).build();
+			return Response.ok(ServiceCaseManager.getInstance().replaceAlertServiceCase(srType, alertUri, newLabel, userName, comment), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
 			
@@ -322,12 +328,13 @@ public class ServiceCaseAdmin extends RestService {
 		{ 
 			if (!(aData.has("userName") && aData.has("payload") && aData.at("payload").has("iri") && aData.at("payload").has("label")&& aData.at("payload").has("type"))) throw new IllegalArgumentException("User Name or Alert data null/empty/Incomplete"); 
 			
-			String userName = aData.at("userName").asString();			
+			String userName = aData.at("userName").asString();	
+			String comment = aData.has("comment")?aData.at("comment").asString():null;
 
 			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
 			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");	
 			
-			return Response.ok(ServiceCaseManager.getInstance().addNewAlertServiceCase(srType, aData.at("payload"), userName), MediaType.APPLICATION_JSON).build();
+			return Response.ok(ServiceCaseManager.getInstance().addNewAlertServiceCase(srType, aData.at("payload"), userName, comment), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
 			e.printStackTrace();
@@ -448,11 +455,12 @@ public class ServiceCaseAdmin extends RestService {
 				if (!(aData.has("userName") && aData.has("payload") && aData.at("payload").isArray())) throw new IllegalArgumentException("User Name or Question data null/empty/Incomplete"); 
 				
 				String userName = aData.at("userName").asString();			
-	
+				String comment = aData.has("comment")?aData.at("comment").asString():null;
+				
 				if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
 				if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");	
 				
-				result = ServiceCaseManager.getInstance().addQuestionsServiceCase(srType, aData.at("payload"), userName);			
+				result = ServiceCaseManager.getInstance().addQuestionsServiceCase(srType, aData.at("payload"), userName, comment);			
 				
 				cache.put(aJsonStr, result);
 				
@@ -524,11 +532,12 @@ public class ServiceCaseAdmin extends RestService {
 				if (!(aData.has("userName") && aData.has("payload") && aData.at("payload").isArray())) throw new IllegalArgumentException("User Name or Activity data null/empty/Incomplete"); 
 				
 				String userName = aData.at("userName").asString();			
-	
+				String comment = aData.has("comment")?aData.at("comment").asString():null;
+				
 				if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
 				if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");	
 				
-				result = ServiceCaseManager.getInstance().addActivitesServiceCase(srType, aData.at("payload"), userName);			
+				result = ServiceCaseManager.getInstance().addActivitesServiceCase(srType, aData.at("payload"), userName, comment);			
 				
 				cache.put(aJsonStr, result);
 				
@@ -565,13 +574,14 @@ public class ServiceCaseAdmin extends RestService {
 		{ 
 			if (!aData.has("userName")) throw new IllegalArgumentException("User Name null/empty/Incomplete"); 
 			
-			String userName = aData.at("userName").asString();			
+			String userName = aData.at("userName").asString();
+			String comment = aData.has("comment")?aData.at("comment").asString():null;
 
 			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
 			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
 			if (activityFragment == null || activityFragment.isEmpty()) throw new IllegalArgumentException("Activity Fragment null or empty");		
 			
-			return Response.ok(ServiceCaseManager.getInstance().addActivityToServiceCase(srType, activityFragment, userName), MediaType.APPLICATION_JSON).build();
+			return Response.ok(ServiceCaseManager.getInstance().addActivityToServiceCase(srType, activityFragment, userName, comment), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
 			ThreadLocalStopwatch.now("Error found Saving Activity.");
@@ -677,7 +687,7 @@ public class ServiceCaseAdmin extends RestService {
 			String userName = aData.at("userName").asString();
 			String objectUri = aData.at("objectUri").asString();
 			String propertyUri = aData.at("propertyUri").asString();
-			String comment = "Update Individial Object Property "+PREFIX+objectUri;
+			String comment = aData.has("comment")?aData.at("comment").asString():"Update Individial Object Property "+PREFIX+objectUri;
 			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
 			if (objectUri == null || objectUri.isEmpty()) throw new IllegalArgumentException("object uri null or empty");
 			if (propertyUri == null || propertyUri.isEmpty()) throw new IllegalArgumentException("property uri null or empty");
@@ -693,25 +703,11 @@ public class ServiceCaseAdmin extends RestService {
 		}
 	}
 	
-	
-	
 	@GET
 	@Path("test")
 	public Response testEndPoint()
 	{
 		return Response.ok (Json.object().set("result", ServiceCaseManager.getInstance().getFullSchema("http://localhost:8182/javascript/schemas/service_field_compact.json")), MediaType.APPLICATION_JSON).build();
-	}
-	
-	
-	private void permissionCheck(OWLClassExpression expr){
-		//TODO enable security
-//		if (!isClientExempt() && reasoner().getSuperClasses(expr, false).containsEntity(owlClass("Protected")))
-//			expr = OWL.and(expr, Permissions.constrain(OWL.individual("BO_View"), getUserActors()));
-//		else if (!isClientExempt() && !reasoner().getSubClasses(OWL.and(expr, owlClass("Protected")), false).isBottomSingleton())
-//		{
-//			return ko("Access denied - protected resources could be returned, please split the query.");
-//		}
-		
 	}
 	
 }
