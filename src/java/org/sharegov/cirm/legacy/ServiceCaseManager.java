@@ -46,7 +46,9 @@ public class ServiceCaseManager extends OntoAdmin {
 	private Map<String, Json> cache;
 	private Map<String, Long> changes;
 	private Map<String, Set <String>> dptActivities;
-	private Map<String, Json> activities;
+	private Map<String, Set <String>> dptOutcomes;
+	private Map<String, Json> outcomes;
+	private Map<String, Json> outcomes;
 	
 	/**
 	 * private to defeat multiple instantiation
@@ -56,7 +58,8 @@ public class ServiceCaseManager extends OntoAdmin {
 		cache = new ConcurrentHashMap<String, Json>();
 		changes = new ConcurrentHashMap<String, Long>();
 		dptActivities = new ConcurrentHashMap<String, Set <String>>();
-		activities = new ConcurrentHashMap<String, Json>();
+		outcomes = new ConcurrentHashMap<String, Json>();
+		outcomes = new ConcurrentHashMap<String, Json>();
 		
 		ThreadLocalStopwatch.startTop("Started Service Case Admin Cache.");
 		getAll();
@@ -391,10 +394,12 @@ public class ServiceCaseManager extends OntoAdmin {
 						atx = getSerializedIndividual(MetaOntology.getIdFromUri(atx.asString()), MetaOntology.getOntologyFromUri(atx.asString()));
 					}
 					
-					addActivityCache(atx, S);
+					addToCache(atx, S, outcomes);
+					addOutcomesByDepartment (srType, atx, departmentIriFragment);
 				}				
 			} else {
-				addActivityCache(srTypeActivities, S);
+				addToCache(srTypeActivities, S, outcomes);
+				addOutcomesByDepartment (srType, srTypeActivities, departmentIriFragment);
 			}
 			
 			if (dptActivities.containsKey(departmentIriFragment)){
@@ -405,11 +410,37 @@ public class ServiceCaseManager extends OntoAdmin {
 		}
 	}
 	
-	private void addActivityCache (Json atx, Set<String> S){
+	private void addOutcomesByDepartment (String srType, Json serializedActivity, String departmentIriFragment){
+		if (serializedActivity.has("hasAllowableOutcome")){
+			Set <String> S = new HashSet<>();
+			
+			Json activityOutcomes = serializedActivity.at("hasAllowableOutcome");
+			
+			if (activityOutcomes.isArray()){
+				for (Json outcx : activityOutcomes.asJsonList()){
+					if (!outcx.isObject()){
+						outcx = getSerializedIndividual(MetaOntology.getIdFromUri(outcx.asString()), MetaOntology.getOntologyFromUri(outcx.asString()));
+					}
+					
+					addToCache(outcx, S, outcomes);
+				}				
+			} else {
+				addToCache(activityOutcomes, S, outcomes);
+			}
+			
+			if (dptOutcomes.containsKey(departmentIriFragment)){
+				dptOutcomes.get(departmentIriFragment).addAll(S);
+			} else {
+				dptOutcomes.put(departmentIriFragment, S);
+			}
+		}
+	}
+	
+	private void addToCache (Json atx, Set<String> S, Map <String, Json> cachePtr){
 		if (atx.has("iri")){
 			String iri = atx.at("iri").asString();
-			if (!activities.containsKey(iri)){
-				activities.put(iri, atx);
+			if (!cachePtr.containsKey(iri)){
+				cachePtr.put(iri, atx);
 				S.add(iri);
 			}
 		}
@@ -435,21 +466,59 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			for (OWLNamedIndividual indx: all){
 				String iri = indx.getIRI().toString();
-				if (!activities.containsKey(iri)){
+				if (!outcomes.containsKey(iri)){
 					Json atx = getSerializedIndividual(MetaOntology.getIdFromUri(iri), MetaOntology.getOntologyFromUri(iri));
 					if (atx.has("iri")){
-						activities.put(iri, atx);
+						outcomes.put(iri, atx);
 					}
 				}
 			}
 			
-			for (Json atx: activities.values()){
+			for (Json atx: outcomes.values()){
 				result.add(atx);
 			}
 		} else {			
 			if (dptActivities.containsKey(departmentFragment)){
 				for (String iri : dptActivities.get(departmentFragment)) {			
-					result.add(activities.get(iri));
+					result.add(outcomes.get(iri));
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 
+	 * Get Outcomes by department, if department == ALL return all outcomes on cache
+	 * 
+	 * Empty array is returned if no results found.
+	 * 
+	 */
+	public Json getOutcomes (String departmentFragment){
+		Json result = Json.array();
+		
+		if (departmentFragment.compareToIgnoreCase("all") == 0){
+						
+			Set<OWLNamedIndividual> all = getAllOutcomeIndividuals();
+			
+			for (OWLNamedIndividual indx: all){
+				String iri = indx.getIRI().toString();
+				if (!outcomes.containsKey(iri)){
+					Json atx = getSerializedIndividual(MetaOntology.getIdFromUri(iri), MetaOntology.getOntologyFromUri(iri));
+					if (atx.has("iri")){
+						outcomes.put(iri, atx);
+					}
+				}
+			}
+			
+			for (Json atx: outcomes.values()){
+				result.add(atx);
+			}
+		} else {			
+			if (dptOutcomes.containsKey(departmentFragment)){
+				for (String iri : dptOutcomes.get(departmentFragment)) {			
+					result.add(outcomes.get(iri));
 				}
 			}
 		}
@@ -1348,10 +1417,29 @@ public class ServiceCaseManager extends OntoAdmin {
 	 */
 
 	private Set<OWLNamedIndividual> getAllActivityIndividuals() {
+		return getAllIndividualsOfClass("Activity");
+	}
+	
+	/**
+	 * 
+	 * @return a list of individuals that belong to the class Outcome
+	 */
+
+	private Set<OWLNamedIndividual> getAllOutcomeIndividuals() {
+		return getAllIndividualsOfClass("Outcome");
+	}
+	
+	/**
+	 * 
+	 * @return a list of individuals that belong to the class aClass
+	 */
+
+	private Set<OWLNamedIndividual> getAllIndividualsOfClass(String aClass) {
 		OWLReasoner reasoner = reasoner();
-		OWLClass activity = owlClass(PREFIX + "Activity");
+		OWLClass activity = owlClass(PREFIX + aClass);
 		return reasoner.getInstances(activity, false).getFlattened();
 	}
+	
 	/*
 	 * Test by Syed
 	 * 
