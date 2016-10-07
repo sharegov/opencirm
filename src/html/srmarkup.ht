@@ -299,7 +299,7 @@
 					</div>
 			        <div class="grid_1">
 						<select class="f_left" data-bind="options: $root.allStates(), value:atAddress().Street_Address_State().iri, 
-						optionsValue:'iri', optionsText:'USPS_Abbreviation', optionsCaption:'State', attr:{disabled: $root.isCustomerLocked()} " style="width:67px;"></select>
+						optionsValue:'iri', optionsText:'label', optionsCaption:'State', attr:{disabled: $root.isCustomerLocked()} " style="width:67px;"></select>
 					</div>
 			        <div class="grid_1">
 			            <input class="f_left" type="text" data-bind="value: atAddress().Zip_Code, attr:{disabled: $root.isCustomerLocked()}" placeholder="Zip">

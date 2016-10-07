@@ -1049,75 +1049,6 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy",
 			return !updateTypeAllowed;
 		};
 		
-
-/*		
-		self.loadFromServer = function(lookup_boid) {
-			//var userFriendlyPattern = /[A-Z]{2}[0-9]{3,6}.{1}[\d]{8}/;
-			//var alphabetPattern = /[A-Za-z]{2}/;
-			//TODO : temp fix. We don't have to do below check once all SRs have hasUserFriendlyID
-			if(self.data().boid() == parseInt(lookup_boid.split("-")[1]))
-				lookup_boid = lookup_boid.split("-")[1];
-			//END : temp fix.
-			if(lookup_boid.match(userFriendlyPattern))
-			{
-				self.loadUserFriendlyFromServer(lookup_boid);
-			}
-			else if(lookup_boid.match(alphabetPattern)) {
-				var pre = lookup_boid.substr(0,2);
-				var srID = lookup_boid.substr(2,lookup_boid.length);
-				var friendlyFormat = pre + U.getFullYear() + "-" + U.addLeadingZeroes(srID, 8);
-				if(friendlyFormat.match(userFriendlyPattern) && friendlyFormat.indexOf("AC") != -1)
-				{
-					self.loadUserFriendlyFromServer(friendlyFormat);
-				}
-				else {
-					$("#sh_dialog_sr_lookup").dialog('close');
-					var formatExample = "\n .SR_ID : 1234 \n .SR_ID : AC1234 or AC2012-00001234 \n .Legacy_ID : 13-00000434";
-					alertDialog("Unrecognizable SR ID Format. Please use one of these formats :" + formatExample);
-					return true;
-				}
-			}
-			else if(lookup_boid.indexOf("-") != -1) {
-				var query = {"type":"legacy:ServiceCase", "legacy:hasLegacyId":lookup_boid,
-							 "currentPage":1, "itemsPerPage":1};
-				cirm.top.async().postObject("/legacy/advSearch", query,  function(result) {
-					if(result.ok == true) {
-						if(result.resultsArray.length == 1)
-						{
-							//fetchSR(result.resultsArray[0], self, false);
-							var fetchedBOID = result.resultsArray[0].boid;
-							cirm.top.async().get("/legacy/search?id="+fetchedBOID, {}, function(result) {
-								$("#sh_dialog_sr_lookup").dialog('close');
-								if(result.ok == true)
-									fetchSR(result.bo, self, false);
-								else if(result.ok == false)
-									showErrorDialog("An error occurred while searching for the Service Request : <br>"+result.error);
-							});
-
-						}
-						else
-						{
-							$("#sh_dialog_sr_lookup").dialog('close');
-							alertDialog("No Search Results");
-						}
-					}
-					else {
-						$("#sh_dialog_sr_lookup").dialog('close');
-						showErrorDialog("An error occurred while searching for the Service Request : <br>"+result.error);
-					}
-				});
-			}
-			else {
-				cirm.top.async().get("/legacy/search?id="+lookup_boid, {}, function(result) {
-					$("#sh_dialog_sr_lookup").dialog('close');
-					if(result.ok == true)
-						fetchSR(result.bo, self, false);
-					else if(result.ok == false)
-						showErrorDialog("An error occurred while searching for the Service Request : <br>"+result.error);
-				});
-			}
-		};
-*/
 		self.srLookup = function() {
 			var lookup_boid = $('[name="SR Lookup"]').val().trim();
 			if(U.isEmptyString(lookup_boid))
@@ -1506,27 +1437,6 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy",
 			else
 				return "";
 		};
-/*			
-				var potentialParents = $.map(self.duplicateDetails(), function(v,i) {
-					if(v.hasStatus =="O-OPEN")
-						return v;
-				});
-				if(potentialParents.length == 1)
-				{
-					if(el.boid === potentialParents[0].boid)
-						return (currentMillis - potentialParents[0].boid > 0 ? "PARENT" : "");
-				}
-				else if(potentialParents.length > 1)
-				{
-					potentialParents.sort( function(a,b) {
-						return a.hasDateCreated - b.hasDateCreated;
-					});
-					if(el.boid === potentialParents[0].boid)
-					{
-						return (currentMillis - potentialParents[0].boid > 0 ? "PARENT" : "");
-					}
-				}
-*/
 		
 		//Delete empty objects, modify email, 
 		function modifyBO(jsondata)

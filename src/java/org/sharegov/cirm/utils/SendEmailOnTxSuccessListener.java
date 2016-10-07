@@ -56,7 +56,8 @@ public class SendEmailOnTxSuccessListener implements CirmTransactionListener
 	{
 		if (e.isSucceeded()) 
 		{
-			if (!cirmMessages.isEmpty()) {
+			if (!cirmMessages.isEmpty() && MessageManager.get().isConfigured()) 
+			{
 				ThreadLocalStopwatch.getWatch().time("SendEmailOnTxSuccessListener sending " + cirmMessages.size());
 				MessageManager.get().sendEmails(cirmMessages);
 			} 

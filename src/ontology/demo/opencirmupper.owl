@@ -1221,14 +1221,14 @@
     <EquivalentClasses>
         <Class IRI="http://opencirm.org#Direction"/>
         <ObjectOneOf>
-            <NamedIndividual IRI="http://opencirm.org#East"/>
+            <NamedIndividual IRI="http://opencirm.org#South"/>
+            <NamedIndividual IRI="http://opencirm.org#South_West"/>
+            <NamedIndividual IRI="http://opencirm.org#South_East"/>
+            <NamedIndividual IRI="http://opencirm.org#West"/>
             <NamedIndividual IRI="http://opencirm.org#North"/>
+            <NamedIndividual IRI="http://opencirm.org#East"/>
             <NamedIndividual IRI="http://opencirm.org#North_East"/>
             <NamedIndividual IRI="http://opencirm.org#North_West"/>
-            <NamedIndividual IRI="http://opencirm.org#South"/>
-            <NamedIndividual IRI="http://opencirm.org#South_East"/>
-            <NamedIndividual IRI="http://opencirm.org#South_West"/>
-            <NamedIndividual IRI="http://opencirm.org#West"/>
         </ObjectOneOf>
     </EquivalentClasses>
     <SubClassOf>
@@ -2861,22 +2861,22 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Alley"/>
-        <Literal datatypeIRI="&xsd;string">ALY</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Alley"/>
         <Literal datatypeIRI="&xsd;string">ALLEE</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Alley"/>
-        <Literal datatypeIRI="&xsd;string">ALLY</Literal>
+        <Literal datatypeIRI="&xsd;string">ALLEY</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Alley"/>
-        <Literal datatypeIRI="&xsd;string">ALLEY</Literal>
+        <Literal datatypeIRI="&xsd;string">ALY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Alley"/>
+        <Literal datatypeIRI="&xsd;string">ALLY</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -2886,22 +2886,22 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Annex"/>
-        <Literal datatypeIRI="&xsd;string">ANX</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Annex"/>
         <Literal datatypeIRI="&xsd;string">ANEX</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Annex"/>
-        <Literal datatypeIRI="&xsd;string">ANNEX</Literal>
+        <Literal datatypeIRI="&xsd;string">ANNX</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Annex"/>
-        <Literal datatypeIRI="&xsd;string">ANNX</Literal>
+        <Literal datatypeIRI="&xsd;string">ANX</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Annex"/>
+        <Literal datatypeIRI="&xsd;string">ANNEX</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -2931,7 +2931,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Avenue"/>
-        <Literal datatypeIRI="&xsd;string">AVN</Literal>
+        <Literal datatypeIRI="&xsd;string">AV</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -2941,7 +2941,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Avenue"/>
-        <Literal datatypeIRI="&xsd;string">AV</Literal>
+        <Literal datatypeIRI="&xsd;string">AVN</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Avenue"/>
+        <Literal datatypeIRI="&xsd;string">AVNUE</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -2954,11 +2959,6 @@
         <Literal datatypeIRI="&xsd;string">AVENUE</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Avenue"/>
-        <Literal datatypeIRI="&xsd;string">AVNUE</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Avenue"/>
         <Literal datatypeIRI="&xsd;string">Avenue</Literal>
@@ -2966,12 +2966,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Bayoo"/>
-        <Literal datatypeIRI="&xsd;string">BAYOO</Literal>
+        <Literal datatypeIRI="&xsd;string">BAYOU</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Bayoo"/>
-        <Literal datatypeIRI="&xsd;string">BAYOU</Literal>
+        <Literal datatypeIRI="&xsd;string">BAYOO</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -2981,12 +2981,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Beach"/>
-        <Literal datatypeIRI="&xsd;string">BEACH</Literal>
+        <Literal datatypeIRI="&xsd;string">BCH</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Beach"/>
-        <Literal datatypeIRI="&xsd;string">BCH</Literal>
+        <Literal datatypeIRI="&xsd;string">BEACH</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -3011,7 +3011,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Bluff"/>
-        <Literal datatypeIRI="&xsd;string">BLUF</Literal>
+        <Literal datatypeIRI="&xsd;string">BLF</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -3021,7 +3021,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Bluff"/>
-        <Literal datatypeIRI="&xsd;string">BLF</Literal>
+        <Literal datatypeIRI="&xsd;string">BLUF</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -3041,12 +3041,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Bottom"/>
-        <Literal datatypeIRI="&xsd;string">BTM</Literal>
+        <Literal datatypeIRI="&xsd;string">BOTTOM</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Bottom"/>
-        <Literal datatypeIRI="&xsd;string">BOT</Literal>
+        <Literal datatypeIRI="&xsd;string">BTM</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -3056,7 +3056,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Bottom"/>
-        <Literal datatypeIRI="&xsd;string">BOTTOM</Literal>
+        <Literal datatypeIRI="&xsd;string">BOT</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -3066,17 +3066,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Boulevard"/>
-        <Literal datatypeIRI="&xsd;string">BOUL</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Boulevard"/>
         <Literal datatypeIRI="&xsd;string">BOULEVARD</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Boulevard"/>
-        <Literal datatypeIRI="&xsd;string">BOULV</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -3084,9 +3074,24 @@
         <Literal datatypeIRI="&xsd;string">BLVD</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Boulevard"/>
+        <Literal datatypeIRI="&xsd;string">BOUL</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Boulevard"/>
+        <Literal datatypeIRI="&xsd;string">BOULV</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Boulevard"/>
         <Literal datatypeIRI="&xsd;string">Boulevard</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Branch"/>
+        <Literal datatypeIRI="&xsd;string">BRNCH</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -3099,11 +3104,6 @@
         <Literal datatypeIRI="&xsd;string">BRANCH</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Branch"/>
-        <Literal datatypeIRI="&xsd;string">BRNCH</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Branch"/>
         <Literal datatypeIRI="&xsd;string">Branch</Literal>
@@ -3111,7 +3111,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Bridge"/>
-        <Literal datatypeIRI="&xsd;string">BRIDGE</Literal>
+        <Literal datatypeIRI="&xsd;string">BRG</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -3121,7 +3121,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Bridge"/>
-        <Literal datatypeIRI="&xsd;string">BRG</Literal>
+        <Literal datatypeIRI="&xsd;string">BRIDGE</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -3176,12 +3176,17 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Bypass"/>
+        <Literal datatypeIRI="&xsd;string">BYPASS</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Bypass"/>
         <Literal datatypeIRI="&xsd;string">BYPAS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Bypass"/>
-        <Literal datatypeIRI="&xsd;string">BYPASS</Literal>
+        <Literal datatypeIRI="&xsd;string">BYPA</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -3194,19 +3199,9 @@
         <Literal datatypeIRI="&xsd;string">BYPS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Bypass"/>
-        <Literal datatypeIRI="&xsd;string">BYPA</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Bypass"/>
         <Literal datatypeIRI="&xsd;string">Bypass</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Camp"/>
-        <Literal datatypeIRI="&xsd;string">CAMP</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -3219,19 +3214,14 @@
         <Literal datatypeIRI="&xsd;string">CMP</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Camp"/>
+        <Literal datatypeIRI="&xsd;string">CAMP</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Camp"/>
         <Literal datatypeIRI="&xsd;string">Camp</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Canyon"/>
-        <Literal datatypeIRI="&xsd;string">CANYN</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Canyon"/>
-        <Literal datatypeIRI="&xsd;string">CYN</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -3242,6 +3232,16 @@
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Canyon"/>
         <Literal datatypeIRI="&xsd;string">CANYON</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Canyon"/>
+        <Literal datatypeIRI="&xsd;string">CANYN</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Canyon"/>
+        <Literal datatypeIRI="&xsd;string">CYN</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -3286,11 +3286,6 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Center"/>
-        <Literal datatypeIRI="&xsd;string">CENTRE</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Center"/>
         <Literal datatypeIRI="&xsd;string">CENTR</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
@@ -3301,12 +3296,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Center"/>
-        <Literal datatypeIRI="&xsd;string">CENT</Literal>
+        <Literal datatypeIRI="&xsd;string">CEN</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Center"/>
-        <Literal datatypeIRI="&xsd;string">CNTR</Literal>
+        <Literal datatypeIRI="&xsd;string">CENTRE</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -3316,12 +3311,17 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Center"/>
+        <Literal datatypeIRI="&xsd;string">CENT</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Center"/>
         <Literal datatypeIRI="&xsd;string">CTR</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Center"/>
-        <Literal datatypeIRI="&xsd;string">CEN</Literal>
+        <Literal datatypeIRI="&xsd;string">CNTR</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -3341,22 +3341,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Circle"/>
-        <Literal datatypeIRI="&xsd;string">CIRC</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Circle"/>
-        <Literal datatypeIRI="&xsd;string">CIR</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Circle"/>
         <Literal datatypeIRI="&xsd;string">CRCL</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Circle"/>
-        <Literal datatypeIRI="&xsd;string">CIRCL</Literal>
+        <Literal datatypeIRI="&xsd;string">CIRC</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -3367,6 +3357,16 @@
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Circle"/>
         <Literal datatypeIRI="&xsd;string">CRCLE</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Circle"/>
+        <Literal datatypeIRI="&xsd;string">CIRCL</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Circle"/>
+        <Literal datatypeIRI="&xsd;string">CIR</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -3386,12 +3386,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Cliff"/>
-        <Literal datatypeIRI="&xsd;string">CLIFF</Literal>
+        <Literal datatypeIRI="&xsd;string">CLF</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Cliff"/>
-        <Literal datatypeIRI="&xsd;string">CLF</Literal>
+        <Literal datatypeIRI="&xsd;string">CLIFF</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -3416,12 +3416,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Club"/>
-        <Literal datatypeIRI="&xsd;string">CLUB</Literal>
+        <Literal datatypeIRI="&xsd;string">CLB</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Club"/>
-        <Literal datatypeIRI="&xsd;string">CLB</Literal>
+        <Literal datatypeIRI="&xsd;string">CLUB</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -3441,12 +3441,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Corner"/>
-        <Literal datatypeIRI="&xsd;string">CORNER</Literal>
+        <Literal datatypeIRI="&xsd;string">COR</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Corner"/>
-        <Literal datatypeIRI="&xsd;string">COR</Literal>
+        <Literal datatypeIRI="&xsd;string">CORNER</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -3456,12 +3456,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Corners"/>
-        <Literal datatypeIRI="&xsd;string">CORNERS</Literal>
+        <Literal datatypeIRI="&xsd;string">CORS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Corners"/>
-        <Literal datatypeIRI="&xsd;string">CORS</Literal>
+        <Literal datatypeIRI="&xsd;string">CORNERS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -3486,17 +3486,17 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Court"/>
-        <Literal datatypeIRI="&xsd;string">COURT</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Court"/>
         <Literal datatypeIRI="&xsd;string">CT</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Court"/>
         <Literal datatypeIRI="&xsd;string">CRT</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Court"/>
+        <Literal datatypeIRI="&xsd;string">COURT</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -3506,12 +3506,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Courts"/>
-        <Literal datatypeIRI="&xsd;string">COURTS</Literal>
+        <Literal datatypeIRI="&xsd;string">CTS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Courts"/>
-        <Literal datatypeIRI="&xsd;string">CTS</Literal>
+        <Literal datatypeIRI="&xsd;string">COURTS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -3551,17 +3551,17 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Creek"/>
-        <Literal datatypeIRI="&xsd;string">CR</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Creek"/>
         <Literal datatypeIRI="&xsd;string">CRK</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Creek"/>
         <Literal datatypeIRI="&xsd;string">CREEK</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Creek"/>
+        <Literal datatypeIRI="&xsd;string">CR</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -3571,22 +3571,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Crescent"/>
-        <Literal datatypeIRI="&xsd;string">CRESENT</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Crescent"/>
-        <Literal datatypeIRI="&xsd;string">CRECENT</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Crescent"/>
         <Literal datatypeIRI="&xsd;string">CRSCNT</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Crescent"/>
-        <Literal datatypeIRI="&xsd;string">CRESCENT</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -3596,12 +3581,27 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Crescent"/>
-        <Literal datatypeIRI="&xsd;string">CRES</Literal>
+        <Literal datatypeIRI="&xsd;string">CRESENT</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Crescent"/>
         <Literal datatypeIRI="&xsd;string">CRSENT</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Crescent"/>
+        <Literal datatypeIRI="&xsd;string">CRESCENT</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Crescent"/>
+        <Literal datatypeIRI="&xsd;string">CRECENT</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Crescent"/>
+        <Literal datatypeIRI="&xsd;string">CRES</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -3621,17 +3621,17 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Crossing"/>
+        <Literal datatypeIRI="&xsd;string">CROSSING</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Crossing"/>
         <Literal datatypeIRI="&xsd;string">CRSSNG</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Crossing"/>
         <Literal datatypeIRI="&xsd;string">XING</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Crossing"/>
-        <Literal datatypeIRI="&xsd;string">CROSSING</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -3681,12 +3681,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Dam"/>
-        <Literal datatypeIRI="&xsd;string">DAM</Literal>
+        <Literal datatypeIRI="&xsd;string">DM</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Dam"/>
-        <Literal datatypeIRI="&xsd;string">DM</Literal>
+        <Literal datatypeIRI="&xsd;string">DAM</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -3721,7 +3721,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Drive"/>
-        <Literal datatypeIRI="&xsd;string">DRV</Literal>
+        <Literal datatypeIRI="&xsd;string">DRIVE</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -3736,7 +3736,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Drive"/>
-        <Literal datatypeIRI="&xsd;string">DRIVE</Literal>
+        <Literal datatypeIRI="&xsd;string">DRV</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -3771,17 +3771,22 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Estates"/>
-        <Literal datatypeIRI="&xsd;string">ESTS</Literal>
+        <Literal datatypeIRI="&xsd;string">ESTATES</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Estates"/>
-        <Literal datatypeIRI="&xsd;string">ESTATES</Literal>
+        <Literal datatypeIRI="&xsd;string">ESTS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Estates"/>
         <Literal datatypeIRI="&xsd;string">Estates</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Expressway"/>
+        <Literal datatypeIRI="&xsd;string">EXPR</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -3796,17 +3801,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Expressway"/>
-        <Literal datatypeIRI="&xsd;string">EXPRESSWAY</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Expressway"/>
         <Literal datatypeIRI="&xsd;string">EXPW</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Expressway"/>
-        <Literal datatypeIRI="&xsd;string">EXPR</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -3814,14 +3809,14 @@
         <Literal datatypeIRI="&xsd;string">EXPY</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Expressway"/>
+        <Literal datatypeIRI="&xsd;string">EXPRESSWAY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Expressway"/>
         <Literal datatypeIRI="&xsd;string">Expressway</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Extension"/>
-        <Literal datatypeIRI="&xsd;string">EXTN</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -3839,6 +3834,11 @@
         <Literal datatypeIRI="&xsd;string">EXT</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Extension"/>
+        <Literal datatypeIRI="&xsd;string">EXTN</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Extension"/>
         <Literal datatypeIRI="&xsd;string">Extension</Literal>
@@ -3846,12 +3846,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Extensions"/>
-        <Literal datatypeIRI="&xsd;string">EXTS</Literal>
+        <Literal datatypeIRI="&xsd;string">EXTENSIONS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Extensions"/>
-        <Literal datatypeIRI="&xsd;string">EXTENSIONS</Literal>
+        <Literal datatypeIRI="&xsd;string">EXTS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -3871,22 +3871,17 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Falls"/>
-        <Literal datatypeIRI="&xsd;string">FLS</Literal>
+        <Literal datatypeIRI="&xsd;string">FALLS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Falls"/>
-        <Literal datatypeIRI="&xsd;string">FALLS</Literal>
+        <Literal datatypeIRI="&xsd;string">FLS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Falls"/>
         <Literal datatypeIRI="&xsd;string">Falls</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Ferry"/>
-        <Literal datatypeIRI="&xsd;string">FRY</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -3897,6 +3892,11 @@
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Ferry"/>
         <Literal datatypeIRI="&xsd;string">FERRY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Ferry"/>
+        <Literal datatypeIRI="&xsd;string">FRY</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -3921,12 +3921,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Fields"/>
-        <Literal datatypeIRI="&xsd;string">FIELDS</Literal>
+        <Literal datatypeIRI="&xsd;string">FLDS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Fields"/>
-        <Literal datatypeIRI="&xsd;string">FLDS</Literal>
+        <Literal datatypeIRI="&xsd;string">FIELDS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -3936,12 +3936,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Flat"/>
-        <Literal datatypeIRI="&xsd;string">FLAT</Literal>
+        <Literal datatypeIRI="&xsd;string">FLT</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Flat"/>
-        <Literal datatypeIRI="&xsd;string">FLT</Literal>
+        <Literal datatypeIRI="&xsd;string">FLAT</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -3991,12 +3991,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Forest"/>
-        <Literal datatypeIRI="&xsd;string">FORESTS</Literal>
+        <Literal datatypeIRI="&xsd;string">FRST</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Forest"/>
-        <Literal datatypeIRI="&xsd;string">FRST</Literal>
+        <Literal datatypeIRI="&xsd;string">FORESTS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -4011,12 +4011,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Forge"/>
-        <Literal datatypeIRI="&xsd;string">FORG</Literal>
+        <Literal datatypeIRI="&xsd;string">FRG</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Forge"/>
-        <Literal datatypeIRI="&xsd;string">FRG</Literal>
+        <Literal datatypeIRI="&xsd;string">FORG</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -4041,12 +4041,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Fork"/>
-        <Literal datatypeIRI="&xsd;string">FRK</Literal>
+        <Literal datatypeIRI="&xsd;string">FORK</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Fork"/>
-        <Literal datatypeIRI="&xsd;string">FORK</Literal>
+        <Literal datatypeIRI="&xsd;string">FRK</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -4056,12 +4056,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Forks"/>
-        <Literal datatypeIRI="&xsd;string">FRKS</Literal>
+        <Literal datatypeIRI="&xsd;string">FORKS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Forks"/>
-        <Literal datatypeIRI="&xsd;string">FORKS</Literal>
+        <Literal datatypeIRI="&xsd;string">FRKS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -4071,12 +4071,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Fort"/>
-        <Literal datatypeIRI="&xsd;string">FRT</Literal>
+        <Literal datatypeIRI="&xsd;string">FT</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Fort"/>
-        <Literal datatypeIRI="&xsd;string">FT</Literal>
+        <Literal datatypeIRI="&xsd;string">FRT</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -4091,7 +4091,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Freeway"/>
-        <Literal datatypeIRI="&xsd;string">FREEWY</Literal>
+        <Literal datatypeIRI="&xsd;string">FRWY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Freeway"/>
+        <Literal datatypeIRI="&xsd;string">FWY</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -4101,17 +4106,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Freeway"/>
+        <Literal datatypeIRI="&xsd;string">FREEWY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Freeway"/>
         <Literal datatypeIRI="&xsd;string">FRWAY</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Freeway"/>
-        <Literal datatypeIRI="&xsd;string">FRWY</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Freeway"/>
-        <Literal datatypeIRI="&xsd;string">FWY</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -4121,12 +4121,17 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Garden"/>
-        <Literal datatypeIRI="&xsd;string">GARDN</Literal>
+        <Literal datatypeIRI="&xsd;string">GARDEN</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Garden"/>
-        <Literal datatypeIRI="&xsd;string">GARDEN</Literal>
+        <Literal datatypeIRI="&xsd;string">GRDN</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Garden"/>
+        <Literal datatypeIRI="&xsd;string">GARDN</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -4137,11 +4142,6 @@
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Garden"/>
         <Literal datatypeIRI="&xsd;string">GDN</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Garden"/>
-        <Literal datatypeIRI="&xsd;string">GRDN</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -4156,12 +4156,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Gardens"/>
-        <Literal datatypeIRI="&xsd;string">GARDENS</Literal>
+        <Literal datatypeIRI="&xsd;string">GDNS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Gardens"/>
-        <Literal datatypeIRI="&xsd;string">GDNS</Literal>
+        <Literal datatypeIRI="&xsd;string">GARDENS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -4171,17 +4171,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Gateway"/>
-        <Literal datatypeIRI="&xsd;string">GTWAY</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Gateway"/>
         <Literal datatypeIRI="&xsd;string">GATWAY</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Gateway"/>
-        <Literal datatypeIRI="&xsd;string">GATEWAY</Literal>
+        <Literal datatypeIRI="&xsd;string">GTWAY</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -4194,6 +4189,11 @@
         <Literal datatypeIRI="&xsd;string">GATEWY</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Gateway"/>
+        <Literal datatypeIRI="&xsd;string">GATEWAY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Gateway"/>
         <Literal datatypeIRI="&xsd;string">Gateway</Literal>
@@ -4201,12 +4201,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Glen"/>
-        <Literal datatypeIRI="&xsd;string">GLEN</Literal>
+        <Literal datatypeIRI="&xsd;string">GLN</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Glen"/>
-        <Literal datatypeIRI="&xsd;string">GLN</Literal>
+        <Literal datatypeIRI="&xsd;string">GLEN</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -4226,12 +4226,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Green"/>
-        <Literal datatypeIRI="&xsd;string">GREEN</Literal>
+        <Literal datatypeIRI="&xsd;string">GRN</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Green"/>
-        <Literal datatypeIRI="&xsd;string">GRN</Literal>
+        <Literal datatypeIRI="&xsd;string">GREEN</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -4281,17 +4281,17 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Harbor"/>
+        <Literal datatypeIRI="&xsd;string">HARBOR</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Harbor"/>
         <Literal datatypeIRI="&xsd;string">HRBOR</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Harbor"/>
         <Literal datatypeIRI="&xsd;string">HBR</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Harbor"/>
-        <Literal datatypeIRI="&xsd;string">HARBOR</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -4321,17 +4321,17 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Haven"/>
+        <Literal datatypeIRI="&xsd;string">HVN</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Haven"/>
         <Literal datatypeIRI="&xsd;string">HAVN</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Haven"/>
         <Literal datatypeIRI="&xsd;string">HAVEN</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Haven"/>
-        <Literal datatypeIRI="&xsd;string">HVN</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -4341,7 +4341,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Heights"/>
-        <Literal datatypeIRI="&xsd;string">HEIGHTS</Literal>
+        <Literal datatypeIRI="&xsd;string">HGTS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -4351,12 +4351,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Heights"/>
-        <Literal datatypeIRI="&xsd;string">HTS</Literal>
+        <Literal datatypeIRI="&xsd;string">HEIGHTS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Heights"/>
-        <Literal datatypeIRI="&xsd;string">HGTS</Literal>
+        <Literal datatypeIRI="&xsd;string">HTS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -4371,17 +4371,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Highway"/>
-        <Literal datatypeIRI="&xsd;string">HIWAY</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Highway"/>
-        <Literal datatypeIRI="&xsd;string">HIGHWAY</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Highway"/>
-        <Literal datatypeIRI="&xsd;string">HWAY</Literal>
+        <Literal datatypeIRI="&xsd;string">HIGHWY</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -4391,12 +4381,22 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Highway"/>
-        <Literal datatypeIRI="&xsd;string">HIGHWY</Literal>
+        <Literal datatypeIRI="&xsd;string">HWAY</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Highway"/>
         <Literal datatypeIRI="&xsd;string">HIWY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Highway"/>
+        <Literal datatypeIRI="&xsd;string">HIGHWAY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Highway"/>
+        <Literal datatypeIRI="&xsd;string">HIWAY</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -4406,12 +4406,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Hill"/>
-        <Literal datatypeIRI="&xsd;string">HL</Literal>
+        <Literal datatypeIRI="&xsd;string">HILL</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Hill"/>
-        <Literal datatypeIRI="&xsd;string">HILL</Literal>
+        <Literal datatypeIRI="&xsd;string">HL</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -4436,17 +4436,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Hollow"/>
-        <Literal datatypeIRI="&xsd;string">HOLW</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Hollow"/>
         <Literal datatypeIRI="&xsd;string">HOLLOW</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Hollow"/>
-        <Literal datatypeIRI="&xsd;string">HLLW</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -4459,6 +4449,16 @@
         <Literal datatypeIRI="&xsd;string">HOLLOWS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Hollow"/>
+        <Literal datatypeIRI="&xsd;string">HOLW</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Hollow"/>
+        <Literal datatypeIRI="&xsd;string">HLLW</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Hollow"/>
         <Literal datatypeIRI="&xsd;string">Hollow</Literal>
@@ -4466,12 +4466,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Inlet"/>
-        <Literal datatypeIRI="&xsd;string">INLET</Literal>
+        <Literal datatypeIRI="&xsd;string">INLT</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Inlet"/>
-        <Literal datatypeIRI="&xsd;string">INLT</Literal>
+        <Literal datatypeIRI="&xsd;string">INLET</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -4481,12 +4481,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Island"/>
-        <Literal datatypeIRI="&xsd;string">ISLND</Literal>
+        <Literal datatypeIRI="&xsd;string">ISLAND</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Island"/>
-        <Literal datatypeIRI="&xsd;string">ISLAND</Literal>
+        <Literal datatypeIRI="&xsd;string">ISLND</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -4506,12 +4506,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Islands"/>
-        <Literal datatypeIRI="&xsd;string">ISS</Literal>
+        <Literal datatypeIRI="&xsd;string">ISLANDS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Islands"/>
-        <Literal datatypeIRI="&xsd;string">ISLANDS</Literal>
+        <Literal datatypeIRI="&xsd;string">ISS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -4521,12 +4521,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Isle"/>
-        <Literal datatypeIRI="&xsd;string">ISLES</Literal>
+        <Literal datatypeIRI="&xsd;string">ISLE</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Isle"/>
-        <Literal datatypeIRI="&xsd;string">ISLE</Literal>
+        <Literal datatypeIRI="&xsd;string">ISLES</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -4536,17 +4536,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Junction"/>
-        <Literal datatypeIRI="&xsd;string">JCTN</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Junction"/>
-        <Literal datatypeIRI="&xsd;string">JCTION</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Junction"/>
-        <Literal datatypeIRI="&xsd;string">JUNCTON</Literal>
+        <Literal datatypeIRI="&xsd;string">JUNCTION</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -4556,22 +4546,27 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Junction"/>
-        <Literal datatypeIRI="&xsd;string">JUNCTION</Literal>
+        <Literal datatypeIRI="&xsd;string">JUNCTN</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Junction"/>
-        <Literal datatypeIRI="&xsd;string">JUNCTN</Literal>
+        <Literal datatypeIRI="&xsd;string">JUNCTON</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Junction"/>
+        <Literal datatypeIRI="&xsd;string">JCTION</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Junction"/>
+        <Literal datatypeIRI="&xsd;string">JCTN</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Junction"/>
         <Literal datatypeIRI="&xsd;string">Junction</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Junctions"/>
-        <Literal datatypeIRI="&xsd;string">JUNCTIONS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -4584,6 +4579,11 @@
         <Literal datatypeIRI="&xsd;string">JCTS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Junctions"/>
+        <Literal datatypeIRI="&xsd;string">JUNCTIONS</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Junctions"/>
         <Literal datatypeIRI="&xsd;string">Junctions</Literal>
@@ -4591,12 +4591,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Key"/>
-        <Literal datatypeIRI="&xsd;string">KEY</Literal>
+        <Literal datatypeIRI="&xsd;string">KY</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Key"/>
-        <Literal datatypeIRI="&xsd;string">KY</Literal>
+        <Literal datatypeIRI="&xsd;string">KEY</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -4606,12 +4606,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Keys"/>
-        <Literal datatypeIRI="&xsd;string">KEYS</Literal>
+        <Literal datatypeIRI="&xsd;string">KYS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Keys"/>
-        <Literal datatypeIRI="&xsd;string">KYS</Literal>
+        <Literal datatypeIRI="&xsd;string">KEYS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -4621,7 +4621,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Knoll"/>
-        <Literal datatypeIRI="&xsd;string">KNL</Literal>
+        <Literal datatypeIRI="&xsd;string">KNOL</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -4631,7 +4631,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Knoll"/>
-        <Literal datatypeIRI="&xsd;string">KNOL</Literal>
+        <Literal datatypeIRI="&xsd;string">KNL</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -4656,12 +4656,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Lake"/>
-        <Literal datatypeIRI="&xsd;string">LK</Literal>
+        <Literal datatypeIRI="&xsd;string">LAKE</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Lake"/>
-        <Literal datatypeIRI="&xsd;string">LAKE</Literal>
+        <Literal datatypeIRI="&xsd;string">LK</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -4696,17 +4696,17 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Landing"/>
+        <Literal datatypeIRI="&xsd;string">LANDING</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Landing"/>
         <Literal datatypeIRI="&xsd;string">LNDG</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Landing"/>
         <Literal datatypeIRI="&xsd;string">LNDNG</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Landing"/>
-        <Literal datatypeIRI="&xsd;string">LANDING</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -4721,7 +4721,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Lane"/>
-        <Literal datatypeIRI="&xsd;string">LN</Literal>
+        <Literal datatypeIRI="&xsd;string">LA</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -4731,7 +4731,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Lane"/>
-        <Literal datatypeIRI="&xsd;string">LA</Literal>
+        <Literal datatypeIRI="&xsd;string">LN</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -4741,12 +4741,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Light"/>
-        <Literal datatypeIRI="&xsd;string">LGT</Literal>
+        <Literal datatypeIRI="&xsd;string">LIGHT</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Light"/>
-        <Literal datatypeIRI="&xsd;string">LIGHT</Literal>
+        <Literal datatypeIRI="&xsd;string">LGT</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -4781,12 +4781,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Lock"/>
-        <Literal datatypeIRI="&xsd;string">LCK</Literal>
+        <Literal datatypeIRI="&xsd;string">LOCK</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Lock"/>
-        <Literal datatypeIRI="&xsd;string">LOCK</Literal>
+        <Literal datatypeIRI="&xsd;string">LCK</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -4796,12 +4796,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Locks"/>
-        <Literal datatypeIRI="&xsd;string">LCKS</Literal>
+        <Literal datatypeIRI="&xsd;string">LOCKS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Locks"/>
-        <Literal datatypeIRI="&xsd;string">LOCKS</Literal>
+        <Literal datatypeIRI="&xsd;string">LCKS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -4821,12 +4821,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Lodge"/>
-        <Literal datatypeIRI="&xsd;string">LDGE</Literal>
+        <Literal datatypeIRI="&xsd;string">LDG</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Lodge"/>
-        <Literal datatypeIRI="&xsd;string">LDG</Literal>
+        <Literal datatypeIRI="&xsd;string">LDGE</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -4861,12 +4861,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Manor"/>
-        <Literal datatypeIRI="&xsd;string">MNR</Literal>
+        <Literal datatypeIRI="&xsd;string">MANOR</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Manor"/>
-        <Literal datatypeIRI="&xsd;string">MANOR</Literal>
+        <Literal datatypeIRI="&xsd;string">MNR</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -4891,12 +4891,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Meadow"/>
-        <Literal datatypeIRI="&xsd;string">MEADOW</Literal>
+        <Literal datatypeIRI="&xsd;string">MDW</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Meadow"/>
-        <Literal datatypeIRI="&xsd;string">MDW</Literal>
+        <Literal datatypeIRI="&xsd;string">MEADOW</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -4966,7 +4966,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Mission"/>
-        <Literal datatypeIRI="&xsd;string">MISSION</Literal>
+        <Literal datatypeIRI="&xsd;string">MSN</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Mission"/>
+        <Literal datatypeIRI="&xsd;string">MSSN</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -4976,12 +4981,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Mission"/>
-        <Literal datatypeIRI="&xsd;string">MSN</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Mission"/>
-        <Literal datatypeIRI="&xsd;string">MSSN</Literal>
+        <Literal datatypeIRI="&xsd;string">MISSION</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -5001,12 +5001,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Mount"/>
-        <Literal datatypeIRI="&xsd;string">MOUNT</Literal>
+        <Literal datatypeIRI="&xsd;string">MNT</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Mount"/>
-        <Literal datatypeIRI="&xsd;string">MNT</Literal>
+        <Literal datatypeIRI="&xsd;string">MOUNT</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -5021,16 +5021,6 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Mountain"/>
-        <Literal datatypeIRI="&xsd;string">MNTAIN</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Mountain"/>
-        <Literal datatypeIRI="&xsd;string">MOUNTIN</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Mountain"/>
         <Literal datatypeIRI="&xsd;string">MOUNTAIN</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
@@ -5041,12 +5031,22 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Mountain"/>
-        <Literal datatypeIRI="&xsd;string">MTIN</Literal>
+        <Literal datatypeIRI="&xsd;string">MOUNTIN</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Mountain"/>
         <Literal datatypeIRI="&xsd;string">MTN</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Mountain"/>
+        <Literal datatypeIRI="&xsd;string">MTIN</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Mountain"/>
+        <Literal datatypeIRI="&xsd;string">MNTAIN</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -5091,12 +5091,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Orchard"/>
-        <Literal datatypeIRI="&xsd;string">ORCHARD</Literal>
+        <Literal datatypeIRI="&xsd;string">ORCH</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Orchard"/>
-        <Literal datatypeIRI="&xsd;string">ORCH</Literal>
+        <Literal datatypeIRI="&xsd;string">ORCHARD</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -5106,12 +5106,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Oval"/>
-        <Literal datatypeIRI="&xsd;string">OVAL</Literal>
+        <Literal datatypeIRI="&xsd;string">OVL</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Oval"/>
-        <Literal datatypeIRI="&xsd;string">OVL</Literal>
+        <Literal datatypeIRI="&xsd;string">OVAL</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -5131,17 +5131,17 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Park"/>
+        <Literal datatypeIRI="&xsd;string">PARK</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Park"/>
         <Literal datatypeIRI="&xsd;string">PRK</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Park"/>
         <Literal datatypeIRI="&xsd;string">PK</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Park"/>
-        <Literal datatypeIRI="&xsd;string">PARK</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -5161,7 +5161,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Parkway"/>
-        <Literal datatypeIRI="&xsd;string">PKY</Literal>
+        <Literal datatypeIRI="&xsd;string">PARKWAY</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -5171,7 +5171,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Parkway"/>
-        <Literal datatypeIRI="&xsd;string">PARKWAY</Literal>
+        <Literal datatypeIRI="&xsd;string">PKY</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -5226,12 +5226,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Path"/>
-        <Literal datatypeIRI="&xsd;string">PATHS</Literal>
+        <Literal datatypeIRI="&xsd;string">PATH</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Path"/>
-        <Literal datatypeIRI="&xsd;string">PATH</Literal>
+        <Literal datatypeIRI="&xsd;string">PATHS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -5311,17 +5311,17 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Plains"/>
-        <Literal datatypeIRI="&xsd;string">PLAINES</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Plains"/>
         <Literal datatypeIRI="&xsd;string">PLNS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Plains"/>
         <Literal datatypeIRI="&xsd;string">PLAINS</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Plains"/>
+        <Literal datatypeIRI="&xsd;string">PLAINES</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -5331,12 +5331,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Plaza"/>
-        <Literal datatypeIRI="&xsd;string">PLAZA</Literal>
+        <Literal datatypeIRI="&xsd;string">PLZ</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Plaza"/>
-        <Literal datatypeIRI="&xsd;string">PLZ</Literal>
+        <Literal datatypeIRI="&xsd;string">PLAZA</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -5366,12 +5366,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Points"/>
-        <Literal datatypeIRI="&xsd;string">POINTS</Literal>
+        <Literal datatypeIRI="&xsd;string">PTS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Points"/>
-        <Literal datatypeIRI="&xsd;string">PTS</Literal>
+        <Literal datatypeIRI="&xsd;string">POINTS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -5381,12 +5381,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Port"/>
-        <Literal datatypeIRI="&xsd;string">PRT</Literal>
+        <Literal datatypeIRI="&xsd;string">PORT</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Port"/>
-        <Literal datatypeIRI="&xsd;string">PORT</Literal>
+        <Literal datatypeIRI="&xsd;string">PRT</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -5411,12 +5411,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Prairie"/>
-        <Literal datatypeIRI="&xsd;string">PRR</Literal>
+        <Literal datatypeIRI="&xsd;string">PRAIRIE</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Prairie"/>
-        <Literal datatypeIRI="&xsd;string">PR</Literal>
+        <Literal datatypeIRI="&xsd;string">PRR</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -5426,7 +5426,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Prairie"/>
-        <Literal datatypeIRI="&xsd;string">PRAIRIE</Literal>
+        <Literal datatypeIRI="&xsd;string">PR</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -5436,12 +5436,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Radial"/>
-        <Literal datatypeIRI="&xsd;string">RAD</Literal>
+        <Literal datatypeIRI="&xsd;string">RADIAL</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Radial"/>
-        <Literal datatypeIRI="&xsd;string">RADIAL</Literal>
+        <Literal datatypeIRI="&xsd;string">RADIEL</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -5451,7 +5451,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Radial"/>
-        <Literal datatypeIRI="&xsd;string">RADIEL</Literal>
+        <Literal datatypeIRI="&xsd;string">RAD</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -5471,7 +5471,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Ranch"/>
-        <Literal datatypeIRI="&xsd;string">RANCH</Literal>
+        <Literal datatypeIRI="&xsd;string">RANCHES</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -5481,7 +5481,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Ranch"/>
-        <Literal datatypeIRI="&xsd;string">RANCHES</Literal>
+        <Literal datatypeIRI="&xsd;string">RANCH</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -5496,12 +5496,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Rapid"/>
-        <Literal datatypeIRI="&xsd;string">RPD</Literal>
+        <Literal datatypeIRI="&xsd;string">RAPID</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Rapid"/>
-        <Literal datatypeIRI="&xsd;string">RAPID</Literal>
+        <Literal datatypeIRI="&xsd;string">RPD</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -5526,12 +5526,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Rest"/>
-        <Literal datatypeIRI="&xsd;string">RST</Literal>
+        <Literal datatypeIRI="&xsd;string">REST</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Rest"/>
-        <Literal datatypeIRI="&xsd;string">REST</Literal>
+        <Literal datatypeIRI="&xsd;string">RST</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -5541,12 +5541,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Ridge"/>
-        <Literal datatypeIRI="&xsd;string">RDGE</Literal>
+        <Literal datatypeIRI="&xsd;string">RDG</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Ridge"/>
-        <Literal datatypeIRI="&xsd;string">RDG</Literal>
+        <Literal datatypeIRI="&xsd;string">RDGE</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -5561,12 +5561,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Ridges"/>
-        <Literal datatypeIRI="&xsd;string">RDGS</Literal>
+        <Literal datatypeIRI="&xsd;string">RIDGES</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Ridges"/>
-        <Literal datatypeIRI="&xsd;string">RIDGES</Literal>
+        <Literal datatypeIRI="&xsd;string">RDGS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -5601,12 +5601,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Road"/>
-        <Literal datatypeIRI="&xsd;string">ROAD</Literal>
+        <Literal datatypeIRI="&xsd;string">RD</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Road"/>
-        <Literal datatypeIRI="&xsd;string">RD</Literal>
+        <Literal datatypeIRI="&xsd;string">ROAD</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -5616,12 +5616,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Roads"/>
-        <Literal datatypeIRI="&xsd;string">ROADS</Literal>
+        <Literal datatypeIRI="&xsd;string">RDS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Roads"/>
-        <Literal datatypeIRI="&xsd;string">RDS</Literal>
+        <Literal datatypeIRI="&xsd;string">ROADS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -5721,7 +5721,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Shores"/>
-        <Literal datatypeIRI="&xsd;string">SHOARS</Literal>
+        <Literal datatypeIRI="&xsd;string">SHRS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -5731,7 +5731,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Shores"/>
-        <Literal datatypeIRI="&xsd;string">SHRS</Literal>
+        <Literal datatypeIRI="&xsd;string">SHOARS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -5756,12 +5756,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Spring"/>
-        <Literal datatypeIRI="&xsd;string">SPNG</Literal>
+        <Literal datatypeIRI="&xsd;string">SPRING</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Spring"/>
-        <Literal datatypeIRI="&xsd;string">SPRING</Literal>
+        <Literal datatypeIRI="&xsd;string">SPNG</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -5772,11 +5772,6 @@
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Spring"/>
         <Literal datatypeIRI="&xsd;string">Spring</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Springs"/>
-        <Literal datatypeIRI="&xsd;string">SPGS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -5792,6 +5787,11 @@
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Springs"/>
         <Literal datatypeIRI="&xsd;string">SPRNGS</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Springs"/>
+        <Literal datatypeIRI="&xsd;string">SPGS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -5821,17 +5821,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Square"/>
-        <Literal datatypeIRI="&xsd;string">SQRE</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Square"/>
-        <Literal datatypeIRI="&xsd;string">SQU</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Square"/>
         <Literal datatypeIRI="&xsd;string">SQR</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Square"/>
+        <Literal datatypeIRI="&xsd;string">SQ</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -5841,7 +5836,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Square"/>
-        <Literal datatypeIRI="&xsd;string">SQ</Literal>
+        <Literal datatypeIRI="&xsd;string">SQRE</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Square"/>
+        <Literal datatypeIRI="&xsd;string">SQU</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -5851,12 +5851,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Squares"/>
-        <Literal datatypeIRI="&xsd;string">SQUARES</Literal>
+        <Literal datatypeIRI="&xsd;string">SQRS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Squares"/>
-        <Literal datatypeIRI="&xsd;string">SQRS</Literal>
+        <Literal datatypeIRI="&xsd;string">SQUARES</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -5871,7 +5871,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Station"/>
-        <Literal datatypeIRI="&xsd;string">STN</Literal>
+        <Literal datatypeIRI="&xsd;string">STA</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -5881,7 +5881,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Station"/>
-        <Literal datatypeIRI="&xsd;string">STA</Literal>
+        <Literal datatypeIRI="&xsd;string">STN</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -5891,12 +5891,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Stravenue"/>
-        <Literal datatypeIRI="&xsd;string">STRAVN</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Stravenue"/>
-        <Literal datatypeIRI="&xsd;string">STRAVEN</Literal>
+        <Literal datatypeIRI="&xsd;string">STRVN</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -5911,7 +5906,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Stravenue"/>
-        <Literal datatypeIRI="&xsd;string">STRAV</Literal>
+        <Literal datatypeIRI="&xsd;string">STRVNUE</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -5921,17 +5916,27 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Stravenue"/>
-        <Literal datatypeIRI="&xsd;string">STRVN</Literal>
+        <Literal datatypeIRI="&xsd;string">STRAV</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Stravenue"/>
-        <Literal datatypeIRI="&xsd;string">STRVNUE</Literal>
+        <Literal datatypeIRI="&xsd;string">STRAVN</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Stravenue"/>
+        <Literal datatypeIRI="&xsd;string">STRAVEN</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Stravenue"/>
         <Literal datatypeIRI="&xsd;string">Stravenue</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Stream"/>
+        <Literal datatypeIRI="&xsd;string">STREAM</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -5944,14 +5949,19 @@
         <Literal datatypeIRI="&xsd;string">STRM</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Stream"/>
-        <Literal datatypeIRI="&xsd;string">STREAM</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Stream"/>
         <Literal datatypeIRI="&xsd;string">Stream</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Street"/>
+        <Literal datatypeIRI="&xsd;string">ST</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Street"/>
+        <Literal datatypeIRI="&xsd;string">STREET</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -5962,16 +5972,6 @@
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Street"/>
         <Literal datatypeIRI="&xsd;string">STR</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Street"/>
-        <Literal datatypeIRI="&xsd;string">STREET</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Street"/>
-        <Literal datatypeIRI="&xsd;string">ST</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -5991,7 +5991,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Summit"/>
-        <Literal datatypeIRI="&xsd;string">SUMMIT</Literal>
+        <Literal datatypeIRI="&xsd;string">SUMITT</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Summit"/>
+        <Literal datatypeIRI="&xsd;string">SMT</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -6001,12 +6006,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Summit"/>
-        <Literal datatypeIRI="&xsd;string">SUMITT</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Summit"/>
-        <Literal datatypeIRI="&xsd;string">SMT</Literal>
+        <Literal datatypeIRI="&xsd;string">SUMMIT</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -6046,7 +6046,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Trace"/>
-        <Literal datatypeIRI="&xsd;string">TRACE</Literal>
+        <Literal datatypeIRI="&xsd;string">TRCE</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -6056,7 +6056,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Trace"/>
-        <Literal datatypeIRI="&xsd;string">TRCE</Literal>
+        <Literal datatypeIRI="&xsd;string">TRACE</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -6066,17 +6066,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Track"/>
-        <Literal datatypeIRI="&xsd;string">TRAK</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Track"/>
-        <Literal datatypeIRI="&xsd;string">TRACKS</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Track"/>
-        <Literal datatypeIRI="&xsd;string">TRK</Literal>
+        <Literal datatypeIRI="&xsd;string">TRACK</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -6086,7 +6076,17 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Track"/>
-        <Literal datatypeIRI="&xsd;string">TRACK</Literal>
+        <Literal datatypeIRI="&xsd;string">TRACKS</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Track"/>
+        <Literal datatypeIRI="&xsd;string">TRAK</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Track"/>
+        <Literal datatypeIRI="&xsd;string">TRK</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -6111,11 +6111,6 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Trail"/>
-        <Literal datatypeIRI="&xsd;string">TRAIL</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Trail"/>
         <Literal datatypeIRI="&xsd;string">TRAILS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
@@ -6126,12 +6121,17 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Trail"/>
-        <Literal datatypeIRI="&xsd;string">TRL</Literal>
+        <Literal datatypeIRI="&xsd;string">TRAIL</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Trail"/>
         <Literal datatypeIRI="&xsd;string">TRLS</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Trail"/>
+        <Literal datatypeIRI="&xsd;string">TRL</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -6146,7 +6146,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Tunnel"/>
-        <Literal datatypeIRI="&xsd;string">TUNL</Literal>
+        <Literal datatypeIRI="&xsd;string">TUNNEL</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Tunnel"/>
+        <Literal datatypeIRI="&xsd;string">TUNEL</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -6161,12 +6166,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Tunnel"/>
-        <Literal datatypeIRI="&xsd;string">TUNEL</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Tunnel"/>
-        <Literal datatypeIRI="&xsd;string">TUNNEL</Literal>
+        <Literal datatypeIRI="&xsd;string">TUNL</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -6181,16 +6181,6 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Turnpike"/>
-        <Literal datatypeIRI="&xsd;string">TRPK</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Turnpike"/>
-        <Literal datatypeIRI="&xsd;string">TURNPIKE</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Turnpike"/>
         <Literal datatypeIRI="&xsd;string">TPK</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
@@ -6201,7 +6191,17 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Turnpike"/>
+        <Literal datatypeIRI="&xsd;string">TURNPIKE</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Turnpike"/>
         <Literal datatypeIRI="&xsd;string">TRNPK</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Turnpike"/>
+        <Literal datatypeIRI="&xsd;string">TRPK</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -6221,12 +6221,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Union"/>
-        <Literal datatypeIRI="&xsd;string">UN</Literal>
+        <Literal datatypeIRI="&xsd;string">UNION</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Union"/>
-        <Literal datatypeIRI="&xsd;string">UNION</Literal>
+        <Literal datatypeIRI="&xsd;string">UN</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -6251,17 +6251,17 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Valley"/>
-        <Literal datatypeIRI="&xsd;string">VALLY</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Valley"/>
         <Literal datatypeIRI="&xsd;string">VALLEY</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Valley"/>
         <Literal datatypeIRI="&xsd;string">VLY</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Valley"/>
+        <Literal datatypeIRI="&xsd;string">VALLY</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -6271,12 +6271,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Valleys"/>
-        <Literal datatypeIRI="&xsd;string">VALLEYS</Literal>
+        <Literal datatypeIRI="&xsd;string">VLYS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Valleys"/>
-        <Literal datatypeIRI="&xsd;string">VLYS</Literal>
+        <Literal datatypeIRI="&xsd;string">VALLEYS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -6326,12 +6326,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Views"/>
-        <Literal datatypeIRI="&xsd;string">VWS</Literal>
+        <Literal datatypeIRI="&xsd;string">VIEWS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Views"/>
-        <Literal datatypeIRI="&xsd;string">VIEWS</Literal>
+        <Literal datatypeIRI="&xsd;string">VWS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -6341,22 +6341,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Village"/>
-        <Literal datatypeIRI="&xsd;string">VILL</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Village"/>
-        <Literal datatypeIRI="&xsd;string">VILLIAGE</Literal>
+        <Literal datatypeIRI="&xsd;string">VILLAG</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Village"/>
         <Literal datatypeIRI="&xsd;string">VILLG</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Village"/>
-        <Literal datatypeIRI="&xsd;string">VILLAG</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -6369,6 +6359,16 @@
         <Literal datatypeIRI="&xsd;string">VLG</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Village"/>
+        <Literal datatypeIRI="&xsd;string">VILLIAGE</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Village"/>
+        <Literal datatypeIRI="&xsd;string">VILL</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Village"/>
         <Literal datatypeIRI="&xsd;string">Village</Literal>
@@ -6376,12 +6376,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Villages"/>
-        <Literal datatypeIRI="&xsd;string">VILLAGES</Literal>
+        <Literal datatypeIRI="&xsd;string">VLGS</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Villages"/>
-        <Literal datatypeIRI="&xsd;string">VLGS</Literal>
+        <Literal datatypeIRI="&xsd;string">VILLAGES</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -6406,11 +6406,6 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Vista"/>
-        <Literal datatypeIRI="&xsd;string">VST</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty IRI="http://opencirm.org#Alias"/>
-        <NamedIndividual IRI="http://opencirm.org#Street_Type_Vista"/>
         <Literal datatypeIRI="&xsd;string">VIST</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
@@ -6422,6 +6417,11 @@
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Vista"/>
         <Literal datatypeIRI="&xsd;string">VISTA</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#Alias"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type_Vista"/>
+        <Literal datatypeIRI="&xsd;string">VST</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -6466,12 +6466,12 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Way"/>
-        <Literal datatypeIRI="&xsd;string">WY</Literal>
+        <Literal datatypeIRI="&xsd;string">WAY</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
         <NamedIndividual IRI="http://opencirm.org#Street_Type_Way"/>
-        <Literal datatypeIRI="&xsd;string">WAY</Literal>
+        <Literal datatypeIRI="&xsd;string">WY</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
@@ -6674,6 +6674,11 @@
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#Florida</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Florida</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
         <IRI>http://opencirm.org#High-School_Student</IRI>
         <Literal datatypeIRI="&xsd;string">High-School Student</Literal>
     </AnnotationAssertion>
@@ -6686,6 +6691,11 @@
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
         <IRI>http://opencirm.org#Municipal_worker</IRI>
         <Literal datatypeIRI="&xsd;string">Municipal worker</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://opencirm.org#New_Jersey</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">New Jersey</Literal>
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>

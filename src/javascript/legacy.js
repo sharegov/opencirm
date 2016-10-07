@@ -1057,51 +1057,6 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 				return false;
 		};
 
-/*		
-		self.colorResultsRow = function(el) {
-			return $.inArray(el, self.dispatchResult.records())%2;
-		};
-*/
-/*
-		self.resolveAddress = function(el) {
-			if(el)
-			{
-				if(U.isEmptyString(el.ADDRESS()))
-					return "";
-				return el.ADDRESS() + ', ' + el.ZIP();
-			}
-			else {
-				if(U.isEmptyString(self.misc.tempRecord().ADDRESS()))
-					return "";
-				return self.misc.tempRecord().ADDRESS() + ', ' + self.misc.tempRecord().ZIP();
-			}
-		};
-*/
-/*		
-		self.resolveStatus = function(el) {
-			if(el)
-			{
-				if(U.isEmptyString(el.STATUS))
-					return "";
-				var label = $.map(self.allStatus, function(v) {
-					if(v.iri == el.STATUS)
-						return v.label;
-				});
-				return label[0];
-			}
-			else
-			{
-				if(U.isEmptyString(self.misc.tempRecord().STATUS()))
-					return "";
-				var label = $.map(self.allStatus, function(v) {
-					if(v.iri == self.misc.tempRecord().STATUS())
-						return v.label;
-				});
-				return label[0];
-			}
-		};
-*/
-
 		self.resolvePriority = function(el) {
 			if(el)
 			{
@@ -1113,20 +1068,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 				});
 				el.PRIORITY_LABEL(label[0]);
 				return label[0];
-			}
-/*
-			else
-			{
-				if(U.isEmptyString(self.misc.tempRecord().PRIORITY()))
-					return "";
-				var label = $.map(cirm.refs.casePriorities, function(v) {
-					if(v.iri == self.misc.tempRecord().PRIORITY())
-						return v.label;
-				});
-				self.misc.tempRecord().PRIORITY_LABEL(label[0]);
-				return label[0];
-			}
-*/			
+			}	
 		};
 		
 		self.resolveSRType = function(el) {
@@ -1150,19 +1092,6 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 			}
 			else
 				return "";
-/*
-			else
-			{
-				if(U.isEmptyString(self.misc.tempRecord().ACTIVITY()))
-					return "";
-				var label = $.map(cirm.refs.serviceCases[self.misc.tempRecord().SR_TYPE()].hasActivity, function(v) {
-					if(v.iri == self.misc.tempRecord().ACTIVITY())
-						return v.label;
-				});
-				self.misc.tempRecord().ACTIVITY_LABEL(label[0]);
-				return label[0];
-			}
-*/
 		};
 		
 		self.resolveOutcomeText = function(el) {
@@ -1374,28 +1303,6 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 			$("#legacy_dialog_asd_dispatch").dialog({height: 400, width:600, modal: true});
 		};
 		
-/*
-		self.highliteRow = function(el, event) {
-			var isBlue = event.currentTarget.parentNode.parentNode.style.backgroundColor == 'rgb(173, 216, 230)' ? true : false;
-			$.each(self.dispatchResult.records, function(i,v) {
-				if($('#dispatchRow_'+i).attr('style').trim() == 'background-color: rgb(173, 216, 230);')
-				{
-					v.DETAILS = self.tempDetails();
-					self.tempDetails("");
-					if(self.colorResultsRow(v) > 0)
-						$('#dispatchRow_'+i).attr('style', 'background-color: rgb(238, 238, 238);');
-					else
-						$('#dispatchRow_'+i).attr('style', 'background-color: white;');
-				}
-			});
-			
-			if(!isBlue)
-			{
-				event.currentTarget.parentNode.parentNode.style.backgroundColor = 'rgb(173, 216, 230)';
-				self.tempDetails(el.DETAILS);
-			}
-		};
-*/
 		self.counter = ko.observable("");
 		self.isTimerOn = ko.observable(false);
 		
@@ -1519,7 +1426,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 				var srt = cirm.refs.serviceCaseList[tempSRType];
 				if(!U.isEmptyString(srt))
 				{
-					self.misc.query().type = "legacy:"+srt;
+					self.misc.query().type = cirm.refs.fulliri(srt);
 					self.misc.counter(self.misc.counter() + 1);
 				}
 				else
@@ -1529,10 +1436,13 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 				}
 			}
 			else
-				self.misc.query().type = "legacy:ServiceCase";
+				self.misc.query().type = cirm.refs.fulliri("ServiceRequestType");
 			
 			if(!U.isEmptyString(self.dispatchSC.hasStatus().iri())) {
-				self.misc.query()["legacy:hasStatus"] = {"iri":self.dispatchSC.hasStatus().iri(), "type":"legacy:Status"};
+				self.misc.query()["legacy:hasStatus"] = {
+                    "iri":self.dispatchSC.hasStatus().iri(), 
+                    "type":"legacy:Status"
+                };
 				self.misc.counter(self.misc.counter() + 1);
 			}
 			
@@ -2544,7 +2454,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 				var srt = cirm.refs.serviceCaseList[tempSRType];
 				if(!U.isEmptyString(srt))
 				{
-					self.misc.query().type = "legacy:"+srt;
+					self.misc.query().type = cirm.refs.fulliri(srt);
 					self.misc.counter(self.misc.counter() + 1);
 				}
 				else
@@ -2554,20 +2464,20 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 				}
 			}
 			else
-				self.misc.query().type = "legacy:ServiceCase";
+				self.misc.query().type = cirm.refs.fulliri("ServiceRequestType");
 
 			if(!U.isEmptyString(self.searchCriteria.srID())) {
 				if(self.searchCriteria.srID().indexOf("-") != -1)
-					self.misc.query()["legacy:hasCaseNumber"] = self.searchCriteria.srID();
+					self.misc.query()[cirm.refs.fulliri("hasCaseNumber")] = self.searchCriteria.srID();
 				else {
 					var yr = U.getFullYearAsString();
-					self.misc.query()["legacy:hasCaseNumber"] = yr.substr(yr.length - 2) + "-1" + U.addLeadingZeroes(self.searchCriteria.srID(), 7);
+					self.misc.query()[cirm.refs.fulliri("hasCaseNumber")] = yr.substr(yr.length - 2) + "-1" + U.addLeadingZeroes(self.searchCriteria.srID(), 7);
 				}
 				self.misc.counter(self.misc.counter() + 1);
 			}
 
 			if(!U.isEmptyString(self.searchCriteria.hasStatus().iri())) {
-				self.misc.query()["legacy:hasStatus"] = {"iri":self.searchCriteria.hasStatus().iri(), "type":"legacy:Status"};
+				self.misc.query()[cirm.refs.fulliri("hasStatus")] = {"iri":self.searchCriteria.hasStatus().iri(), "type":"legacy:Status"};
 				self.misc.counter(self.misc.counter() + 1);
 			}
 			

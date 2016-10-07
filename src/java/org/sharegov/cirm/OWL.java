@@ -1226,15 +1226,17 @@ public class OWL
 			for(Map.Entry<String, Json> entry: x.asJsonMap().entrySet())
 			{
 				if(entry.getValue().isString() && 
-					!entry.getKey().equals("iri")
-					&& (entry.getValue().asString().startsWith(Refs.nameBase.resolve())
-							|| entry.getValue().asString().startsWith(Refs.defaultOntologyIRI.resolve())
-					   )
-					&& entry.getValue() != null)
+				  !entry.getKey().equals("iri") && 
+				  entry.getValue() != null && 
+				  (entry.getValue().asString().startsWith(Refs.nameBase.resolve()) || 
+				   entry.getValue().asString().startsWith(Refs.defaultOntologyIRI.resolve()))
+				 )
 				{
 					try
 					{
-					x.set(entry.getKey(), jsonMap.get(entry.getValue().asString()));
+						Json resolved = jsonMap.get(entry.getValue().asString());
+						if (resolved != null)
+							x.set(entry.getKey(), resolved);
 					}
 					catch (Throwable t)
 					{

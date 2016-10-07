@@ -933,6 +933,12 @@ public class MessageManager
 		return initialized;
 	}
 
+	public boolean isConfigured()
+	{
+		ensureInit();
+		return this.configurationProperties.containsKey("mail.smtp.host");
+	}
+	
 	public Properties getConfiguration()
 	{
 		return configurationProperties;
@@ -1007,19 +1013,22 @@ public class MessageManager
 				{
 					try
 					{
-						OWLLiteral host = OWL.dataProperty( (OWLNamedIndividual)Refs.configSet.resolve().get("SMTPConfig"), "hasValue");
-						Properties newProps = new Properties();
-						newProps.setProperty("mail.smtp.host", host.getLiteral());
-						OWLNamedIndividual mmMode = (OWLNamedIndividual)Refs.configSet.resolve().get("MessageManagerConfig");
-						if (mmMode == null) throw new IllegalArgumentException("Exactly one value needs to be configured for MessageManagerConfig");
-						OWLNamedIndividual messageSender = OWL.objectProperty(mmMode, "hasEmailAddress");
-						InternetAddress messageSenderAdr = new InternetAddress(messageSender.getIRI().getFragment());
-						newProps = new Properties();
-						newProps.setProperty("mail.smtp.host", host.getLiteral());
-						newProps.setProperty("mode", mmMode.getIRI().getFragment());
+						Properties newProps = new Properties();					
+						if (Refs.configSet.resolve().get("SMTPConfig") != null) 
+						{
+							OWLLiteral host = OWL.dataProperty( (OWLNamedIndividual)Refs.configSet.resolve().get("SMTPConfig"), "hasValue");
+							newProps.setProperty("mail.smtp.host", host.getLiteral());
+						}
+						if (Refs.configSet.resolve().get("MessageManagerConfig") != null)
+						{
+							OWLNamedIndividual mmMode = (OWLNamedIndividual)Refs.configSet.resolve().get("MessageManagerConfig");
+							//if (mmMode == null) throw new IllegalArgumentException("Exactly one value needs to be configured for MessageManagerConfig");
+							OWLNamedIndividual messageSender = OWL.objectProperty(mmMode, "hasEmailAddress");
+							messageSenderAddress = new InternetAddress(messageSender.getIRI().getFragment());
+							newProps.setProperty("mode", mmMode.getIRI().getFragment());
+						}
 						//publish to volatile
 						configurationProperties = newProps;
-						messageSenderAddress = messageSenderAdr;
 					}
 					catch (Exception e)
 					{

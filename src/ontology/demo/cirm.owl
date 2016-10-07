@@ -311,6 +311,9 @@
         <DataProperty IRI="#hasValidLocationNotRequired"/>
     </Declaration>
     <Declaration>
+        <DataProperty IRI="#isAccepted"/>
+    </Declaration>
+    <Declaration>
         <DataProperty IRI="#isAssignedTo"/>
     </Declaration>
     <Declaration>
@@ -421,6 +424,10 @@
     <DataPropertyRange>
         <DataProperty IRI="#hasCaseNumber"/>
         <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#isAccepted"/>
+        <Datatype abbreviatedIRI="xsd:boolean"/>
     </DataPropertyRange>
 </Ontology>
 

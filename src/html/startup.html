@@ -87,8 +87,9 @@ function (rest, U, cirm, legacy, sreditor, answerhub, store) {
         
         legacy.marquee().embed($('#marqueeContainer'));
 
-		var electionsComponent = legacy.elections();
-		electionsComponent.embed($('#electionsDiv'));
+// comment out for non-MDC context
+//		var electionsComponent = legacy.elections();
+//		electionsComponent.embed($('#electionsDiv'));
 		$('#birthDate').datepicker();
 
         // Emptying and filling the mainContent div doesn't work because everything time it is emptied,
@@ -106,11 +107,11 @@ function (rest, U, cirm, legacy, sreditor, answerhub, store) {
         editor.embed($('#editorDiv'));
 		caseEditor = editor;
 		
-		var wcsComponent = legacy.wcs(answerHubModel.addressSearch.address);
-		wcsComponent.embed($('#wcsDiv'));
+		// var wcsComponent = legacy.wcs(answerHubModel.addressSearch.address);
+		// wcsComponent.embed($('#wcsDiv'));
 		
-		var asdComponent = legacy.asd();
-		asdComponent.embed($('#asdDiv'));
+		// var asdComponent = legacy.asd();
+		// asdComponent.embed($('#asdDiv'));
 		
 		var advSearchComponent = legacy.advancedSearch(new answerhub.AddressModel() ); //answerHubModel.addressSearch.address);
 		advSearchComponent.embed($('#advancedSearchDiv'));
@@ -135,18 +136,18 @@ function (rest, U, cirm, legacy, sreditor, answerhub, store) {
                    currentDiv.hide();
                    currentDiv = $('#editorDiv').show();                
             },
-            elections: function() {
-                   currentDiv.hide();
-                   currentDiv = $('#electionsDiv').show();
-            },
-            wcs: function() {
-                   currentDiv.hide();
-                   currentDiv = $('#wcsDiv').show();
-            },
-            asd: function() {
-                   currentDiv.hide();
-                   currentDiv = $('#asdDiv').show();
-            },
+            // elections: function() {
+            //        currentDiv.hide();
+            //        currentDiv = $('#electionsDiv').show();
+            // },
+            // wcs: function() {
+            //        currentDiv.hide();
+            //        currentDiv = $('#wcsDiv').show();
+            // },
+            // asd: function() {
+            //        currentDiv.hide();
+            //        currentDiv = $('#asdDiv').show();
+            // },
             advancedSearch: function() {
                    currentDiv.hide();
                    currentDiv = $('#advancedSearchDiv').show();
@@ -405,9 +406,11 @@ function patchPlaceholdersforIE() {
         <ul>
             <li><a href="#" menuHandler="answerHub" class="bn_on">Answer Hub</a></li>
             <li><a href="#" menuHandler="serviceHub">Service Hub</a></li>
+            <!--
             <li id="electionsTabLi"><a href="#" menuHandler="elections">Elections</a></li>
-            <li id="wcsTabLi"><a href="#" menuHandler="wcs">WCS</a></li>
+            <li id="wcsTabLi"><a href="#" menuHandler="wcs">WCS</a></li>            
             <li id=asdTabLi><a href="#" menuHandler="asd">ASD</a></li>
+            -->
             <li><a href="#" menuHandler="advancedSearch">Basic Search</a></li>
             <li><a href="http://feedback.miamidade.gov/Community/se.ashx?s=57F31458562A495B" target="_blank" menuHandler="help">Feedback</a></li>
         </ul>    
@@ -424,12 +427,13 @@ function patchPlaceholdersforIE() {
 
 <div id='editorDiv' style="display:none"></div>
 
+<!--
 <div id='electionsDiv' style="display:none"></div>
 
 <div id='wcsDiv' style="display:none"></div>
 
 <div id='asdDiv' style="display:none"></div>
-
+-->
 <div id='advancedSearchDiv' style="display:none"></div>
 
 <div id="applicationUpdateDiv" style="display:none; background: white; bottom:20px; position:absolute; text-align:left; width: 350px; border: 2px solid red; padding: 5px;"> 
