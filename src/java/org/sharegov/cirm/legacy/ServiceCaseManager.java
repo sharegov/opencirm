@@ -1441,6 +1441,36 @@ public class ServiceCaseManager extends OntoAdmin {
 		return reasoner.getInstances(activity, false).getFlattened();
 	}
 	
+	/**
+	 *  
+	 * @param activityIRI the short prefixed for of the iri.
+	 * 
+	 * @return  a list of service cases who have this activity assigned.
+	 */
+	
+	public Json getServiceCasesByActivity(String activityIRI){
+		try {			
+			
+			Json S = Json.array();
+			Set<OWLNamedIndividual> serviceCases = OWL
+					.reasoner()
+					.getInstances(
+							OWL.and(OWL.owlClass("legacy:ServiceCase"),
+									OWL.has(OWL
+											.objectProperty("legacy:hasActivity"),
+											OWL.individual(activityIRI))), true)
+					.getFlattened();
+			for(OWLNamedIndividual serviceCase : serviceCases) {
+				S.add(Json.object().set("iri", serviceCase.getIRI().toString()).set("type", "ServiceCase"));
+			}
+			return S;
+		} catch (Exception e) {
+			System.out
+					.println("Error while querying the Ontology for SRs with activity: "
+							+ activityIRI);
+			throw e;	
+		}
+	}
 	/*
 	 * Test by Syed
 	 * 

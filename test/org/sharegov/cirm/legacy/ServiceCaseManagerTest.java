@@ -233,6 +233,18 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
     	}
     }
     
+    
+    /***
+     * Test all service cases have a dept with Name
+     */
+    @Test
+    public void testServiceCasesByActivity(){
+    	Json json = serviceCaseManager.getServiceCasesByActivity("legacy:ASANCRFU_ASCITATI"); 
+    	
+    	assertTrue(json.isArray());
+    	assertTrue(json.asJsonList().size()>0);
+    }
+    
     public static boolean annotationExist(String iri){
     	OWLEntity entity = OWL.dataFactory().getOWLNamedIndividual(OWL.fullIri(iri));
         //System.out.println("entity ...." + entity.toStringID());
