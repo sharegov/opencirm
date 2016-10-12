@@ -1469,7 +1469,7 @@ public class ServiceCaseManager extends OntoAdmin {
 											OWL.individual(activityIRI))), true)
 					.getFlattened();
 			for(OWLNamedIndividual serviceCase : serviceCases) {
-				S.add(Json.object().set("iri", serviceCase.getIRI().toString()).set("type", "ServiceCase"));
+				S.add(getOne(serviceCase));
 			}
 			return S;
 		} catch (Exception e) {
