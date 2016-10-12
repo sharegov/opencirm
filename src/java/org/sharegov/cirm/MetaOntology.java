@@ -287,7 +287,29 @@ public class MetaOntology
 		OWLDataFactory factory = manager.getOWLDataFactory();
 		OWLIndividual individual = factory.getOWLNamedIndividual(fullIri(PREFIX + individualID)); 
 		
-		return getRemoveAllPropertiesIndividualChanges (individual);		
+		return getRemoveOnlyPropertiesIndividualChanges (individual);		
+	}
+	
+	public static List<OWLOntologyChange> getRemoveIndividualObjectPropertyReferenceChanges (String parentID, String propertyID, String individualID){
+		OWLOntology O = OWL.ontology();
+		String ontologyIri = Refs.defaultOntologyIRI.resolve();
+
+		if (O == null) {
+			throw new RuntimeException("Ontology not found: " + ontologyIri);
+		}
+		
+		OWLOntologyManager manager = OWL.manager();
+		OWLDataFactory factory = manager.getOWLDataFactory();
+		
+		OWLNamedIndividual newInd = OWL.individual(PREFIX + individualID);		
+		OWLIndividual parent = factory.getOWLNamedIndividual(fullIri(PREFIX + parentID));
+		OWLObjectProperty property =  factory.getOWLObjectProperty(fullIri(PREFIX + propertyID));
+		
+		List<OWLOntologyChange> result = new ArrayList<OWLOntologyChange>();
+		
+		result.add(new RemoveAxiom(O, factory.getOWLObjectPropertyAssertionAxiom(property, parent, newInd)));	
+		
+		return result;
 	}
 	
 	/*
@@ -480,9 +502,7 @@ public class MetaOntology
 		
 		for (OWLOntology O: OWL.ontologies()){		
 			for (OWLAxiom a : O.getDeclarationAxioms((OWLEntity)individual)) L.add(new RemoveAxiom(O, a));
-//			by removing this line program will have to find where the individual was removed from the ontology
-//			for axioms that reference the individual somewhere else on the configuration.
-//			for (OWLAxiom a : O.getReferencingAxioms((OWLEntity)individual)) L.add(new RemoveAxiom(O, a));			
+			for (OWLAxiom a : O.getReferencingAxioms((OWLEntity)individual)) L.add(new RemoveAxiom(O, a));			
 			for (OWLAxiom a : O.getDataPropertyAssertionAxioms(individual)) L.add(new RemoveAxiom(O, a));
 			for (OWLAxiom a : O.getObjectPropertyAssertionAxioms(individual)) L.add(new RemoveAxiom(O, a));
 			for (OWLAxiom a : O.getAnnotationAssertionAxioms(((OWLEntity) individual).getIRI())) L.add(new RemoveAxiom(O, a));
@@ -496,6 +516,7 @@ public class MetaOntology
 		List<OWLOntologyChange> L = new ArrayList<OWLOntologyChange>();
 		
 		for (OWLOntology O: OWL.ontologies()){				
+			for (OWLAxiom a : O.getDeclarationAxioms((OWLEntity)individual)) L.add(new RemoveAxiom(O, a));	
 			for (OWLAxiom a : O.getDataPropertyAssertionAxioms(individual)) L.add(new RemoveAxiom(O, a));
 			for (OWLAxiom a : O.getObjectPropertyAssertionAxioms(individual)) L.add(new RemoveAxiom(O, a));
 			for (OWLAxiom a : O.getAnnotationAssertionAxioms(((OWLEntity) individual).getIRI())) L.add(new RemoveAxiom(O, a));
@@ -550,7 +571,7 @@ public class MetaOntology
 	protected static List<OWLOntologyChange> makeObjectIndividual (OWLIndividual parent, Json properties, OWLOntology O, OWLOntologyManager manager, OWLDataFactory factory){
 		List<OWLOntologyChange> result = new ArrayList<OWLOntologyChange>();
 		
-		result.addAll(getRemoveAllPropertiesIndividualChanges(parent));
+		result.addAll(getRemoveOnlyPropertiesIndividualChanges(parent));
 		
 		for (Map.Entry<String, Json> e : properties.asJsonMap().entrySet())
 		{

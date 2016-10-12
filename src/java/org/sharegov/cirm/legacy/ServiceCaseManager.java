@@ -1143,7 +1143,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	public Json addQuestionsServiceCase (String individualID, Json data, String userName, String comment){
 		String host = getHostIpAddress();		
 		
-		if (!host.isEmpty() && validateJson(host + "/javascript/schemas/service_field_compact.json", data)){
+		if (!host.isEmpty() && validateJson(host + "/javascript/schemas/service_field_list_compact.json", data)){
 			
 			List<String> evictionList = new ArrayList<String>();
 			evictionList.add(individualID);
@@ -1164,7 +1164,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	public Json addActivitesServiceCase (String individualID, Json data, String userName, String comment){	
 		String host = getHostIpAddress();		
 		
-		if (!host.isEmpty() && validateJson(host + "/javascript/schemas/activity_compact.json", data)){
+		if (!host.isEmpty() && validateJson(host + "/javascript/schemas/activity_list_compact.json", data)){
 			
 			List<String> evictionList = new ArrayList<String>();
 			evictionList.add(individualID);
@@ -1196,10 +1196,12 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			if (toRemove.isArray()){
 				for (Json ox: toRemove.asJsonList()){
-					removeObjectOnto (ox, evictionList);
+					String iri = removeObjectOnto (ox, evictionList);
+					changes.addAll(MetaOntology.getRemoveIndividualObjectPropertyReferenceChanges(individualID, propertyID, iri));
 				}
 			} else {
-				removeObjectOnto (toRemove, evictionList);
+				String iri = removeObjectOnto (toRemove, evictionList);
+				changes.addAll(MetaOntology.getRemoveIndividualObjectPropertyReferenceChanges(individualID, propertyID, iri));
 				
 			}
 			ThreadLocalStopwatch.now("---- Ended Removing Old Objects from individual: " + individualID + " property: " + propertyID);
@@ -1273,21 +1275,27 @@ public class ServiceCaseManager extends OntoAdmin {
 			} throw new IllegalArgumentException("Cannot update Activities to Service Case Type "+ PREFIX +  individualID);	
 	}
 	
-	private void removeObjectOnto (Json ox, List<String> evictionList){
+	private String getIriFromIdividualSerialization (Json serialization){
 		String iri = "";
-		if (ox.isObject())
-			if (ox.has("iri")){
-				iri = ox.at("iri").asString();
-			} else throw new IllegalArgumentException("Cannot find iri property for object: "+ ox.asString());
+		
+		if (serialization.isObject())
+			if (serialization.has("iri")){
+				iri = serialization.at("iri").asString();
+			} else throw new IllegalArgumentException("Cannot find iri property for object: "+ serialization.asString());
 		else {
-			iri = ox.asString();
+			iri = serialization.asString();
 		}
 		
-		iri = MetaOntology.getIdFromUri(iri);
+		return iri;
+	}
+	
+	private String removeObjectOnto (Json ox, List<String> evictionList){	
+		String iri = MetaOntology.getIdFromUri(getIriFromIdividualSerialization(ox));
 		
 		OWLNamedIndividual ind = OWL.individual(PREFIX + iri);
 		evictionList.add(ind.getIRI().getFragment());
-//		changes.addAll(MetaOntology.getRemoveAllPropertiesIndividualChanges(ind));
+		
+		return iri;
 	}
 	
 	public boolean validateJson (String schemaUri, Json o){	
