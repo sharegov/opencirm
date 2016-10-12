@@ -33,6 +33,7 @@ define(['jquery', 'rest', 'U','store!'], function($, rest, U, store) {
               user.authenticate('', $('#iUsername').val(), $('#iPassword').val());
           });
           $('#btnLogin').click(function () {
+              console.log('authentication...');
               user.authenticate('', $('#iUsername').val(), $('#iPassword').val());
           });
            $('#loginForm')[0].reset();                
@@ -45,6 +46,8 @@ define(['jquery', 'rest', 'U','store!'], function($, rest, U, store) {
             var profile = null;
             if (r.ok) {
                 profile = r.profile;
+                user.FirstName = profile.first_name;
+                user.LastName = profile.last_name;                                
                 var cl = $.extend({}, profile);
                 delete cl.access; 
                 user.setLocalInfo(user.username, cl);

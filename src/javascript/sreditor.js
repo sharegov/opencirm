@@ -3086,8 +3086,6 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy",
 		};
 
 		self.attachmentCallBack = function(res) {
-			
-			
 			if(res.ok == true){
 				self.data().properties().hasAttachment.push(res.url);
 				console.log();
@@ -3097,13 +3095,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy",
 			else if(res.ok == false)
 				alertDialog("Error uploading file");
 		};
-		
-		
 
 		self.uploadFiles = function(el) {
-			
-		   
-			
 			if($('#fileUploader').val())
 			{
 			$('#fileUploader').upload("/upload", self.attachmentCallBack, 'json');
@@ -3111,16 +3104,13 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy",
 			}
 			console.log(self);
 		};
-		
-		
+			
 		function metadata(key, value){
 			this.key = key;
 			this.value = value;
 			
 		}
-		
-		
-		
+			
 		function updateMetadata(metadata, images){
 			
 			var url = getMetadataUrl(); 
@@ -3152,26 +3142,22 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy",
 			}
 		};
 
-		/*self.getImageSource = function(data) {
-			return "../uploaded/"+data;
-		};*/
-		
-		self.removeImage = function(data) {
-			console.log("removing image "); 
-			console.log(data);
-			$("#sh_dialog_alert")[0].innerText = "Are you sure you want to delete this Image";
-			$("#sh_dialog_alert").dialog({ height: 150, width: 350, modal: true, buttons: {
-				"Delete" : function() {
-	        		self.data().properties().hasAttachment.remove(data);
-					self.data().properties().hasRemovedAttachment.push(data);
-					$("#sh_dialog_alert").dialog('close');
-				},
-				"Cancel": function() {
-				  	$("#sh_dialog_alert").dialog('close');
-				}
-			  } 
-			});
-		};
+    self.removeImage = function(data) {
+      console.log("removing image "); 
+      console.log(data);
+      $("#sh_dialog_alert")[0].innerText = "Are you sure you want to delete this Image";
+      $("#sh_dialog_alert").dialog({ height: 150, width: 350, modal: true, buttons: {
+        "Delete" : function() {
+              self.data().properties().hasAttachment.remove(data);
+          self.data().properties().hasRemovedAttachment.push(data);
+          $("#sh_dialog_alert").dialog('close');
+        },
+        "Cancel": function() {
+            $("#sh_dialog_alert").dialog('close');
+        }
+        } 
+      });
+    };
 		
 		self.validateTypeOnXY = function (type, x, y, callback, invalidMsg)
 		{
@@ -3760,68 +3746,40 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy",
         var self = {};
         self.markup = $(srmarkupText);
         self.model = new RequestModel(addressModel);
-       
-       
-        self.model.getFileInfo = function(url){
+
+        self.model.getFileInfo = function(url) {       	
+          var obj = {}; 
+          obj.isImage = false;
+          var imageTypes = ['jpg', 'png', 'gif', 'tif','jpeg'];             
+        	var tokens = url.split("/");
+        	var file = tokens[tokens.length-1];
+        	var extpos = file.lastIndexOf(".");
+        	var name = file;
+        	var ext = null; 
         	
-        	 var obj = {}; 
-             obj.isImage = false;
-             var imageTypes = ['jpg', 'png', 'gif', 'tif','jpeg'];
-             
-        	var tokens; 
-        	var name;
-        	var ext; 
-        	tokens = url.split("/");
-        	
-        	if(tokens.length < 5)
-        		{
-        		console.log("error tokenizing url"); 
-        		obj.name = file;
-        		return obj; 
-        		}
-        	
-        	name = tokens[4]; 
-        	
-        	tokens = name.split("_");
-        	tokens = tokens[1].split("-")
-        	name = tokens[0]; 
-        	//tokens = name.split(".");
-        	ext = tokens[1];
+        	if (extpos > 0) {
+            name = file.substring(0, extpos);
+            ext = file.substring(extpos+1);
+        	} 
         	console.log('name and ext ' + name + ext); 
-        	name = name + '.' +ext;
-        	for(var i = 0; i < imageTypes.length; i++){
-        		if(imageTypes[i] == ext)
-        			{
+        	for(var i = 0; i < imageTypes.length; i++) {
+        		if(imageTypes[i] == ext) {
         			obj.isImage = true; 
-        			}
+        		}
         	}
-        	obj.name = name;
+        	obj.name = file;
         	return obj;
         }
-        
-       
         ko.applyBindings(self.model, self.markup[0]);
-      
-/*
-        var obj = legacy.metadata.LegacyServiceCaseListInput;
-        //cirm.top.get("/legacy?q=LegacyServiceCaseListInput");
-        var renderer = ui.engine.getRenderer(obj.type);
-        var srtypeinput = renderer.apply(ui, [obj]);
-		$(srtypeinput).addClass('ic_field');
-		$(srtypeinput).attr("placeholder", "Service Request Type").attr('title', 'Service Request Type');
-		$(srtypeinput).attr('style', 'width:312px');
-		//$(srtypeinput).attr('data-bind', 'event: {keydown: validateOnEnter}, css: {color_green: $root.setSRTypeColor()}');
-        $('#srTypeList .input_clear', self.markup).prepend(srtypeinput);
-*/
+        
         if (sr) {
             fetchSR(sr,self.model, false);
         }
         
         self.embed = function(parent) {
-            $(parent).append(self.markup);
-            
-            var ihist = legacy.interactionHistory(); 
-		    ihist.embed($('#callInteractionContainer',self.markup));	
+          $(parent).append(self.markup);
+          var ihist = legacy.interactionHistory(); 
+          ihist.embed($('#callInteractionContainer',self.markup));	
         }        
 
         // Menu switch on SR details, not sure if this 

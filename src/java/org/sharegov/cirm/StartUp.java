@@ -63,6 +63,7 @@ import org.sharegov.cirm.rest.OntoAdmin;
 import org.sharegov.cirm.utils.AdaptiveClassLoader;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.UploadToCloudServerResource;
+import org.sharegov.cirm.utils.UploadToWorkingDirectory;
 
 /**
  * Starts up OpenCirm.
@@ -318,7 +319,8 @@ public class StartUp extends ServerResource
             public Restlet createInboundRoot() {
                 Router router = new Router();
                 // Attach the resource.
-                router.attachDefault(UploadToCloudServerResource.class);
+                router.attachDefault(UploadToWorkingDirectory.class);
+                //router.attachDefault(UploadToCloudServerResource.class);
                 return router;
             }
         };

@@ -433,7 +433,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 				self.gis.getAddressCandidates(self.address.fullAddress(),
 				                              self.address.zip(), 
 				                              self.address.municipality(), function(candidates) {
-					if(candidates === undefined || candidates.length == 0) {
+					if(candidates === undefined || candidates.length == 0 || !candidates[0].zip) {
 						//self.address.clear();
 						self.hideProgress("#ah_dialog_address_search");
 						$('body').css('cursor', 'default');

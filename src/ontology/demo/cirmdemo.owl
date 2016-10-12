@@ -3270,12 +3270,12 @@ You have received a </Literal>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUrl"/>
         <NamedIndividual IRI="http://opencirm.org#LocalPostgresDatabase"/>
-        <Literal datatypeIRI="&xsd;string">jdbc:postgresql://localhost:5432/opencirm</Literal>
+        <Literal datatypeIRI="&xsd;string">jdbc:postgresql://localhost:5432/cirm</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://opencirm.org#LocalPostgresDatabase"/>
-        <Literal datatypeIRI="&xsd;string">opencirm</Literal>
+        <Literal datatypeIRI="&xsd;string">cirm</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
