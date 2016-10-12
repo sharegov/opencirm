@@ -1449,6 +1449,42 @@ public class ServiceCaseManager extends OntoAdmin {
 		return reasoner.getInstances(activity, false).getFlattened();
 	}
 	
+	
+	public Json getServiceCasesByActivityFromCache(String activityIRI){
+		
+		try {			
+			
+			Json S = Json.array();
+			OWLNamedIndividual activityIndividual = OWL.individual(activityIRI);
+			
+			for(Json sr: getAll().asJsonList()){
+				Json serviceCase = getSerializedMetaIndividual(sr.at("iri").toString().replace("\"", "").split(":")[1]);
+				if(serviceCase.has("hasActivity") && serviceCase.at("hasActivity").isArray())
+				{
+					for(Json activity : serviceCase.at("hasActivity").asJsonList()){
+						String iri = null;
+						if(activity.isObject()){
+							iri = activity.at("iri").asString();
+						}else{
+							iri = activity.asString();
+						}
+						if( iri != null && iri.equals(activityIndividual.getIRI().toString()))
+						{
+							Json o = getOne(OWL.individual(serviceCase.at("iri").asString()));
+							if(!S.asJsonList().contains(o))
+								S.add(o);
+						}
+					}
+				}
+			}
+			return S;
+		} catch (Exception e) {
+			System.out
+					.println("Error while querying the cache for SRs with activity: "
+							+ activityIRI);
+			throw e;	
+		}
+	}
 	/**
 	 *  
 	 * @param activityIRI the short prefixed for of the iri.
@@ -1479,34 +1515,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			throw e;	
 		}
 	}
-	/*
-	 * Test by Syed
-	 * 
-	 */
-		
-	public void testAxiom() {
-		OwlRepo repo = getRepo();
-		repo.ensurePeerStarted();
-		// OWLOntology O = OWL.ontology();
-		Set<OWLLiteral> propValues = OWL.reasoner()
-				.getDataPropertyValues(OWL.individual("legacy:311OTHER_Q3"),
-						OWL.dataProperty("label"));
-		System.out.println("isEmpty" + propValues.isEmpty());
-		for (OWLLiteral v : propValues) {
-			System.out.println(v.getLiteral().toString());
-		}
+	
 
-		Set<OWLLiteral> propValues1 = OWL.reasoner().getDataPropertyValues(
-				OWL.individual("legacy:311OTHER_Q3"),
-				OWL.dataProperty("legacy:label"));
-		System.out.println("isEmpty(legacy)" + propValues.isEmpty());
-		for (OWLLiteral v : propValues1) {
-			System.out.println("legacy:" + v.getLiteral().toString());
-		}
 
-		String annotation = OWL.getEntityLabel(OWL
-				.individual("legacy:311OTHER_Q3"));
-		System.out.println("annotation:" + annotation);
-
-	}
 }

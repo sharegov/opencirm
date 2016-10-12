@@ -88,7 +88,7 @@ public class ServiceCaseAdmin extends RestService {
 	public Response getServiceCaseByActivity(@PathParam("activityIRI") String activityIRI) {
 		try
 		{			
-			return Response.ok(ServiceCaseManager.getInstance().getServiceCasesByActivity(activityIRI), MediaType.APPLICATION_JSON).build();
+			return Response.ok(ServiceCaseManager.getInstance().getServiceCasesByActivityFromCache(activityIRI), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			return Response
 					.status(Status.INTERNAL_SERVER_ERROR)
