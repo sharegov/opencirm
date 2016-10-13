@@ -40,11 +40,14 @@ function ($) {
                         'componentRestrictions': componentRestrictions
                       },
         function(results, status) {
-            console.log(results);
             if (status == google.maps.GeocoderStatus.OK) {
-                callback(resultsToAddresCandidates(results));
+		var candidates = resultsToAddresCandidates(results);
+		if (candidates.length > 0)
+                    callback(candidates);
+		else
+                    error("Failed to map address:only partial matches.", {"status":200},"");
             } else {
-                error(status);
+                error("Failed to map address:no matches.", {"status":500}, "");
             }
     });    
   }
@@ -82,7 +85,8 @@ function ($) {
   function resultsToAddresCandidates(results) {
     var candidates = [];
     for (var i=0, l = results.length; i<l; i++) {
-       candidates.push(resultToAddressCandidate(results[i]));
+	if (!results[i].partial_match)
+	    candidates.push(resultToAddressCandidate(results[i]));
     }
     return candidates;
   }

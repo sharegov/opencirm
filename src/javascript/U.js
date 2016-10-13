@@ -473,7 +473,7 @@ function resolveIris(x) {
     objectRecurse(x, function(n,v,p) {
         if (typeof v == "string" && 
             n != "iri" &&
-            v.indexOf("http://www.miamidade.gov/") == 0 &&
+            v.indexOf("http://opencirm.org") == 0 &&
             map[v] !== undefined)
             p[n] = map[v];			
     });

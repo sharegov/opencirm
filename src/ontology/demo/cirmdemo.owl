@@ -80,16 +80,10 @@
         <DataProperty IRI="http://opencirm.org#OtherPhoneNumber"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="http://opencirm.org#hasDateLastModified"/>
-    </Declaration>
-    <Declaration>
         <DataProperty IRI="http://opencirm.org#hasIdName"/>
     </Declaration>
     <Declaration>
         <DataProperty IRI="http://opencirm.org#hasTableName"/>
-    </Declaration>
-    <Declaration>
-        <DataProperty IRI="http://opencirm.org#isModifiedBy"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#Agency_Department_Actor"/>
@@ -3270,12 +3264,12 @@ You have received a </Literal>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUrl"/>
         <NamedIndividual IRI="http://opencirm.org#LocalPostgresDatabase"/>
-        <Literal datatypeIRI="&xsd;string">jdbc:postgresql://localhost:5432/cirm</Literal>
+        <Literal datatypeIRI="&xsd;string">jdbc:postgresql://localhost:5432/opencirm</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://opencirm.org#LocalPostgresDatabase"/>
-        <Literal datatypeIRI="&xsd;string">cirm</Literal>
+        <Literal datatypeIRI="&xsd;string">opencirm</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Alias"/>
@@ -4031,14 +4025,6 @@ Thank you.</Literal>
     </DataPropertyRange>
     <DataPropertyRange>
         <DataProperty IRI="http://opencirm.org#OtherPhoneNumber"/>
-        <Datatype abbreviatedIRI="xsd:string"/>
-    </DataPropertyRange>
-    <DataPropertyRange>
-        <DataProperty IRI="http://opencirm.org#hasDateLastModified"/>
-        <Datatype abbreviatedIRI="xsd:dateTimeStamp"/>
-    </DataPropertyRange>
-    <DataPropertyRange>
-        <DataProperty IRI="http://opencirm.org#isModifiedBy"/>
         <Datatype abbreviatedIRI="xsd:string"/>
     </DataPropertyRange>
     <AnnotationAssertion>
