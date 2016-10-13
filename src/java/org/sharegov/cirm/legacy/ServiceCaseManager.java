@@ -527,6 +527,29 @@ public class ServiceCaseManager extends OntoAdmin {
 		return result;
 	}
 	
+	
+	/**
+	 * 
+	 * Get Outcomes by department, if department == ALL return all outcomes on cache
+	 * 
+	 * Empty array is returned if no results found.
+	 * 
+	 */
+	public Json getOutcomes (String... departments){
+		Json result = Json.array();
+		for(String departmentFragment : departments)
+		{
+			if (dptOutcomes.containsKey(departmentFragment)){
+				for (String iri : dptOutcomes.get(departmentFragment)) {			
+					result.add(outcomes.get(iri));
+				}
+			}
+		}
+		return result;
+	}
+	
+	
+	
 	/**
 	 * 
 	 * @return a list of Service Case Types that contains the required data for the user interface
