@@ -80,10 +80,16 @@
         <DataProperty IRI="http://opencirm.org#OtherPhoneNumber"/>
     </Declaration>
     <Declaration>
+        <DataProperty IRI="http://opencirm.org#hasDateLastModified"/>
+    </Declaration>
+    <Declaration>
         <DataProperty IRI="http://opencirm.org#hasIdName"/>
     </Declaration>
     <Declaration>
         <DataProperty IRI="http://opencirm.org#hasTableName"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#isModifiedBy"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#Agency_Department_Actor"/>
@@ -4025,6 +4031,14 @@ Thank you.</Literal>
     </DataPropertyRange>
     <DataPropertyRange>
         <DataProperty IRI="http://opencirm.org#OtherPhoneNumber"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://opencirm.org#hasDateLastModified"/>
+        <Datatype abbreviatedIRI="xsd:dateTimeStamp"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://opencirm.org#isModifiedBy"/>
         <Datatype abbreviatedIRI="xsd:string"/>
     </DataPropertyRange>
     <AnnotationAssertion>
