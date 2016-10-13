@@ -1969,7 +1969,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy",
             $('[name="SR Lookup"]').val(result.bo.properties.hasCaseNumber);
             var type = result.bo.type;
             if(type.indexOf("legacy:") == -1) { 
-                type = "legacy:"+type;
+              type = "http://opencirm.org#" + type;            
+//                type = "legacy:"+type;
                 result.bo.type = type;
             }
             self.removeDuplicates();
@@ -2006,7 +2007,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy",
                     alertDialog("Successfully updated SR : "+ result.bo.properties.hasCaseNumber);
                     var type = result.bo.type;
                     if(type.indexOf("legacy:") == -1) {
-                        type = "legacy:"+type; 
+                      type = "http://opencirm.org#" + type;
+//                        type = "legacy:"+type; 
                         result.bo.type = type;
                     }
                     self.removeDuplicates();
@@ -3225,7 +3227,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy",
         type = "http://opencirm.org#" + type;
 			   bo.type = type;
 		  }
-		  var typeiri = type.startsWith("http:") ? type : "http://www.miamidade.gov/cirm/legacy#" + type.split(":")[1]; 
+		  var typeiri = type.startsWith("http:") ? type : "http://opencirm.org#" + type.split(":")[1]; 
 	    var srType = cirm.refs.serviceCases[typeiri]; 
       var typeLabel = srType.hasJurisdictionCode ? 
                       srType.label + " - " + srType.hasJurisdictionCode : srType.label;
