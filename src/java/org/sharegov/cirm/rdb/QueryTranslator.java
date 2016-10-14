@@ -587,8 +587,15 @@ public class QueryTranslator
 				}
 				else 
 				{
+					System.out.println(statement.getSql().SQL());
 					//This is where transformed ontology query goes.
-					miscQuery(select, statement, property, columnIRI, columns, paginationCriteria, paginationJson, caseSensitive, i);
+					try
+					{
+						miscQuery(select, statement, property, columnIRI, columns, paginationCriteria, paginationJson, caseSensitive, i);
+					}catch(Exception e)
+					{
+						e.printStackTrace();
+					}
 				}
 			} //for
 		}
@@ -624,7 +631,7 @@ public class QueryTranslator
 			Map<OWLProperty<?, ?>, OWLNamedIndividual> columns, Json paginationCriteria, Json paginationJson, 
 			boolean caseSensitive, Integer i)
 	{
-		if (Keyword.valueOf(property.getKey())!= null) {
+		if (Keyword.valueOf(property.getKey()) != null) {
 			if(Operation.SQL_ORDER_BY.equals(TRANSLATIONS.get(Keyword.valueOf(property.getKey()))))
 			{
 				if(property.getValue().asString().equals("boid")) {
