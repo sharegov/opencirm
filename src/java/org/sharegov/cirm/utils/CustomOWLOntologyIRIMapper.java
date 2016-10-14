@@ -86,7 +86,7 @@ public class CustomOWLOntologyIRIMapper implements OWLOntologyIRIMapper
 				IRI ontologyIRI = IRI.create(((String)customMapping.getKey()).trim());
 				String location = ((String)customMapping.getValue()).trim();
 				if (!location.contains(":"))
-					location = "file://" + StartUp.config.at("workingDir").asString() + File.separator + location;
+					location = "file:///" + StartUp.config.at("workingDir").asString() + "/" + location;
 				IRI documentIRI = IRI.create(location);
 				ontologyIRIToDocumentIRIMap.put(ontologyIRI, documentIRI);
 				//Test URL creation of document IRI to validate. Has to be absolute.

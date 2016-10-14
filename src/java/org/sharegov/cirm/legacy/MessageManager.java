@@ -39,10 +39,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.mail.Address;
+import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
 import javax.mail.SendFailedException;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -147,6 +149,7 @@ public class MessageManager
 	
 	private volatile ConcurrentMap<String, Object> messageVariables;
 	private volatile Properties configurationProperties;
+	private volatile Authenticator authenticator;
 	
 	private volatile Session session = null;// <prop key="mail.smtp.host">smtp.miamidade.gov</prop>
 	private volatile boolean initialized = false;
@@ -919,6 +922,8 @@ public class MessageManager
 	{
 		try
 		{
+			msg.setFrom(new InternetAddress("syedrabbas@gmail.com"));
+			msg.setRecipient(RecipientType.TO,new InternetAddress("syedrabbas@gmail.com"));
 			if(!DISABLE_SEND)
 				Transport.send(msg);			
 		}
@@ -1013,11 +1018,26 @@ public class MessageManager
 				{
 					try
 					{
-						Properties newProps = new Properties();					
+						Properties newProps = new Properties();	
+						
 						if (Refs.configSet.resolve().get("SMTPConfig") != null) 
 						{
-							OWLLiteral host = OWL.dataProperty( (OWLNamedIndividual)Refs.configSet.resolve().get("SMTPConfig"), "hasValue");
+							OWLNamedIndividual smtpConfig = (OWLNamedIndividual)Refs.configSet.resolve().get("SMTPConfig");
+							OWLLiteral host = OWL.dataProperty( smtpConfig , "hasValue");
 							newProps.setProperty("mail.smtp.host", host.getLiteral());
+							OWLLiteral username = OWL.dataProperty( smtpConfig , "hasUsername");
+							if(username != null)
+							{
+								newProps.setProperty("mail.smtp.auth", "true");
+								OWLLiteral password = OWL.dataProperty( smtpConfig , "hasPassword");
+								authenticator = new Authenticator() {
+									@Override
+									protected PasswordAuthentication getPasswordAuthentication() {
+										return new PasswordAuthentication(username.getLiteral(), password.getLiteral());
+									}
+								};
+										
+							}
 						}
 						if (Refs.configSet.resolve().get("MessageManagerConfig") != null)
 						{
@@ -1035,7 +1055,7 @@ public class MessageManager
 						throw new IllegalStateException("Messagemenager initialization failure. Check SMTPConfig, MessageManagerConfig in Ontos.", e);
 					}
 					messageVariables = new ConcurrentHashMap<String, Object>();
-					session = Session.getDefaultInstance(configurationProperties, null);
+					session = Session.getDefaultInstance(configurationProperties, authenticator);
 					initialized = true;
 					if (!isTestMode()) 
 						System.out.println("MessageManager in PRODUCTION MODE. Emails will be sent to specified to,cc and legacy:MessageTemplate.hasBcc recipients.");

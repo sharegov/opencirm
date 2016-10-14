@@ -520,7 +520,7 @@ public class ActivityManager
 						dataProperty("legacy:hasOrderBy")
 						, serviceActivity, factory.getOWLLiteral(orderBy)));
 */		
-		OWLNamedIndividual emailTemplate = objectProperty(activityType, "legacy:hasEmailTemplate");
+		OWLNamedIndividual emailTemplate = objectProperty(activityType, Model.legacy("hasEmailTemplate").toString());
 		if(emailTemplate != null && USE_MESSAGE_MANAGER)
 		{
 			if (hasAssignActivityToOutcomeEmail(activityType) && isAssignedTo == null)
@@ -529,7 +529,7 @@ public class ActivityManager
 				System.out.println("createActivity: email creation prevented, because serviceActivity " + serviceActivity + " Type: " + activityType + " hasAssignActivityToOutcomeEmail, was executed and still noone assigned.");
 			} else 
 			{
-				CirmMessage m = MessageManager.get().createMessageFromTemplate(bo, dataProperty(activityType, "legacy:hasLegacyCode"), emailTemplate);
+				CirmMessage m = MessageManager.get().createMessageFromTemplate(bo, dataProperty(activityType, Model.legacy("hasLegacyCode").toString()), emailTemplate);
 				if (m!= null) {
 					m.addExplanation("createActivity " + serviceActivity.getIRI().getFragment() 
 							+ " Tpl: " + emailTemplate.getIRI().getFragment());
