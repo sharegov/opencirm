@@ -14,8 +14,7 @@ import mjson.Json;
  */
 public class SRCirmStatsDataReporter extends CirmStatsDataReporter
 {	
-	public SRCirmStatsDataReporter(CirmStatistics stats, String component)
-	{
+	public SRCirmStatsDataReporter(CirmStatistics stats, String component) {
 		super(stats, component);
 	}
 	
@@ -26,8 +25,7 @@ public class SRCirmStatsDataReporter extends CirmStatsDataReporter
 	 * @param action
 	 * @param serviceCaseJson with String properties (x|x."type"|x."bo")."type" and (x|x."type"|x."bo")."properties"."legacy:hasCaseNumber" 
 	 */
-	public void succeeded(final String action, final Json serviceCaseJson)
-	{
+	public void succeeded(final String action, final Json serviceCaseJson) {
 		String type = safeDetermineType(serviceCaseJson);
 		String id = safeDetermineHasCaseNumber(serviceCaseJson);
 		super.succeeded(action, type, id);
@@ -42,8 +40,7 @@ public class SRCirmStatsDataReporter extends CirmStatsDataReporter
 	 * @param exception
 	 * @param failureMessage
 	 */
-	public void failed(final String action, final Json serviceCaseJson, final String exception, final String failureMessage) 
-	{
+	public void failed(final String action, final Json serviceCaseJson, final String exception, final String failureMessage) {
 		String type = safeDetermineType(serviceCaseJson);
 		String id = safeDetermineHasCaseNumber(serviceCaseJson);
 		super.failed(action, type, id, exception, failureMessage);
@@ -55,15 +52,12 @@ public class SRCirmStatsDataReporter extends CirmStatsDataReporter
 	 * @throws never an exception.
 	 * @return
 	 */
-	public static String safeDetermineType(final Json serviceCaseJson) 
-	{
+	public static String safeDetermineType(final Json serviceCaseJson) {
 		Json caseRoot;
-		try
-		{
+		try	{
 			caseRoot = findCaseRoot(serviceCaseJson);
 			return caseRoot.at("type").asString();
-		} catch (Exception e)
-		{
+		} catch (Exception e) {
 			System.err.println("SRCirmStatsDataReporter was unable to determine type as String from " + serviceCaseJson);
 			return CirmStatistics.UNKNOWN;
 		}		
@@ -76,23 +70,19 @@ public class SRCirmStatsDataReporter extends CirmStatsDataReporter
 	 * @throws never an exception.
 	 * @return
 	 */
-	public static String safeDetermineHasCaseNumber(final Json serviceCaseJson) 
-	{
+	public static String safeDetermineHasCaseNumber(final Json serviceCaseJson) {
 		Json caseRoot;
-		try
-		{
+		try	{
 			caseRoot = findCaseRoot(serviceCaseJson);			
 			if (caseRoot.has("properties")) {
 				caseRoot = caseRoot.at("properties");
 			}
 			if (caseRoot.has("legacy:hasCaseNumber")) {
 				return caseRoot.at("legacy:hasCaseNumber").asString();
-			} else 
-			{
+			} else 	{
 				return caseRoot.at("hasCaseNumber").asString();
 			}
-		} catch (Exception e)
-		{
+		} catch (Exception e) {
 			System.err.println("SRCirmStatsDataReporter was unable to determine " 
 					+ "properties.legacy:hasCaseNumber as String from " + serviceCaseJson);
 			return CirmStatistics.UNKNOWN;
@@ -101,23 +91,30 @@ public class SRCirmStatsDataReporter extends CirmStatsDataReporter
 	
 	/**
 	 * Tries to return the case root (data or BO) for a serviceCaseJson, LE response or response JMSMessage.
+	 * This method shows how many different json formats for a service case/message we must expect.
 	 * @param serviceCaseOrJmsg
 	 * @throws Exception if param null or non object
 	 */
-	static Json findCaseRoot(final Json serviceCaseOrJmsg) 
-	{
+	static Json findCaseRoot(final Json serviceCaseOrJmsg) {
 		Json caseRoot = serviceCaseOrJmsg;
 		if (serviceCaseOrJmsg.has("response") 
 				&& serviceCaseOrJmsg.at("response").has("data") 
 				&& ( serviceCaseOrJmsg.at("response").at("data").has("type")
 						|| serviceCaseOrJmsg.at("response").at("data").has("case"))
-		   ) 
-		{
+		   ) {
 			caseRoot = serviceCaseOrJmsg.at("response").at("data");
-		} else if (serviceCaseOrJmsg.has("bo")) caseRoot = serviceCaseOrJmsg.at("bo");
-		else if (serviceCaseOrJmsg.has("data")) caseRoot = serviceCaseOrJmsg.at("data");
-		else if (serviceCaseOrJmsg.has("originalMessage") && serviceCaseOrJmsg.at("originalMessage").has("data")) {
+		} else if (serviceCaseOrJmsg.has("bo")) {
+			caseRoot = serviceCaseOrJmsg.at("bo");
+		} else if (serviceCaseOrJmsg.has("data")) {
+			caseRoot = serviceCaseOrJmsg.at("data");
+		} else if (serviceCaseOrJmsg.has("originalMessage") && serviceCaseOrJmsg.at("originalMessage").has("data")) {
 			caseRoot = serviceCaseOrJmsg.at("originalMessage").at("data");
+		} else if (serviceCaseOrJmsg.has("originalMessage") 
+				&& serviceCaseOrJmsg.at("originalMessage").has("response") 
+				&& serviceCaseOrJmsg.at("originalMessage").at("response").has("bo")
+				&& serviceCaseOrJmsg.at("originalMessage").at("response").at("bo").isObject()
+				  )	{
+			caseRoot = serviceCaseOrJmsg.at("originalMessage").at("response").at("bo");
 		}
 		//else could not yet find caseRoot
 		
