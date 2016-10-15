@@ -71,7 +71,7 @@
         <NamedIndividual IRI="http://opencirm.org#OUTCOME_COMPLETE"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#syedrabbas@gmail.com"/>
+        <NamedIndividual IRI="http://opencirm.org#borislav.iordanov@gmail.com"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#MessageManagerConfigProd"/>
@@ -1434,7 +1434,7 @@
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="http://opencirm.org#EmailAddress"/>
-        <NamedIndividual IRI="http://opencirm.org#syedrabbas@gmail.com"/>
+        <NamedIndividual IRI="http://opencirm.org#borislav.iordanov@gmail.com"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="http://opencirm.org#ServiceRequestType"/>
@@ -1990,7 +1990,7 @@
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#hasEmailAddress"/>
         <NamedIndividual IRI="http://opencirm.org#MessageManagerConfigProd"/>
-        <NamedIndividual IRI="http://opencirm.org#syedrabbas@gmail.com"/>
+        <NamedIndividual IRI="http://opencirm.org#borislav.iordanov@gmail.com"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#Value"/>
@@ -2931,7 +2931,7 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasBCCTest"/>
         <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_DUMPNOTIF_GENASSIG"/>
-        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">syedrabbas@gmail.com</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">borislav.iordanov@gmail.com</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org/cirm#hasBody"/>
@@ -2958,7 +2958,7 @@ You have received a </Literal>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org/cirm#hasTo"/>
         <NamedIndividual IRI="http://opencirm.org#ILLEGALDUMPING_DUMPNOTIF_GENASSIG"/>
-        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">syedrabbas@gmail.com</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">borislav.iordanov@gmail.com</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org/cirm#hasBusinessCodes"/>

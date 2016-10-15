@@ -922,8 +922,8 @@ public class MessageManager
 	{
 		try
 		{
-			msg.setFrom(new InternetAddress("syedrabbas@gmail.com"));
-			msg.setRecipient(RecipientType.TO,new InternetAddress("syedrabbas@gmail.com"));
+//			msg.setFrom(new InternetAddress("borislav.iordanov@gmail.com"));
+//			msg.setRecipient(RecipientType.TO,new InternetAddress("borislav.iordanov@gmail.com"));
 			if(!DISABLE_SEND)
 				Transport.send(msg);			
 		}
@@ -1029,6 +1029,7 @@ public class MessageManager
 							if(username != null)
 							{
 								newProps.setProperty("mail.smtp.auth", "true");
+								newProps.setProperty("mail.smtp.ssl.enable", "true"); // for AWS
 								OWLLiteral password = OWL.dataProperty( smtpConfig , "hasPassword");
 								authenticator = new Authenticator() {
 									@Override

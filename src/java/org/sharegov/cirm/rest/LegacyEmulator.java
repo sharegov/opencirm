@@ -1093,7 +1093,7 @@ public class LegacyEmulator extends RestService
 	@Path("update")
 	@Produces("application/json")
 	public Json updateServiceCase(@FormParam("data") final String formData)
-	{
+	{		
 		Json form = read(formData);
 		
 		// Not sure if this is needed anymore (Boris)
