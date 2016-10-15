@@ -569,21 +569,23 @@ public class DepartmentIntegration extends RestService
         
         newcase.at("properties").set("legacy:hasStatus", Json.object("iri", "legacy:O-OPEN"));
         newcase.at("properties").delAt("legacy:hasDepartmentError");
-        return Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
-        public Json call()
-        {       
-            Json data = emulator.updateServiceCase(newcase, "cirmuser");
-            if (!data.is("ok", true)) 
-            {
-                return data;
-            }
-            data = data.at("bo");
-            String type = "legacy:" + data.at("type").asString();
-            Json deptInterface = getDepartmentInterfaceCode(type);
-            if (deptInterface.isNull()) 
-                return ko("The type " + type + " is not configured to an external interface.");
-            try
-            {
+        Json result;
+        try {
+            result = Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
+            public Json call()
+            {       
+                Json data = emulator.updateServiceCase(newcase, "cirmuser");
+                if (!data.is("ok", true)) 
+                {
+                    return data;
+                }
+                data = data.at("bo");
+                String type = "legacy:" + data.at("type").asString();
+                Json deptInterface = getDepartmentInterfaceCode(type);
+                if (deptInterface.isNull()) 
+                {
+                    return ko("The type " + type + " is not configured to an external interface.");
+                }
                 BOntology bo = BOntology.makeRuntimeBOntology(data);
                 if (deptInterface.is("hasLegacyCode", "COM-CITY"))
                 {
@@ -606,15 +608,13 @@ public class DepartmentIntegration extends RestService
                 sendToDepartment(bo, deptInterface, null);
                 srStatsReporter.succeeded("resendNewCase", data);
                 return ok().set("bo", bo.toJSON()); 
-            }
-            catch (Throwable t)
-            {
-                srStatsReporter.failed("resendNewCase", data, t.toString(), t.getMessage());
-            	// this will print out the "can't serialize exeption", which we don't want 'cause it's normal
-//              t.printStackTrace(System.err);
-                return ko(t); 
-            }
-        }});
+            }});
+        } catch (Throwable t) 
+        {
+        	srStatsReporter.failed("resendNewCase", newcase, t.toString(), t.getMessage());
+        	result = ko(t);
+        }
+        return result;
     }
     
 	/**

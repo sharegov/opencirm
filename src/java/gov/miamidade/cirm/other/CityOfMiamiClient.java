@@ -265,65 +265,71 @@ public class CityOfMiamiClient extends RestService
 	 */
 	public Json applyUpdate(final Json update)
 	{
-		return Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
-		public Json call()
-		{								
-//			System.out.println("COM update:" + update);
-			Json existingSR = emulator.lookupServiceCase(Json.object("legacy:hasCaseNumber", update.at("CaseNumber"), "type", "legacy:ServiceCase"));
-			if (existingSR.is("ok", false)) 
-			{
-				srStatsReporter.failed("CirmUpdateAfterComRXUpdate", CirmStatistics.UNKNOWN, 
-						"" + update.at("CaseNumber"), 
-						"Case to update was not found in CiRM", "" + update);
-				return existingSR;
-			}
-			existingSR = existingSR.at("bo");
-			String typeCode = existingSR.at("type").asString();
-			existingSR.at("properties").delAt("ServiceField21643565");
-			Json newActivities = Json.array();
-			if (update.at("code1", "").asString().length() > 0 && update.at("value1").asString().length() > 0)
-			{
-				newActivities.add(Json.object("hasActivity", Json.object("type", "Activity", "iri", "legacy:" + typeCode + "_" + update.at("code1").asString()),
-								 "hasOutcome", Json.object("type", "Outcome", "iri", "legacy:OUTCOME_" + update.at("value1", "").asString()),
-								 "hasDateCreated", GenUtils.formatDate(new java.util.Date()),
-								 "hasCompletedTimestamp", GenUtils.formatDate(new java.util.Date())));
-			}
-			if (update.at("code2", "").asString().length() > 0 && update.at("value2", "").asString().length() > 0)
-			{
-				newActivities.add(Json.object("hasActivity", Json.object("type", "Activity", "iri", "legacy:" + typeCode + "_" + update.at("code2").asString()),
-								 "hasOutcome", Json.object("type", "Outcome", "iri", "legacy:OUTCOME_" + update.at("value2", "").asString()),
-								 "hasDateCreated", GenUtils.formatDate(new java.util.Date()),
-								 "hasCompletedTimestamp", GenUtils.formatDate(new java.util.Date())));
-			}
-			if (update.at("code3", "").asString().length() > 0 && update.at("value3", "").asString().length() > 0)
-			{
-				newActivities.add(Json.object("hasActivity", Json.object("type", "Activity", "iri", "legacy:" + typeCode + "_" + update.at("code3").asString()),
-								 "hasOutcome", Json.object("type", "Outcome", "iri", "legacy:OUTCOME_" + update.at("value3", "").asString()),
-								 "hasDateCreated", GenUtils.formatDate(new java.util.Date()),
-								 "hasCompletedTimestamp", GenUtils.formatDate(new java.util.Date())));
-			}
-			existingSR.at("properties").at("hasServiceActivity", Json.array()).with(newActivities);
-			Json updateResult = emulator.updateServiceCase(OWL.resolveIris(OWL.prefix(existingSR), null), "department");
-			Json ackResult = Json.nil();
-			
-			// Doing the acknowledgment inside the transaction implies the following potential irregularities:
-			// (a) the transaction can be retried several times until it succeeds, so the acknowledgment will be sent several times
-			// (b) the transaction may fail permanently in which case the acknoweledgment will be wrong. However, such a failure
-			// during the commit would mean a bug that needs to be addressed. So we only need to make sure the error is propagated
-			if (!updateResult.is("ok", true)) 
-			{
-				srStatsReporter.failed("CirmUpdateAfterComRXUpdate", existingSR, 
-						"Update sr with " + newActivities.asJsonList().size() + "new activities received by COM failed ", 
-						updateResult.at("error").asString());
-				ackResult = acknowledgeUpdate(update, "N", encode(updateResult.at("error").asString()));
-			}
-			else
-			{
-				srStatsReporter.succeeded("CirmUpdateAfterComRXUpdate", existingSR);
-				ackResult = acknowledgeUpdate(update, "Y", "");
-			}
-			return ackResult;
-		}});
+		Json updateResult = null;
+		try {
+			updateResult = Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
+    		public Json call()
+    		{								
+    //			System.out.println("COM update:" + update);
+    			Json existingSR = emulator.lookupServiceCase(Json.object("legacy:hasCaseNumber", update.at("CaseNumber"), "type", "legacy:ServiceCase"));
+    			if (existingSR.is("ok", false)) 
+    			{
+    				srStatsReporter.failed("CirmUpdateAfterComRXUpdate", CirmStatistics.UNKNOWN, 
+    						"" + update.at("CaseNumber"), 
+    						"Case to update was not found in CiRM", "" + update);
+    				return existingSR;
+    			}
+    			existingSR = existingSR.at("bo");
+    			String typeCode = existingSR.at("type").asString();
+    			existingSR.at("properties").delAt("ServiceField21643565");
+    			Json newActivities = Json.array();
+    			try {
+        			if (update.at("code1", "").asString().length() > 0 && update.at("value1").asString().length() > 0)
+        			{
+        				newActivities.add(Json.object("hasActivity", Json.object("type", "Activity", "iri", "legacy:" + typeCode + "_" + update.at("code1").asString()),
+        								 "hasOutcome", Json.object("type", "Outcome", "iri", "legacy:OUTCOME_" + update.at("value1", "").asString()),
+        								 "hasDateCreated", GenUtils.formatDate(new java.util.Date()),
+        								 "hasCompletedTimestamp", GenUtils.formatDate(new java.util.Date())));
+        			}
+        			if (update.at("code2", "").asString().length() > 0 && update.at("value2", "").asString().length() > 0)
+        			{
+        				newActivities.add(Json.object("hasActivity", Json.object("type", "Activity", "iri", "legacy:" + typeCode + "_" + update.at("code2").asString()),
+        								 "hasOutcome", Json.object("type", "Outcome", "iri", "legacy:OUTCOME_" + update.at("value2", "").asString()),
+        								 "hasDateCreated", GenUtils.formatDate(new java.util.Date()),
+        								 "hasCompletedTimestamp", GenUtils.formatDate(new java.util.Date())));
+        			}
+        			if (update.at("code3", "").asString().length() > 0 && update.at("value3", "").asString().length() > 0)
+        			{
+        				newActivities.add(Json.object("hasActivity", Json.object("type", "Activity", "iri", "legacy:" + typeCode + "_" + update.at("code3").asString()),
+        								 "hasOutcome", Json.object("type", "Outcome", "iri", "legacy:OUTCOME_" + update.at("value3", "").asString()),
+        								 "hasDateCreated", GenUtils.formatDate(new java.util.Date()),
+        								 "hasCompletedTimestamp", GenUtils.formatDate(new java.util.Date())));
+        			}
+        			existingSR.at("properties").at("hasServiceActivity", Json.array()).with(newActivities);
+        			Json updateResultInt = emulator.updateServiceCase(OWL.resolveIris(OWL.prefix(existingSR), null), "department");
+       				srStatsReporter.succeeded("CirmUpdateAfterComRXUpdate", existingSR);
+        			return updateResultInt;
+    			} catch (Throwable t) {
+    				srStatsReporter.failed("CirmUpdateAfterComRXUpdate", existingSR, t.toString(),
+    						"Update sr with " + newActivities.asJsonList().size() + "new activities received by COM failed ");
+    				throw t;
+    			}
+    		}});
+		} catch (Throwable t) {
+			//Transaction with potential retries is over, now we have an exception that we need to consider in our
+			//acknowledgment to the city.
+			updateResult =  GenUtils.ko(t);
+		}
+		Json ackResult = Json.nil();
+		if (!updateResult.is("ok", true)) 
+		{
+			ackResult = acknowledgeUpdate(update, "N", encode(updateResult.at("error").asString()));
+		}
+		else
+		{
+			ackResult = acknowledgeUpdate(update, "Y", "");
+		}
+		return ackResult;
 	}
 	
 	/**
