@@ -530,24 +530,28 @@ public class ServiceCaseManager extends OntoAdmin {
 	
 	/**
 	 * 
-	 * Get Outcomes by department, if department == ALL return all outcomes on cache
+	 * Get Outcomes by department
 	 * 
 	 * Empty array is returned if no results found.
 	 * 
 	 */
 	public Json getOutcomes (String... departments){
-		Json result = Json.array();
+		Set<String> allIris = new HashSet<>();		
 		for(String departmentFragment : departments)
 		{
 			if (dptOutcomes.containsKey(departmentFragment)){
-				for (String iri : dptOutcomes.get(departmentFragment)) {			
-					result.add(outcomes.get(iri));
+				for (String iri : dptOutcomes.get(departmentFragment)) {
+					allIris.add(iri);
 				}
 			}
 		}
+		
+		Json result = Json.array();
+		for (String iri: allIris){
+			result.add(outcomes.get(iri));			
+		}
 		return result;
-	}
-	
+	}	
 	
 	
 	/**
