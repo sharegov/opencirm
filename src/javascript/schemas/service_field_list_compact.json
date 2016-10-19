@@ -100,7 +100,7 @@
 					"type": "string"
 				},
 		"hasAllowableModules": {
-									"pattern": "^,?(((SREINTAK|SRERESAC|SREMASS|SRSNGLWO|SRSUMMRY|WEBINTAK|SRSUMMRY|MD-WCS|MD-WCSL),?)*)+$", 
+									"pattern": "^,?(((SREINTAK|SRERESAC|SREMASS|SRSNGLWO|WEBINTAK|SRSUMMRY|MD-WCS|MD-WCSL),?)*)+$", 
 									"type": "string"
 								},
 		"iri": {

@@ -100,7 +100,7 @@
 					"type": "string"
 				},
 		"hasAllowableModules": {
-									"pattern": "^,?(((SREINTAK|SRERESAC|SREMASS|SRSNGLWO|SRSUMMRY|WEBINTAK|SRSUMMRY|MD-WCS|MD-WCSL),?)*)+$", 
+									"pattern": "^,?(((SREINTAK|SRERESAC|SREMASS|SRSNGLWO|WEBINTAK|SRSUMMRY|MD-WCS|MD-WCSL),?)*)+$", 
 									"type": "string"
 								},
 		"iri": {
@@ -311,7 +311,8 @@
 							"hasAllowableOutcome": {"$ref": "#/definitions/Outcome"},
 							"hasDefaultOutcome": {"$ref": "#/definitions/Outcome"},
 							"hasAssignmentRule": {"$ref": "#/definitions/hasAssignmentRule"},
-							"hasActivityAssignment": {"$ref": "#/definitions/hasActivityAssignment"}
+							"hasActivityAssignment": {"$ref": "#/definitions/hasActivityAssignment"},
+							"hasEmailTemplate": {"$ref": "#/definitions/hasEmailTemplate"}
 							
 						}
 					},
@@ -438,6 +439,29 @@
 							"label",
 							"type"
 						]
-					  }
+					  },
+		"hasEmailTemplate": {
+							"additionalProperties": false,
+							"properties": {
+								"iri": {"$ref": "#/definitions/iri"},
+								"label": {"$ref": "#/definitions/label"},
+								"hasTo": {"$ref": "#/definitions/label"},
+								"hasSubject": {"$ref": "#/definitions/label"},
+								"hasCc": {"$ref": "#/definitions/label"},
+								"hasBody": {"$ref": "#/definitions/label"},
+								"type": {
+									"enum": ["MessageTemplate"]
+								}
+							},
+							"required": [
+								"iri",
+								"label",
+								"hasTo",
+								"hasSubject",
+								"hasBody",
+								"type"
+							],
+							"type": "object"
+						}
 	}
 }
