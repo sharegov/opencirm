@@ -380,7 +380,7 @@
 										"hasLegacyEvent": {"$ref": "#/definitions/hasLegacyEvent"},
 										"hasAnswerObject": {"$ref": "#/definitions/hasAnswerObject"},
 										"type": {
-													"enum": ["Activity Trigger", "QuestionTrigger"]
+													"enum": ["ActivityTrigger", "Activity Trigger", "QuestionTrigger"]
 												},
 										"iri": {"$ref": "#/definitions/iri"}
 									}
