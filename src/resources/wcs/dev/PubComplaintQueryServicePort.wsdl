@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://pwwm/wcs/intra/webservices/soap/pubcomplaintquery" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://pwwm/wcs/intra/webservices/soap/pubcomplaintquery" xmlns:intf="http://pwwm/wcs/intra/webservices/soap/pubcomplaintquery" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema elementFormDefault="qualified" targetNamespace="http://pwwm/wcs/intra/webservices/soap/pubcomplaintquery" xmlns="http://www.w3.org/2001/XMLSchema">
+   <complexType name="PubComplaintQueryInHdr_Type">
+    <sequence>
+     <element name="StreamInputSessionId" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="PubComplaintQueryIn_Type">
+    <sequence>
+     <element name="PubComplaintQueryInHdr" nillable="true" type="impl:PubComplaintQueryInHdr_Type"/>
+     <element name="ACCT1" type="xsd:string"/>
+     <element name="ACCT2" type="xsd:string"/>
+     <element name="ACCT3" type="xsd:string"/>
+     <element name="COMPLID" type="xsd:string"/>
+     <element name="COMPLNUM" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="PubComplaintQueryRequest_Type">
+    <sequence>
+     <element name="PubComplaintQueryIn" nillable="true" type="impl:PubComplaintQueryIn_Type"/>
+    </sequence>
+   </complexType>
+   <element name="PubComplaintQueryRequest" type="impl:PubComplaintQueryRequest_Type"/>
+   <complexType name="ArrayOf_xsd_string">
+    <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="PubComplaintQueryOut_Type">
+    <sequence>
+     <element name="SCRMSG" type="xsd:string"/>
+     <element name="MAPNAME" type="xsd:string"/>
+     <element name="ACC1" type="xsd:string"/>
+     <element name="ACC2" type="xsd:string"/>
+     <element name="ArrayOfCOMPLDIG" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfACOMPLDIG" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfCOMPLNO" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfACOMPLNO" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfCOMPLDT" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfACOMPLDT" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfCOMPLTIME" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfACOMPLTIME" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfCOMPLDESC" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfACOMPLDESC" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfCOMPLST" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfACOMPLST" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfCOMPLSTDESC" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfACOMPLSTDESC" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfCOMPLTYPE" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfACOMPLTYPE" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfCOMPLADDR" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfACOMPLADDR" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="PACC1" type="xsd:string"/>
+     <element name="PACC2" type="xsd:string"/>
+     <element name="PACC3" type="xsd:string"/>
+     <element name="PCOMPLDIG" type="xsd:string"/>
+     <element name="PCOMPLNO" type="xsd:string"/>
+     <element name="ONAME" type="xsd:string"/>
+     <element name="PDATE" type="xsd:string"/>
+     <element name="ADDR" type="xsd:string"/>
+     <element name="PTIME" type="xsd:string"/>
+     <element name="APT" type="xsd:string"/>
+     <element name="ZIP" type="xsd:string"/>
+     <element name="CLERK" type="xsd:string"/>
+     <element name="ROUTE" type="xsd:string"/>
+     <element name="COMPSTAT" type="xsd:string"/>
+     <element name="STDESC" type="xsd:string"/>
+     <element name="CNAME" type="xsd:string"/>
+     <element name="CADDRESS" type="xsd:string"/>
+     <element name="CAPT" type="xsd:string"/>
+     <element name="CCITY" type="xsd:string"/>
+     <element name="CSTATE" type="xsd:string"/>
+     <element name="CZIP" type="xsd:string"/>
+     <element name="PHAREA" type="xsd:string"/>
+     <element name="PHONE" type="xsd:string"/>
+     <element name="COMPTYPE" type="xsd:string"/>
+     <element name="OTHPHAREA" type="xsd:string"/>
+     <element name="OTHEXT" type="xsd:string"/>
+     <element name="COMPLCODE" type="xsd:string"/>
+     <element name="COMPDESC" type="xsd:string"/>
+     <element name="DISPTIME" type="xsd:string"/>
+     <element name="SUPVINIT" type="xsd:string"/>
+     <element name="SUPVNAME" type="xsd:string"/>
+     <element name="ACTDATE" type="xsd:string"/>
+     <element name="ACTTAKE" type="xsd:string"/>
+     <element name="REMARKS" type="xsd:string"/>
+     <element name="ACC3" type="xsd:string"/>
+     <element name="XMLCONVRC" type="xsd:unsignedShort"/>
+     <element name="RETURNMSG" type="xsd:string"/>
+     <element name="RETURNCODE" type="xsd:unsignedShort"/>
+     <element name="OTHPHONE" type="xsd:string"/>
+     <element name="OPHAREA" type="xsd:string"/>
+     <element name="OPHONE" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="PubComplaintQueryResponse_Type">
+    <sequence>
+     <element name="PubComplaintQueryOut" nillable="true" type="impl:PubComplaintQueryOut_Type"/>
+    </sequence>
+   </complexType>
+   <element name="PubComplaintQueryResponse" type="impl:PubComplaintQueryResponse_Type"/>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="PubComplaintQueryResponse">
+
+      <wsdl:part element="impl:PubComplaintQueryResponse" name="PubComplaintQueryResponse"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="PubComplaintQueryRequest">
+
+      <wsdl:part element="impl:PubComplaintQueryRequest" name="PubComplaintQueryRequest"/>
+
+   </wsdl:message>
+
+   <wsdl:portType name="PubComplaintQueryServicePort_Type">
+
+      <wsdl:operation name="PubComplaintQuery" parameterOrder="PubComplaintQueryRequest">
+
+         <wsdl:input message="impl:PubComplaintQueryRequest" name="PubComplaintQueryRequest"/>
+
+         <wsdl:output message="impl:PubComplaintQueryResponse" name="PubComplaintQueryResponse"/>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="PubComplaintQueryServicePortSoapBinding" type="impl:PubComplaintQueryServicePort_Type">
+
+      <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="PubComplaintQuery">
+
+         <wsdlsoap:operation soapAction="PubComplaintQuery"/>
+
+         <wsdl:input name="PubComplaintQueryRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="PubComplaintQueryResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="PubComplaintQueryService">
+
+      <wsdl:port binding="impl:PubComplaintQueryServicePortSoapBinding" name="PubComplaintQueryServicePort">
+
+         <wsdlsoap:address location="https://s0500012/wcs/soapservices/PubComplaintQueryServicePort"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>

@@ -43,7 +43,7 @@ class UxLogAnalyzer {
 	
 	static final double BAD_UX_THRESHOLD_SECS = 10;	
 	
-	static String logMatch = "END createNewKOSR";
+	static String logMatch = "END createNewKOSR"; //"END updateServiceCase data"; //"END createNewKOSR";
 			
 	static String[] logPaths = new String[] {
 			"\\\\s2030050\\cirmservices\\logs\\wrapper.log",
@@ -74,13 +74,45 @@ class UxLogAnalyzer {
 			"\\\\s2030059\\cirmservices\\logs\\wrapper.log.4",
 			"\\\\s2030059\\cirmservices\\logs\\wrapper.log.5",
 			"\\\\s2030059\\cirmservices\\logs\\wrapper.log.6",
+			"\\\\s2030059\\cirmservices\\logs\\wrapper.log.7",
+			"\\\\s2030059\\cirmservices\\logs\\wrapper.log.8",
+			"\\\\s2030059\\cirmservices\\logs\\wrapper.log.9",
+			"\\\\s2030059\\cirmservices\\logs\\wrapper.log.10",
+			"\\\\s2030059\\cirmservices\\logs\\wrapper.log.11",
+			"\\\\s2030059\\cirmservices\\logs\\wrapper.log.12",
+			"\\\\s2030059\\cirmservices\\logs\\wrapper.log.13",
+			"\\\\s2030059\\cirmservices\\logs\\wrapper.log.14",
+			"\\\\s2030059\\cirmservices\\logs\\wrapper.log.15",
+			"\\\\s2030059\\cirmservices\\logs\\wrapper.log.16",
+			"\\\\s2030059\\cirmservices\\logs\\wrapper.log.17",
+			"\\\\s2030059\\cirmservices\\logs\\wrapper.log.18",
+			"\\\\s2030059\\cirmservices\\logs\\wrapper.log.19",
+			"\\\\s2030059\\cirmservices\\logs\\wrapper.log.20",
+			"\\\\s2030059\\cirmservices\\logs\\wrapper.log.21",
+			"\\\\s2030059\\cirmservices\\logs\\wrapper.log.22",
 			"\\\\s2030060\\cirmservices\\logs\\wrapper.log",
 			"\\\\s2030060\\cirmservices\\logs\\wrapper.log.1",
 			"\\\\s2030060\\cirmservices\\logs\\wrapper.log.2",
 			"\\\\s2030060\\cirmservices\\logs\\wrapper.log.3",
 			"\\\\s2030060\\cirmservices\\logs\\wrapper.log.4",
 			"\\\\s2030060\\cirmservices\\logs\\wrapper.log.5",
-			"\\\\s2030060\\cirmservices\\logs\\wrapper.log.6"
+			"\\\\s2030060\\cirmservices\\logs\\wrapper.log.6",
+			"\\\\s2030060\\cirmservices\\logs\\wrapper.log.7",
+			"\\\\s2030060\\cirmservices\\logs\\wrapper.log.8",
+			"\\\\s2030060\\cirmservices\\logs\\wrapper.log.9",
+			"\\\\s2030060\\cirmservices\\logs\\wrapper.log.10",
+			"\\\\s2030060\\cirmservices\\logs\\wrapper.log.11",
+			"\\\\s2030060\\cirmservices\\logs\\wrapper.log.12",
+			"\\\\s2030060\\cirmservices\\logs\\wrapper.log.13",
+			"\\\\s2030060\\cirmservices\\logs\\wrapper.log.14",
+			"\\\\s2030060\\cirmservices\\logs\\wrapper.log.15",
+			"\\\\s2030060\\cirmservices\\logs\\wrapper.log.16",
+			"\\\\s2030060\\cirmservices\\logs\\wrapper.log.17",
+			"\\\\s2030060\\cirmservices\\logs\\wrapper.log.18",
+			"\\\\s2030060\\cirmservices\\logs\\wrapper.log.19",
+			"\\\\s2030060\\cirmservices\\logs\\wrapper.log.20",
+			"\\\\s2030060\\cirmservices\\logs\\wrapper.log.21",
+			"\\\\s2030060\\cirmservices\\logs\\wrapper.log.22"
 	};
 	
 	private final static DateFormat logDf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");

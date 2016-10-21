@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://pwwm/wcs/intra/webservices/soap/searchbyfolio" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://pwwm/wcs/intra/webservices/soap/searchbyfolio" xmlns:intf="http://pwwm/wcs/intra/webservices/soap/searchbyfolio" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema elementFormDefault="qualified" targetNamespace="http://pwwm/wcs/intra/webservices/soap/searchbyfolio" xmlns="http://www.w3.org/2001/XMLSchema">
+   <complexType name="SearchByFolioInHdr_Type">
+    <sequence>
+     <element name="StreamInputSessionId" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="SearchByFolioIn_Type">
+    <sequence>
+     <element name="SearchByFolioInHdr" nillable="true" type="impl:SearchByFolioInHdr_Type"/>
+     <element name="FOLMUNI" type="xsd:string"/>
+     <element name="FOLNUMB" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="SearchByFolioRequest_Type">
+    <sequence>
+     <element name="SearchByFolioIn" nillable="true" type="impl:SearchByFolioIn_Type"/>
+    </sequence>
+   </complexType>
+   <element name="SearchByFolioRequest" type="impl:SearchByFolioRequest_Type"/>
+   <complexType name="ArrayOf_xsd_string">
+    <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="SearchByFolioOut_Type">
+    <sequence>
+     <element name="MAPNAME" type="xsd:string"/>
+     <element name="SCRMSG" type="xsd:string"/>
+     <element name="SCRNAME" type="xsd:string"/>
+     <element name="ACC1" type="xsd:string"/>
+     <element name="ACC2" type="xsd:string"/>
+     <element name="ACC3" type="xsd:string"/>
+     <element name="RETURNMSG" type="xsd:string"/>
+     <element name="RETURNCODE" type="xsd:unsignedShort"/>
+     <element name="XMLCONVRC" type="xsd:unsignedShort"/>
+     <element name="TAXUNIT" type="xsd:string"/>
+     <element name="WSTUNIT" type="xsd:string"/>
+     <element name="FEECODE" type="xsd:string"/>
+     <element name="FCDESC" type="xsd:string"/>
+     <element name="CRDATE" type="xsd:string"/>
+     <element name="FOLMUN" type="xsd:string"/>
+     <element name="FOLNUM" type="xsd:string"/>
+     <element name="ACCTYPE" type="xsd:string"/>
+     <element name="OUTSRV" type="xsd:string"/>
+     <element name="SRVSTART" type="xsd:string"/>
+     <element name="SRVDATE" type="xsd:string"/>
+     <element name="ACCST" type="xsd:string"/>
+     <element name="HANDICAP" type="xsd:string"/>
+     <element name="BILLST" type="xsd:string"/>
+     <element name="PENCODE" type="xsd:string"/>
+     <element name="ACCNAME" type="xsd:string"/>
+     <element name="BILLDATE" type="xsd:string"/>
+     <element name="ACCADDR" type="xsd:string"/>
+     <element name="PRAMT" type="xsd:string"/>
+     <element name="ACCAPT" type="xsd:string"/>
+     <element name="ACCZIP" type="xsd:string"/>
+     <element name="PHAREA" type="xsd:string"/>
+     <element name="PHNUM" type="xsd:string"/>
+     <element name="PRTAX" type="xsd:string"/>
+     <element name="LEGAL" type="xsd:string"/>
+     <element name="PRPENDATE" type="xsd:string"/>
+     <element name="PRPENAMT" type="xsd:string"/>
+     <element name="OWNAME" type="xsd:string"/>
+     <element name="MTHDELQ" type="xsd:string"/>
+     <element name="MAILCO" type="xsd:string"/>
+     <element name="PENDATE" type="xsd:string"/>
+     <element name="PENAMT" type="xsd:string"/>
+     <element name="MISCMAIL" type="xsd:string"/>
+     <element name="SRVTAXAMT" type="xsd:string"/>
+     <element name="MAILADDR" type="xsd:string"/>
+     <element name="MAILAPT" type="xsd:string"/>
+     <element name="CURFEEAMT" type="xsd:string"/>
+     <element name="MAILCITY" type="xsd:string"/>
+     <element name="MAILST" type="xsd:string"/>
+     <element name="MAILZIP" type="xsd:string"/>
+     <element name="BADCHKFEE" type="xsd:string"/>
+     <element name="OWNPHAREA" type="xsd:string"/>
+     <element name="OWNPHNUM" type="xsd:string"/>
+     <element name="CLUC" type="xsd:string"/>
+     <element name="PDAMT" type="xsd:string"/>
+     <element name="CANROLL" type="xsd:string"/>
+     <element name="ArrayOfUSIZE" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfUNITS" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="OCLNO" type="xsd:string"/>
+     <element name="FEECR" type="xsd:string"/>
+     <element name="BOOK" type="xsd:string"/>
+     <element name="ROUTE" type="xsd:string"/>
+     <element name="DIST" type="xsd:string"/>
+     <element name="REG" type="xsd:string"/>
+     <element name="DELINQ" type="xsd:string"/>
+     <element name="TOTDUE" type="xsd:string"/>
+     <element name="JUDGAMT" type="xsd:string"/>
+     <element name="BLKAMT" type="xsd:string"/>
+     <element name="GRTOTDUE" type="xsd:string"/>
+     <element name="TRIPS" type="xsd:string"/>
+     <element name="PICKUP" type="xsd:string"/>
+     <element name="EXEMPT" type="xsd:string"/>
+     <element name="SRVTAX" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="SearchByFolioResponse_Type">
+    <sequence>
+     <element name="SearchByFolioOut" nillable="true" type="impl:SearchByFolioOut_Type"/>
+    </sequence>
+   </complexType>
+   <element name="SearchByFolioResponse" type="impl:SearchByFolioResponse_Type"/>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="SearchByFolioResponse">
+
+      <wsdl:part element="impl:SearchByFolioResponse" name="SearchByFolioResponse"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="SearchByFolioRequest">
+
+      <wsdl:part element="impl:SearchByFolioRequest" name="SearchByFolioRequest"/>
+
+   </wsdl:message>
+
+   <wsdl:portType name="SearchByFolioServicePort_Type">
+
+      <wsdl:operation name="SearchByFolio" parameterOrder="SearchByFolioRequest">
+
+         <wsdl:input message="impl:SearchByFolioRequest" name="SearchByFolioRequest"/>
+
+         <wsdl:output message="impl:SearchByFolioResponse" name="SearchByFolioResponse"/>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="SearchByFolioServicePortSoapBinding" type="impl:SearchByFolioServicePort_Type">
+
+      <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="SearchByFolio">
+
+         <wsdlsoap:operation soapAction="SearchByFolio"/>
+
+         <wsdl:input name="SearchByFolioRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="SearchByFolioResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="SearchByFolioService">
+
+      <wsdl:port binding="impl:SearchByFolioServicePortSoapBinding" name="SearchByFolioServicePort">
+
+         <wsdlsoap:address location="https://s0500012/wcs/soapservices/SearchByFolioServicePort"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>

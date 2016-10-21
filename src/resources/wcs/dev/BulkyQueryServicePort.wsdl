@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://pwwm/wcs/intra/webservices/soap/bulkyquery" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://pwwm/wcs/intra/webservices/soap/bulkyquery" xmlns:intf="http://pwwm/wcs/intra/webservices/soap/bulkyquery" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema elementFormDefault="qualified" targetNamespace="http://pwwm/wcs/intra/webservices/soap/bulkyquery" xmlns="http://www.w3.org/2001/XMLSchema">
+   <complexType name="BulkyQueryInHdr_Type">
+    <sequence>
+     <element name="StreamInputSessionId" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="BulkyQueryIn_Type">
+    <sequence>
+     <element name="BulkyQueryInHdr" nillable="true" type="impl:BulkyQueryInHdr_Type"/>
+     <element name="ACCT1" type="xsd:string"/>
+     <element name="ACCT2" type="xsd:string"/>
+     <element name="ACCT3" type="xsd:string"/>
+     <element name="WONUM" type="xsd:string"/>
+     <element name="WODIG" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="BulkyQueryRequest_Type">
+    <sequence>
+     <element name="BulkyQueryIn" nillable="true" type="impl:BulkyQueryIn_Type"/>
+    </sequence>
+   </complexType>
+   <element name="BulkyQueryRequest" type="impl:BulkyQueryRequest_Type"/>
+   <complexType name="ArrayOf_xsd_string">
+    <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="BulkyQueryOut_Type">
+    <sequence>
+     <element name="MAPNAME" type="xsd:string"/>
+     <element name="PAGENUM" type="xsd:string"/>
+     <element name="ACC1" type="xsd:string"/>
+     <element name="ACC2" type="xsd:string"/>
+     <element name="ACC3" type="xsd:string"/>
+     <element name="OWNAME" type="xsd:string"/>
+     <element name="PROPADDR" type="xsd:string"/>
+     <element name="PROPAPT" type="xsd:string"/>
+     <element name="ArrayOfORDNUM" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfAORDNUM" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfORDDIG" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfAORDDIG" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfREASCODE" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfAREASCODE" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfORDDATE" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfAORDDATE" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfSCHEACT" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfASCHEACT" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfORDST" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfAORDST" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfBLKFEE" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfABLKFEE" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfBLKPAID" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfABLKPAID" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfTOTDUE" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfATOTDUE" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfESTACT" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfAESTACT" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="SCRMSG" type="xsd:string"/>
+     <element name="SPLIT" type="xsd:string"/>
+     <element name="BACC1" type="xsd:string"/>
+     <element name="BACC2" type="xsd:string"/>
+     <element name="BACC3" type="xsd:string"/>
+     <element name="BLKST" type="xsd:string"/>
+     <element name="BLKSTDESC" type="xsd:string"/>
+     <element name="BORDNUM" type="xsd:string"/>
+     <element name="BORDDIG" type="xsd:string"/>
+     <element name="BNAME" type="xsd:string"/>
+     <element name="BORDDATE" type="xsd:string"/>
+     <element name="BADDRESS" type="xsd:string"/>
+     <element name="CLERK" type="xsd:string"/>
+     <element name="PHAREA" type="xsd:string"/>
+     <element name="PHNUM" type="xsd:string"/>
+     <element name="COMPLCODE" type="xsd:string"/>
+     <element name="COMPLNUM" type="xsd:string"/>
+     <element name="BLKLOC" type="xsd:string"/>
+     <element name="COMMENTS" type="xsd:string"/>
+     <element name="RFPICK" type="xsd:string"/>
+     <element name="OPERDESC" type="xsd:string"/>
+     <element name="PICKED" type="xsd:string"/>
+     <element name="TRIPS" type="xsd:string"/>
+     <element name="BOOKNO" type="xsd:string"/>
+     <element name="ALLTR" type="xsd:string"/>
+     <element name="CITICOMB" type="xsd:string"/>
+     <element name="YDSKEYD" type="xsd:string"/>
+     <element name="BGOBACK" type="xsd:string"/>
+     <element name="BYLEFT" type="xsd:string"/>
+     <element name="YDSPICK" type="xsd:string"/>
+     <element name="ESTY" type="xsd:string"/>
+     <element name="PICKYL" type="xsd:string"/>
+     <element name="YDSBILL" type="xsd:string"/>
+     <element name="BULKFEE" type="xsd:string"/>
+     <element name="SPFEE" type="xsd:string"/>
+     <element name="SMTREE" type="xsd:string"/>
+     <element name="SMAPL" type="xsd:string"/>
+     <element name="SMFURN" type="xsd:string"/>
+     <element name="SMOTH" type="xsd:string"/>
+     <element name="MEDTREE" type="xsd:string"/>
+     <element name="MEDAPL" type="xsd:string"/>
+     <element name="MEDFURN" type="xsd:string"/>
+     <element name="MEDOTH" type="xsd:string"/>
+     <element name="LRGTREE" type="xsd:string"/>
+     <element name="LRGAPL" type="xsd:string"/>
+     <element name="LRGFURN" type="xsd:string"/>
+     <element name="LRGOTH" type="xsd:string"/>
+     <element name="BADCHK" type="xsd:string"/>
+     <element name="BULKPD" type="xsd:string"/>
+     <element name="BULTOTDUE" type="xsd:string"/>
+     <element name="BLKCODE" type="xsd:string"/>
+     <element name="BLKDESC" type="xsd:string"/>
+     <element name="RETURNMSG" type="xsd:string"/>
+     <element name="RETURNCODE" type="xsd:unsignedShort"/>
+     <element name="XMLCONVRC" type="xsd:unsignedShort"/>
+     <element name="OPERID" type="xsd:string"/>
+     <element name="BULKYTIME" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="BulkyQueryResponse_Type">
+    <sequence>
+     <element name="BulkyQueryOut" nillable="true" type="impl:BulkyQueryOut_Type"/>
+    </sequence>
+   </complexType>
+   <element name="BulkyQueryResponse" type="impl:BulkyQueryResponse_Type"/>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="BulkyQueryResponse">
+
+      <wsdl:part element="impl:BulkyQueryResponse" name="BulkyQueryResponse"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="BulkyQueryRequest">
+
+      <wsdl:part element="impl:BulkyQueryRequest" name="BulkyQueryRequest"/>
+
+   </wsdl:message>
+
+   <wsdl:portType name="BulkyQueryServicePort_Type">
+
+      <wsdl:operation name="BulkyQuery" parameterOrder="BulkyQueryRequest">
+
+         <wsdl:input message="impl:BulkyQueryRequest" name="BulkyQueryRequest"/>
+
+         <wsdl:output message="impl:BulkyQueryResponse" name="BulkyQueryResponse"/>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="BulkyQueryServicePortSoapBinding" type="impl:BulkyQueryServicePort_Type">
+
+      <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="BulkyQuery">
+
+         <wsdlsoap:operation soapAction="BulkyQuery"/>
+
+         <wsdl:input name="BulkyQueryRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="BulkyQueryResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="BulkyQueryService">
+
+      <wsdl:port binding="impl:BulkyQueryServicePortSoapBinding" name="BulkyQueryServicePort">
+
+         <wsdlsoap:address location="https://s0500012/wcs/soapservices/BulkyQueryServicePort"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>
