@@ -15,7 +15,7 @@
     "ontologyConfigSet":"http://www.miamidade.gov/ontology#TestConfigSet",    
 	"network" : { "user": "cirmconfigservice_production",
 				"password":"ccsprod",
-				"serverUrl":"s0141667",
+				"serverUrl":"s0144818",
 				"ontoServer":"ontology_server_production"},
     "ontologyPrefixes": {
     	"legacy:" : "http://www.miamidade.gov/cirm/legacy#",
