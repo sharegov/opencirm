@@ -60,10 +60,12 @@ import org.w3c.dom.NodeList;
  * 1. Retrieve Activities from COM and update CiRM SRs with them.<br>
  * 2. Send new cases to COM<br>
  * <br>
- * 2016.11.22 hilpold<br>
+ * 2015.11.22 hilpold<br>
  * Case updates received from COM for cases that could not be found AND the case was created prior to CASE_NOT_FOUND_CUTOFF_YEAR (2009),
- * will pe acknowledged as if the update was applied succesfully (Y) to prevent resource consuming infinite loops with CitiView.<rb>
- * A special tag "Historic Data" will be sent with our response, so COM staff can report on these updates in their system.
+ * will be acknowledged as if the update was applied succesfully (Y) to prevent resource consuming infinite loops with CitiView.<br>
+ * A special tag "Historic Data" will be sent with our response, so COM staff can report on these updates in their system.<br>
+ * 2016.10.22 hilpold<br>
+ * Redesigned to use cirm transactions with external calls correctly under high load (sendNewCaseToCity, applyUpdatFromCity and all response processing). <br>s
  * 
  * @author boris, Thomas Hilpold
  */
@@ -98,12 +100,11 @@ public class CityOfMiamiClient extends RestService
 	
 	/**
 	 * Updates a CiRM SR in CiRM with COM response information after sending it as new case to COM.
-	 * Existence of a processMessage means COM rejected the SR. In this case, the SR status is X-ERROR and an email will be sent.
-	 * comNumber will be set as answer <SRYPE>_CASENUM in the CiRM SR, if exists.
+	 * Existence of a processMessage means COM rejected the SR. In this case, the SR status is X-ERROR.
+	 * cityCaseNumber will be set as answer <SRYPE>_CASENUM in the CiRM SR, if exists.
 	 * 
 	 * @param serviceCase
-	 * @param comNumber from the COM response (null: no STYPE_CASENUM will be set)
-	 * @param processMessage null: COM received case -> O-LOCKED Not null: case rejected -> X-ERROR & email  
+	 * @param cityResponse with cityCaseNumber and processMessage from the COM response
 	 * @return
 	 */
 	public Json updateServiceCaseWithCityResponse(Json serviceCase, CitySendNewCaseResponse cityResponse)
@@ -136,7 +137,7 @@ public class CityOfMiamiClient extends RestService
 	 * @param serviceCase
 	 * @return
 	 */
-	public CitySendNewCaseResponse sendNewCaseToCity(Json serviceCase)
+	public CitySendNewCaseResponse sendNewCaseToCityHttpPost(Json serviceCase)
 	{
 		ThreadLocalStopwatch.start("START CityOfMiamiClient sendNewCase");
 		String SOAP_HEADER = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
@@ -192,7 +193,7 @@ public class CityOfMiamiClient extends RestService
 	 * @param msg
 	 * @return
 	 */
-	public Json acknowledgeUpdate(Json update, String YN, String msg)
+	public Json respondToCityAfterUpdateHttpPost(Json update, String YN, String msg)
 	{
 		String header = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" 
 			+ "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">"
@@ -318,11 +319,11 @@ public class CityOfMiamiClient extends RestService
 		Json ackResult = Json.nil();
 		if (!updateResult.is("ok", true)) 
 		{
-			ackResult = acknowledgeUpdate(update, "N", encode(updateResult.at("error").asString()));
+			ackResult = respondToCityAfterUpdateHttpPost(update, "N", encode(updateResult.at("error").asString()));
 		}
 		else
 		{
-			ackResult = acknowledgeUpdate(update, "Y", "");
+			ackResult = respondToCityAfterUpdateHttpPost(update, "Y", "");
 		}
 		return ackResult;
 	}
@@ -340,7 +341,7 @@ public class CityOfMiamiClient extends RestService
 	 */
 	@GET
 	@Path("/retrieveUpdates")
-	public Json retrieveUpdatesFromCity()
+	public Json retrieveUpdatesFromCityHttpPost()
 	{		
 		ThreadLocalStopwatch.startTop("START CityOfMiamiClient /retrieveUpdates");
 		forceClientExempt.set(true);
@@ -378,7 +379,7 @@ public class CityOfMiamiClient extends RestService
 				);
 				if (update.at("CaseNumber").isNull())
 				{
-					acknowledgeUpdate(update, "N", "CiRM tracking number is null.");
+					respondToCityAfterUpdateHttpPost(update, "N", "CiRM tracking number is null.");
 					continue;
 				}
 				try
@@ -395,7 +396,7 @@ public class CityOfMiamiClient extends RestService
 									+ " FAILED: " + update.at("CaseNumber") + " result: " + updateResult 
 									+ ", responding Y " + CASE_NOT_FOUND_TAG);
 							//respond as if update was applied, but provide special message.
-							acknowledgeUpdate(update, "Y", CASE_NOT_FOUND_TAG);							
+							respondToCityAfterUpdateHttpPost(update, "Y", CASE_NOT_FOUND_TAG);							
 						} else {
 							//do not acknowledge, CitiView will resend
 							ThreadLocalStopwatch.error("ERROR: COM UPDATE " + i + " FAILED: " + update + "\nCOM UPDATED RESULT: " + updateResult);
@@ -577,7 +578,7 @@ public class CityOfMiamiClient extends RestService
     		
     		//2 Send case to city via sync webservice call, retrieve response
     		//This fails with exception if city is not avail
-    		final CitySendNewCaseResponse cityReponse = sendNewCaseToCity(sr);    		
+    		final CitySendNewCaseResponse cityReponse = sendNewCaseToCityHttpPost(sr);    		
     		
     		//3 Send email if process message == failure
     		if (cityReponse.getCityProcessMessage() != null) 
@@ -612,7 +613,7 @@ public class CityOfMiamiClient extends RestService
 		catch (Throwable ex)
 		{
 			srStatsReporter.failed("FAIL sendCaseToCOM rest /sendnew", data, "" + GenUtils.getRootCause(ex), "" + GenUtils.getRootCause(ex).getMessage());
-			if (isWorthRetrying(ex))
+			if (isExceptionWorthRetrying(ex))
 			{
 				ThreadLocalStopwatch.stop("FAIL CityOfMiamiClient /sendnew with " + ex + " but will retry automatically in 30 minutes.");
 				return scheduleSendNewRetry(ex, "/other/cityofmiami/sendnew", 30, data);
@@ -676,7 +677,7 @@ public class CityOfMiamiClient extends RestService
 	/**
 	 * @return true if cause is a Socket or GisException.
 	 */
-	boolean isWorthRetrying(Throwable t)
+	boolean isExceptionWorthRetrying(Throwable t)
 	{
 		Throwable root = GenUtils.getRootCause(t);
 		return root instanceof java.net.SocketException ||
