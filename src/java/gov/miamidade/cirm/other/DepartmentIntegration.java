@@ -571,10 +571,11 @@ public class DepartmentIntegration extends RestService
         newcase.at("properties").delAt("legacy:hasDepartmentError");
         Json result;
         try {
-            result = Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
+        	result = Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
             public Json call()
             {       
-                Json data = emulator.updateServiceCase(newcase, "cirmuser");
+            	Json newCaseTx = newcase.dup();
+                Json data = emulator.updateServiceCase(newCaseTx, "cirmuser");
                 if (!data.is("ok", true)) 
                 {
                     return data;
@@ -587,28 +588,36 @@ public class DepartmentIntegration extends RestService
                     return ko("The type " + type + " is not configured to an external interface.");
                 }
                 BOntology bo = BOntology.makeRuntimeBOntology(data);
-                if (deptInterface.is("hasLegacyCode", "COM-CITY"))
+                if (deptInterface.is("hasLegacyCode", "COM-CITY"))                	
                 {
-                    new gov.miamidade.cirm.other.CityOfMiamiClient().sendCaseToCOM(
-                            Json.object("caseNumber", data.at("properties").at("legacy:hasCaseNumber")));
-                    //delaySendToDepartment(bo, deptInterface, 1);
-                    return ok().set("bo", bo.toJSON());
-                }
+                	//Exit transaction, but mark for Sending to City of Miami directly using web service
+                	return Json.object().set("SendToCom", true).set("caseNumber", data.at("properties").at("legacy:hasCaseNumber"));
+                	
+                } else 
+                {
+                	//Send to MDCEAI via MQ queue
                 
-                // First, check the GIS is ok, this is extra work because we don't
-                // have easy means to obtain the return values from the service calls upstream
-                // during the update.
-                Json locationInfo = emulator.populateGisData(data.dup().at("properties").set("hasLegacyInterface", deptInterface).up(), bo);
-                if (locationInfo.has("extendedInfo") && locationInfo.at("extendedInfo").has("error"))
-                {
-                    GenUtils.reportPWGisProblem(data.at("properties").at("legacy:hasCaseNumber").asString(),
-                            locationInfo.at("extendedInfo").at("error"));
-                    return ko("GIS extended validation failed: " + locationInfo.at("extendedInfo").at("error"));
+                    // First, check the GIS is ok, this is extra work because we don't
+                    // have easy means to obtain the return values from the service calls upstream
+                    // during the update.
+                    Json locationInfo = emulator.populateGisData(data.dup().at("properties").set("hasLegacyInterface", deptInterface).up(), bo);
+                    if (locationInfo.has("extendedInfo") && locationInfo.at("extendedInfo").has("error"))
+                    {
+                        GenUtils.reportPWGisProblem(data.at("properties").at("legacy:hasCaseNumber").asString(),
+                                locationInfo.at("extendedInfo").at("error"));
+                        return ko("GIS extended validation failed: " + locationInfo.at("extendedInfo").at("error"));
+                    }
+                    sendToDepartment(bo, deptInterface, null);
+                    srStatsReporter.succeeded("resendNewCase", data);
+                    return ok().set("bo", bo.toJSON()); 
                 }
-                sendToDepartment(bo, deptInterface, null);
-                srStatsReporter.succeeded("resendNewCase", data);
-                return ok().set("bo", bo.toJSON()); 
             }});
+        	if (result.has("SendToCom") && result.is("SendToCom", true)) {
+            	//Send to City of Miami directly using web service
+        		CityOfMiamiClient cityClient = new CityOfMiamiClient();
+        		result = cityClient.sendCaseToCity(Json.object("caseNumber", result.at("caseNumber")));
+                //return ok().set("bo", bo.toJSON());
+        	}
         } catch (Throwable t) 
         {
         	srStatsReporter.failed("resendNewCase", newcase, t.toString(), t.getMessage());

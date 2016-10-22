@@ -106,31 +106,27 @@ public class CityOfMiamiClient extends RestService
 	 * @param processMessage null: COM received case -> O-LOCKED Not null: case rejected -> X-ERROR & email  
 	 * @return
 	 */
-	public Json saveCOMSubmitResult(Json serviceCase, String comNumber, String processMessage)
+	public Json updateServiceCaseWithCityResponse(Json serviceCase, CitySendNewCaseResponse cityResponse)
 	{
 		ThreadLocalStopwatch.start("START CityOfMiamiClient saveCOMSubmitResult");
+		String cityCaseNumber = cityResponse.getCityCaseNumber();
+		String cityProcessMessage = cityResponse.getCityProcessMessage();
 		// Update SR with passed back information
-		if (comNumber != null)
+		if (cityCaseNumber != null)
 			serviceCase.at("properties").at("hasServiceAnswer").add(
-				Json.object("hasAnswerValue", Json.object("type", "http://www.w3.org/2001/XMLSchema#string", "literal", comNumber), 
+				Json.object("hasAnswerValue", Json.object("type", "http://www.w3.org/2001/XMLSchema#string", "literal", cityCaseNumber), 
 						    "hasServiceField", Json.object("iri", "http://www.miamidade.gov/cirm/legacy#" + serviceCase.at("type").asString() + "_CASENUM")));
-		if (processMessage != null)
+		if (cityProcessMessage != null)
 		{
-			serviceCase.at("properties").set("hasDepartmentError", processMessage);
+			serviceCase.at("properties").set("hasDepartmentError", cityProcessMessage);
 			serviceCase.at("properties").at("hasStatus").set("iri", fullIri("legacy:X-ERROR").toString());
-			// TODO, remove hard emails from here...also, may be X-ERROR status should trigger emails
-			// for all SR types, not just COM, configurable somehow...
-			ThreadLocalStopwatch.error("CityOfMiamiClient [COM CASE REJECTED] department error email sent ");
-	    	MessageManager.get().sendEmail("cirm@miamidade.gov", 
-					"hilpold@miamidade.gov;ioliva@miamigov.com;VOchoa@miamigov.com;angel.martin@miamidade.gov;silval@miamidade.gov", 
-					"[COM CASE REJECTED] " + serviceCase.at("properties").at("hasCaseNumber"), processMessage);			
 		}
 		else
 		{
 			serviceCase.at("properties").delAt("hasDepartmentError");			
 			serviceCase.at("properties").at("hasStatus").set("iri", fullIri("legacy:O-LOCKED").toString());
 		}
-		Json result = emulator.updateServiceCase(serviceCase, "cirmuser");	
+		Json result = emulator.updateServiceCase(serviceCase, "cirmuser");
 		ThreadLocalStopwatch.stop("END CityOfMiamiClient saveCOMSubmitResult");
 		return result;
 	}
@@ -140,7 +136,7 @@ public class CityOfMiamiClient extends RestService
 	 * @param serviceCase
 	 * @return
 	 */
-	public Json sendNewCase(Json serviceCase)
+	public CitySendNewCaseResponse sendNewCaseToCity(Json serviceCase)
 	{
 		ThreadLocalStopwatch.start("START CityOfMiamiClient sendNewCase");
 		String SOAP_HEADER = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
@@ -180,13 +176,12 @@ public class CityOfMiamiClient extends RestService
 		String responseContent = item.getFirstChild().getTextContent();
 		Document rdoc = XMLU.parse(responseContent);
 		// COM interface response contains a CaseNumber (comNumber) and a processMessage
-		String comNumber = XMLU.content(rdoc, "CaseNumber");
+		String cityCaseNumber = XMLU.content(rdoc, "CaseNumber");
 //		String inspector = XMLU.content(rdoc, "Inspector");
-		String processMessage = XMLU.content(rdoc, "ProcessMessage");
-		//Update CiRM SR with this information
-		Json upr = this.saveCOMSubmitResult(serviceCase, comNumber, processMessage);
-		ThreadLocalStopwatch.stop("END CityOfMiamiClient sendNewCase");
-		return ok().set("updateResult", upr);
+		String cityProcessMessage = XMLU.content(rdoc, "ProcessMessage");
+		
+		CitySendNewCaseResponse cityResponse = new CitySendNewCaseResponse(cityCaseNumber, cityProcessMessage); 
+		return cityResponse;
 	}
 	
 	/**
@@ -263,7 +258,7 @@ public class CityOfMiamiClient extends RestService
 	 * @param update
 	 * @return
 	 */
-	public Json applyUpdate(final Json update)
+	public Json applyUpdateFromCity(final Json update)
 	{
 		Json updateResult = null;
 		try {
@@ -345,7 +340,7 @@ public class CityOfMiamiClient extends RestService
 	 */
 	@GET
 	@Path("/retrieveUpdates")
-	public Json retrieveUpdates()
+	public Json retrieveUpdatesFromCity()
 	{		
 		ThreadLocalStopwatch.startTop("START CityOfMiamiClient /retrieveUpdates");
 		forceClientExempt.set(true);
@@ -368,7 +363,7 @@ public class CityOfMiamiClient extends RestService
 			Document rdoc = XMLU.parse(topdoc.getElementsByTagName("strGetServiceRequestReadyResult").item(0).getTextContent());
 			NodeList updateNodes = rdoc.getElementsByTagName("tblCECases");
 			Json result = Json.array();
-			ThreadLocalStopwatch.now("NOW CityOfMiamiClient /retrieveUpdates updateNodes.length() " + updateNodes.getLength());			
+			ThreadLocalStopwatch.now("NOW CityOfMiamiClient /retrieveUpdates updateNodes.length() = " + updateNodes.getLength());			
 			for (int i = 0; i < updateNodes.getLength(); i++)
 			{
 				Element n = (Element)updateNodes.item(i);
@@ -388,12 +383,12 @@ public class CityOfMiamiClient extends RestService
 				}
 				try
 				{
-					Json updateResult = applyUpdate(update);
+					Json updateResult = applyUpdateFromCity(update);
 					// TODO : if the update failed somehow, we need to log it somewhere for auditing purpose
 					// nowhere else for now, but stdout
 					if (updateResult.is("ok", false))
 					{
-						if (isUpdateForPreCutoffCase(update)) {
+						if (isCityUpdateForPreCutoffCase(update)) {
 							ThreadLocalStopwatch.error("COM UPDATE FOR PRE " 
 									+ CASE_NOT_FOUND_CUTOFF_YEAR 
 									+ "  case " + i 
@@ -411,9 +406,10 @@ public class CityOfMiamiClient extends RestService
 				catch (Throwable t)
 				{
 					ThreadLocalStopwatch.error("ERROR: COM UPDATE " + i + " FAILED unexpectedly: " + update + "\n exception " + t);
+					t.printStackTrace();
 					result.add(ko(t));
 				}
-			}
+			} //end for
 			ThreadLocalStopwatch.stop("END CityOfMiamiClient /retrieveUpdates returning ok, maybe with errors");
 			return ok().set("data", result);
 	    }
@@ -429,7 +425,7 @@ public class CityOfMiamiClient extends RestService
 	 * @param update
 	 * @return false, if could not determine or not.
 	 */
-	private boolean isUpdateForPreCutoffCase(Json update) {
+	private boolean isCityUpdateForPreCutoffCase(Json update) {
 		if (ServiceCaseJsonHelper.isCaseNumberString(update.at("CaseNumber"))) {
 			String caseNum = update.at("CaseNumber").asString().trim();
 			int updateCaseYear4 = ServiceCaseJsonHelper.getCaseNumberYear(caseNum);
@@ -543,55 +539,90 @@ public class CityOfMiamiClient extends RestService
 	
 	/**
 	 * Sends a ServiceCase to COM 
+	 * tx1: find/load case,
+	 * NoTx: send to com, store result (retry http)
+	 * tx2: process result, lock or xerror case.
 	 * @param data
 	 * @return
 	 */
 	@POST
 	@Path("/sendnew")
-	public Json sendCaseToCOM(Json data)
+	public Json sendCaseToCity(Json data)
 	{
-		ThreadLocalStopwatch.start("START CityOfMiamiClient /sendnew");
-		forceClientExempt.set(true);
 		if (!data.has("caseNumber")) {
 			ThreadLocalStopwatch.fail("FAIL CityOfMiamiClient /sendnew Case number property missing");
 			return ko("Case number property missing from JSON object.");
 		}
-		String casenumber = data.at("caseNumber").asString();
-		long boid = emulator.toServiceCaseId(casenumber);
+		forceClientExempt.set(true);
+		//1 Find and load case tx
+		final String cirmCaseNumber = data.at("caseNumber").asString();
+		ThreadLocalStopwatch.start("START CityOfMiamiClient /sendnew " + cirmCaseNumber);
 		try
 		{
-			Json sr = emulator.lookupServiceCase(boid);
-			OWL.resolveIris(sr, null);
-			if (!sr.is("ok", true) || 
-				!sr.at("bo").at("properties").at("hasStatus").at("iri").asString().contains("O-OPEN"))
-			{
-				ThreadLocalStopwatch.fail("END CityOfMiamiClient /sendnew lookup sr not ok or not O-OPEN - not sending");
-				return sr;
-			}
-			Json sendResult = sendNewCase(sr.at("bo"));
-			if (sendResult.is("ok", true)) 
-			{
-				srStatsReporter.succeeded("sendCaseToCOM rest /sendnew", sr.at("bo"));
-			}
-			else
-			{
-				srStatsReporter.failed("sendCaseToCOM rest /sendnew", sr.at("bo"), "Send new case failed", sendResult.at("updateResult").toString());
-			}
-			ThreadLocalStopwatch.stop("END CityOfMiamiClient /sendnew case sent ");
-			return sendResult;
+    		Json sr = Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
+                public Json call()
+                {       
+            		long boid = emulator.toServiceCaseId(cirmCaseNumber);
+            		Json sr = emulator.lookupServiceCase(boid);
+            		return sr;
+                }});              		
+    		if (!sr.is("ok", true) || 
+            		!sr.at("bo").at("properties").at("hasStatus").at("iri").asString().contains("O-OPEN"))
+            {
+            	ThreadLocalStopwatch.fail("END CityOfMiamiClient /sendnew lookup sr not found or not O-OPEN - not sending " + cirmCaseNumber);
+            	return sr;
+            }
+    		sr = sr.at("bo");
+    		OWL.resolveIris(sr, null);
+    		
+    		//2 Send case to city via sync webservice call, retrieve response
+    		//This fails with exception if city is not avail
+    		final CitySendNewCaseResponse cityReponse = sendNewCaseToCity(sr);    		
+    		
+    		//3 Send email if process message == failure
+    		if (cityReponse.getCityProcessMessage() != null) 
+    		{
+    			ThreadLocalStopwatch.error("CityOfMiamiClient [COM CASE REJECTED] department error email sent for " 
+    			+ cirmCaseNumber 
+    			+ " message " 
+    			+ cityReponse.getCityProcessMessage());
+    			MessageManager.get().sendEmail("cirm@miamidade.gov", 
+					"hilpold@miamidade.gov;ioliva@miamigov.com;VOchoa@miamigov.com;angel.martin@miamidade.gov;silval@miamidade.gov;imarp@miamidade.gov", 
+					"[COM CASE REJECTED] " + cirmCaseNumber, cityReponse.getCityProcessMessage());
+    		}
+
+    		//4 Reload and Update (Lock or X-ERR) 311Hub case tx with response
+    		Json updateResult = Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
+                public Json call()
+                {                      	
+            		ThreadLocalStopwatch.now("NOW CityOfMiamiClient /sendnew update (Lock/Xerr) case with city response. City case number: " + cityReponse.getCityCaseNumber());            		
+            		long boid = emulator.toServiceCaseId(cirmCaseNumber);
+            		Json sr = emulator.lookupServiceCase(boid);
+            		sr = sr.at("bo");
+            		//Update CiRM SR with this information	
+            		OWL.resolveIris(sr, null);
+            		Json updateResult = updateServiceCaseWithCityResponse(sr, cityReponse);
+            		srStatsReporter.succeeded("sendCaseToCOM rest /sendnew", sr.at("bo"));
+            		//return ok().set("updateResult", updateResult);
+            		return updateResult; //ok with bo property
+                }});
+    		ThreadLocalStopwatch.stop("END CityOfMiamiClient /sendnew case sent " + cirmCaseNumber);
+    		return updateResult;
 		}
 		catch (Throwable ex)
 		{
-			srStatsReporter.failed("sendCaseToCOM rest /sendnew", data, "" + GenUtils.getRootCause(ex), "" + GenUtils.getRootCause(ex).getMessage());
-			ThreadLocalStopwatch.stop("FAIL CityOfMiamiClient /sendnew with " + ex);
-			if (!isWorthRetrying(ex))
+			srStatsReporter.failed("FAIL sendCaseToCOM rest /sendnew", data, "" + GenUtils.getRootCause(ex), "" + GenUtils.getRootCause(ex).getMessage());
+			if (isWorthRetrying(ex))
 			{
-				GenUtils.reportFatal("While sending COM case, caseNumber was " + data.at("caseNumber"), ex.toString(), ex);
-				return ko(ex);
+				ThreadLocalStopwatch.stop("FAIL CityOfMiamiClient /sendnew with " + ex + " but will retry automatically in 30 minutes.");
+				return scheduleSendNewRetry(ex, "/other/cityofmiami/sendnew", 30, data);
 			}
 			else 
 			{
-				return scheduleSendNewRetry(ex, "/other/cityofmiami/sendnew", 30, data);
+				ThreadLocalStopwatch.stop("FAIL FATAL CityOfMiamiClient /sendnew with " + ex + ". Sending Fatal email, no retry.");
+				GenUtils.reportFatal("While sending COM case, caseNumber was " + data.at("caseNumber"), ex.toString(), ex);
+				ex.printStackTrace();
+				return ko(ex);
 			}
 		}		
 	}
@@ -650,5 +681,24 @@ public class CityOfMiamiClient extends RestService
 		Throwable root = GenUtils.getRootCause(t);
 		return root instanceof java.net.SocketException ||
 			   root instanceof GisException;
+	}
+	
+	private static class CitySendNewCaseResponse {
+
+		private String cityCaseNumber;
+		private String cityProcessMessage;
+		
+		CitySendNewCaseResponse(String cityCaseNumber, String cityProcessMessage) {
+			this.cityCaseNumber = cityCaseNumber;
+			this.cityProcessMessage = cityProcessMessage;
+		}
+
+		public String getCityCaseNumber() {
+			return cityCaseNumber;
+		}
+
+		public String getCityProcessMessage() {
+			return cityProcessMessage;
+		}
 	}
 }
