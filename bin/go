@@ -60,4 +60,4 @@ fi
 
 echo $CIRM_NATIVE
 
-exec $JAVA_EXEC -Xms4096M -Xmx4096M -XX:+HeapDumpOnOutOfMemoryError -cp $CIRM_CLASSPATH  -Djava.library.path=$CIRM_NATIVE org.sharegov.cirm.StartUp $CIRM_HOME/conf/devconfig.json
+exec $JAVA_EXEC -Xms4096M -Xmx4096M -XX:+HeapDumpOnOutOfMemoryError -cp $CIRM_CLASSPATH  -Djava.library.path=$CIRM_NATIVE org.sharegov.cirm.StartUp $CIRM_HOME/conf/linuxconfig.json

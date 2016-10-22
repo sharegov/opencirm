@@ -332,6 +332,9 @@
         <ObjectProperty IRI="http://opencirm.org#hasJsonMapper"/>
     </Declaration>
     <Declaration>
+        <ObjectProperty IRI="http://opencirm.org#hasSequence"/>
+    </Declaration>
+    <Declaration>
         <ObjectProperty IRI="http://opencirm.org#hasTable"/>
     </Declaration>
     <Declaration>

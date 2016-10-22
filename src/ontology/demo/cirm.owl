@@ -331,6 +331,300 @@
     <Declaration>
         <DataProperty IRI="#participantEntityTable"/>
     </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.DATA"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_BULKSERV"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_CMAINT"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_CODENO"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_COMDIST"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_DAY"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIACODE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIACOM"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIACOMD"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIAGARB"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIAGARB2"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIAMNT"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIARCRTE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIARECY"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIATDAY"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIAZONE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MUNCODE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MUNICIP"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_NETA"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_ROUTE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_STLGHT"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_SWENFID"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_SWRCDAY"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_SWRECWK"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_TEAMNO"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_TEAMOFFC"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.HASH"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.ID"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.ADDRESS_ID"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.CITY"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.FULL_ADDRESS"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.LOCATION_NAME"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STATE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STREET_NAME"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STREET_NAME_PREFIX"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STREET_NAME_SUFFIX"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STREET_NUMBER"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.UNIT"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.XCOORDINATE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.YCOORDINATE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.ZIP"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SEQUENCE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_ACTION.NAME"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_ACTION.VALUE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL.AGENT"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL.END_TIME"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL.FROM_PHONE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL.SERVICE_CALL_ID"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL.START_TIME"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SRREQ_SRACTOR.SR_ACTOR_ID"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SRREQ_SRACTOR.SR_REQUEST_ID"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.ACTIVITY_CODE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.ACTIVITY_ID"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.COMPLETE_DATE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.CREATED_BY"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.CREATED_DATE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.DETAILS"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.DUE_DATE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.OUTCOME_CODE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.SR_REQUEST_ID"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.STAFF_ASSIGNED"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.UPDATED_BY"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.UPDATED_DATE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.CREATED_BY"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.CREATED_DATE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_ADDRESS"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_CELL_PHONE_NO"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_CONTACT_METHOD"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_EMAIL"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_FAX_PHONE_NO"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_ID"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_INITIALS"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_LNAME"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_NAME"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_OTHER_PHONE_NO"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_PHONE_NUMBER"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_SUFFIX"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_TITLE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_TYPE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_WORK_PHONE_NO"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.UPDATED_BY"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.UPDATED_DATE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.CASE_NUMBER"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.CREATED_BY"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.CREATED_DATE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.DUE_DATE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.GIS_INFO_ID"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_COMMENTS"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_DESCRIPTION"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_INTAKE_METHOD"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_PRIORITY"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_REQUEST_ADDRESS"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_REQUEST_ID"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_STATUS"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_XCOORDINATE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_YCOORDINATE"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.UPDATED_BY"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.UPDATED_DATE"/>
+    </Declaration>
     <SubClassOf>
         <Class IRI="#ActivityAssignment"/>
         <Class IRI="#LegacyEvent"/>
@@ -402,6 +696,1498 @@
         <Class IRI="#StatusChange"/>
         <Class IRI="#LegacyEvent"/>
     </SubClassOf>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.DATA"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_BULKSERV"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_CMAINT"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_CODENO"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_COMDIST"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_DAY"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIACODE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIACOM"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIACOMD"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIAGARB"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIAGARB2"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIAMNT"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIARCRTE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIARECY"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIATDAY"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIAZONE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MUNCODE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MUNICIP"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_NETA"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_ROUTE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_STLGHT"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_SWENFID"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_SWRCDAY"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_SWRECWK"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_TEAMNO"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_TEAMOFFC"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.HASH"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBPrimaryKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.ID"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBPrimaryKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.ADDRESS_ID"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.CITY"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.FULL_ADDRESS"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.LOCATION_NAME"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STATE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STREET_NAME"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STREET_NAME_PREFIX"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STREET_NAME_SUFFIX"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STREET_NUMBER"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.UNIT"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.XCOORDINATE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.YCOORDINATE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.ZIP"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBSequence"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SEQUENCE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_ACTION"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_ACTION.NAME"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_ACTION.VALUE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL.AGENT"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL.END_TIME"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL.FROM_PHONE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBPrimaryKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL.SERVICE_CALL_ID"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL.START_TIME"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SRREQ_SRACTOR"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBForeignKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SRREQ_SRACTOR.SR_ACTOR_ID"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBPrimaryKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SRREQ_SRACTOR.SR_ACTOR_ID"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBForeignKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SRREQ_SRACTOR.SR_REQUEST_ID"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBPrimaryKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SRREQ_SRACTOR.SR_REQUEST_ID"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.ACTIVITY_CODE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBPrimaryKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.ACTIVITY_ID"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.COMPLETE_DATE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.CREATED_BY"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.CREATED_DATE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.DETAILS"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.DUE_DATE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.OUTCOME_CODE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBForeignKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.SR_REQUEST_ID"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.STAFF_ASSIGNED"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.UPDATED_BY"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.UPDATED_DATE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.CREATED_BY"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.CREATED_DATE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBForeignKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_ADDRESS"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_CELL_PHONE_NO"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_CONTACT_METHOD"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_EMAIL"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_FAX_PHONE_NO"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBPrimaryKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_ID"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_INITIALS"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_LNAME"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_NAME"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_OTHER_PHONE_NO"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_PHONE_NUMBER"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_SUFFIX"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_TITLE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_TYPE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_WORK_PHONE_NO"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.UPDATED_BY"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.UPDATED_DATE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.CASE_NUMBER"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.CREATED_BY"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.CREATED_DATE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.DUE_DATE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBForeignKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.GIS_INFO_ID"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_COMMENTS"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_DESCRIPTION"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_INTAKE_METHOD"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_PRIORITY"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBForeignKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_REQUEST_ADDRESS"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBPrimaryKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_REQUEST_ID"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_STATUS"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_XCOORDINATE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_YCOORDINATE"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.UPDATED_BY"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.UPDATED_DATE"/>
+    </ClassAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.DATA"/>
+        <NamedIndividual IRI="http://opencirm.org#CLOB"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.DATA"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_BULKSERV"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_BULKSERV"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_CMAINT"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_CMAINT"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_CODENO"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_CODENO"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_COMDIST"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_COMDIST"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_DAY"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_DAY"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIACODE"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIACODE"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIACOM"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIACOM"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIACOMD"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIACOMD"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIAGARB"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIAGARB"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIAGARB2"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIAGARB2"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIAMNT"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIAMNT"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIARCRTE"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIARCRTE"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIARECY"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIARECY"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIATDAY"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIATDAY"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIAZONE"/>
+        <NamedIndividual IRI="http://opencirm.org#DOUBLE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MIAZONE"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MUNCODE"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MUNCODE"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MUNICIP"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_MUNICIP"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_NETA"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_NETA"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_ROUTE"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_ROUTE"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_STLGHT"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_STLGHT"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_SWENFID"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_SWENFID"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_SWRCDAY"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_SWRCDAY"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_SWRECWK"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_SWRECWK"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_TEAMNO"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_TEAMNO"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_TEAMOFFC"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.GIS_TEAMOFFC"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.HASH"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.HASH"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.ID"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.ID"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.ADDRESS_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasSequence"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.ADDRESS_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SEQUENCE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.ADDRESS_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.CITY"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.CITY"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.FULL_ADDRESS"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.FULL_ADDRESS"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.LOCATION_NAME"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.LOCATION_NAME"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STATE"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STATE"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STREET_NAME"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STREET_NAME"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STREET_NAME_PREFIX"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STREET_NAME_PREFIX"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STREET_NAME_SUFFIX"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STREET_NAME_SUFFIX"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STREET_NUMBER"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STREET_NUMBER"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.UNIT"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.UNIT"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.XCOORDINATE"/>
+        <NamedIndividual IRI="http://opencirm.org#DOUBLE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.XCOORDINATE"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.YCOORDINATE"/>
+        <NamedIndividual IRI="http://opencirm.org#DOUBLE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.YCOORDINATE"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.ZIP"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.ZIP"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_ACTION.NAME"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_ACTION.NAME"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_ACTION.VALUE"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_ACTION.VALUE"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL.AGENT"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL.AGENT"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL.END_TIME"/>
+        <NamedIndividual IRI="http://opencirm.org#TIMESTAMP"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL.END_TIME"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL.FROM_PHONE"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL.FROM_PHONE"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL.SERVICE_CALL_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL.SERVICE_CALL_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL.START_TIME"/>
+        <NamedIndividual IRI="http://opencirm.org#TIMESTAMP"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL.START_TIME"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SRREQ_SRACTOR.SR_ACTOR_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasJoinColumn"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SRREQ_SRACTOR.SR_ACTOR_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_ID"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasJoinTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SRREQ_SRACTOR.SR_ACTOR_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SRREQ_SRACTOR.SR_ACTOR_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SRREQ_SRACTOR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SRREQ_SRACTOR.SR_REQUEST_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasJoinColumn"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SRREQ_SRACTOR.SR_REQUEST_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_REQUEST_ID"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasJoinTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SRREQ_SRACTOR.SR_REQUEST_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SRREQ_SRACTOR.SR_REQUEST_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SRREQ_SRACTOR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.ACTIVITY_CODE"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.ACTIVITY_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.ACTIVITY_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.COMPLETE_DATE"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.CREATED_BY"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.CREATED_DATE"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.DETAILS"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.DUE_DATE"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.OUTCOME_CODE"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.SR_REQUEST_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasJoinColumn"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.SR_REQUEST_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_REQUEST_ID"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasJoinTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.SR_REQUEST_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.SR_REQUEST_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.STAFF_ASSIGNED"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.UPDATED_BY"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.UPDATED_DATE"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.CREATED_BY"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.CREATED_DATE"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_ADDRESS"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasJoinColumn"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_ADDRESS"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.ADDRESS_ID"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasJoinTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_ADDRESS"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_ADDRESS"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_CELL_PHONE_NO"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_CONTACT_METHOD"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_EMAIL"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_FAX_PHONE_NO"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_INITIALS"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_LNAME"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_NAME"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_OTHER_PHONE_NO"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_PHONE_NUMBER"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_SUFFIX"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_TITLE"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_TYPE"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_TYPE"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_WORK_PHONE_NO"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_WORK_PHONE_NO"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.UPDATED_BY"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.UPDATED_BY"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.UPDATED_DATE"/>
+        <NamedIndividual IRI="http://opencirm.org#TIMESTAMP"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.UPDATED_DATE"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.CASE_NUMBER"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.CASE_NUMBER"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.CREATED_BY"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.CREATED_BY"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.CREATED_DATE"/>
+        <NamedIndividual IRI="http://opencirm.org#TIMESTAMP"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.CREATED_DATE"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.DUE_DATE"/>
+        <NamedIndividual IRI="http://opencirm.org#TIMESTAMP"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.DUE_DATE"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.GIS_INFO_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasJoinColumn"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.GIS_INFO_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.ID"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasJoinTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.GIS_INFO_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.GIS_INFO_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_COMMENTS"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_COMMENTS"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_DESCRIPTION"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_DESCRIPTION"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_INTAKE_METHOD"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_INTAKE_METHOD"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_PRIORITY"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_PRIORITY"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_REQUEST_ADDRESS"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasJoinColumn"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_REQUEST_ADDRESS"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.ADDRESS_ID"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasJoinTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_REQUEST_ADDRESS"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_REQUEST_ADDRESS"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_REQUEST_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasSequence"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_REQUEST_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SEQUENCE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_REQUEST_ID"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_STATUS"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_STATUS"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_XCOORDINATE"/>
+        <NamedIndividual IRI="http://opencirm.org#DOUBLE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_XCOORDINATE"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_YCOORDINATE"/>
+        <NamedIndividual IRI="http://opencirm.org#DOUBLE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_YCOORDINATE"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.UPDATED_BY"/>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.UPDATED_BY"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.UPDATED_DATE"/>
+        <NamedIndividual IRI="http://opencirm.org#TIMESTAMP"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.UPDATED_DATE"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS"/>
+    </ObjectPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.ADDRESS_ID"/>
+        <Literal datatypeIRI="&xsd;string">NUMBER(19,0)</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.FULL_ADDRESS"/>
+        <Literal datatypeIRI="&xsd;string">VARCHAR2(255)</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.LOCATION_NAME"/>
+        <Literal datatypeIRI="&xsd;string">VARCHAR2(255)</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STREET_NAME"/>
+        <Literal datatypeIRI="&xsd;string">VARCHAR2(255)</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STREET_NAME_PREFIX"/>
+        <Literal datatypeIRI="&xsd;string">VARCHAR2(255)</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STREET_NAME_SUFFIX"/>
+        <Literal datatypeIRI="&xsd;string">VARCHAR2(255)</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STREET_NUMBER"/>
+        <Literal datatypeIRI="&xsd;string">NUMBER(19,0)</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.UNIT"/>
+        <Literal datatypeIRI="&xsd;string">VARCHAR2(255)</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#nextValue"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SEQUENCE"/>
+        <Literal datatypeIRI="&xsd;string">NEXTVAL</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SRREQ_SRACTOR.SR_ACTOR_ID"/>
+        <Literal datatypeIRI="&xsd;string">NUMBER(19,0)</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SRREQ_SRACTOR.SR_REQUEST_ID"/>
+        <Literal datatypeIRI="&xsd;string">NUMBER(19,0)</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_ID"/>
+        <Literal datatypeIRI="&xsd;string">NUMBER(19,0)</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_TYPE"/>
+        <Literal datatypeIRI="&xsd;string">VARCHAR2(255)</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.CASE_NUMBER"/>
+        <Literal datatypeIRI="&xsd;string">VARCHAR2(255)</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.CREATED_BY"/>
+        <Literal datatypeIRI="&xsd;string">VARCHAR2(255)</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.CREATED_DATE"/>
+        <Literal datatypeIRI="&xsd;string">TIMESTAMP</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.DUE_DATE"/>
+        <Literal datatypeIRI="&xsd;string">TIMESTAMP</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.GIS_INFO_ID"/>
+        <Literal datatypeIRI="&xsd;string">NUMBER(19,0)</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_COMMENTS"/>
+        <Literal datatypeIRI="&xsd;string">VARCHAR2(4000)</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_DESCRIPTION"/>
+        <Literal datatypeIRI="&xsd;string">VARCHAR2(4000)</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_INTAKE_METHOD"/>
+        <Literal datatypeIRI="&xsd;string">VARCHAR2(255)</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_PRIORITY"/>
+        <Literal datatypeIRI="&xsd;string">VARCHAR2(255)</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_REQUEST_ADDRESS"/>
+        <Literal datatypeIRI="&rdf;PlainLiteral">NUMBER(19,0)</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_REQUEST_ID"/>
+        <Literal datatypeIRI="&xsd;string">NUMBER(19,0)</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_STATUS"/>
+        <Literal datatypeIRI="&xsd;string">VARCHAR2(255)</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.UPDATED_BY"/>
+        <Literal datatypeIRI="&xsd;string">VARCHAR2(255)</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.UPDATED_DATE"/>
+        <Literal datatypeIRI="&xsd;string">TIMESTAMP</Literal>
+    </DataPropertyAssertion>
     <ObjectPropertyDomain>
         <ObjectProperty IRI="#hasAllowableEvent"/>
         <ObjectUnionOf>
