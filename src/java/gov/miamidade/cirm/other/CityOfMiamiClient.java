@@ -314,16 +314,35 @@ public class CityOfMiamiClient extends RestService
 		} catch (Throwable t) {
 			//Transaction with potential retries is over, now we have an exception that we need to consider in our
 			//acknowledgment to the city.
+			ThreadLocalStopwatch.error("FAIL COM UPDATE " + update + " with " + t);
 			updateResult =  GenUtils.ko(t);
 		}
+		//Respond to city after applying city update to sr in cirm
 		Json ackResult = Json.nil();
-		if (!updateResult.is("ok", true)) 
-		{
-			ackResult = respondToCityAfterUpdateHttpPost(update, "N", encode(updateResult.at("error").asString()));
-		}
-		else
-		{
-			ackResult = respondToCityAfterUpdateHttpPost(update, "Y", "");
+		boolean retryNeeded;
+		long startTime = System.currentTimeMillis();
+		do {
+			retryNeeded = false;
+			try {
+    			if (!updateResult.is("ok", true)) {
+        			ackResult = respondToCityAfterUpdateHttpPost(update, "N", encode(updateResult.at("error").asString()));
+        		} else {
+        			ackResult = respondToCityAfterUpdateHttpPost(update, "Y", "");
+        		}
+			} catch(Throwable t) {				
+				retryNeeded = isExceptionWorthRetrying(t);
+				if (!retryNeeded) {
+					throw new RuntimeException("RespondToCityAfterUpdate to CityView interface failed with : " + t, t);
+				} else {
+    				try {
+    					Thread.sleep(1000);
+    				} catch (InterruptedException e) {
+    				}
+				}
+			}
+		} while (retryNeeded && (System.currentTimeMillis() - startTime < 30000));
+		if (retryNeeded) {
+			throw new RuntimeException("RespondToCityAfterUpdate to CityView interface failed for over 30 seconds with retriable exception");
 		}
 		return ackResult;
 	}
