@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://pwwm/wcs/intra/webservices/soap/enfcomplaintquery" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://pwwm/wcs/intra/webservices/soap/enfcomplaintquery" xmlns:intf="http://pwwm/wcs/intra/webservices/soap/enfcomplaintquery" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema elementFormDefault="qualified" targetNamespace="http://pwwm/wcs/intra/webservices/soap/enfcomplaintquery" xmlns="http://www.w3.org/2001/XMLSchema">
+   <complexType name="EnfComplaintQueryInHdr_Type">
+    <sequence>
+     <element name="StreamInputSessionId" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="EnfComplaintQueryIn_Type">
+    <sequence>
+     <element name="EnfComplaintQueryInHdr" nillable="true" type="impl:EnfComplaintQueryInHdr_Type"/>
+     <element name="COMPLID" type="xsd:string"/>
+     <element name="COMPLNUM" type="xsd:string"/>
+     <element name="ACCT1" type="xsd:string"/>
+     <element name="ACCT2" type="xsd:string"/>
+     <element name="ACCT3" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="EnfComplaintQueryRequest_Type">
+    <sequence>
+     <element name="EnfComplaintQueryIn" nillable="true" type="impl:EnfComplaintQueryIn_Type"/>
+    </sequence>
+   </complexType>
+   <element name="EnfComplaintQueryRequest" type="impl:EnfComplaintQueryRequest_Type"/>
+   <complexType name="ArrayOf_xsd_string">
+    <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="EnfComplaintQueryOut_Type">
+    <sequence>
+     <element name="MAPNAME" type="xsd:string"/>
+     <element name="ACCOUNT" type="xsd:string"/>
+     <element name="PROPADDR" type="xsd:string"/>
+     <element name="SCRMSG" type="xsd:string"/>
+     <element name="ArrayOfCOMPLDIG" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfACOMPLDIG" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfCOMPLNO" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfACOMPLNO" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfCOMPLDT" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfACOMPLDT" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfORDNUM" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfAORDNUM" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfORDDIG" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfAORDDIG" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfCOMPLDESC" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfACOMPLDESC" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfSTDESC" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfASTDESC" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfSTCODE" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfASTCODE" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="COMPDIG" type="xsd:string"/>
+     <element name="COMPNUM" type="xsd:string"/>
+     <element name="CROFFICER" type="xsd:string"/>
+     <element name="COMPST" type="xsd:string"/>
+     <element name="CSTDESC" type="xsd:string"/>
+     <element name="CACC1" type="xsd:string"/>
+     <element name="CACC2" type="xsd:string"/>
+     <element name="CACC3" type="xsd:string"/>
+     <element name="ONAME" type="xsd:string"/>
+     <element name="BLKNUM" type="xsd:string"/>
+     <element name="BLKDIG" type="xsd:string"/>
+     <element name="OADDR" type="xsd:string"/>
+     <element name="COMPDT" type="xsd:string"/>
+     <element name="OAPT" type="xsd:string"/>
+     <element name="OZIP" type="xsd:string"/>
+     <element name="OPHAREA" type="xsd:string"/>
+     <element name="OPHONE" type="xsd:string"/>
+     <element name="CLERK" type="xsd:string"/>
+     <element name="COMPNAME" type="xsd:string"/>
+     <element name="BOOK" type="xsd:string"/>
+     <element name="ROUTE" type="xsd:string"/>
+     <element name="COMPADDR" type="xsd:string"/>
+     <element name="COMPCITY" type="xsd:string"/>
+     <element name="COMPZIP" type="xsd:string"/>
+     <element name="COMPSTATE" type="xsd:string"/>
+     <element name="COMPPHAREA" type="xsd:string"/>
+     <element name="COMPPH" type="xsd:string"/>
+     <element name="COMPL1" type="xsd:string"/>
+     <element name="COMPL2" type="xsd:string"/>
+     <element name="COMPL3" type="xsd:string"/>
+     <element name="WARNINGDT" type="xsd:string"/>
+     <element name="ILLEGAL" type="xsd:string"/>
+     <element name="UNAUTH" type="xsd:string"/>
+     <element name="LITTER" type="xsd:string"/>
+     <element name="UNCONT" type="xsd:string"/>
+     <element name="OTHERT" type="xsd:string"/>
+     <element name="WHOINIT" type="xsd:string"/>
+     <element name="WHONAME" type="xsd:string"/>
+     <element name="CORRECTDT" type="xsd:string"/>
+     <element name="MD" type="xsd:string"/>
+     <element name="TICKETNUM" type="xsd:string"/>
+     <element name="TICKAMT" type="xsd:string"/>
+     <element name="TICKDT" type="xsd:string"/>
+     <element name="TWHOINIT" type="xsd:string"/>
+     <element name="TWHONAME" type="xsd:string"/>
+     <element name="TCORRDT" type="xsd:string"/>
+     <element name="LETTER" type="xsd:string"/>
+     <element name="RECEIVDT" type="xsd:string"/>
+     <element name="BYWHO" type="xsd:string"/>
+     <element name="COURTNO" type="xsd:string"/>
+     <element name="CRECEIVDT" type="xsd:string"/>
+     <element name="COURTDT" type="xsd:string"/>
+     <element name="RELTOPROP" type="xsd:string"/>
+     <element name="PHOTO" type="xsd:string"/>
+     <element name="MISC" type="xsd:string"/>
+     <element name="XMLCONVRC" type="xsd:unsignedShort"/>
+     <element name="RETURNCODE" type="xsd:unsignedShort"/>
+     <element name="RETURNMSG" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="EnfComplaintQueryResponse_Type">
+    <sequence>
+     <element name="EnfComplaintQueryOut" nillable="true" type="impl:EnfComplaintQueryOut_Type"/>
+    </sequence>
+   </complexType>
+   <element name="EnfComplaintQueryResponse" type="impl:EnfComplaintQueryResponse_Type"/>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="EnfComplaintQueryRequest">
+
+      <wsdl:part element="impl:EnfComplaintQueryRequest" name="EnfComplaintQueryRequest"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="EnfComplaintQueryResponse">
+
+      <wsdl:part element="impl:EnfComplaintQueryResponse" name="EnfComplaintQueryResponse"/>
+
+   </wsdl:message>
+
+   <wsdl:portType name="EnfComplaintQueryServicePort_Type">
+
+      <wsdl:operation name="EnfComplaintQuery" parameterOrder="EnfComplaintQueryRequest">
+
+         <wsdl:input message="impl:EnfComplaintQueryRequest" name="EnfComplaintQueryRequest"/>
+
+         <wsdl:output message="impl:EnfComplaintQueryResponse" name="EnfComplaintQueryResponse"/>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="EnfComplaintQueryServicePortSoapBinding" type="impl:EnfComplaintQueryServicePort_Type">
+
+      <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="EnfComplaintQuery">
+
+         <wsdlsoap:operation soapAction="EnfComplaintQuery"/>
+
+         <wsdl:input name="EnfComplaintQueryRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="EnfComplaintQueryResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="EnfComplaintQueryService">
+
+      <wsdl:port binding="impl:EnfComplaintQueryServicePortSoapBinding" name="EnfComplaintQueryServicePort">
+
+         <wsdlsoap:address location="https://s0500012/wcs/soapservices/EnfComplaintQueryServicePort"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>

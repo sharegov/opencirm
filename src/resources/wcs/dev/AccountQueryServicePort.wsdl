@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://pwwm/wcs/intra/webservices/soap/accountquery" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://pwwm/wcs/intra/webservices/soap/accountquery" xmlns:intf="http://pwwm/wcs/intra/webservices/soap/accountquery" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema elementFormDefault="qualified" targetNamespace="http://pwwm/wcs/intra/webservices/soap/accountquery" xmlns="http://www.w3.org/2001/XMLSchema">
+   <complexType name="AccountQueryInHdr_Type">
+    <sequence>
+     <element name="StreamInputSessionId" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="AccountQueryIn_Type">
+    <sequence>
+     <element name="AccountQueryInHdr" nillable="true" type="impl:AccountQueryInHdr_Type"/>
+     <element name="ACCT1" type="xsd:string"/>
+     <element name="ACCT2" type="xsd:string"/>
+     <element name="ACCT3" type="xsd:string"/>
+     <element name="ADDRESS" type="xsd:string"/>
+     <element name="APT" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="AccountQueryRequest_Type">
+    <sequence>
+     <element name="AccountQueryIn" nillable="true" type="impl:AccountQueryIn_Type"/>
+    </sequence>
+   </complexType>
+   <element name="AccountQueryRequest" type="impl:AccountQueryRequest_Type"/>
+   <complexType name="ArrayOf_xsd_string">
+    <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="AccountQueryOut_Type">
+    <sequence>
+     <element name="MAPNAME" type="xsd:string"/>
+     <element name="SCRNAME" type="xsd:string"/>
+     <element name="ArrayOfADRADDR" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfAADRADDR" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfADRAPT" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfAADRAPT" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfADRFMUN" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfAADRFMUN" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfADRFNUM" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfAADRFNUM" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfADRACC1" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfAADRACC1" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfADRACC2" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfAADRACC2" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfADRACC3" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfAADRACC3" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfADRCODE" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfAADRCODE" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfADRST" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfAADRST" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfADRNAME" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfAADRNAME" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="SCRMSG" type="xsd:string"/>
+     <element name="ACC1" type="xsd:string"/>
+     <element name="ACC2" type="xsd:string"/>
+     <element name="ACC3" type="xsd:string"/>
+     <element name="TAXUNIT" type="xsd:string"/>
+     <element name="WSTUNIT" type="xsd:string"/>
+     <element name="FEECODE" type="xsd:string"/>
+     <element name="FCDESC" type="xsd:string"/>
+     <element name="CRDATE" type="xsd:string"/>
+     <element name="FOLMUN" type="xsd:string"/>
+     <element name="FOLNUM" type="xsd:string"/>
+     <element name="ACCTYPE" type="xsd:string"/>
+     <element name="OUTSRV" type="xsd:string"/>
+     <element name="SRVSTART" type="xsd:string"/>
+     <element name="SRVDATE" type="xsd:string"/>
+     <element name="ACCST" type="xsd:string"/>
+     <element name="HANDICAP" type="xsd:string"/>
+     <element name="BILLST" type="xsd:string"/>
+     <element name="PENCODE" type="xsd:string"/>
+     <element name="ACCNAME" type="xsd:string"/>
+     <element name="BILLDATE" type="xsd:string"/>
+     <element name="ACCADDR" type="xsd:string"/>
+     <element name="PRAMT" type="xsd:string"/>
+     <element name="ACCAPT" type="xsd:string"/>
+     <element name="ACCZIP" type="xsd:string"/>
+     <element name="PHAREA" type="xsd:string"/>
+     <element name="PHNUM" type="xsd:string"/>
+     <element name="PRTAX" type="xsd:string"/>
+     <element name="LEGAL" type="xsd:string"/>
+     <element name="PRPENDATE" type="xsd:string"/>
+     <element name="OWNAME" type="xsd:string"/>
+     <element name="MTHDELQ" type="xsd:string"/>
+     <element name="PRPENAMT" type="xsd:string"/>
+     <element name="MAILCO" type="xsd:string"/>
+     <element name="PENDATE" type="xsd:string"/>
+     <element name="PENAMT" type="xsd:string"/>
+     <element name="MISCMAIL" type="xsd:string"/>
+     <element name="SRVTAX" type="xsd:string"/>
+     <element name="SRVTAXAMT" type="xsd:string"/>
+     <element name="MAILADDR" type="xsd:string"/>
+     <element name="MAILAPT" type="xsd:string"/>
+     <element name="CURFEEAMT" type="xsd:string"/>
+     <element name="MAILCITY" type="xsd:string"/>
+     <element name="MAILST" type="xsd:string"/>
+     <element name="MAILZIP" type="xsd:string"/>
+     <element name="BADCHKFEE" type="xsd:string"/>
+     <element name="OWNPHAREA" type="xsd:string"/>
+     <element name="OWNPHNUM" type="xsd:string"/>
+     <element name="CLUC" type="xsd:string"/>
+     <element name="PDAMT" type="xsd:string"/>
+     <element name="CANROLL" type="xsd:string"/>
+     <element name="ArrayOfUSIZE" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfUNITS" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="ArrayOfIDNO" nillable="true" type="impl:ArrayOf_xsd_string"/>
+     <element name="OCLNO" type="xsd:string"/>
+     <element name="FEECR" type="xsd:string"/>
+     <element name="BOOK" type="xsd:string"/>
+     <element name="ROUTE" type="xsd:string"/>
+     <element name="DIST" type="xsd:string"/>
+     <element name="REG" type="xsd:string"/>
+     <element name="DELINQ" type="xsd:string"/>
+     <element name="TOTDUE" type="xsd:string"/>
+     <element name="GRTOTDUE" type="xsd:string"/>
+     <element name="JUDGAMT" type="xsd:string"/>
+     <element name="TRIPS" type="xsd:string"/>
+     <element name="EXEMPT" type="xsd:string"/>
+     <element name="BLKAMT" type="xsd:string"/>
+     <element name="XMLCONVRC" type="xsd:unsignedShort"/>
+     <element name="RETURNCODE" type="xsd:unsignedShort"/>
+     <element name="RETURNMSG" type="xsd:string"/>
+     <element name="PICKUP" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="AccountQueryResponse_Type">
+    <sequence>
+     <element name="AccountQueryOut" nillable="true" type="impl:AccountQueryOut_Type"/>
+    </sequence>
+   </complexType>
+   <element name="AccountQueryResponse" type="impl:AccountQueryResponse_Type"/>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="AccountQueryResponse">
+
+      <wsdl:part element="impl:AccountQueryResponse" name="AccountQueryResponse"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="AccountQueryRequest">
+
+      <wsdl:part element="impl:AccountQueryRequest" name="AccountQueryRequest"/>
+
+   </wsdl:message>
+
+   <wsdl:portType name="AccountQueryServicePort_Type">
+
+      <wsdl:operation name="AccountQuery" parameterOrder="AccountQueryRequest">
+
+         <wsdl:input message="impl:AccountQueryRequest" name="AccountQueryRequest"/>
+
+         <wsdl:output message="impl:AccountQueryResponse" name="AccountQueryResponse"/>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="AccountQueryServicePortSoapBinding" type="impl:AccountQueryServicePort_Type">
+
+      <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="AccountQuery">
+
+         <wsdlsoap:operation soapAction="AccountQuery"/>
+
+         <wsdl:input name="AccountQueryRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="AccountQueryResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="AccountQueryService">
+
+      <wsdl:port binding="impl:AccountQueryServicePortSoapBinding" name="AccountQueryServicePort">
+
+         <wsdlsoap:address location="https://s0500012/wcs/soapservices/AccountQueryServicePort"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>
