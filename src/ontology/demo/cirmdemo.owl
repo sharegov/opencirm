@@ -10,7 +10,7 @@
 
 
 <Ontology xmlns="http://www.w3.org/2002/07/owl#"
-     xml:base="http://opencirm.org"
+     xml:base="http://opencirm.org/demo"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -62,16 +62,25 @@
         <Class abbreviatedIRI="legacy:Tree_Fallen"/>
     </Declaration>
     <Declaration>
+        <ObjectProperty abbreviatedIRI="legacy:authenticatesWith"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty abbreviatedIRI="legacy:hasDataSource"/>
+    </Declaration>
+    <Declaration>
         <ObjectProperty abbreviatedIRI="legacy:hasEmailAddress"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#authenticatesWith"/>
+        <ObjectProperty abbreviatedIRI="legacy:hasMany"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasDataSource"/>
+        <ObjectProperty abbreviatedIRI="legacy:hasOne"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasUserBase"/>
+        <ObjectProperty abbreviatedIRI="legacy:hasUserBase"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty abbreviatedIRI="legacy:toOne"/>
     </Declaration>
     <Declaration>
         <DataProperty abbreviatedIRI="legacy:BusinessPhoneNumber"/>
@@ -122,6 +131,9 @@
         <NamedIndividual abbreviatedIRI="legacy:Bal_Harbour_Village"/>
     </Declaration>
     <Declaration>
+        <NamedIndividual abbreviatedIRI="legacy:BusinessObjectIRIPrefixConfig"/>
+    </Declaration>
+    <Declaration>
         <NamedIndividual abbreviatedIRI="legacy:CIRMApplication"/>
     </Declaration>
     <Declaration>
@@ -150,6 +162,9 @@
     </Declaration>
     <Declaration>
         <NamedIndividual abbreviatedIRI="legacy:CIty_of_Sunny_Isles_Beach"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual abbreviatedIRI="legacy:CLOSED"/>
     </Declaration>
     <Declaration>
         <NamedIndividual abbreviatedIRI="legacy:Citizen_Actor"/>
@@ -221,10 +236,22 @@
         <NamedIndividual abbreviatedIRI="legacy:ClientSideOwlPrefixes"/>
     </Declaration>
     <Declaration>
+        <NamedIndividual abbreviatedIRI="legacy:DBIDFactoryConfig"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual abbreviatedIRI="legacy:DBUserProvider"/>
+    </Declaration>
+    <Declaration>
         <NamedIndividual abbreviatedIRI="legacy:DefaultStreetAddress"/>
     </Declaration>
     <Declaration>
         <NamedIndividual abbreviatedIRI="legacy:DemoConfigSet"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual abbreviatedIRI="legacy:EmailIntake"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual abbreviatedIRI="legacy:Emergency"/>
     </Declaration>
     <Declaration>
         <NamedIndividual abbreviatedIRI="legacy:Florida"/>
@@ -413,7 +440,13 @@
         <NamedIndividual abbreviatedIRI="legacy:Miami_Shores_Village"/>
     </Declaration>
     <Declaration>
+        <NamedIndividual abbreviatedIRI="legacy:MobileIntake"/>
+    </Declaration>
+    <Declaration>
         <NamedIndividual abbreviatedIRI="legacy:North_Bay_Village"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual abbreviatedIRI="legacy:OPEN"/>
     </Declaration>
     <Declaration>
         <NamedIndividual abbreviatedIRI="legacy:OUTCOME_COMPLETE"/>
@@ -476,7 +509,22 @@
         <NamedIndividual abbreviatedIRI="legacy:POTHOME_PWSTATUS_OUTCOME_DEBRIS"/>
     </Declaration>
     <Declaration>
+        <NamedIndividual abbreviatedIRI="legacy:PhoneIntake"/>
+    </Declaration>
+    <Declaration>
         <NamedIndividual abbreviatedIRI="legacy:Pothole"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual abbreviatedIRI="legacy:PropertyLegallyResponsible"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual abbreviatedIRI="legacy:PropertyOther"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual abbreviatedIRI="legacy:PropertyOwner"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual abbreviatedIRI="legacy:PropertyTenant"/>
     </Declaration>
     <Declaration>
         <NamedIndividual abbreviatedIRI="legacy:PublicWorksDepartment"/>
@@ -489,6 +537,9 @@
     </Declaration>
     <Declaration>
         <NamedIndividual abbreviatedIRI="legacy:SolrSearchService"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual abbreviatedIRI="legacy:Standard"/>
     </Declaration>
     <Declaration>
         <NamedIndividual abbreviatedIRI="legacy:TREEFALLEN_DENIALDE"/>
@@ -563,6 +614,9 @@
         <NamedIndividual abbreviatedIRI="legacy:Tree_Fallen"/>
     </Declaration>
     <Declaration>
+        <NamedIndividual abbreviatedIRI="legacy:Urgent"/>
+    </Declaration>
+    <Declaration>
         <NamedIndividual abbreviatedIRI="legacy:UserService"/>
     </Declaration>
     <Declaration>
@@ -584,7 +638,22 @@
         <NamedIndividual abbreviatedIRI="legacy:WasteManagementDepartment"/>
     </Declaration>
     <Declaration>
+        <NamedIndividual abbreviatedIRI="legacy:WebIntake"/>
+    </Declaration>
+    <Declaration>
         <NamedIndividual abbreviatedIRI="legacy:borislav.iordanov@gmail.com"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual abbreviatedIRI="legacy:choicesResidence"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual abbreviatedIRI="legacy:hasMember"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual abbreviatedIRI="legacy:hasServiceActivity"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual abbreviatedIRI="legacy:hasServiceCaseActor"/>
     </Declaration>
     <Declaration>
         <NamedIndividual abbreviatedIRI="legacy:org.semanticweb.HermiT.Reasoner$ReasonerFactory"/>
@@ -638,58 +707,7 @@
         <NamedIndividual abbreviatedIRI="legacy:org.sharegov.cirm.utils.JsonEntityProvider"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="#BusinessObjectIRIPrefixConfig"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="#CLOSED"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="#DBIDFactoryConfig"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="#DBUserProvider"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="#EmailIntake"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="#Emergency"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="#MobileIntake"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="#OPEN"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="#PhoneIntake"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="#PropertyLegallyResponsible"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="#PropertyOther"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="#PropertyOwner"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="#PropertyTenant"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="#Standard"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="#Urgent"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="#WebIntake"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="#choicesResidence"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="#sqPropertyOwner"/>
+        <NamedIndividual abbreviatedIRI="legacy:sqPropertyOwner"/>
     </Declaration>
     <SubClassOf>
         <Class abbreviatedIRI="legacy:AnswerHubConfiguration"/>
@@ -763,6 +781,10 @@
         <NamedIndividual abbreviatedIRI="legacy:Bal_Harbour_Village"/>
     </ClassAssertion>
     <ClassAssertion>
+        <Class abbreviatedIRI="legacy:ConfigParam"/>
+        <NamedIndividual abbreviatedIRI="legacy:BusinessObjectIRIPrefixConfig"/>
+    </ClassAssertion>
+    <ClassAssertion>
         <Class abbreviatedIRI="legacy:JSR311Application"/>
         <NamedIndividual abbreviatedIRI="legacy:CIRMApplication"/>
     </ClassAssertion>
@@ -773,6 +795,10 @@
     <ClassAssertion>
         <Class abbreviatedIRI="legacy:Miami_Dade_City"/>
         <NamedIndividual abbreviatedIRI="legacy:CIty_of_Sunny_Isles_Beach"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class abbreviatedIRI="legacy:Status"/>
+        <NamedIndividual abbreviatedIRI="legacy:CLOSED"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class abbreviatedIRI="legacy:ServiceActor"/>
@@ -951,12 +977,28 @@
         <NamedIndividual abbreviatedIRI="legacy:ClientSideOwlPrefixes"/>
     </ClassAssertion>
     <ClassAssertion>
+        <Class abbreviatedIRI="legacy:ConfigParam"/>
+        <NamedIndividual abbreviatedIRI="legacy:DBIDFactoryConfig"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class abbreviatedIRI="legacy:UserBaseDataSource"/>
+        <NamedIndividual abbreviatedIRI="legacy:DBUserProvider"/>
+    </ClassAssertion>
+    <ClassAssertion>
         <Class abbreviatedIRI="legacy:Street_Address"/>
         <NamedIndividual abbreviatedIRI="legacy:DefaultStreetAddress"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class abbreviatedIRI="legacy:ConfigSet"/>
         <NamedIndividual abbreviatedIRI="legacy:DemoConfigSet"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class abbreviatedIRI="legacy:IntakeMethod"/>
+        <NamedIndividual abbreviatedIRI="legacy:EmailIntake"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class abbreviatedIRI="legacy:Priority"/>
+        <NamedIndividual abbreviatedIRI="legacy:Emergency"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class abbreviatedIRI="legacy:Outcome"/>
@@ -1211,12 +1253,20 @@
         <NamedIndividual abbreviatedIRI="legacy:Miami_Shores_Village"/>
     </ClassAssertion>
     <ClassAssertion>
+        <Class abbreviatedIRI="legacy:IntakeMethod"/>
+        <NamedIndividual abbreviatedIRI="legacy:MobileIntake"/>
+    </ClassAssertion>
+    <ClassAssertion>
         <Class abbreviatedIRI="legacy:City_Organization"/>
         <NamedIndividual abbreviatedIRI="legacy:North_Bay_Village"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class abbreviatedIRI="legacy:Miami_Dade_City"/>
         <NamedIndividual abbreviatedIRI="legacy:North_Bay_Village"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class abbreviatedIRI="legacy:Status"/>
+        <NamedIndividual abbreviatedIRI="legacy:OPEN"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class abbreviatedIRI="legacy:Outcome"/>
@@ -1299,8 +1349,28 @@
         <NamedIndividual abbreviatedIRI="legacy:POTHOME_PWSTATUS_OUTCOME_DEBRIS"/>
     </ClassAssertion>
     <ClassAssertion>
+        <Class abbreviatedIRI="legacy:IntakeMethod"/>
+        <NamedIndividual abbreviatedIRI="legacy:PhoneIntake"/>
+    </ClassAssertion>
+    <ClassAssertion>
         <Class abbreviatedIRI="legacy:ServiceRequestType"/>
         <NamedIndividual abbreviatedIRI="legacy:Pothole"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class abbreviatedIRI="legacy:ChoiceValue"/>
+        <NamedIndividual abbreviatedIRI="legacy:PropertyLegallyResponsible"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class abbreviatedIRI="legacy:ChoiceValue"/>
+        <NamedIndividual abbreviatedIRI="legacy:PropertyOther"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class abbreviatedIRI="legacy:ChoiceValue"/>
+        <NamedIndividual abbreviatedIRI="legacy:PropertyOwner"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class abbreviatedIRI="legacy:ChoiceValue"/>
+        <NamedIndividual abbreviatedIRI="legacy:PropertyTenant"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class abbreviatedIRI="legacy:Department_City"/>
@@ -1317,6 +1387,10 @@
     <ClassAssertion>
         <Class abbreviatedIRI="legacy:ConfigParam"/>
         <NamedIndividual abbreviatedIRI="legacy:SolrSearchService"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class abbreviatedIRI="legacy:Priority"/>
+        <NamedIndividual abbreviatedIRI="legacy:Standard"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class abbreviatedIRI="legacy:Activity"/>
@@ -1431,6 +1505,10 @@
         <NamedIndividual abbreviatedIRI="legacy:Tree_Fallen"/>
     </ClassAssertion>
     <ClassAssertion>
+        <Class abbreviatedIRI="legacy:Priority"/>
+        <NamedIndividual abbreviatedIRI="legacy:Urgent"/>
+    </ClassAssertion>
+    <ClassAssertion>
         <Class abbreviatedIRI="legacy:RestService"/>
         <NamedIndividual abbreviatedIRI="legacy:UserService"/>
     </ClassAssertion>
@@ -1479,8 +1557,28 @@
         <NamedIndividual abbreviatedIRI="legacy:WasteManagementDepartment"/>
     </ClassAssertion>
     <ClassAssertion>
+        <Class abbreviatedIRI="legacy:IntakeMethod"/>
+        <NamedIndividual abbreviatedIRI="legacy:WebIntake"/>
+    </ClassAssertion>
+    <ClassAssertion>
         <Class abbreviatedIRI="legacy:EmailAddress"/>
         <NamedIndividual abbreviatedIRI="legacy:borislav.iordanov@gmail.com"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class abbreviatedIRI="legacy:ChoiceValueList"/>
+        <NamedIndividual abbreviatedIRI="legacy:choicesResidence"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class abbreviatedIRI="legacy:OWLObjectProperty"/>
+        <NamedIndividual abbreviatedIRI="legacy:hasMember"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class abbreviatedIRI="legacy:OWLObjectProperty"/>
+        <NamedIndividual abbreviatedIRI="legacy:hasServiceActivity"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class abbreviatedIRI="legacy:OWLObjectProperty"/>
+        <NamedIndividual abbreviatedIRI="legacy:hasServiceCaseActor"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class abbreviatedIRI="legacy:JavaClass"/>
@@ -1551,76 +1649,8 @@
         <NamedIndividual abbreviatedIRI="legacy:org.sharegov.cirm.utils.JsonEntityProvider"/>
     </ClassAssertion>
     <ClassAssertion>
-        <Class abbreviatedIRI="legacy:ConfigParam"/>
-        <NamedIndividual IRI="#BusinessObjectIRIPrefixConfig"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:Status"/>
-        <NamedIndividual IRI="#CLOSED"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:ConfigParam"/>
-        <NamedIndividual IRI="#DBIDFactoryConfig"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:UserBaseDataSource"/>
-        <NamedIndividual IRI="#DBUserProvider"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:IntakeMethod"/>
-        <NamedIndividual IRI="#EmailIntake"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:Priority"/>
-        <NamedIndividual IRI="#Emergency"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:IntakeMethod"/>
-        <NamedIndividual IRI="#MobileIntake"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:Status"/>
-        <NamedIndividual IRI="#OPEN"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:IntakeMethod"/>
-        <NamedIndividual IRI="#PhoneIntake"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:ChoiceValue"/>
-        <NamedIndividual IRI="#PropertyLegallyResponsible"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:ChoiceValue"/>
-        <NamedIndividual IRI="#PropertyOther"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:ChoiceValue"/>
-        <NamedIndividual IRI="#PropertyOwner"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:ChoiceValue"/>
-        <NamedIndividual IRI="#PropertyTenant"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:Priority"/>
-        <NamedIndividual IRI="#Standard"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:Priority"/>
-        <NamedIndividual IRI="#Urgent"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:IntakeMethod"/>
-        <NamedIndividual IRI="#WebIntake"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:ChoiceValueList"/>
-        <NamedIndividual IRI="#choicesResidence"/>
-    </ClassAssertion>
-    <ClassAssertion>
         <Class abbreviatedIRI="legacy:ServiceQuestion"/>
-        <NamedIndividual IRI="#sqPropertyOwner"/>
+        <NamedIndividual abbreviatedIRI="legacy:sqPropertyOwner"/>
     </ClassAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasImplementation"/>
@@ -1693,14 +1723,24 @@
         <NamedIndividual abbreviatedIRI="legacy:org.sharegov.cirm.services.OWLWebServices"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
+        <ObjectProperty abbreviatedIRI="legacy:Value"/>
+        <NamedIndividual abbreviatedIRI="legacy:DBIDFactoryConfig"/>
+        <NamedIndividual abbreviatedIRI="legacy:org.sharegov.cirm.rdb.DBIDFactory"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty abbreviatedIRI="legacy:hasDataSource"/>
+        <NamedIndividual abbreviatedIRI="legacy:DBUserProvider"/>
+        <NamedIndividual abbreviatedIRI="legacy:LocalPostgresDatabase"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty abbreviatedIRI="legacy:hasImplementation"/>
+        <NamedIndividual abbreviatedIRI="legacy:DBUserProvider"/>
+        <NamedIndividual abbreviatedIRI="legacy:org.sharegov.cirm.user.DBUserProvider"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:Street_Address_State"/>
         <NamedIndividual abbreviatedIRI="legacy:DefaultStreetAddress"/>
         <NamedIndividual abbreviatedIRI="legacy:Florida"/>
-    </ObjectPropertyAssertion>
-    <ObjectPropertyAssertion>
-        <ObjectProperty abbreviatedIRI="legacy:hasMember"/>
-        <NamedIndividual abbreviatedIRI="legacy:DemoConfigSet"/>
-        <NamedIndividual IRI="#BusinessObjectIRIPrefixConfig"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasMember"/>
@@ -1730,7 +1770,12 @@
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasMember"/>
         <NamedIndividual abbreviatedIRI="legacy:DemoConfigSet"/>
-        <NamedIndividual IRI="#DBIDFactoryConfig"/>
+        <NamedIndividual abbreviatedIRI="legacy:BusinessObjectIRIPrefixConfig"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty abbreviatedIRI="legacy:hasMember"/>
+        <NamedIndividual abbreviatedIRI="legacy:DemoConfigSet"/>
+        <NamedIndividual abbreviatedIRI="legacy:DBIDFactoryConfig"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasAllowableOutcome"/>
@@ -1850,17 +1895,17 @@
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasDefaultIntakeMethod"/>
         <NamedIndividual abbreviatedIRI="legacy:Garbage_Missed_Complaint"/>
-        <NamedIndividual IRI="#PhoneIntake"/>
+        <NamedIndividual abbreviatedIRI="legacy:PhoneIntake"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasDefaultPriority"/>
         <NamedIndividual abbreviatedIRI="legacy:Garbage_Missed_Complaint"/>
-        <NamedIndividual IRI="#Standard"/>
+        <NamedIndividual abbreviatedIRI="legacy:Standard"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasDefaultStatus"/>
         <NamedIndividual abbreviatedIRI="legacy:Garbage_Missed_Complaint"/>
-        <NamedIndividual IRI="#OPEN"/>
+        <NamedIndividual abbreviatedIRI="legacy:OPEN"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasServiceActor"/>
@@ -1945,11 +1990,6 @@
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasChoiceValue"/>
         <NamedIndividual abbreviatedIRI="legacy:ILLEGALDUMPING_Q1_CHOICES"/>
-        <NamedIndividual abbreviatedIRI="legacy:ILLEGALDUMPING_Q1_CHOICES_RIGHTOFWAYNOTINF"/>
-    </ObjectPropertyAssertion>
-    <ObjectPropertyAssertion>
-        <ObjectProperty abbreviatedIRI="legacy:hasChoiceValue"/>
-        <NamedIndividual abbreviatedIRI="legacy:ILLEGALDUMPING_Q1_CHOICES"/>
         <NamedIndividual abbreviatedIRI="legacy:ILLEGALDUMPING_Q1_CHOICES_VACANTLOT"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
@@ -1960,17 +2000,22 @@
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasChoiceValue"/>
         <NamedIndividual abbreviatedIRI="legacy:ILLEGALDUMPING_Q1_CHOICES"/>
+        <NamedIndividual abbreviatedIRI="legacy:ILLEGALDUMPING_Q1_CHOICES_RIGHTOFWAYNOTINF"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty abbreviatedIRI="legacy:hasChoiceValue"/>
+        <NamedIndividual abbreviatedIRI="legacy:ILLEGALDUMPING_Q1_CHOICES"/>
         <NamedIndividual abbreviatedIRI="legacy:ILLEGALDUMPING_Q1_CHOICES_STBLOCKTRAFF"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasChoiceValue"/>
         <NamedIndividual abbreviatedIRI="legacy:ILLEGALDUMPING_Q1_CHOICES"/>
-        <NamedIndividual abbreviatedIRI="legacy:ILLEGALDUMPING_Q1_CHOICES_BULKYSCHPILE"/>
+        <NamedIndividual abbreviatedIRI="legacy:ILLEGALDUMPING_Q1_CHOICES_OTHER"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasChoiceValue"/>
         <NamedIndividual abbreviatedIRI="legacy:ILLEGALDUMPING_Q1_CHOICES"/>
-        <NamedIndividual abbreviatedIRI="legacy:ILLEGALDUMPING_Q1_CHOICES_OTHER"/>
+        <NamedIndividual abbreviatedIRI="legacy:ILLEGALDUMPING_Q1_CHOICES_BULKYSCHPILE"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasChoiceValue"/>
@@ -2050,17 +2095,17 @@
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasDefaultIntakeMethod"/>
         <NamedIndividual abbreviatedIRI="legacy:Illegal_Dumping"/>
-        <NamedIndividual IRI="#PhoneIntake"/>
+        <NamedIndividual abbreviatedIRI="legacy:PhoneIntake"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasDefaultPriority"/>
         <NamedIndividual abbreviatedIRI="legacy:Illegal_Dumping"/>
-        <NamedIndividual IRI="#Standard"/>
+        <NamedIndividual abbreviatedIRI="legacy:Standard"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasDefaultStatus"/>
         <NamedIndividual abbreviatedIRI="legacy:Illegal_Dumping"/>
-        <NamedIndividual IRI="#OPEN"/>
+        <NamedIndividual abbreviatedIRI="legacy:OPEN"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasServiceActor"/>
@@ -2095,7 +2140,7 @@
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasServiceField"/>
         <NamedIndividual abbreviatedIRI="legacy:Illegal_Dumping"/>
-        <NamedIndividual IRI="#sqPropertyOwner"/>
+        <NamedIndividual abbreviatedIRI="legacy:sqPropertyOwner"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:providedBy"/>
@@ -2190,17 +2235,17 @@
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasDefaultIntakeMethod"/>
         <NamedIndividual abbreviatedIRI="legacy:Pothole"/>
-        <NamedIndividual IRI="#PhoneIntake"/>
+        <NamedIndividual abbreviatedIRI="legacy:PhoneIntake"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasDefaultPriority"/>
         <NamedIndividual abbreviatedIRI="legacy:Pothole"/>
-        <NamedIndividual IRI="#Standard"/>
+        <NamedIndividual abbreviatedIRI="legacy:Standard"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasDefaultStatus"/>
         <NamedIndividual abbreviatedIRI="legacy:Pothole"/>
-        <NamedIndividual IRI="#OPEN"/>
+        <NamedIndividual abbreviatedIRI="legacy:OPEN"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasServiceActor"/>
@@ -2435,17 +2480,17 @@
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasDefaultIntakeMethod"/>
         <NamedIndividual abbreviatedIRI="legacy:Tree_Fallen"/>
-        <NamedIndividual IRI="#PhoneIntake"/>
+        <NamedIndividual abbreviatedIRI="legacy:PhoneIntake"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasDefaultPriority"/>
         <NamedIndividual abbreviatedIRI="legacy:Tree_Fallen"/>
-        <NamedIndividual IRI="#Standard"/>
+        <NamedIndividual abbreviatedIRI="legacy:Standard"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasDefaultStatus"/>
         <NamedIndividual abbreviatedIRI="legacy:Tree_Fallen"/>
-        <NamedIndividual IRI="#OPEN"/>
+        <NamedIndividual abbreviatedIRI="legacy:OPEN"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasServiceActor"/>
@@ -2478,24 +2523,74 @@
         <NamedIndividual abbreviatedIRI="legacy:PublicWorksDepartment"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
+        <ObjectProperty abbreviatedIRI="legacy:authenticatesWith"/>
+        <NamedIndividual abbreviatedIRI="legacy:UserService"/>
+        <NamedIndividual abbreviatedIRI="legacy:DBUserProvider"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasImplementation"/>
         <NamedIndividual abbreviatedIRI="legacy:UserService"/>
         <NamedIndividual abbreviatedIRI="legacy:org.sharegov.cirm.rest.UserService"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#authenticatesWith"/>
+        <ObjectProperty abbreviatedIRI="legacy:hasUserBase"/>
         <NamedIndividual abbreviatedIRI="legacy:UserService"/>
-        <NamedIndividual IRI="#DBUserProvider"/>
-    </ObjectPropertyAssertion>
-    <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#hasUserBase"/>
-        <NamedIndividual abbreviatedIRI="legacy:UserService"/>
-        <NamedIndividual IRI="#DBUserProvider"/>
+        <NamedIndividual abbreviatedIRI="legacy:DBUserProvider"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:Divisions"/>
         <NamedIndividual abbreviatedIRI="legacy:WasteManagementDepartment"/>
         <NamedIndividual abbreviatedIRI="legacy:GarbageDivision"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty abbreviatedIRI="legacy:hasChoiceValue"/>
+        <NamedIndividual abbreviatedIRI="legacy:choicesResidence"/>
+        <NamedIndividual abbreviatedIRI="legacy:PropertyLegallyResponsible"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty abbreviatedIRI="legacy:hasChoiceValue"/>
+        <NamedIndividual abbreviatedIRI="legacy:choicesResidence"/>
+        <NamedIndividual abbreviatedIRI="legacy:PropertyOther"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty abbreviatedIRI="legacy:hasChoiceValue"/>
+        <NamedIndividual abbreviatedIRI="legacy:choicesResidence"/>
+        <NamedIndividual abbreviatedIRI="legacy:PropertyTenant"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty abbreviatedIRI="legacy:hasChoiceValue"/>
+        <NamedIndividual abbreviatedIRI="legacy:choicesResidence"/>
+        <NamedIndividual abbreviatedIRI="legacy:PropertyOwner"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty abbreviatedIRI="legacy:hasMany"/>
+        <NamedIndividual abbreviatedIRI="legacy:hasMember"/>
+        <NamedIndividual abbreviatedIRI="legacy:ServiceCallAction"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty abbreviatedIRI="legacy:toOne"/>
+        <NamedIndividual abbreviatedIRI="legacy:hasMember"/>
+        <NamedIndividual abbreviatedIRI="legacy:ServiceCall"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty abbreviatedIRI="legacy:hasMany"/>
+        <NamedIndividual abbreviatedIRI="legacy:hasServiceActivity"/>
+        <NamedIndividual abbreviatedIRI="legacy:ServiceActivity"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty abbreviatedIRI="legacy:toOne"/>
+        <NamedIndividual abbreviatedIRI="legacy:hasServiceActivity"/>
+        <NamedIndividual abbreviatedIRI="legacy:ServiceRequestType"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty abbreviatedIRI="legacy:hasOne"/>
+        <NamedIndividual abbreviatedIRI="legacy:hasServiceCaseActor"/>
+        <NamedIndividual abbreviatedIRI="legacy:ServiceRequestType"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty abbreviatedIRI="legacy:toOne"/>
+        <NamedIndividual abbreviatedIRI="legacy:hasServiceCaseActor"/>
+        <NamedIndividual abbreviatedIRI="legacy:ServiceCaseActor"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasImplementation"/>
@@ -2508,44 +2603,9 @@
         <NamedIndividual abbreviatedIRI="legacy:org.sharegov.cirm.search.GoogleSearchEngine"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty abbreviatedIRI="legacy:Value"/>
-        <NamedIndividual IRI="#DBIDFactoryConfig"/>
-        <NamedIndividual abbreviatedIRI="legacy:org.sharegov.cirm.rdb.DBIDFactory"/>
-    </ObjectPropertyAssertion>
-    <ObjectPropertyAssertion>
-        <ObjectProperty abbreviatedIRI="legacy:hasImplementation"/>
-        <NamedIndividual IRI="#DBUserProvider"/>
-        <NamedIndividual abbreviatedIRI="legacy:org.sharegov.cirm.user.DBUserProvider"/>
-    </ObjectPropertyAssertion>
-    <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#hasDataSource"/>
-        <NamedIndividual IRI="#DBUserProvider"/>
-        <NamedIndividual abbreviatedIRI="legacy:LocalPostgresDatabase"/>
-    </ObjectPropertyAssertion>
-    <ObjectPropertyAssertion>
-        <ObjectProperty abbreviatedIRI="legacy:hasChoiceValue"/>
-        <NamedIndividual IRI="#choicesResidence"/>
-        <NamedIndividual IRI="#PropertyTenant"/>
-    </ObjectPropertyAssertion>
-    <ObjectPropertyAssertion>
-        <ObjectProperty abbreviatedIRI="legacy:hasChoiceValue"/>
-        <NamedIndividual IRI="#choicesResidence"/>
-        <NamedIndividual IRI="#PropertyLegallyResponsible"/>
-    </ObjectPropertyAssertion>
-    <ObjectPropertyAssertion>
-        <ObjectProperty abbreviatedIRI="legacy:hasChoiceValue"/>
-        <NamedIndividual IRI="#choicesResidence"/>
-        <NamedIndividual IRI="#PropertyOther"/>
-    </ObjectPropertyAssertion>
-    <ObjectPropertyAssertion>
-        <ObjectProperty abbreviatedIRI="legacy:hasChoiceValue"/>
-        <NamedIndividual IRI="#choicesResidence"/>
-        <NamedIndividual IRI="#PropertyOwner"/>
-    </ObjectPropertyAssertion>
-    <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasChoiceValueList"/>
-        <NamedIndividual IRI="#sqPropertyOwner"/>
-        <NamedIndividual IRI="#choicesResidence"/>
+        <NamedIndividual abbreviatedIRI="legacy:sqPropertyOwner"/>
+        <NamedIndividual abbreviatedIRI="legacy:choicesResidence"/>
     </ObjectPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty abbreviatedIRI="legacy:hasPassword"/>
@@ -2571,6 +2631,16 @@
         <DataProperty abbreviatedIRI="legacy:Name"/>
         <NamedIndividual abbreviatedIRI="legacy:Bal_Harbour_Village"/>
         <Literal datatypeIRI="&xsd;string">Bal Harbour Village</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty abbreviatedIRI="legacy:Name"/>
+        <NamedIndividual abbreviatedIRI="legacy:BusinessObjectIRIPrefixConfig"/>
+        <Literal datatypeIRI="&xsd;string">businessObjectIRIPrefix</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty abbreviatedIRI="legacy:Value"/>
+        <NamedIndividual abbreviatedIRI="legacy:BusinessObjectIRIPrefixConfig"/>
+        <Literal datatypeIRI="&xsd;string">http://opencirm.org/bo</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty abbreviatedIRI="legacy:Alias"/>
@@ -2812,6 +2882,26 @@
         <DataProperty abbreviatedIRI="legacy:hasName"/>
         <NamedIndividual abbreviatedIRI="legacy:ClientSideOwlPrefixes"/>
         <Literal datatypeIRI="&xsd;string">owlprefixes</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty abbreviatedIRI="legacy:Name"/>
+        <NamedIndividual abbreviatedIRI="legacy:DBIDFactoryConfig"/>
+        <Literal datatypeIRI="&xsd;string">CIRMIDFactory</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty abbreviatedIRI="legacy:hasIdName"/>
+        <NamedIndividual abbreviatedIRI="legacy:DBUserProvider"/>
+        <Literal datatypeIRI="&xsd;string">username</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty abbreviatedIRI="legacy:hasName"/>
+        <NamedIndividual abbreviatedIRI="legacy:DBUserProvider"/>
+        <Literal datatypeIRI="&xsd;string">localpostgres</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty abbreviatedIRI="legacy:hasTableName"/>
+        <NamedIndividual abbreviatedIRI="legacy:DBUserProvider"/>
+        <Literal datatypeIRI="&xsd;string">cirm_user</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty abbreviatedIRI="legacy:Street_Name"/>
@@ -4144,43 +4234,13 @@ Thank you.</Literal>
         <Literal datatypeIRI="&xsd;string">Village of Virginia Gardens</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
-        <DataProperty abbreviatedIRI="legacy:Name"/>
-        <NamedIndividual IRI="#BusinessObjectIRIPrefixConfig"/>
-        <Literal datatypeIRI="&xsd;string">businessObjectIRIPrefix</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty abbreviatedIRI="legacy:Value"/>
-        <NamedIndividual IRI="#BusinessObjectIRIPrefixConfig"/>
-        <Literal datatypeIRI="&xsd;string">http://opencirm.org/bo</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty abbreviatedIRI="legacy:Name"/>
-        <NamedIndividual IRI="#DBIDFactoryConfig"/>
-        <Literal datatypeIRI="&xsd;string">CIRMIDFactory</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty abbreviatedIRI="legacy:hasIdName"/>
-        <NamedIndividual IRI="#DBUserProvider"/>
-        <Literal datatypeIRI="&xsd;string">username</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty abbreviatedIRI="legacy:hasName"/>
-        <NamedIndividual IRI="#DBUserProvider"/>
-        <Literal datatypeIRI="&xsd;string">localpostgres</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty abbreviatedIRI="legacy:hasTableName"/>
-        <NamedIndividual IRI="#DBUserProvider"/>
-        <Literal datatypeIRI="&xsd;string">cirm_user</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
         <DataProperty abbreviatedIRI="legacy:hasDataType"/>
-        <NamedIndividual IRI="#sqPropertyOwner"/>
+        <NamedIndividual abbreviatedIRI="legacy:sqPropertyOwner"/>
         <Literal datatypeIRI="&xsd;string">CHARLIST</Literal>
     </DataPropertyAssertion>
     <SubObjectPropertyOf>
-        <ObjectProperty IRI="#hasUserBase"/>
-        <ObjectProperty IRI="#hasDataSource"/>
+        <ObjectProperty abbreviatedIRI="legacy:hasUserBase"/>
+        <ObjectProperty abbreviatedIRI="legacy:hasDataSource"/>
     </SubObjectPropertyOf>
     <ObjectPropertyDomain>
         <ObjectProperty abbreviatedIRI="legacy:hasDefaultPriority"/>
@@ -4191,16 +4251,16 @@ Thank you.</Literal>
         <Class abbreviatedIRI="legacy:ServiceCase"/>
     </ObjectPropertyDomain>
     <ObjectPropertyRange>
+        <ObjectProperty abbreviatedIRI="legacy:hasDataSource"/>
+        <Class abbreviatedIRI="legacy:DataSource"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
         <ObjectProperty abbreviatedIRI="legacy:hasDefaultPriority"/>
         <Class abbreviatedIRI="legacy:Priority"/>
     </ObjectPropertyRange>
     <ObjectPropertyRange>
         <ObjectProperty abbreviatedIRI="legacy:hasDefaultStatus"/>
         <Class abbreviatedIRI="legacy:Status"/>
-    </ObjectPropertyRange>
-    <ObjectPropertyRange>
-        <ObjectProperty IRI="#hasDataSource"/>
-        <Class abbreviatedIRI="legacy:DataSource"/>
     </ObjectPropertyRange>
     <FunctionalDataProperty>
         <DataProperty abbreviatedIRI="legacy:hasIdName"/>
@@ -4258,6 +4318,11 @@ Thank you.</Literal>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
         <AbbreviatedIRI>legacy:CIty_of_Sunny_Isles_Beach</AbbreviatedIRI>
         <Literal datatypeIRI="&xsd;string">Sunny Isles Beach</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <AbbreviatedIRI>legacy:CLOSED</AbbreviatedIRI>
+        <Literal datatypeIRI="&xsd;string">Closed</Literal>
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
@@ -4368,6 +4433,16 @@ Thank you.</Literal>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
         <AbbreviatedIRI>legacy:ClientSideOwlPrefixes</AbbreviatedIRI>
         <Literal datatypeIRI="&xsd;string">ClientSideOwlPrefixes</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <AbbreviatedIRI>legacy:EmailIntake</AbbreviatedIRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Email</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <AbbreviatedIRI>legacy:Emergency</AbbreviatedIRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">1-Emergency</Literal>
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
@@ -4591,8 +4666,18 @@ Thank you.</Literal>
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <AbbreviatedIRI>legacy:MobileIntake</AbbreviatedIRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Mobile Device</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
         <AbbreviatedIRI>legacy:North_Bay_Village</AbbreviatedIRI>
         <Literal datatypeIRI="&xsd;string">North Bay Village</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <AbbreviatedIRI>legacy:OPEN</AbbreviatedIRI>
+        <Literal datatypeIRI="&xsd;string">Open</Literal>
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
@@ -4681,8 +4766,33 @@ Thank you.</Literal>
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <AbbreviatedIRI>legacy:PhoneIntake</AbbreviatedIRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Phone</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
         <AbbreviatedIRI>legacy:Pothole</AbbreviatedIRI>
         <Literal datatypeIRI="&xsd;string">Pothole</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <AbbreviatedIRI>legacy:PropertyLegallyResponsible</AbbreviatedIRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Legally Responsible for Property</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <AbbreviatedIRI>legacy:PropertyOther</AbbreviatedIRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Other</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <AbbreviatedIRI>legacy:PropertyOwner</AbbreviatedIRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Owner</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <AbbreviatedIRI>legacy:PropertyTenant</AbbreviatedIRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Tenant</Literal>
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
@@ -4693,6 +4803,11 @@ Thank you.</Literal>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
         <AbbreviatedIRI>legacy:PublicWorksStreets</AbbreviatedIRI>
         <Literal datatypeIRI="&xsd;string">Streets Division</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <AbbreviatedIRI>legacy:Standard</AbbreviatedIRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">3-Standard</Literal>
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
@@ -4796,6 +4911,11 @@ Thank you.</Literal>
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <AbbreviatedIRI>legacy:Urgent</AbbreviatedIRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">2-Urgent</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
         <AbbreviatedIRI>legacy:Village_of_Biscayne_Park</AbbreviatedIRI>
         <Literal datatypeIRI="&xsd;string">Biscayne Park</Literal>
     </AnnotationAssertion>
@@ -4846,72 +4966,12 @@ Thank you.</Literal>
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
-        <IRI>#CLOSED</IRI>
-        <Literal datatypeIRI="&xsd;string">Closed</Literal>
-    </AnnotationAssertion>
-    <AnnotationAssertion>
-        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
-        <IRI>#EmailIntake</IRI>
-        <Literal datatypeIRI="&rdf;PlainLiteral">Email</Literal>
-    </AnnotationAssertion>
-    <AnnotationAssertion>
-        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
-        <IRI>#Emergency</IRI>
-        <Literal datatypeIRI="&rdf;PlainLiteral">1-Emergency</Literal>
-    </AnnotationAssertion>
-    <AnnotationAssertion>
-        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
-        <IRI>#MobileIntake</IRI>
-        <Literal datatypeIRI="&rdf;PlainLiteral">Mobile Device</Literal>
-    </AnnotationAssertion>
-    <AnnotationAssertion>
-        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
-        <IRI>#OPEN</IRI>
-        <Literal datatypeIRI="&xsd;string">Open</Literal>
-    </AnnotationAssertion>
-    <AnnotationAssertion>
-        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
-        <IRI>#PhoneIntake</IRI>
-        <Literal datatypeIRI="&rdf;PlainLiteral">Phone</Literal>
-    </AnnotationAssertion>
-    <AnnotationAssertion>
-        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
-        <IRI>#PropertyLegallyResponsible</IRI>
-        <Literal datatypeIRI="&rdf;PlainLiteral">Legally Responsible for Property</Literal>
-    </AnnotationAssertion>
-    <AnnotationAssertion>
-        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
-        <IRI>#PropertyOther</IRI>
-        <Literal datatypeIRI="&rdf;PlainLiteral">Other</Literal>
-    </AnnotationAssertion>
-    <AnnotationAssertion>
-        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
-        <IRI>#PropertyOwner</IRI>
-        <Literal datatypeIRI="&rdf;PlainLiteral">Owner</Literal>
-    </AnnotationAssertion>
-    <AnnotationAssertion>
-        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
-        <IRI>#PropertyTenant</IRI>
-        <Literal datatypeIRI="&rdf;PlainLiteral">Tenant</Literal>
-    </AnnotationAssertion>
-    <AnnotationAssertion>
-        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
-        <IRI>#Standard</IRI>
-        <Literal datatypeIRI="&rdf;PlainLiteral">3-Standard</Literal>
-    </AnnotationAssertion>
-    <AnnotationAssertion>
-        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
-        <IRI>#Urgent</IRI>
-        <Literal datatypeIRI="&rdf;PlainLiteral">2-Urgent</Literal>
-    </AnnotationAssertion>
-    <AnnotationAssertion>
-        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
-        <IRI>#WebIntake</IRI>
+        <AbbreviatedIRI>legacy:WebIntake</AbbreviatedIRI>
         <Literal datatypeIRI="&rdf;PlainLiteral">Website</Literal>
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
-        <IRI>#sqPropertyOwner</IRI>
+        <AbbreviatedIRI>legacy:sqPropertyOwner</AbbreviatedIRI>
         <Literal datatypeIRI="&rdf;PlainLiteral">Relationship to Property</Literal>
     </AnnotationAssertion>
 </Ontology>
