@@ -1001,7 +1001,7 @@ public class PDFViewReport
     	{
     		Json queryData = Json.object()
         			.set("legacy:hasCaseNumber", caseNumber)
-        			.set("type","legacy:ServiceCase");
+        			.set("type","legacy:ServiceRequestType");
         		boid = le.lookupServiceCaseId(queryData);
         		if(boid == -1)
         			throw new RuntimeException("No Service Request present with Case Number : "+caseNumber);

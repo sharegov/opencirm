@@ -272,17 +272,12 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
         self.fulliri = function(iri) {
             if (iri.startsWith("http:") || iri.startsWith("https:"))
                 return iri;
-            var parts = iri.split(":");
+            var parts = iri.split(":");                
             if (parts.length == 1)
                 return "http://opencirm.org#" + iri;
-            else if (parts[0] == "platform")
-                return "http://opencirm.org/platform#" + iri;
-            else if (parts[0] == "upper")
-                return "http://opencirm.org/upper#" + iri;
-            else if (parts[0] == "cirm")
-                return "http://opencirm.org/cirm#" + iri;
-            else if (parts[0] == "demo")
-                return "http://opencirm.org/demo#" + iri;            
+            
+            else
+                return "http://opencirm.org#" + parts[1];                
         };
         
     }

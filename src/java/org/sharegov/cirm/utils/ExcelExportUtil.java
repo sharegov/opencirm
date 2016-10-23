@@ -344,11 +344,11 @@ public class ExcelExportUtil
     				prop.getKey().equalsIgnoreCase("itemsPerPage")) 
     			continue;
  			if(prop.getKey().equalsIgnoreCase("type")) {
-				if(prop.getValue().isString() && prop.getValue().asString().equalsIgnoreCase("legacy:ServiceCase"))
+				if(prop.getValue().isString() && prop.getValue().asString().equalsIgnoreCase("legacy:ServiceRequestType"))
 					continue;
 				if(prop.getValue().isArray()) {
 					List<Json> typeList = prop.getValue().asJsonList();
-					if(typeList.size() == 1 && typeList.get(0).asString().equalsIgnoreCase("legacy:ServiceCase"))
+					if(typeList.size() == 1 && typeList.get(0).asString().equalsIgnoreCase("legacy:ServiceRequestType"))
 						continue;
 				}
 			}

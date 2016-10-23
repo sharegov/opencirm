@@ -347,7 +347,7 @@ public class LegacyEmulator extends RestService
 			OWL.parseIDFromBusinessOntologyIRI(iri);
 		}
 		catch (Throwable t) { }
-		return lookupServiceCaseId(Json.object("legacy:hasCaseNumber", s, "type", "legacy:ServiceCase"));
+		return lookupServiceCaseId(Json.object("legacy:hasCaseNumber", s, "type", "legacy:ServiceRequestType"));
 	}
 	
 	/**
@@ -362,7 +362,7 @@ public class LegacyEmulator extends RestService
 		RelationalOWLPersister persister = getPersister();
 		RelationalStore store = persister.getStore();
 		Query q = qt.translate(Json.object("legacy:hasCaseNumber", caseNumber, 
-										   "type", "legacy:ServiceCase"), 
+										   "type", "legacy:ServiceRequestType"), 
 							   store);
 		Set<Long> results = store.query(q, Refs.tempOntoManager.resolve().getOWLDataFactory());
 		if (results.size() == 0)
@@ -505,7 +505,7 @@ public class LegacyEmulator extends RestService
 		{
 			try { caseid = Long.parseLong(query.asString()); } catch (Throwable t) {}
 			if (caseid == -1)
-				query = Json.object("legacy:hasCaseNumber", query.asString(), "type", "legacy:ServiceCase");
+				query = Json.object("legacy:hasCaseNumber", query.asString(), "type", "legacy:ServiceRequestType");
 		}
 		if (query.isObject())
 		{
@@ -716,13 +716,13 @@ public class LegacyEmulator extends RestService
 		{
 			GenUtils.ensureArray(pattern, "type");
 			List<Json> searchTypes = pattern.at("type").asJsonList();
-			boolean searchAllAllowed = "legacy:ServiceCase".equals(searchTypes.get(0).asString()); 
+			boolean searchAllAllowed = "legacy:ServiceRequestType".equals(searchTypes.get(0).asString()); 
 			if(searchAllAllowed || searchTypes.size() > 1)
 			{
 				Set<OWLNamedIndividual> permittedTypes = Permissions.
 						getAllowedObjectsOfClass(
 							Permissions.BO_VIEW, 
-							owlClass("legacy:ServiceCase"), 
+							owlClass("legacy:ServiceRequestType"), 
 							getUserActors());
 				List<String> permittedTypeList = new ArrayList<String>();
 				for(OWLNamedIndividual ind : permittedTypes)
@@ -920,13 +920,13 @@ public class LegacyEmulator extends RestService
 			{
 				GenUtils.ensureArray(data, "type");
 				List<Json> searchTypes = data.at("type").asJsonList();
-				boolean searchAllAllowed = "legacy:ServiceCase".equals(searchTypes.get(0).asString()); 
+				boolean searchAllAllowed = "legacy:ServiceRequestType".equals(searchTypes.get(0).asString()); 
 				if(searchAllAllowed || searchTypes.size() > 1)
 				{
 					Set<OWLNamedIndividual> permittedTypes = Permissions.
 							getAllowedObjectsOfClass(
 								Permissions.BO_VIEW, 
-								owlClass("legacy:ServiceCase"), 
+								owlClass("legacy:ServiceRequestType"), 
 								getUserActors());
 					List<String> permittedTypeList = new ArrayList<String>();
 					for(OWLNamedIndividual ind : permittedTypes)

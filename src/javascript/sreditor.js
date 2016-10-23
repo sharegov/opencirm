@@ -970,9 +970,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy",
 		});
 
 		self.loadFromServerByCaseNumber = function(lookup_boid) {
-			var query = {/*"type":"http://opencirm.org#ServiceRequestType", */
-                   "http://opencirm.org/cirm#hasCaseNumber":lookup_boid};
-      //var query = {"type":"legacy:ServiceCase", "legacy:hasCaseNumber":lookup_boid};
+			var query = {"type":"legacy:ServiceRequestType", "legacy:hasCaseNumber":lookup_boid};
 			cirm.top.async().postObject("/legacy/caseNumberSearch", query, function(result) {
 				$("#sh_dialog_sr_lookup").dialog('close');
 				if(result.ok)

@@ -10,7 +10,7 @@
 
 
 <Ontology xmlns="http://www.w3.org/2002/07/owl#"
-     xml:base="http://opencirm.org/demo"
+     xml:base="http://opencirm.org"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -393,9 +393,6 @@
     </Declaration>
     <Declaration>
         <NamedIndividual abbreviatedIRI="legacy:ILLEGALDUMPING_Q4"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual abbreviatedIRI="legacy:ILLEGAL_Dumping"/>
     </Declaration>
     <Declaration>
         <NamedIndividual abbreviatedIRI="legacy:Illegal_Dumping"/>
@@ -1901,7 +1898,7 @@
         <NamedIndividual abbreviatedIRI="legacy:GARBAGEMISSEDCOMP_Q1"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="http://opencirm.org#providedBy"/>
+        <ObjectProperty abbreviatedIRI="legacy:providedBy"/>
         <NamedIndividual abbreviatedIRI="legacy:Garbage_Missed_Complaint"/>
         <NamedIndividual abbreviatedIRI="legacy:WasteManagementDepartment"/>
     </ObjectPropertyAssertion>
@@ -2101,7 +2098,7 @@
         <NamedIndividual IRI="#sqPropertyOwner"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="http://opencirm.org#providedBy"/>
+        <ObjectProperty abbreviatedIRI="legacy:providedBy"/>
         <NamedIndividual abbreviatedIRI="legacy:Illegal_Dumping"/>
         <NamedIndividual abbreviatedIRI="legacy:WasteManagementDepartment"/>
     </ObjectPropertyAssertion>
@@ -2256,7 +2253,7 @@
         <NamedIndividual abbreviatedIRI="legacy:POTHOLE_Q3"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="http://opencirm.org#providedBy"/>
+        <ObjectProperty abbreviatedIRI="legacy:providedBy"/>
         <NamedIndividual abbreviatedIRI="legacy:Pothole"/>
         <NamedIndividual abbreviatedIRI="legacy:PublicWorksDepartment"/>
     </ObjectPropertyAssertion>
@@ -2476,7 +2473,7 @@
         <NamedIndividual abbreviatedIRI="legacy:TREEFALLEN_Q1"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="http://opencirm.org#providedBy"/>
+        <ObjectProperty abbreviatedIRI="legacy:providedBy"/>
         <NamedIndividual abbreviatedIRI="legacy:Tree_Fallen"/>
         <NamedIndividual abbreviatedIRI="legacy:PublicWorksDepartment"/>
     </ObjectPropertyAssertion>
@@ -2807,7 +2804,7 @@
     return {
         def : &quot;http://opencirm.org#&quot;,
         cirmapp : &quot;http://opencirm.org#&quot;,
-        cases : &quot;http://opencirm.org/demo#&quot;
+        cases : &quot;http://opencirm.org#&quot;
     };
 })</Literal>
     </DataPropertyAssertion>
@@ -3407,41 +3404,6 @@ You have received a </Literal>
         <DataProperty abbreviatedIRI="legacy:hasOrderBy"/>
         <NamedIndividual abbreviatedIRI="legacy:ILLEGALDUMPING_Q4"/>
         <Literal datatypeIRI="&xsd;float">4.0</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty abbreviatedIRI="legacy:hasDurationDays"/>
-        <NamedIndividual abbreviatedIRI="legacy:ILLEGAL_Dumping"/>
-        <Literal datatypeIRI="&xsd;float">90.0</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty abbreviatedIRI="legacy:hasGeoAreaCode"/>
-        <NamedIndividual abbreviatedIRI="legacy:ILLEGAL_Dumping"/>
-        <Literal datatypeIRI="&xsd;string">SWENFMUN</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty abbreviatedIRI="legacy:hasGeoAreaRequired"/>
-        <NamedIndividual abbreviatedIRI="legacy:ILLEGAL_Dumping"/>
-        <Literal datatypeIRI="&xsd;string">Y</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty abbreviatedIRI="legacy:hasJurisdictionCode"/>
-        <NamedIndividual abbreviatedIRI="legacy:ILLEGAL_Dumping"/>
-        <Literal datatypeIRI="&xsd;string">MD</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty abbreviatedIRI="legacy:hasJurisdictionDescription"/>
-        <NamedIndividual abbreviatedIRI="legacy:ILLEGAL_Dumping"/>
-        <Literal datatypeIRI="&xsd;string">MIAMI-DADE COUNTY</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty abbreviatedIRI="legacy:hasLegacyCode"/>
-        <NamedIndividual abbreviatedIRI="legacy:ILLEGAL_Dumping"/>
-        <Literal datatypeIRI="&xsd;string">ILLEGALDUMPING</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty abbreviatedIRI="legacy:hasShowLocation"/>
-        <NamedIndividual abbreviatedIRI="legacy:ILLEGAL_Dumping"/>
-        <Literal datatypeIRI="&xsd;string">ALLOWLOC</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty abbreviatedIRI="legacy:hasGeoAreaRequired"/>
@@ -4189,7 +4151,7 @@ Thank you.</Literal>
     <DataPropertyAssertion>
         <DataProperty abbreviatedIRI="legacy:Value"/>
         <NamedIndividual IRI="#BusinessObjectIRIPrefixConfig"/>
-        <Literal datatypeIRI="&xsd;string">http://opencirm.org/demo/bo</Literal>
+        <Literal datatypeIRI="&xsd;string">http://opencirm.org/bo</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty abbreviatedIRI="legacy:Name"/>
@@ -4884,6 +4846,11 @@ Thank you.</Literal>
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>#CLOSED</IRI>
+        <Literal datatypeIRI="&xsd;string">Closed</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
         <IRI>#EmailIntake</IRI>
         <Literal datatypeIRI="&rdf;PlainLiteral">Email</Literal>
     </AnnotationAssertion>
@@ -4896,6 +4863,11 @@ Thank you.</Literal>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
         <IRI>#MobileIntake</IRI>
         <Literal datatypeIRI="&rdf;PlainLiteral">Mobile Device</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>#OPEN</IRI>
+        <Literal datatypeIRI="&xsd;string">Open</Literal>
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>

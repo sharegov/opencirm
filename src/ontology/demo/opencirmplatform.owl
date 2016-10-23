@@ -383,9 +383,6 @@
         <DataProperty IRI="http://opencirm.org#nextValue"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#AServiceTest"/>
-    </Declaration>
-    <Declaration>
         <NamedIndividual IRI="http://opencirm.org#BO_Cancel"/>
     </Declaration>
     <Declaration>
@@ -431,9 +428,6 @@
         <NamedIndividual IRI="http://opencirm.org#Illegal_Dumping_Inquiry"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#Inquiry"/>
-    </Declaration>
-    <Declaration>
         <NamedIndividual IRI="http://opencirm.org#MQSeries"/>
     </Declaration>
     <Declaration>
@@ -459,9 +453,6 @@
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#ServiceCallAction"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#Service_Request"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#Street_Address"/>
@@ -1017,10 +1008,6 @@
         <Class IRI="http://opencirm.org#DataSource"/>
     </SubClassOf>
     <ClassAssertion>
-        <Class IRI="http://opencirm.org#OWLClass"/>
-        <NamedIndividual IRI="http://opencirm.org#AServiceTest"/>
-    </ClassAssertion>
-    <ClassAssertion>
         <Class IRI="http://opencirm.org#BO_Action"/>
         <NamedIndividual IRI="http://opencirm.org#BO_Cancel"/>
     </ClassAssertion>
@@ -1081,10 +1068,6 @@
         <NamedIndividual IRI="http://opencirm.org#Illegal_Dumping_Inquiry"/>
     </ClassAssertion>
     <ClassAssertion>
-        <Class IRI="http://opencirm.org#OWLClass"/>
-        <NamedIndividual IRI="http://opencirm.org#Inquiry"/>
-    </ClassAssertion>
-    <ClassAssertion>
         <Class IRI="http://opencirm.org#QueueType"/>
         <NamedIndividual IRI="http://opencirm.org#MQSeries"/>
     </ClassAssertion>
@@ -1119,10 +1102,6 @@
     <ClassAssertion>
         <Class IRI="http://opencirm.org#OWLClass"/>
         <NamedIndividual IRI="http://opencirm.org#ServiceCallAction"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class IRI="http://opencirm.org#OWLClass"/>
-        <NamedIndividual IRI="http://opencirm.org#Service_Request"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="http://opencirm.org#OWLClass"/>
@@ -3637,11 +3616,6 @@
         <AnnotationProperty IRI="http://purl.org/dc/elements/1.1/description"/>
         <IRI>http://opencirm.org#ServiceCall</IRI>
         <Literal datatypeIRI="&rdf;PlainLiteral">Represents an interaction between a call taker and a caller. It is composed of a sequence of ServiceCallAction individuals, each timestamped and the timestamping determines the ordering. A ServiceCall uses the following properties: hasUsername, startAt, endAt, notes, resolution.</Literal>
-    </AnnotationAssertion>
-    <AnnotationAssertion>
-        <AnnotationProperty IRI="http://www.miamidade.gov/ontology#csrCode"/>
-        <IRI>http://opencirm.org#Service_Request</IRI>
-        <Literal datatypeIRI="&xsd;string">test</Literal>
     </AnnotationAssertion>
 </Ontology>
 

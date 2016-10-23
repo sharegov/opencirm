@@ -185,32 +185,8 @@ public class QueryTranslator
 			.ON(TABLE_CLASSIFICATION+".OWLCLASS", TABLE_IRI+"_1"+".ID");
 		select.JOIN(TABLE_IRI +" "+TABLE_IRI+"_2")
 		.ON("CIRM_SR_ACTIVITY.ACTIVITY_ID", TABLE_IRI+"_2"+".ID");
-		//START : USER_FRIENDLY_ID
-		/*
-		StringBuilder sb = new StringBuilder();
-		sb.append("(SELECT * FROM ")
-		  .append(VIEW_DATA_PROPERTY)
-		  .append(" WHERE PREDICATE_ID = (")
-		  .append("SELECT ID FROM CIRM_IRI WHERE IRI = '")
-		  .append(fullIri("hasUserFriendlyID").toString())
-		  .append("')) a");
-		select.LEFT_OUTER_JOIN(sb.toString())
-		.ON(reqColumnIRI.getIRI().getFragment(), "a.SUBJECT_ID");
-		select.WHERE("a.TO_DATE IS NULL");
-		*/
-		//END : USER_FRIENDLY_ID
 		select.AND();
 		select.WHERE(TABLE_CLASSIFICATION+".TO_DATE IS NULL");
-//		//OLD TYPE HANDLING START::::::::::::::
-//		if(!pattern.at("type").asString().equals("legacy:ServiceCase")) 
-//		{
-//			select.AND();
-//			select.WHERE(TABLE_CLASSIFICATION+".OWLCLASS").EQUALS("?");
-//			statement.getParameters().add(identifiers.get(owlClass(fullIri(pattern.at("type").asString()))));
-//			statement.getTypes().add(individual(fullIri(Concepts.INTEGER)));
-//		}
-//		//END OLD TYPE HANDLING ::::::::::::::
-		// START NEW TYPE HANDLING FOR PERMISSIONS 
 		List<String> owlClassTypeList = new LinkedList<String>();
 		Json type = pattern.at("type");
 		if(type.isArray())
@@ -222,7 +198,7 @@ public class QueryTranslator
 		{
 			owlClassTypeList.add(type.asString());
 		}
-		if (!owlClassTypeList.contains("legacy:ServiceCase")) 
+		if (!owlClassTypeList.contains("legacy:ServiceRequestType")) 
 		{
 			select.AND();
 			if(owlClassTypeList.size() == 1)
@@ -459,9 +435,8 @@ public class QueryTranslator
 			{
 				owlClassTypeList.add(type.asString());
 			}
-			//Join on CIRM_CLASSIFICATION table if type is present.
-			//if(!type.asString().equals("legacy:ServiceCase") && column != null) 
-			if(!owlClassTypeList.contains("legacy:ServiceCase") && column != null) 
+			//Join on CIRM_CLASSIFICATION table if type is present. 
+			if(!owlClassTypeList.contains("legacy:ServiceRequestType") && column != null) 
 			{
 				select.JOIN(TABLE_CLASSIFICATION).ON(TABLE_CLASSIFICATION+".SUBJECT", column.getFragment());
 				if(owlClassTypeList.size() == 1)
