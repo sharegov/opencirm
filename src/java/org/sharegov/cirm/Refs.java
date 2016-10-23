@@ -74,7 +74,7 @@ public class Refs
 	public static final Ref<String> topOntologyIRI = new Ref<String>() {
 		public String resolve()
 		{
-			return "http://www.miamidade.gov/ontology";
+			return "http://opencirm.org/upper";
 		}
 	};
 	

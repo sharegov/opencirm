@@ -2854,7 +2854,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 					}
 				}
 				else if(sortByField == "hasStatus" || sortByField == "hasCaseNumber") {
-					self.misc.query().sortBy = "legacy:"+sortByField;
+					self.misc.query().sortBy = cirm.refs.fulliri("legacy:"+sortByField);
 					self.misc.query().sortDirection = sortDirection;
 				}
 				else {

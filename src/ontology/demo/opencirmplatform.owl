@@ -410,9 +410,6 @@
         <NamedIndividual IRI="http://opencirm.org#DOUBLE"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#Garbage_Missed_Complaint"/>
-    </Declaration>
-    <Declaration>
         <NamedIndividual IRI="http://opencirm.org#GeoPropertySet"/>
     </Declaration>
     <Declaration>
@@ -429,9 +426,6 @@
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#Illegal_Dumping"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#Illegal_Dumping_Inquiry"/>
@@ -480,9 +474,6 @@
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#Thing"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#Tree_Fallen"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
@@ -1062,10 +1053,6 @@
         <NamedIndividual IRI="http://opencirm.org#DOUBLE"/>
     </ClassAssertion>
     <ClassAssertion>
-        <Class IRI="http://opencirm.org#ServiceRequestType"/>
-        <NamedIndividual IRI="http://opencirm.org#Garbage_Missed_Complaint"/>
-    </ClassAssertion>
-    <ClassAssertion>
         <Class IRI="http://opencirm.org#OWLClass"/>
         <NamedIndividual IRI="http://opencirm.org#GeoPropertySet"/>
     </ClassAssertion>
@@ -1088,10 +1075,6 @@
     <ClassAssertion>
         <Class IRI="http://opencirm.org#DBDataType"/>
         <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class IRI="http://opencirm.org#ServiceRequestType"/>
-        <NamedIndividual IRI="http://opencirm.org#Illegal_Dumping"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="http://opencirm.org#OWLClass"/>
@@ -1156,10 +1139,6 @@
     <ClassAssertion>
         <Class IRI="http://opencirm.org#OWLClass"/>
         <NamedIndividual IRI="http://opencirm.org#Thing"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class IRI="http://opencirm.org#ServiceRequestType"/>
-        <NamedIndividual IRI="http://opencirm.org#Tree_Fallen"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="http://opencirm.org#DBDataType"/>

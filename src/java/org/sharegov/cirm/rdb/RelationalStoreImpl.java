@@ -5285,6 +5285,7 @@ public class RelationalStoreImpl implements RelationalStore
 			{
 				queryEntities = Collections.emptySet();
 			}
+			System.out.println(query.getStatement().getSql().SQL());
 			stmt = prepareStatement(conn, query.getStatement(),	selectIDsAndEntitiesByIRIs(queryEntities));
 			rs = stmt.executeQuery();
 			while (rs.next())

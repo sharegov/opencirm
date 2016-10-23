@@ -1,4 +1,4 @@
-PREFIX : <http://www.miamidade.gov/ontology#>
+PREFIX : <http://opencirm.org#>
 
 SELECT * 
 WHERE {

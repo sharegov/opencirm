@@ -567,10 +567,10 @@ public class ServiceCaseManager extends OntoAdmin {
 	private Json getSerializedIndividual (String individualID, String ontologyID){
 		try {			
 			if (ontologyID.toLowerCase().contains("legacy")) ontologyID = "legacy";
-			else ontologyID = "mdc";
+			else ontologyID = "legacy";
 			
 			String cacheKey = ontologyID + ":" + individualID;
-			
+
 			Json el = cache.get(cacheKey);
 			
 			if (el != null && !el.isNull()) return el;

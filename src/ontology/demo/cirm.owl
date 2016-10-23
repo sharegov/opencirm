@@ -16,209 +16,215 @@
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      ontologyIRI="http://opencirm.org/cirm">
-    <Prefix name="" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Prefix name="" IRI="http://opencirm.org#"/>
     <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
     <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
     <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
     <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
     <Import>http://opencirm.org/platform</Import>
     <Declaration>
-        <Class IRI="#Activity"/>
+        <Class IRI="http://opencirm.org#Activity"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#ActivityAssignment"/>
+        <Class IRI="http://opencirm.org#ActivityAssignment"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#ActivityTrigger"/>
+        <Class IRI="http://opencirm.org#ActivityTrigger"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#AnyStatus"/>
+        <Class IRI="http://opencirm.org#AnyStatus"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#ChoiceValue"/>
+        <Class IRI="http://opencirm.org#ChoiceValue"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#ChoiceValueList"/>
+        <Class IRI="http://opencirm.org#ChoiceValueList"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#ClearServiceField"/>
+        <Class IRI="http://opencirm.org#ClearServiceField"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#CreateServiceCase"/>
+        <Class IRI="http://opencirm.org#CreateServiceCase"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#IntakeMethod"/>
+        <Class IRI="http://opencirm.org#IntakeMethod"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#IntakeMethodList"/>
+        <Class IRI="http://opencirm.org#IntakeMethodList"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#LegacyEvent"/>
+        <Class IRI="http://opencirm.org#LegacyEvent"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#LegacyInterface"/>
+        <Class IRI="http://opencirm.org#LegacyInterface"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#LegacyTrigger"/>
+        <Class IRI="http://opencirm.org#LegacyTrigger"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#MarkServiceFieldDisabled"/>
+        <Class IRI="http://opencirm.org#MarkServiceFieldDisabled"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#MarkServiceFieldRequired"/>
+        <Class IRI="http://opencirm.org#MarkServiceFieldRequired"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#MessageTemplate"/>
+        <Class IRI="http://opencirm.org#MessageTemplate"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#MessageVariable"/>
+        <Class IRI="http://opencirm.org#MessageVariable"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#Outcome"/>
+        <Class IRI="http://opencirm.org#Outcome"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#Priority"/>
+        <Class IRI="http://opencirm.org#Priority"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#QuestionTrigger"/>
+        <Class IRI="http://opencirm.org#QuestionTrigger"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#SendEmail"/>
+        <Class IRI="http://opencirm.org#SendEmail"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#ServiceActivity"/>
+        <Class IRI="http://opencirm.org#ServiceActivity"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#ServiceActor"/>
+        <Class IRI="http://opencirm.org#ServiceActor"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#ServiceAnswer"/>
+        <Class IRI="http://opencirm.org#ServiceAnswer"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#ServiceCase"/>
+        <Class IRI="http://opencirm.org#ServiceCase"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#ServiceCaseActor"/>
+        <Class IRI="http://opencirm.org#ServiceCaseActor"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#ServiceCaseAlert"/>
+        <Class IRI="http://opencirm.org#ServiceCaseAlert"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#ServiceCaseOutcomeTrigger"/>
+        <Class IRI="http://opencirm.org#ServiceCaseOutcomeTrigger"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#ServiceField"/>
+        <Class IRI="http://opencirm.org#ServiceField"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#ServiceFieldAlert"/>
+        <Class IRI="http://opencirm.org#ServiceFieldAlert"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#ServiceNote"/>
+        <Class IRI="http://opencirm.org#ServiceNote"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#ServiceQuestion"/>
+        <Class IRI="http://opencirm.org#ServiceQuestion"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#Status"/>
+        <Class IRI="http://opencirm.org#Status"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#StatusChange"/>
+        <Class IRI="http://opencirm.org#StatusChange"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#StreetAddressOnlyCheckRule"/>
+        <Class IRI="http://opencirm.org#StreetAddressOnlyCheckRule"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasActivity"/>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasActivityAssignment"/>
+        <ObjectProperty IRI="http://opencirm.org#hasTableMapping"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasAllowableEvent"/>
+        <ObjectProperty IRI="http://opencirm.org#hasActivity"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasAllowableOutcome"/>
+        <ObjectProperty IRI="http://opencirm.org#hasActivityAssignment"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasAnswerObject"/>
+        <ObjectProperty IRI="http://opencirm.org#hasAllowableEvent"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasAutoServiceActor"/>
+        <ObjectProperty IRI="http://opencirm.org#hasAllowableOutcome"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasChoiceValue"/>
+        <ObjectProperty IRI="http://opencirm.org#hasAnswerObject"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasChoiceValueList"/>
+        <ObjectProperty IRI="http://opencirm.org#hasAutoServiceActor"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasDefaultIntakeMethod"/>
+        <ObjectProperty IRI="http://opencirm.org#hasChoiceValue"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasDefaultOutcome"/>
+        <ObjectProperty IRI="http://opencirm.org#hasChoiceValueList"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasDefaultPriority"/>
+        <ObjectProperty IRI="http://opencirm.org#hasDefaultIntakeMethod"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasDefaultStatus"/>
+        <ObjectProperty IRI="http://opencirm.org#hasDefaultOutcome"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasDuplicateCheckRule"/>
+        <ObjectProperty IRI="http://opencirm.org#hasDefaultPriority"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasEmailTemplate"/>
+        <ObjectProperty IRI="http://opencirm.org#hasDefaultStatus"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasIntakeMethod"/>
+        <ObjectProperty IRI="http://opencirm.org#hasDuplicateCheckRule"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasLegacyEvent"/>
+        <ObjectProperty IRI="http://opencirm.org#hasEmailTemplate"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasLegacyInterface"/>
+        <ObjectProperty IRI="http://opencirm.org#hasIntakeMethod"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasOutcome"/>
+        <ObjectProperty IRI="http://opencirm.org#hasLegacyEvent"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasOverdueActivity"/>
+        <ObjectProperty IRI="http://opencirm.org#hasLegacyInterface"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasPriority"/>
+        <ObjectProperty IRI="http://opencirm.org#hasOutcome"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasServiceActivity"/>
+        <ObjectProperty IRI="http://opencirm.org#hasOverdueActivity"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasServiceActor"/>
+        <ObjectProperty IRI="http://opencirm.org#hasPriority"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasServiceAnswer"/>
+        <ObjectProperty IRI="http://opencirm.org#hasServiceActivity"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasServiceCase"/>
+        <ObjectProperty IRI="http://opencirm.org#hasServiceActor"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasServiceCaseActor"/>
+        <ObjectProperty IRI="http://opencirm.org#hasServiceAnswer"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasServiceCaseAlert"/>
+        <ObjectProperty IRI="http://opencirm.org#hasServiceCase"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasServiceField"/>
+        <ObjectProperty IRI="http://opencirm.org#hasServiceCaseActor"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasServiceFieldAlert"/>
+        <ObjectProperty IRI="http://opencirm.org#hasServiceCaseAlert"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasStatus"/>
+        <ObjectProperty IRI="http://opencirm.org#hasServiceField"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasStatusLimit"/>
+        <ObjectProperty IRI="http://opencirm.org#hasServiceFieldAlert"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#providedBy"/>
+        <ObjectProperty IRI="http://opencirm.org#hasStatus"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://opencirm.org#hasStatusLimit"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://opencirm.org#providedBy"/>
     </Declaration>
     <Declaration>
         <DataProperty IRI="http://opencirm.org#fullAddress"/>
@@ -227,109 +233,112 @@
         <DataProperty IRI="http://opencirm.org#hasAttachment"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasAddressBuffer"/>
+        <DataProperty IRI="http://opencirm.org#hasAddressBuffer"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasAllowableModules"/>
+        <DataProperty IRI="http://opencirm.org#hasAllowableModules"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasAnswerValue"/>
+        <DataProperty IRI="http://opencirm.org#hasAnswerValue"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasBody"/>
+        <DataProperty IRI="http://opencirm.org#hasBody"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasBusinessCodes"/>
+        <DataProperty IRI="http://opencirm.org#hasBusinessCodes"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasCaseNumber"/>
+        <DataProperty IRI="http://opencirm.org#hasCaseNumber"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasCc"/>
+        <DataProperty IRI="http://opencirm.org#hasCc"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasCompletedDate"/>
+        <DataProperty IRI="http://opencirm.org#hasCompletedDate"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasCompletedTimestamp"/>
+        <DataProperty IRI="http://opencirm.org#hasCompletedTimestamp"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasDataType"/>
+        <DataProperty IRI="http://opencirm.org#hasDataType"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasDetails"/>
+        <DataProperty IRI="http://opencirm.org#hasDetails"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasDueDate"/>
+        <DataProperty IRI="http://opencirm.org#hasDueDate"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasDurationDays"/>
+        <DataProperty IRI="http://opencirm.org#hasDurationDays"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasGeoAreaCode"/>
+        <DataProperty IRI="http://opencirm.org#hasGeoAreaCode"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasGeoAreaRequired"/>
+        <DataProperty IRI="http://opencirm.org#hasGeoAreaRequired"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasJurisdictionCode"/>
+        <DataProperty IRI="http://opencirm.org#hasJurisdictionCode"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasJurisdictionDescription"/>
+        <DataProperty IRI="http://opencirm.org#hasJurisdictionDescription"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasLegacyBody"/>
+        <DataProperty IRI="http://opencirm.org#hasLegacyBody"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasLegacyCode"/>
+        <DataProperty IRI="http://opencirm.org#hasLegacyCode"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasOccurDays"/>
+        <DataProperty IRI="http://opencirm.org#hasOccurDays"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasOrderBy"/>
+        <DataProperty IRI="http://opencirm.org#hasOrderBy"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasShowLocation"/>
+        <DataProperty IRI="http://opencirm.org#hasShowLocation"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasSubject"/>
+        <DataProperty IRI="http://opencirm.org#hasSubject"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasSuspenseDays"/>
+        <DataProperty IRI="http://opencirm.org#hasSuspenseDays"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasThresholdDays"/>
+        <DataProperty IRI="http://opencirm.org#hasThresholdDays"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasTo"/>
+        <DataProperty IRI="http://opencirm.org#hasTo"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasUpdatedDate"/>
+        <DataProperty IRI="http://opencirm.org#hasUpdatedDate"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#hasValidLocationNotRequired"/>
+        <DataProperty IRI="http://opencirm.org#hasValidLocationNotRequired"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#isAccepted"/>
+        <DataProperty IRI="http://opencirm.org#isAccepted"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#isAssignedTo"/>
+        <DataProperty IRI="http://opencirm.org#isAssignedTo"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#isAutoCreate"/>
+        <DataProperty IRI="http://opencirm.org#isAutoCreate"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#isDisabled"/>
+        <DataProperty IRI="http://opencirm.org#isDisabled"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#isDisabledCreate"/>
+        <DataProperty IRI="http://opencirm.org#isDisabledCreate"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#isExernal"/>
+        <DataProperty IRI="http://opencirm.org#isExernal"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#participantEntityTable"/>
+        <DataProperty IRI="http://opencirm.org#participantEntityTable"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#BusinessPhoneNumber"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.DATA"/>
@@ -625,77 +634,207 @@
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.UPDATED_DATE"/>
     </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CellPhoneNumber"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#City"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#Comments"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#FaxNumber"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#HomePhoneNumber"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#LastName"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#Name"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ServiceRequestType"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#State"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#Street_Direction"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#Street_Name"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#Street_Number"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#Unit"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#Zip_Code"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#endAt"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#fullAddress"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#hasActivity"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#hasCaseNumber"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#hasCompletedTimestamp"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#hasDateCreated"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#hasDateLastModified"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#hasDetails"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#hasDueDate"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#hasEmailAddress"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#hasGisDataId"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#hasIntakeMethod"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#hasLocationName"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#hasName"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#hasOutcome"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#hasPriority"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#hasServiceActor"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#hasStatus"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#hasUpdateDate"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#hasUsername"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#hasValue"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#hasXCoordinate"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#hasYCoordinate"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#isAssignedTo"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#isCreatedBy"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#isModifiedBy"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#startAt"/>
+    </Declaration>
     <SubClassOf>
-        <Class IRI="#ActivityAssignment"/>
-        <Class IRI="#LegacyEvent"/>
+        <Class IRI="http://opencirm.org#ActivityAssignment"/>
+        <Class IRI="http://opencirm.org#LegacyEvent"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#ActivityTrigger"/>
-        <Class IRI="#LegacyTrigger"/>
+        <Class IRI="http://opencirm.org#ActivityTrigger"/>
+        <Class IRI="http://opencirm.org#LegacyTrigger"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#ClearServiceField"/>
-        <Class IRI="#LegacyEvent"/>
+        <Class IRI="http://opencirm.org#ClearServiceField"/>
+        <Class IRI="http://opencirm.org#LegacyEvent"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#CreateServiceCase"/>
-        <Class IRI="#LegacyEvent"/>
+        <Class IRI="http://opencirm.org#CreateServiceCase"/>
+        <Class IRI="http://opencirm.org#LegacyEvent"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#MarkServiceFieldDisabled"/>
-        <Class IRI="#LegacyEvent"/>
+        <Class IRI="http://opencirm.org#MarkServiceFieldDisabled"/>
+        <Class IRI="http://opencirm.org#LegacyEvent"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#MarkServiceFieldRequired"/>
-        <Class IRI="#LegacyEvent"/>
+        <Class IRI="http://opencirm.org#MarkServiceFieldRequired"/>
+        <Class IRI="http://opencirm.org#LegacyEvent"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#QuestionTrigger"/>
-        <Class IRI="#LegacyTrigger"/>
+        <Class IRI="http://opencirm.org#QuestionTrigger"/>
+        <Class IRI="http://opencirm.org#LegacyTrigger"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#SendEmail"/>
-        <Class IRI="#LegacyEvent"/>
+        <Class IRI="http://opencirm.org#SendEmail"/>
+        <Class IRI="http://opencirm.org#LegacyEvent"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#ServiceCase"/>
+        <Class IRI="http://opencirm.org#ServiceCase"/>
         <Class IRI="http://opencirm.org#Protected"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#ServiceCaseActor"/>
+        <Class IRI="http://opencirm.org#ServiceCaseActor"/>
         <ObjectUnionOf>
             <Class IRI="http://opencirm.org#Organization"/>
             <Class IRI="http://opencirm.org#Person"/>
         </ObjectUnionOf>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#ServiceCaseAlert"/>
-        <Class IRI="#LegacyEvent"/>
+        <Class IRI="http://opencirm.org#ServiceCaseAlert"/>
+        <Class IRI="http://opencirm.org#LegacyEvent"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#ServiceCaseOutcomeTrigger"/>
-        <Class IRI="#LegacyTrigger"/>
+        <Class IRI="http://opencirm.org#ServiceCaseOutcomeTrigger"/>
+        <Class IRI="http://opencirm.org#LegacyTrigger"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#ServiceFieldAlert"/>
-        <Class IRI="#LegacyEvent"/>
+        <Class IRI="http://opencirm.org#ServiceFieldAlert"/>
+        <Class IRI="http://opencirm.org#LegacyEvent"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#ServiceNote"/>
-        <Class IRI="#ServiceField"/>
+        <Class IRI="http://opencirm.org#ServiceNote"/>
+        <Class IRI="http://opencirm.org#ServiceField"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#ServiceQuestion"/>
-        <Class IRI="#ServiceField"/>
+        <Class IRI="http://opencirm.org#ServiceQuestion"/>
+        <Class IRI="http://opencirm.org#ServiceField"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#Status"/>
-        <Class IRI="#Outcome"/>
+        <Class IRI="http://opencirm.org#Status"/>
+        <Class IRI="http://opencirm.org#Outcome"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#StatusChange"/>
-        <Class IRI="#LegacyEvent"/>
+        <Class IRI="http://opencirm.org#StatusChange"/>
+        <Class IRI="http://opencirm.org#LegacyEvent"/>
     </SubClassOf>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#BusinessPhoneNumber"/>
+    </ClassAssertion>
     <ClassAssertion>
         <Class IRI="http://opencirm.org#DBTable"/>
         <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO"/>
@@ -813,11 +952,19 @@
         <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.ID"/>
     </ClassAssertion>
     <ClassAssertion>
+        <Class IRI="http://opencirm.org#IRIKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.ID"/>
+    </ClassAssertion>
+    <ClassAssertion>
         <Class IRI="http://opencirm.org#DBTable"/>
         <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="http://opencirm.org#DBPrimaryKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.ADDRESS_ID"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#IRIKey"/>
         <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.ADDRESS_ID"/>
     </ClassAssertion>
     <ClassAssertion>
@@ -905,6 +1052,10 @@
         <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL.SERVICE_CALL_ID"/>
     </ClassAssertion>
     <ClassAssertion>
+        <Class IRI="http://opencirm.org#IRIKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL.SERVICE_CALL_ID"/>
+    </ClassAssertion>
+    <ClassAssertion>
         <Class IRI="http://opencirm.org#DBNoKey"/>
         <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL.START_TIME"/>
     </ClassAssertion>
@@ -938,6 +1089,10 @@
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="http://opencirm.org#DBPrimaryKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.ACTIVITY_ID"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#IRIKey"/>
         <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.ACTIVITY_ID"/>
     </ClassAssertion>
     <ClassAssertion>
@@ -1014,6 +1169,10 @@
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="http://opencirm.org#DBPrimaryKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_ID"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#IRIKey"/>
         <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_ID"/>
     </ClassAssertion>
     <ClassAssertion>
@@ -1109,6 +1268,10 @@
         <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_REQUEST_ID"/>
     </ClassAssertion>
     <ClassAssertion>
+        <Class IRI="http://opencirm.org#IRIKey"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_REQUEST_ID"/>
+    </ClassAssertion>
+    <ClassAssertion>
         <Class IRI="http://opencirm.org#DBNoKey"/>
         <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_STATUS"/>
     </ClassAssertion>
@@ -1128,6 +1291,179 @@
         <Class IRI="http://opencirm.org#DBNoKey"/>
         <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.UPDATED_DATE"/>
     </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#CellPhoneNumber"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLObjectProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#City"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#Comments"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#FaxNumber"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#HomePhoneNumber"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#LastName"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#Name"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLClass"/>
+        <NamedIndividual IRI="http://opencirm.org#ServiceRequestType"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLObjectProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#State"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLObjectProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Direction"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Name"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Number"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLObjectProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#Unit"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#Zip_Code"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#endAt"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#fullAddress"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLObjectProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#hasActivity"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#hasCaseNumber"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#hasCompletedTimestamp"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#hasDateCreated"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#hasDateLastModified"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#hasDetails"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#hasDueDate"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLObjectProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#hasEmailAddress"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#hasGisDataId"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLObjectProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#hasIntakeMethod"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#hasLocationName"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#hasName"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLObjectProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#hasOutcome"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLObjectProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#hasPriority"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLObjectProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#hasServiceActor"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLObjectProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#hasStatus"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#hasUpdateDate"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#hasUsername"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#hasValue"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#hasXCoordinate"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#hasYCoordinate"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#isAssignedTo"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#isCreatedBy"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#isModifiedBy"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+        <NamedIndividual IRI="http://opencirm.org#startAt"/>
+    </ClassAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#BusinessPhoneNumber"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_WORK_PHONE_NO"/>
+    </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
         <NamedIndividual IRI="http://opencirm.org#CIRM_GIS_INFO.DATA"/>
@@ -2163,6 +2499,261 @@
         <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.UPDATED_DATE"/>
         <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS"/>
     </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#CellPhoneNumber"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_CELL_PHONE_NO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#City"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.CITY"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#Comments"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_COMMENTS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#FaxNumber"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_FAX_PHONE_NO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#HomePhoneNumber"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_PHONE_NUMBER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#LastName"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_LNAME"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#Name"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_NAME"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasTableMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#ServiceRequestType"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#State"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STATE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Direction"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STREET_NAME_PREFIX"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Name"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STREET_NAME"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Number"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STREET_NUMBER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#Street_Type"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.STREET_NAME_SUFFIX"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#Unit"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.UNIT"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#Zip_Code"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.ZIP"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#endAt"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL.END_TIME"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#fullAddress"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.FULL_ADDRESS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#hasActivity"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.ACTIVITY_CODE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#hasCaseNumber"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.CASE_NUMBER"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#hasCompletedTimestamp"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.COMPLETE_DATE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#hasDateCreated"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.CREATED_DATE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#hasDateCreated"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.CREATED_DATE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#hasDateCreated"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.CREATED_DATE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#hasDateLastModified"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.UPDATED_DATE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#hasDetails"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.DETAILS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#hasDetails"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_DESCRIPTION"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#hasDueDate"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.DUE_DATE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#hasDueDate"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.DUE_DATE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#hasEmailAddress"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_EMAIL"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#hasGisDataId"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.GIS_INFO_ID"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#hasIntakeMethod"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_INTAKE_METHOD"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#hasLocationName"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.LOCATION_NAME"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#hasName"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_ACTION.NAME"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#hasOutcome"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.OUTCOME_CODE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#hasPriority"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_PRIORITY"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#hasServiceActor"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.SR_ACTOR_TYPE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#hasStatus"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_STATUS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#hasUpdateDate"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.UPDATED_DATE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#hasUpdateDate"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.UPDATED_DATE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#hasUsername"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL.AGENT"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#hasValue"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_ACTION.VALUE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#hasXCoordinate"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_XCOORDINATE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#hasYCoordinate"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.SR_YCOORDINATE"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#isAssignedTo"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.STAFF_ASSIGNED"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#isCreatedBy"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.CREATED_BY"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#isCreatedBy"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.CREATED_BY"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#isCreatedBy"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.CREATED_BY"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#isModifiedBy"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_REQUESTS.UPDATED_BY"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#isModifiedBy"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTOR.UPDATED_BY"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#isModifiedBy"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SR_ACTIVITY.UPDATED_BY"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnMapping"/>
+        <NamedIndividual IRI="http://opencirm.org#startAt"/>
+        <NamedIndividual IRI="http://opencirm.org#CIRM_SERVICE_CALL.START_TIME"/>
+    </ObjectPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
         <NamedIndividual IRI="http://opencirm.org#CIRM_MDC_ADDRESS.ADDRESS_ID"/>
@@ -2329,14 +2920,14 @@
         <Literal datatypeIRI="&xsd;string">TIMESTAMP</Literal>
     </DataPropertyAssertion>
     <ObjectPropertyDomain>
-        <ObjectProperty IRI="#hasAllowableEvent"/>
+        <ObjectProperty IRI="http://opencirm.org#hasAllowableEvent"/>
         <ObjectUnionOf>
-            <Class IRI="#LegacyInterface"/>
-            <Class IRI="#ServiceCase"/>
+            <Class IRI="http://opencirm.org#LegacyInterface"/>
+            <Class IRI="http://opencirm.org#ServiceCase"/>
         </ObjectUnionOf>
     </ObjectPropertyDomain>
     <DataPropertyDomain>
-        <DataProperty IRI="#hasCaseNumber"/>
+        <DataProperty IRI="http://opencirm.org#hasCaseNumber"/>
         <Class IRI="http://opencirm.org#ServiceRequestType"/>
     </DataPropertyDomain>
     <DataPropertyRange>
@@ -2348,11 +2939,11 @@
         <Datatype abbreviatedIRI="xsd:string"/>
     </DataPropertyRange>
     <DataPropertyRange>
-        <DataProperty IRI="#hasCaseNumber"/>
+        <DataProperty IRI="http://opencirm.org#hasCaseNumber"/>
         <Datatype abbreviatedIRI="xsd:string"/>
     </DataPropertyRange>
     <DataPropertyRange>
-        <DataProperty IRI="#isAccepted"/>
+        <DataProperty IRI="http://opencirm.org#isAccepted"/>
         <Datatype abbreviatedIRI="xsd:boolean"/>
     </DataPropertyRange>
 </Ontology>

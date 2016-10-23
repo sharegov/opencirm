@@ -33,6 +33,7 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.PrefixManager;
+import org.semanticweb.owlapi.model.UnloadableImportException;
 import org.semanticweb.owlapi.util.BidirectionalShortFormProvider;
 import org.semanticweb.owlapi.util.BidirectionalShortFormProviderAdapter;
 import org.semanticweb.owlapi.util.ShortFormProvider;
@@ -180,10 +181,11 @@ public class DLQueryParser
 		ManchesterOWLSyntaxEditorParser parser = new ManchesterOWLSyntaxEditorParser(
 				dataFactory, classExpressionString);
 		parser.setDefaultOntology(rootOntology);
+		
 		// Specify an entity checker that wil be used to check a class
 		// expression contains the correct names.
 		final OWLEntityChecker ec = new ShortFormEntityChecker(bidiShortFormProvider);
-		OWLEntityChecker entityChecker = new DoubleDefaultPrefixEntityCheckerAdapter(ec);
+		OWLEntityChecker entityChecker =  new OWL.EntityChecker(); //new DoubleDefaultPrefixEntityCheckerAdapter(ec);
 		parser.setOWLEntityChecker(entityChecker);
 //		parser.setOWLEntityChecker(ec);
 		// Do the actual parsing
@@ -255,9 +257,8 @@ public class DLQueryParser
 		parser.setDefaultOntology(rootOntology);
 		// Specify an entity checker that wil be used to check a class
 		// expression contains the correct names.
-		OWLEntityChecker delegateEc = new ShortFormEntityChecker(
-				bidiShortFormProvider);
-		OWLEntityChecker entityChecker = new DoubleDefaultPrefixEntityCheckerAdapter(delegateEc);
+		OWLEntityChecker delegateEc = new ShortFormEntityChecker(bidiShortFormProvider);
+		OWLEntityChecker entityChecker = new OWL.EntityChecker(); // new DoubleDefaultPrefixEntityCheckerAdapter(delegateEc);
 		parser.setOWLEntityChecker(entityChecker);
 		// Do the actual parsing
 		synchronized(manager) {

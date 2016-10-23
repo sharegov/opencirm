@@ -878,6 +878,7 @@ public class LegacyEmulator extends RestService
 		q.getStatement().getSql().CLEAR_PAGINATION();
 		q.getStatement().getSql().CLEAR_COLUMNS();
 		q.getStatement().getSql().COLUMN("count(*)").AS("RecordCount");
+		q.getStatement().getSql().ORDER_BY(null);
 		Set<Long> count = store.query(q, Refs.tempOntoManager.resolve().getOWLDataFactory());
 		if (count.size() == 1)
 			return count.iterator().next();

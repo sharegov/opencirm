@@ -40,7 +40,7 @@
 	<classpathentry kind="lib" path="lib/jena/xercesImpl-2.7.1.jar"/>
 	<classpathentry kind="lib" path="lib/jgrapht-jdk1.5.jar"/>
 	<classpathentry kind="lib" path="lib/org.apache.commons.io.jar"/>
-	<classpathentry kind="lib" path="lib/owlapi-bin.jar" sourcepath="C:/_CiRM/y. tools/OWL API 3.2.4/owlapi-src.jar"/>
+	<classpathentry kind="lib" path="lib/owlapi-bin.jar" sourcepath="/home/borislav/sharegov/owlapi-src.jar"/>
 	<classpathentry kind="lib" path="lib/pellet-cli.jar"/>
 	<classpathentry kind="lib" path="lib/pellet-core.jar"/>
 	<classpathentry kind="lib" path="lib/pellet-datatypes.jar"/>

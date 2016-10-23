@@ -171,6 +171,8 @@ public class Sql
 		{
 			if (column != null)
 				this.orderBy.add(column);
+			else
+				this.orderBy.clear();
 			return this;
 		}
 		
@@ -178,6 +180,8 @@ public class Sql
 		{
 			if(direction != null)
 				this.orderDirection = direction;
+			else
+				this.orderDirection = null;
 			return this;
 		}
 

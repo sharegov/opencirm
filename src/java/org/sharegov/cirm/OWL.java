@@ -49,6 +49,7 @@ import org.hypergraphdb.app.owl.core.OWLDataFactoryHGDB;
 import org.hypergraphdb.app.owl.core.OWLDataFactoryInternalsHGDB;
 import org.hypergraphdb.app.owl.core.OWLObjectHGDB;
 import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
+import org.semanticweb.owlapi.expression.OWLEntityChecker;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
@@ -1772,6 +1773,64 @@ public class OWL
 //		Set<OWLClassExpression> S = new HashSet<OWLClassExpression>();
 //		for (OWLClassExpression ind:expr.getOperands())
 //			S.add(R(ind));
+		
+	}
+	
+	public static class EntityChecker implements OWLEntityChecker
+	{			
+		boolean isNoName(String name) 
+		{
+			return name.charAt(0) == '{' || name.charAt(0) == '<'; 
+		}
+		@Override
+		public OWLClass getOWLClass(String name)
+		{
+			if (isNoName(name)) return null;
+			OWLClass e = owlClass(fullIri(name));
+			return ontology().isDeclared(e, true) ? e : null;
+		}
+
+		@Override
+		public OWLObjectProperty getOWLObjectProperty(String name)
+		{
+			if (isNoName(name)) return null;
+			OWLObjectProperty e = objectProperty(fullIri(name));
+			return ontology().isDeclared(e, true) ? e : null;
+			
+		}
+
+		@Override
+		public OWLDataProperty getOWLDataProperty(String name)
+		{
+			if (isNoName(name)) return null;			
+			OWLDataProperty e = dataProperty(fullIri(name));
+			return ontology().isDeclared(e, true) ? e : null;
+		}
+
+		@Override
+		public OWLNamedIndividual getOWLIndividual(String name)
+		{
+			if (isNoName(name)) return null;
+			OWLNamedIndividual e = individual(fullIri(name));
+			return e;
+			//return ontology().isDeclared(e, true) ? e : null;
+		}
+
+		@Override
+		public OWLDatatype getOWLDatatype(String name)
+		{
+			if (isNoName(name)) return null;			
+			OWLDatatype e = dataFactory().getOWLDatatype(fullIri(name));
+			return ontology().isDeclared(e, true) ? e : null;
+		}
+
+		@Override
+		public OWLAnnotationProperty getOWLAnnotationProperty(String name)
+		{
+			if (isNoName(name)) return null;			
+			OWLAnnotationProperty e = annotationProperty(fullIri(name));
+			return ontology().isDeclared(e, true) ? e : null;
+		}
 		
 	}
 }
