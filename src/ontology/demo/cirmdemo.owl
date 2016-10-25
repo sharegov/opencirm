@@ -2543,6 +2543,11 @@
         <NamedIndividual abbreviatedIRI="legacy:GarbageDivision"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
+        <ObjectProperty abbreviatedIRI="legacy:hasOne"/>
+        <NamedIndividual abbreviatedIRI="legacy:atAddress"/>
+        <NamedIndividual abbreviatedIRI="legacy:Street_Address"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI="legacy:hasChoiceValue"/>
         <NamedIndividual abbreviatedIRI="legacy:choicesResidence"/>
         <NamedIndividual abbreviatedIRI="legacy:PropertyLegallyResponsible"/>

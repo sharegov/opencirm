@@ -208,8 +208,8 @@ public class LegacyEmulator extends RestService
 		{
 			public int compare(Json left, Json right)
 			{
-				Float f = (left.at("hasOrderBy").asFloat() - right.at(
-						"hasOrderBy").asFloat());
+				Float f = (left.at("hasOrderBy", 0.0).asFloat() - right.at(
+						"hasOrderBy", 0.0).asFloat());
 				if (f > 0)
 					return 1;
 				else if (f < 0)

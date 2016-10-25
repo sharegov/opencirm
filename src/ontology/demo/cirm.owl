@@ -338,6 +338,9 @@
         <DataProperty abbreviatedIRI=":participantEntityTable"/>
     </Declaration>
     <Declaration>
+        <DataProperty abbreviatedIRI=":storeFragment"/>
+    </Declaration>
+    <Declaration>
         <NamedIndividual abbreviatedIRI=":BusinessPhoneNumber"/>
     </Declaration>
     <Declaration>
@@ -684,6 +687,9 @@
     </Declaration>
     <Declaration>
         <NamedIndividual abbreviatedIRI=":Zip_Code"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual abbreviatedIRI=":atAddress"/>
     </Declaration>
     <Declaration>
         <NamedIndividual abbreviatedIRI=":endAt"/>
@@ -1364,6 +1370,10 @@
     <ClassAssertion>
         <Class abbreviatedIRI=":OWLDataProperty"/>
         <NamedIndividual abbreviatedIRI=":Zip_Code"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class abbreviatedIRI=":OWLObjectProperty"/>
+        <NamedIndividual abbreviatedIRI=":atAddress"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class abbreviatedIRI=":OWLDataProperty"/>
@@ -2620,6 +2630,11 @@
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI=":hasColumnMapping"/>
+        <NamedIndividual abbreviatedIRI=":atAddress"/>
+        <NamedIndividual abbreviatedIRI=":CIRM_SR_REQUESTS.SR_REQUEST_ADDRESS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty abbreviatedIRI=":hasColumnMapping"/>
         <NamedIndividual abbreviatedIRI=":endAt"/>
         <NamedIndividual abbreviatedIRI=":CIRM_SERVICE_CALL.END_TIME"/>
     </ObjectPropertyAssertion>
@@ -2962,6 +2977,21 @@
         <DataProperty abbreviatedIRI=":hasColumnDefinition"/>
         <NamedIndividual abbreviatedIRI=":CIRM_SR_REQUESTS.UPDATED_DATE"/>
         <Literal datatypeIRI="&xsd;string">TIMESTAMP</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty abbreviatedIRI=":storeFragment"/>
+        <NamedIndividual abbreviatedIRI=":Street_Direction"/>
+        <Literal datatypeIRI="&xsd;string">true</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty abbreviatedIRI=":storeFragment"/>
+        <NamedIndividual abbreviatedIRI=":Street_Type"/>
+        <Literal datatypeIRI="&xsd;string">true</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty abbreviatedIRI=":storeFragment"/>
+        <NamedIndividual abbreviatedIRI=":hasStatus"/>
+        <Literal datatypeIRI="&xsd;string">true</Literal>
     </DataPropertyAssertion>
     <ObjectPropertyDomain>
         <ObjectProperty abbreviatedIRI=":hasAllowableEvent"/>

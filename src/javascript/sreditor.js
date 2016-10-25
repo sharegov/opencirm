@@ -36,7 +36,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy",
   		self.hasLocationName = "";
   		self.type = "Street_Address";
   		self.Street_Address_City = {"iri":"", "label":"" };
-  		self.Street_Address_State = {"iri":"http://www.miamidade.gov/ontology#Florida", "label":"Florida" };
+  		self.Street_Address_State = {"iri":"http://opencirm.org#Florida", "label":"Florida" };
   		self.Street_Direction = {"label":"", "iri":""};
   		self.hasStreetType = {"label":"", "iri":""};
   		self.addressType = "";
@@ -50,7 +50,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy",
   		self.Zip_Code = "";
   		self.type = "Street_Address";
   		self.Street_Address_City = {"iri":"", "label":"" };
-  		self.Street_Address_State = {"iri":"http://www.miamidade.gov/ontology#Florida", "label":"Florida" };
+  		self.Street_Address_State = {"iri":"http://opencirm.org#Florida", "label":"Florida" };
     }
     
     function ServiceActor(iri, label, username, serverDate, isNew) {
@@ -81,7 +81,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy",
     }
     
   	function isCitizenActor(iri) {
-  		return (iri === 'http://www.miamidade.gov/cirm/legacy#CITIZEN');
+  		return (iri === 'http://opencirm.org#CITIZEN');
   	}
 
     function ServiceActivity(iri, label, username, serverDate, isNew) {
@@ -663,7 +663,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy",
 	        var P = blue.properties; 
 			P.atAddress = {
 	            Street_Address_City: {iri : '', label: ''},
-	            Street_Address_State:{iri:"http://www.miamidade.gov/ontology#Florida","label": "FL"},
+	            Street_Address_State:{iri:"http://opencirm.org#Florida","label": "FL"},
 			    Street_Direction: {iri: "", label: ""},
 			    hasStreetType: {iri: "", label: ""},
 			    Street_Name:'',
@@ -1195,7 +1195,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy",
 			}
 			//TODO : temp fix below. State is sometimes undefined, some times set to Florida. Debug Random behavior.
 			if(postData.address.Street_Address_State.iri === undefined)
-				postData.address.Street_Address_State.iri = "http://www.miamidade.gov/ontology#Florida";
+				postData.address.Street_Address_State.iri = "http://opencirm.org#Florida";
 			$('#dup_checking').show();
 			$('#save').hide();
 			cirm.top.async().post("/legacy/duplicateCheck", {data:JSON.stringify(postData)},  function(result) {
@@ -1216,7 +1216,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy",
 					});
 					if(srDisplayedIsNew)					
 					{
-						self.data().properties().hasStatus().iri("http://www.miamidade.gov/cirm/legacy#O-DUP");
+						self.data().properties().hasStatus().iri("http://opencirm.org#O-DUP");
 						self.data().properties().hasStatus().label("O-DUP");
 					}
 					self.duplicateCount(filteredDetails.length);
@@ -3020,7 +3020,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy",
 			el.atAddress().Street_Address_City().label("");
 			el.atAddress().Street_Address_City().iri("");
 			el.atAddress().Street_Address_State().label("Florida");
-			el.atAddress().Street_Address_State().iri("http://www.miamidade.gov/ontology#Florida");
+			el.atAddress().Street_Address_State().iri("http://opencirm.org#Florida");
 		};
 		
 		self.selectActorRow = function(el, event) {
