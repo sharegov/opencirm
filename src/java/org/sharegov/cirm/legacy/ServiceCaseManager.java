@@ -64,7 +64,6 @@ public class ServiceCaseManager extends OntoAdmin {
 		
 		ThreadLocalStopwatch.startTop("Started Service Case Admin Cache.");
 		getAll();
-		MetaOntology.getInstance().clearObjectCache();
 		ThreadLocalStopwatch.now("End Service Case Admin Cache.");
 	}
 
@@ -123,7 +122,7 @@ public class ServiceCaseManager extends OntoAdmin {
 		cache.remove(aKey);
 		cache.remove(PREFIX + aKey);	
 		
-		MetaOntology.getInstance().clearCacheAndSynchronizeReasoner();
+		MetaOntology.clearCacheAndSynchronizeReasoner();
 	}
 	
 	/**
@@ -137,7 +136,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			cache.remove(key);
 			cache.remove(PREFIX + key);
 		}
-		MetaOntology.getInstance().clearCacheAndSynchronizeReasoner();
+		MetaOntology.clearCacheAndSynchronizeReasoner();
 	}
 	
 	/**
@@ -385,7 +384,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	private void addActitivitesByDepartment(String srType, Json serializedSrType, String departmentIriFragment){
 		if (serializedSrType.has("hasActivity")){
 			
-			Json srTypeActivities = MetaOntology.getInstance().resolveIRIs(serializedSrType.at("hasActivity"), false);
+			Json srTypeActivities = MetaOntology.resolveIRIs(serializedSrType.at("hasActivity"));
 			
 			Set <String> S = new HashSet<>();
 						
@@ -1086,7 +1085,7 @@ public class ServiceCaseManager extends OntoAdmin {
 				
 		if (sr.has("hasServiceField")){
 			
-			Json questions = MetaOntology.getInstance().resolveIRIs(sr.at("hasServiceField"));
+			Json questions = MetaOntology.resolveIRIs(sr.at("hasServiceField"));
 			
 			if (!questions.isArray()){
 				return Json.array().add(questions);						
@@ -1110,7 +1109,7 @@ public class ServiceCaseManager extends OntoAdmin {
 				
 		if (sr.has("hasActivity")){
 			
-			Json activities = MetaOntology.getInstance().resolveIRIs(sr.at("hasActivity"));
+			Json activities = MetaOntology.resolveIRIs(sr.at("hasActivity"));
 			
 			if (!activities.isArray()){
 				return Json.array().add(activities);						
@@ -1145,7 +1144,7 @@ public class ServiceCaseManager extends OntoAdmin {
 		
 		if (result){
 			clearAllCachedButServiceCase();
-			MetaOntology.getInstance().clearCacheAndSynchronizeReasoner();
+			MetaOntology.clearCacheAndSynchronizeReasoner();
 		}
 		
 		return result;

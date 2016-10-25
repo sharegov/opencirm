@@ -75,35 +75,8 @@ public class MetaOntology
 
 	private static String PREFIX = "legacy:";
 	public static final int RESOLVE_ALL_IRI_MAX_DEPTH = 5;
-	private static MetaOntology instance = null; 
-	private Map<String, Json> objectMap;
-	private Map<String, Boolean> resolutionMap;
-	/**
-	 * private to defeat multiple instantiation
-	 * 
-	 */
-	private MetaOntology() {
-		objectMap = new ConcurrentHashMap<String, Json>();
-		resolutionMap = new ConcurrentHashMap<String, Boolean>();
-	}
-
-	/**
-	 * Singleton instance getter. Synchronized to defeat multiple instantiation when instance == null
-	 *  
-	 * @return the same unique instance of the class 
-	 */
-	public synchronized static MetaOntology getInstance(){
-		if (instance == null){
-			instance = new MetaOntology ();
-		}
-		return instance;
-	}
 	
-	public synchronized void clearObjectCache (){
-		objectMap.clear();
-		resolutionMap.clear();
-	}
-	/*
+	 /*
 	 * Generic Ontology handling functions.
 	 */
 	
@@ -814,7 +787,7 @@ public class MetaOntology
 	 * TODO hilpold find the right class for this method.
 	 * 
 	 */	
-	public void clearCacheAndSynchronizeReasoner() {
+	public static void clearCacheAndSynchronizeReasoner() {
 		synchronized (OWL.reasoner()) {
 			ThreadLocalStopwatch.startTop("START clearCache");
 			clearCache();
@@ -822,7 +795,6 @@ public class MetaOntology
 			ThreadLocalStopwatch.now("START syncReasoner");
 			synchronizeReasoner();
 			ThreadLocalStopwatch.now("END syncReasoner");
-			clearObjectCache();
 		}		
 	}
 	
@@ -994,16 +966,10 @@ public class MetaOntology
 		
 		return S;
 	}
-	
-	public Json resolveIRIs(Json j){
-		return resolveIRIs(j, true);
-	}
-	
-	public Json resolveIRIs(Json j, boolean clearCache){
-		
-		if (clearCache){
-			clearObjectCache();
-		}
+
+	public static Json resolveIRIs(Json j){
+		Map<String, Json> objectMap = new ConcurrentHashMap<String, Json>();
+		Map<String, Boolean> resolutionMap  = new ConcurrentHashMap<String, Boolean>();
 		
 		Json result = j.dup();
 		
