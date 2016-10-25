@@ -157,6 +157,11 @@
 							]
 						},
 		"hasChoiceValueList": {
+								"oneOf":[
+											{"$ref": "#/definitions/hasChoiceValueListObject"}
+									    ]
+							  },
+		"hasChoiceValueListObject": {
 									"type": "object",
 									"properties": {
 										"hasChoiceValue": {
