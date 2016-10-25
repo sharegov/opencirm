@@ -141,7 +141,7 @@ import org.sharegov.cirm.workflows.WebServiceCallTask;
 public class LegacyEmulator extends RestService
 {
 	public static boolean DBG = true;
-	public static boolean DBGSQL = false;
+	public static boolean DBGSQL = true;
 
 	public static final int MAX_CALLWS_ATTEMPTS = 3;
 	
@@ -974,7 +974,8 @@ public class LegacyEmulator extends RestService
 					.COLUMN("i1.IRI").AS("TYPE")
 					.COLUMN("addrV.FULL_ADDRESS").AS("FULL_ADDRESS")
 					.COLUMN("addrV.ZIP").AS("ZIP")
-					.COLUMN("addrV.CITY_SHORT").AS("CITY")
+					//.COLUMN("addrV.CITY_SHORT").AS("CITY")
+					.COLUMN("addrV.CITY").AS("CITY")
 					.COLUMN("a.SR_STATUS").AS("STATUS")
 					.COLUMN("acts.COMPLETE_DATE").AS("COMPLETE_DATE")
 					.COLUMN("a.CREATED_DATE").AS("CREATED_DATE")
@@ -991,7 +992,8 @@ public class LegacyEmulator extends RestService
 						"CIRM_SR_ACTIVITY a1 GROUP BY a1.SR_REQUEST_ID) acts ";
 				select.LEFT_OUTER_JOIN(innerQuery).ON("a.SR_REQUEST_ID",
 						"acts.SR_REQUEST_ID");
-				select.LEFT_OUTER_JOIN("CIRM_MDC_ADDRESS_VIEW addrV").ON(
+				//select.LEFT_OUTER_JOIN("CIRM_MDC_ADDRESS_VIEW addrV").ON(
+				select.LEFT_OUTER_JOIN("CIRM_MDC_ADDRESS addrV").ON(
 						"a.SR_REQUEST_ADDRESS", "addrV.ADDRESS_ID");
 				select.LEFT_OUTER_JOIN("CIRM_CLASSIFICATION cl").ON(
 						"cl.SUBJECT", "a.SR_REQUEST_ID");
