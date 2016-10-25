@@ -95,6 +95,8 @@ public class UserService extends RestService implements AutoConfigurable
 		
 	private List<String> orderedProviders()
 	{
+		if (desc.at("hasUserBase", Json.object()).has("hasName"))
+			return Collections.singletonList(desc.at("hasUserBase").at("hasName").asString());
 	    ArrayList<String> L = new ArrayList<String>(desc.at("hasUserBase", Json.object()).asJsonMap().keySet());
 	    Collections.sort(L, new Comparator<String>() {
 	       public int compare(String left, String right)

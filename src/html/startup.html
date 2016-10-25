@@ -69,15 +69,25 @@ paths: {
 },
 priority: ["jquery", "jqueryconf", "logincheck"]
 //, urlArgs: "cache_bust=" + (new Date()).getTime()
-},  [ "rest", "U", "cirm", "legacy", "sreditor", "answerhub", "store", "interfaceValidation", "jquery", 
+},  [ "rest", "U", "cirm", "legacy", "sreditor", "answerhub", "store", "cirmgis", "interfaceValidation", "jquery", 
     "jquery-ui", "jquery-tmpl", "jquery-autoresize", 
     "jquery-marquee", "jquery-cookie", "jquery-jec",
     "jquery-upload", "jquery-knockout", "jquery-datatables", "jquery-dt-ko-binding"],
-function (rest, U, cirm, legacy, sreditor, answerhub, store) {     
-        if (! cirm.user.ensureLoggedin()) {
-            alert('Failed to retrieve profile, the user service may be down, please try again later');
-            window.location.href="login.html";
-        }
+function (rest, U, cirm, legacy, sreditor, answerhub, store, cirmgis) {     
+  if (! cirm.user.ensureLoggedin()) {
+      alert('Failed to retrieve profile, the user service may be down, please try again later');
+      window.location.href="login.html";
+  }
+  
+  window.mapReverseGeocode = function(latlng) 
+  {
+    //console.log("reverse geo coding on", latlng);
+    cirmgis.reverseGeoCode(latlng, function(address) {
+//      console.log("address back from map", address);
+      answerHubModel.addressSearch.setAddress(address, false);
+    });
+  }
+  
         //
         // Application update event
         //
@@ -323,9 +333,8 @@ function addressFromMapCallback(pinfo)
 {                
     //if (!pinfo.match)
     //    return;
-	var clonedProp = $.extend(true, {}, pinfo);;
-    answerHubModel.addressSearch.setAddress(clonedProp, false);
-
+	var clonedProp = $.extend(true, {}, pinfo);
+  answerHubModel.addressSearch.setAddress(clonedProp, false);
 }
 function mapInitializedCallback()
 {

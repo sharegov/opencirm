@@ -303,7 +303,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 				$("#sh_unit").autocomplete( "destroy" );
 			}
 			
-			if (self.map()) {
+			if (self.map() && viaResolveAddress) {
 				self.map().address = self.address.fullAddress();
 				self.map().zip = self.address.zip();
 				self.map().propertyInfo = self.address.addressData().propertyInfo;

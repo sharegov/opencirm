@@ -14,6 +14,8 @@ function ($) {
       path = _path;
       restClient = new rest.Client("/", {jsonp: true, async: true});
       geocoder = new google.maps.Geocoder();
+      window.gmaps = google;
+      window.geo = geocoder;
   }
 
   function ensureInit() {
@@ -92,7 +94,7 @@ function ($) {
   }
   
   function resultToAddressCandidate(result) {
-    console.log('google result to candidate', result);
+//    console.log('google result to candidate', result);
     var candidate = {address:'', municipality:'', zip: '', fullAddress: '', parsedAddress: {zip:'', House:''}};
     candidate.address =  result.formatted_address.split(",")[0];
     candidate.fullAddress = result.formatted_address;
@@ -115,7 +117,32 @@ function ($) {
     return candidate;
   }
 
+  function reverseGeoCode(latlng, continuation) {
+    geocoder.geocode({'location': latlng}, function(results, status) {
+      if (status === 'OK') {
+//        console.log('geocode ok', results);            
+        for (var i = 0; i < results.length; i++)
+          if (results[i].types.find(function(t) { return t=="street_address"})) {          
+            var info = resultToAddressCandidate(results[i]);
+//            console.log('info', info);            
+            // get rid of the ranges that google returns by picking the starting number
+            var streetNumber = info.address.split(" ")[0];
+            if (streetNumber.indexOf("-") > 0) {
+              var firstNumber = streetNumber.split("-")[0];
+              info.address = info.address.replace(streetNumber, firstNumber);
+              if (info.fullAddress)
+                info.fullAddress = info.fullAddress.replace(streetNumber, firstNumber);
+            }            
+            continuation.call(this, info);
+          }
+      } else {
+        console.log('geocode failed', status);
+      }
+    });
+  }
+  
   return {
+      reverseGeoCode : reverseGeoCode,
       getAddressCandidates: addressCandidates,
       getCommonLocationCandidates: commonLocationCandidates,
       getCommonLocation: commonLocation,
