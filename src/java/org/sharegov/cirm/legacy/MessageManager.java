@@ -1025,12 +1025,12 @@ public class MessageManager
 							OWLNamedIndividual smtpConfig = (OWLNamedIndividual)Refs.configSet.resolve().get("SMTPConfig");
 							OWLLiteral host = OWL.dataProperty( smtpConfig , "hasValue");
 							newProps.setProperty("mail.smtp.host", host.getLiteral());
-							OWLLiteral username = OWL.dataProperty( smtpConfig , "hasUsername");
+							final OWLLiteral username = OWL.dataProperty( smtpConfig , "hasUsername");
 							if(username != null)
 							{
 								newProps.setProperty("mail.smtp.auth", "true");
 								newProps.setProperty("mail.smtp.ssl.enable", "true"); // for AWS
-								OWLLiteral password = OWL.dataProperty( smtpConfig , "hasPassword");
+								final OWLLiteral password = OWL.dataProperty( smtpConfig , "hasPassword");
 								authenticator = new Authenticator() {
 									@Override
 									protected PasswordAuthentication getPasswordAuthentication() {
