@@ -1352,6 +1352,10 @@
         <NamedIndividual abbreviatedIRI=":Street_Address_State"/>
     </ClassAssertion>
     <ClassAssertion>
+        <Class abbreviatedIRI=":OWLProperty"/>
+        <NamedIndividual abbreviatedIRI=":Street_Address_State"/>
+    </ClassAssertion>
+    <ClassAssertion>
         <Class abbreviatedIRI=":OWLObjectProperty"/>
         <NamedIndividual abbreviatedIRI=":Street_Direction"/>
     </ClassAssertion>
@@ -2981,16 +2985,6 @@
         <DataProperty abbreviatedIRI=":hasColumnDefinition"/>
         <NamedIndividual abbreviatedIRI=":CIRM_SR_REQUESTS.UPDATED_DATE"/>
         <Literal datatypeIRI="&xsd;string">TIMESTAMP</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty abbreviatedIRI=":storeFragment"/>
-        <NamedIndividual abbreviatedIRI=":Street_Address_City"/>
-        <Literal datatypeIRI="&xsd;string">true</Literal>
-    </DataPropertyAssertion>
-    <DataPropertyAssertion>
-        <DataProperty abbreviatedIRI=":storeFragment"/>
-        <NamedIndividual abbreviatedIRI=":Street_Address_State"/>
-        <Literal datatypeIRI="&xsd;string">true</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty abbreviatedIRI=":storeFragment"/>
