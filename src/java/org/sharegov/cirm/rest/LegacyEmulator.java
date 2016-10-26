@@ -975,7 +975,7 @@ public class LegacyEmulator extends RestService
 					.COLUMN("addrV.FULL_ADDRESS").AS("FULL_ADDRESS")
 					.COLUMN("addrV.ZIP").AS("ZIP")
 					//.COLUMN("addrV.CITY_SHORT").AS("CITY")
-					.COLUMN("addrV.CITY").AS("CITY")
+					.COLUMN("city_iri.IRI").AS("CITY")
 					.COLUMN("a.SR_STATUS").AS("STATUS")
 					.COLUMN("acts.COMPLETE_DATE").AS("COMPLETE_DATE")
 					.COLUMN("a.CREATED_DATE").AS("CREATED_DATE")
@@ -999,6 +999,8 @@ public class LegacyEmulator extends RestService
 						"cl.SUBJECT", "a.SR_REQUEST_ID");
 				select.LEFT_OUTER_JOIN("CIRM_IRI i1")
 						.ON("cl.OWLCLASS", "i1.ID");
+				select.LEFT_OUTER_JOIN("CIRM_IRI city_iri")
+						.ON("addrV.City", "city_iri.ID");				
 				select.LEFT_OUTER_JOIN("CIRM_GIS_INFO").ON("a.GIS_INFO_ID",
 						"CIRM_GIS_INFO.ID");
 				select.WHERE("cl.TO_DATE IS NULL");
@@ -1016,24 +1018,19 @@ public class LegacyEmulator extends RestService
 					OWLNamedIndividual ind = individual("legacy:" + j.at("type").asString());
 					j.set("label", OWL.getEntityLabel(ind));
 					ind = individual(j.at("Street_Address_City").asString());
-					Set<OWLLiteral> dpSet = ind.getDataPropertyValues(
-							dataProperty("Name"), topOntology.resolve());
+					Set<OWLLiteral> dpSet = ind.getDataPropertyValues(dataProperty("Name"), OWL.ontology());
 					if (!dpSet.isEmpty())
-						j.set("Street_Address_City", dpSet.iterator().next()
-								.getLiteral());
+						j.set("Street_Address_City", dpSet.iterator().next().getLiteral());
 					else
 					{
-						dpSet = ind.getDataPropertyValues(
-								dataProperty("Alias"), topOntology.resolve());
+						dpSet = ind.getDataPropertyValues(dataProperty("Alias"), OWL.ontology());
 						if (!dpSet.isEmpty())
-							j.set("Street_Address_City", dpSet.iterator()
-									.next().getLiteral());
+							j.set("Street_Address_City", dpSet.iterator().next().getLiteral());
 					}
 					resultsArray.add(j);
 				}
 			}
-			return ok().set("resultsArray", resultsArray).set("totalRecords",
-					getSearchResultCount(q, store));
+			return ok().set("resultsArray", resultsArray).set("totalRecords", getSearchResultCount(q, store));
 		}
 		catch (Exception e)
 		{

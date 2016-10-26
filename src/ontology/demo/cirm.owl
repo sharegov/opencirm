@@ -641,9 +641,6 @@
         <NamedIndividual abbreviatedIRI=":CellPhoneNumber"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual abbreviatedIRI=":City"/>
-    </Declaration>
-    <Declaration>
         <NamedIndividual abbreviatedIRI=":Comments"/>
     </Declaration>
     <Declaration>
@@ -668,7 +665,10 @@
         <NamedIndividual abbreviatedIRI=":ServiceRequestType"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual abbreviatedIRI=":State"/>
+        <NamedIndividual abbreviatedIRI=":Street_Address_City"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual abbreviatedIRI=":Street_Address_State"/>
     </Declaration>
     <Declaration>
         <NamedIndividual abbreviatedIRI=":Street_Direction"/>
@@ -1308,10 +1308,6 @@
         <NamedIndividual abbreviatedIRI=":CellPhoneNumber"/>
     </ClassAssertion>
     <ClassAssertion>
-        <Class abbreviatedIRI=":OWLObjectProperty"/>
-        <NamedIndividual abbreviatedIRI=":City"/>
-    </ClassAssertion>
-    <ClassAssertion>
         <Class abbreviatedIRI=":OWLDataProperty"/>
         <NamedIndividual abbreviatedIRI=":Comments"/>
     </ClassAssertion>
@@ -1345,7 +1341,15 @@
     </ClassAssertion>
     <ClassAssertion>
         <Class abbreviatedIRI=":OWLObjectProperty"/>
-        <NamedIndividual abbreviatedIRI=":State"/>
+        <NamedIndividual abbreviatedIRI=":Street_Address_City"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class abbreviatedIRI=":OWLProperty"/>
+        <NamedIndividual abbreviatedIRI=":Street_Address_City"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class abbreviatedIRI=":OWLObjectProperty"/>
+        <NamedIndividual abbreviatedIRI=":Street_Address_State"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class abbreviatedIRI=":OWLObjectProperty"/>
@@ -2530,11 +2534,6 @@
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI=":hasColumnMapping"/>
-        <NamedIndividual abbreviatedIRI=":City"/>
-        <NamedIndividual abbreviatedIRI=":CIRM_MDC_ADDRESS.CITY"/>
-    </ObjectPropertyAssertion>
-    <ObjectPropertyAssertion>
-        <ObjectProperty abbreviatedIRI=":hasColumnMapping"/>
         <NamedIndividual abbreviatedIRI=":Comments"/>
         <NamedIndividual abbreviatedIRI=":CIRM_SR_REQUESTS.SR_COMMENTS"/>
     </ObjectPropertyAssertion>
@@ -2589,14 +2588,19 @@
         <NamedIndividual abbreviatedIRI=":CIRM_SR_REQUESTS"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty abbreviatedIRI=":hasColumnMapping"/>
-        <NamedIndividual abbreviatedIRI=":State"/>
-        <NamedIndividual abbreviatedIRI=":CIRM_MDC_ADDRESS.STATE"/>
-    </ObjectPropertyAssertion>
-    <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI=":hasTableMapping"/>
         <NamedIndividual abbreviatedIRI=":Street_Address"/>
         <NamedIndividual abbreviatedIRI=":CIRM_MDC_ADDRESS"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty abbreviatedIRI=":hasColumnMapping"/>
+        <NamedIndividual abbreviatedIRI=":Street_Address_City"/>
+        <NamedIndividual abbreviatedIRI=":CIRM_MDC_ADDRESS.CITY"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty abbreviatedIRI=":hasColumnMapping"/>
+        <NamedIndividual abbreviatedIRI=":Street_Address_State"/>
+        <NamedIndividual abbreviatedIRI=":CIRM_MDC_ADDRESS.STATE"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI=":hasColumnMapping"/>
@@ -2980,6 +2984,16 @@
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty abbreviatedIRI=":storeFragment"/>
+        <NamedIndividual abbreviatedIRI=":Street_Address_City"/>
+        <Literal datatypeIRI="&xsd;string">true</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty abbreviatedIRI=":storeFragment"/>
+        <NamedIndividual abbreviatedIRI=":Street_Address_State"/>
+        <Literal datatypeIRI="&xsd;string">true</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty abbreviatedIRI=":storeFragment"/>
         <NamedIndividual abbreviatedIRI=":Street_Direction"/>
         <Literal datatypeIRI="&xsd;string">true</Literal>
     </DataPropertyAssertion>
@@ -2994,12 +3008,28 @@
         <Literal datatypeIRI="&xsd;string">true</Literal>
     </DataPropertyAssertion>
     <ObjectPropertyDomain>
+        <ObjectProperty abbreviatedIRI=":Street_Address_City"/>
+        <Class abbreviatedIRI=":Street_Address"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty abbreviatedIRI=":Street_Address_State"/>
+        <Class abbreviatedIRI=":Street_Address"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
         <ObjectProperty abbreviatedIRI=":hasAllowableEvent"/>
         <ObjectUnionOf>
             <Class abbreviatedIRI=":LegacyInterface"/>
             <Class abbreviatedIRI=":ServiceCase"/>
         </ObjectUnionOf>
     </ObjectPropertyDomain>
+    <ObjectPropertyRange>
+        <ObjectProperty abbreviatedIRI=":Street_Address_City"/>
+        <Class abbreviatedIRI=":City"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty abbreviatedIRI=":Street_Address_State"/>
+        <Class abbreviatedIRI=":State__U.S._"/>
+    </ObjectPropertyRange>
     <DataPropertyDomain>
         <DataProperty abbreviatedIRI=":hasCaseNumber"/>
         <Class abbreviatedIRI=":ServiceRequestType"/>

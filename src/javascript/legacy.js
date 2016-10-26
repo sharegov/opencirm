@@ -2415,8 +2415,9 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 			$("#sh_dialog_address_search").dialog({ height: 140, modal: true });
 			$("#sh_dialog_address_search").dialog('close');
     		var inputValue = $(event.currentTarget).val();
-    		if(Date.parse(inputValue) != null) {
-    			self.searchCriteria[event.currentTarget.id](Date.parse(inputValue).toString('MM/dd/yyyy'));
+    		var parsed = Date.parse(inputValue);
+    		if(parsed != null) {
+    			self.searchCriteria[event.currentTarget.id](parsed.toString('MM/dd/yyyy'));
     		}
     		event.currentTarget.focus();
 			patchPlaceholdersforIE();

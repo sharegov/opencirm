@@ -96,6 +96,7 @@ import org.semanticweb.owlapi.model.OWLPropertyAssertionAxiom;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.sharegov.cirm.CirmTransaction;
 import org.sharegov.cirm.OWL;
+import org.sharegov.cirm.utils.DBGUtils;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
@@ -2253,8 +2254,8 @@ public class RelationalStoreImpl implements RelationalStore
 			ThreadLocalStopwatch.getWatch().reset(
 					"Start merge ontology "
 							+ ontology.getOntologyID().getOntologyIRI());
-			// System.out.println("MERGING ONTOLOGY: " + ontology);
-			// DBGUtils.printOntologyFunctional(ontology);
+			System.out.println("MERGING ONTOLOGY: " + ontology);
+			DBGUtils.printOntologyFunctional(ontology);
 		}
 		// 0. Save time
 		Timestamp time = new Timestamp(getStoreTimeInt().getTime());
