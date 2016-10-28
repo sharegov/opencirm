@@ -1378,8 +1378,7 @@ public class LegacyEmulator extends RestService
 				Response current = Response.getCurrent();
 				Long boid = serviceCaseParam.at("boid").asLong();
 				Json bo = findServiceCaseOntology(boid).toJSON();
-				//TODO hilpold not always cirmuser, could be CityOfMIamiClient or DepartmentIntegration also!
-				Json result = updateServiceCaseTransaction(serviceCaseParam, bo, updateDate, emailsToSend, originator); //"cirmuser"
+				Json result = updateServiceCaseTransaction(serviceCaseParam, bo, updateDate, emailsToSend, originator);
 				Response.setCurrent(current);
 				return result;
 			}});			
@@ -1388,11 +1387,16 @@ public class LegacyEmulator extends RestService
 		}
 		catch (Throwable e)
 		{
-			//Do not catch error here.
-			ThreadLocalStopwatch.fail("FAIL updateServiceCase (str)");
-			System.out.println("formData passed into updateServiceCase: "+ serviceCaseParam.toString());
-			e.printStackTrace();
-			return ko(e);
+			if (CirmTransaction.isExecutingOnThisThread()) {
+				//We're still inside a higher level transaction and must not hide/catch a potentially retriable exception.
+				throw e;
+			} else {
+				//Top level transaction completed, all possible retries completed, return error json. 
+    			ThreadLocalStopwatch.fail("FAIL updateServiceCase (str)");
+    			System.out.println("formData passed into updateServiceCase: "+ serviceCaseParam.toString());
+    			e.printStackTrace();
+    			return ko(e);
+			}
 		}
 	}
 	

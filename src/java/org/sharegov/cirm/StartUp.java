@@ -87,6 +87,7 @@ public class StartUp extends ServerResource
 			.set("defaultOntologyIRI", "http://www.miamidade.gov/cirm/legacy")
 			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#ProdConfigSet")
 			.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#TestConfigSet")
+			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#DevConfigSet")
 			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#LocalConfigSetXE")
 			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#LocalConfigSet")
 			.set("nameBase", "http://www.miamidade.gov/ontology" )

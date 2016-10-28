@@ -3,7 +3,6 @@
 	<name>opencirm</name>
 	<comment></comment>
 	<projects>
-		<project>mdcirm</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
