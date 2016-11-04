@@ -226,29 +226,34 @@ public class CityOfMiamiClient extends RestService
 		 + "<TrackingNumber>" + cirmNumber + "</TrackingNumber>"
 		 + "<flagCSRready>N</flagCSRready>"
 		 + "<flagCSRProcessOK>" + YN + "</flagCSRProcessOK>"                                                            
-		 + "<CSRProcessMessage>" + msg+ "</CSRProcessMessage>"
+		 + "<CSRProcessMessage>" + msg + "</CSRProcessMessage>"
 		 + "</tblCECases>"
 		 + "</NewDataSet>";
 
 		String request = header + encode(body) + footer;
-		
+		ThreadLocalStopwatch.now("COM respondToCity request \r\n" + request);
+		//System.out.println();
 		String response = GenUtils.httpPost(serviceDescription.at("hasEndpoint").asString(), request, new String[] {
 		    "Content-type", "text/xml; charset=utf-8",
 		    "content-length", Integer.toString(request.length()),
 		    "soapaction", "http://citynet.com/strUpdateCVCasesProcessStatus"
 		});
-	
+		ThreadLocalStopwatch.now("COM respondToCity response \r\n" + response);
+		
 		Document topdoc = XMLU.parse(response);
 		
 		Node item = topdoc.getElementsByTagName("strUpdateCVCasesProcessStatusResult").item(0);
-		String responseContent = item.getFirstChild().getTextContent();
-		Document rdoc = XMLU.parse(responseContent);
-		String processMessage = XMLU.content(rdoc, "ProcessMessage");
-		
-		if (processMessage == null || "Process OK".equals(processMessage))
+		String processMessage = null;
+		if (item != null && item.hasChildNodes()) {
+    		String responseContent = item.getFirstChild().getTextContent();
+    		Document rdoc = XMLU.parse(responseContent);
+    		processMessage = XMLU.content(rdoc, "ProcessMessage");
+		}
+		if (processMessage == null || "Process OK".equals(processMessage)) {
 			return ok();
-		else
+		} else {
 			return ko(processMessage);
+		}
 	}
 	
 	/**
@@ -325,7 +330,13 @@ public class CityOfMiamiClient extends RestService
 			retryNeeded = false;
 			try {
     			if (!updateResult.is("ok", true)) {
-        			ackResult = respondToCityAfterUpdateHttpPost(update, "N", encode(updateResult.at("error").asString()));
+    				if (isCityUpdateForPreCutoffCase(update)) {
+    					ThreadLocalStopwatch.error("COM UPDATE FOR PRE " + CASE_NOT_FOUND_CUTOFF_YEAR + " detected and update failed, responding Ok."); 
+    					//respond as if update was applied, but provide special message.
+    					ackResult = respondToCityAfterUpdateHttpPost(update, "Y", CASE_NOT_FOUND_TAG);
+    				} else {
+    					ackResult = respondToCityAfterUpdateHttpPost(update, "N", encode(updateResult.at("error").asString()));
+    				}
         		} else {
         			ackResult = respondToCityAfterUpdateHttpPost(update, "Y", "");
         		}
@@ -344,7 +355,11 @@ public class CityOfMiamiClient extends RestService
 		if (retryNeeded) {
 			throw new RuntimeException("RespondToCityAfterUpdate to CityView interface failed for over 30 seconds with retriable exception");
 		}
-		return ackResult;
+		if (!updateResult.is("ok", true)) {
+			return updateResult;
+		} else {
+			return ackResult;
+		}
 	}
 	
 	/**
@@ -383,8 +398,10 @@ public class CityOfMiamiClient extends RestService
 			Document rdoc = XMLU.parse(topdoc.getElementsByTagName("strGetServiceRequestReadyResult").item(0).getTextContent());
 			NodeList updateNodes = rdoc.getElementsByTagName("tblCECases");
 			Json result = Json.array();
-			ThreadLocalStopwatch.now("NOW CityOfMiamiClient /retrieveUpdates updateNodes.length() = " + updateNodes.getLength());			
-			for (int i = 0; i < updateNodes.getLength(); i++)
+			int nrOfComUpdates = updateNodes.getLength();
+			int maxIdxComUpdates = nrOfComUpdates - 1;
+			ThreadLocalStopwatch.now("NOW CityOfMiamiClient /retrieveUpdates updateNodes.length() = " + nrOfComUpdates);			
+			for (int i = 0; i < nrOfComUpdates; i++)
 			{
 				Element n = (Element)updateNodes.item(i);
 				final Json update = Json.object(
@@ -396,30 +413,24 @@ public class CityOfMiamiClient extends RestService
 					"code3", XMLU.content(n, "Activity3"),
 					"value3", XMLU.content(n, "Outcome3", "")
 				);
+				ThreadLocalStopwatch.now("START COM CityOfMiamiClient UPDATE " + i + "/" + maxIdxComUpdates+ " " + update);
 				if (update.at("CaseNumber").isNull())
-				{
+				{					
 					respondToCityAfterUpdateHttpPost(update, "N", "CiRM tracking number is null.");
+					ThreadLocalStopwatch.error("ERROR: COM CityOfMiamiClient UPDATE " + i + "/" + maxIdxComUpdates+ " " + update);	
 					continue;
 				}
 				try
 				{
 					Json updateResult = applyUpdateFromCity(update);
-					// TODO : if the update failed somehow, we need to log it somewhere for auditing purpose
-					// nowhere else for now, but stdout
 					if (updateResult.is("ok", false))
 					{
-						if (isCityUpdateForPreCutoffCase(update)) {
-							ThreadLocalStopwatch.error("COM UPDATE FOR PRE " 
-									+ CASE_NOT_FOUND_CUTOFF_YEAR 
-									+ "  case " + i 
-									+ " FAILED: " + update.at("CaseNumber") + " result: " + updateResult 
-									+ ", responding Y " + CASE_NOT_FOUND_TAG);
-							//respond as if update was applied, but provide special message.
-							respondToCityAfterUpdateHttpPost(update, "Y", CASE_NOT_FOUND_TAG);							
-						} else {
-							//do not acknowledge, CitiView will resend
-							ThreadLocalStopwatch.error("ERROR: COM UPDATE " + i + " FAILED: " + update + "\nCOM UPDATED RESULT: " + updateResult);
+						if (updateResult.has("stackTrace")) {
+							updateResult.delAt("stackTrace");
 						}
+						ThreadLocalStopwatch.error("ERROR: COM CityOfMiamiClient UPDATE " + i + "/" + maxIdxComUpdates+ " " + update);												
+					} else {
+						ThreadLocalStopwatch.now("SUCCESS: COM CityOfMiamiClient UPDATE " + i + "/" + maxIdxComUpdates+ " " + update);
 					}
 					result.add(updateResult);	
 				}
