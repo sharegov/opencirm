@@ -21,7 +21,6 @@ import static org.sharegov.cirm.OWL.individual;
 import static org.sharegov.cirm.OWL.getEntityLabel;
 import static org.sharegov.cirm.OWL.objectProperty;
 import static org.sharegov.cirm.OWL.ontology;
-import static org.sharegov.cirm.utils.ServiceRequestReportUtil.formatDate;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -42,7 +41,6 @@ import org.apache.poi.hssf.usermodel.HSSFPrintSetup;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.semanticweb.owlapi.model.OWLOntology;
 
@@ -334,7 +332,7 @@ public class ExcelExportUtil
 	    cell = row.createCell(0);
 	    cell.setCellValue(searchCriteriaHeader);
     	sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 
-    			cell.getColumnIndex(), cell.getColumnIndex()+2));
+    			cell.getColumnIndex(), cell.getColumnIndex() + 2));
     	for(Entry<String, Json> prop : searchCriteria.asJsonMap().entrySet())
     	{
     		if(prop.getKey().equalsIgnoreCase("sortBy") || 
@@ -373,7 +371,8 @@ public class ExcelExportUtil
 						prop.getKey().equals("legacy:hasIntakeMethod") || 
 						prop.getKey().equals("legacy:hasPriority"))
 				{
-					sbAnswer.append(getEntityLabel(individual(prop.getValue().at("iri").asString())));
+    				Json objectOrList = prop.getValue();    				
+					sbAnswer.append(getEntityLabelDisplayString(objectOrList));
 				}
 				if(prop.getKey().equals("atAddress"))
 				{
@@ -448,4 +447,27 @@ public class ExcelExportUtil
     	return rowCounter;
     }
 
+    /**
+     * Gets labels for one or more entities in a grammatically correct list for user display.
+     * 
+     * @param objectOrList object with iri or list of objects with iri.
+     * @return
+     */
+    public String getEntityLabelDisplayString(Json objectOrList) {
+    	if (objectOrList == null) return "";
+    	if (objectOrList.isPrimitive()) return objectOrList.asString();
+    	
+    	String result = "";
+    	if (objectOrList.isArray()) {
+    		int len = objectOrList.asJsonList().size();
+    		for (Json o : objectOrList.asJsonList()) {
+    			len--;
+    			result += getEntityLabel(individual(o.at("iri").asString()));
+    			result += (len > 1)? ", " : (len > 0)? " and " : ".";    				
+    		}
+    	} else {
+    		result = getEntityLabel(individual(objectOrList.at("iri").asString()));
+    	}
+    	return result;
+    }
 }
