@@ -549,11 +549,11 @@ public class ActivityManager
 			OWLDataFactory factory = manager.getOWLDataFactory();
 			//06-20-2013 syed - Use the SR hasDateLastModified as the ServiceActivity hasUpdatedDate.
 			OWLLiteral updatedDate = bo.getDataProperty("hasDateLastModified");
+			//2016.11.05 hilpold - if sr was never updated, use now.
+			if (updatedDate == null) {
+				updatedDate = factory.getOWLLiteral(GenUtils.formatDate(new Date()), OWL2Datatype.XSD_DATE_TIME);
+			}
 			
-					//factory.getOWLLiteral(DatatypeFactory.newInstance()
-						//				.newXMLGregorianCalendar((GregorianCalendar)Calendar.getInstance())
-							//			.toXMLFormat()
-								//		,OWL2Datatype.XSD_DATE_TIME_STAMP);
 			bo.deleteDataProperty(serviceActivity, dataProperty("legacy:hasUpdatedDate"));
 			manager.addAxiom(o,
 					factory.getOWLDataPropertyAssertionAxiom(
