@@ -722,25 +722,6 @@
         <Class abbreviatedIRI="legacy:Software_Configuration"/>
     </SubClassOf>
     <SubClassOf>
-        <Class abbreviatedIRI="legacy:City"/>
-        <Class abbreviatedIRI="legacy:Place"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class abbreviatedIRI="legacy:City"/>
-        <DataExactCardinality cardinality="1">
-            <DataProperty abbreviatedIRI="legacy:Name"/>
-            <Datatype abbreviatedIRI="xsd:string"/>
-        </DataExactCardinality>
-    </SubClassOf>
-    <SubClassOf>
-        <Class abbreviatedIRI="legacy:ConfigParam"/>
-        <Class abbreviatedIRI="legacy:Software_Configuration"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class abbreviatedIRI="legacy:ConfigSet"/>
-        <Class abbreviatedIRI="legacy:Software_Configuration"/>
-    </SubClassOf>
-    <SubClassOf>
         <Class abbreviatedIRI="legacy:Garbage_Missed_Complaint"/>
         <Class abbreviatedIRI="legacy:ServiceRequestType"/>
     </SubClassOf>
@@ -755,10 +736,6 @@
     <SubClassOf>
         <Class abbreviatedIRI="legacy:Pothole"/>
         <Class abbreviatedIRI="legacy:ServiceRequestType"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class abbreviatedIRI="legacy:Software_Configuration"/>
-        <Class abbreviatedIRI="legacy:Software_Object"/>
     </SubClassOf>
     <SubClassOf>
         <Class abbreviatedIRI="legacy:Tree_Fallen"/>
@@ -1590,63 +1567,11 @@
     </ClassAssertion>
     <ClassAssertion>
         <Class abbreviatedIRI="legacy:JavaClass"/>
-        <NamedIndividual abbreviatedIRI="legacy:org.sharegov.cirm.rest.CodeService"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:JavaClass"/>
-        <NamedIndividual abbreviatedIRI="legacy:org.sharegov.cirm.rest.LegacyEmulator"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:JavaClass"/>
-        <NamedIndividual abbreviatedIRI="legacy:org.sharegov.cirm.rest.MetaService"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:JavaClass"/>
-        <NamedIndividual abbreviatedIRI="legacy:org.sharegov.cirm.rest.OWLIndividuals"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:JavaClass"/>
-        <NamedIndividual abbreviatedIRI="legacy:org.sharegov.cirm.rest.OWLTypes"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:JavaClass"/>
-        <NamedIndividual abbreviatedIRI="legacy:org.sharegov.cirm.rest.OntoAdmin"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:JavaClass"/>
-        <NamedIndividual abbreviatedIRI="legacy:org.sharegov.cirm.rest.OperationService"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:JavaClass"/>
-        <NamedIndividual abbreviatedIRI="legacy:org.sharegov.cirm.rest.RestServiceAdmin"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:JavaClass"/>
-        <NamedIndividual abbreviatedIRI="legacy:org.sharegov.cirm.rest.SearchService"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:JavaClass"/>
-        <NamedIndividual abbreviatedIRI="legacy:org.sharegov.cirm.rest.SystemMonitorService"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:JavaClass"/>
-        <NamedIndividual abbreviatedIRI="legacy:org.sharegov.cirm.rest.UiService"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:JavaClass"/>
         <NamedIndividual abbreviatedIRI="legacy:org.sharegov.cirm.search.GoogleSearchEngine"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class abbreviatedIRI="legacy:JavaInterface"/>
         <NamedIndividual abbreviatedIRI="legacy:org.sharegov.cirm.search.SearchEngine"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:JavaClass"/>
-        <NamedIndividual abbreviatedIRI="legacy:org.sharegov.cirm.services.OWLWebServices"/>
-    </ClassAssertion>
-    <ClassAssertion>
-        <Class abbreviatedIRI="legacy:JavaClass"/>
-        <NamedIndividual abbreviatedIRI="legacy:org.sharegov.cirm.utils.JsonEntityProvider"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class abbreviatedIRI="legacy:ServiceQuestion"/>
@@ -3558,12 +3483,12 @@ You have received a </Literal>
     <DataPropertyAssertion>
         <DataProperty abbreviatedIRI="legacy:hasUrl"/>
         <NamedIndividual abbreviatedIRI="legacy:LocalPostgresDatabase"/>
-        <Literal datatypeIRI="&xsd;string">jdbc:postgresql://localhost:5432/cirm</Literal>
+        <Literal datatypeIRI="&xsd;string">jdbc:postgresql://localhost:5432/opencirm</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty abbreviatedIRI="legacy:hasUsername"/>
         <NamedIndividual abbreviatedIRI="legacy:LocalPostgresDatabase"/>
-        <Literal datatypeIRI="&xsd;string">cirm</Literal>
+        <Literal datatypeIRI="&xsd;string">opencirm</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty abbreviatedIRI="legacy:Name"/>
