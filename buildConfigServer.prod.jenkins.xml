@@ -36,7 +36,7 @@
 	<target name="update-prod-conf" depends="clean, deploy-prod-conf, restart-prod-conf" description="Clean, then build and deploy latest release to production config server, then restart."/>
 	<target name="restart-prod-conf-with-fresh-ontodb" description="Restart configuration server after deleting its ontologies local DBs (which forces a clean reload of onto data)">
 		<antcall target="restart-conf-with-fresh-ontodb">
-			<param name="server" value="s0144549"/>
+			<param name="server" value="s2030075"/>
 		</antcall>
 	</target>
 	<!-- Production User Targets END -->
@@ -208,10 +208,10 @@
 	<target name="prepare-conf-release" depends="make-dist, version-increment, save-version" description="Compile, revision tag, make config server distribution ready for deployment."/>
 	<target name="deploy-prod-conf" depends="prepare-conf-release" description="Deploy to production server, does not autorestart.">
 		<echo message="Deploying ${changesetid} to production..."/>
-		<deploy server="s0144549"/>
+		<deploy server="s2030075"/>
 	</target>
-	<target name="restart-prod-conf" description="Restart the production configuration server (s0144549).">
-		<restart server="s0144549"/>
+	<target name="restart-prod-conf" description="Restart the production configuration server (s2030075).">
+		<restart server="s2030075"/>
 	</target>
 	<target name="wipeonto-conf" description="Delete ontology DB at specified 'server'">
 		<echo message="Delete ontology DB at ${server}"/>
