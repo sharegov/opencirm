@@ -86,8 +86,8 @@ public class StartUp extends ServerResource
 			.set("keyPass", "password")
 			.set("defaultOntologyIRI", "http://www.miamidade.gov/cirm/legacy")
 			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#ProdConfigSet")
-			.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#TestConfigSet")
-			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#DevConfigSet")
+			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#TestConfigSet")
+			.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#DevConfigSet")
 			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#LocalConfigSetXE")
 			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#LocalConfigSet")
 			.set("nameBase", "http://www.miamidade.gov/ontology" )
@@ -286,6 +286,9 @@ public class StartUp extends ServerResource
 
 	public static void main(String[] args) throws Exception
 	{
+		setHttpClientLogging(true);
+		
+		
 		if (STRESS_TEST_CONFIG)
 			stressTestConfig();
 		if( (args.length > 0) ) {
@@ -605,5 +608,12 @@ public class StartUp extends ServerResource
 				StartupUtils.getWeakSSLCipherSuitesParamString());
 		ctx.getParameters().add("enabledCipherSuites", 
 				StartupUtils.getStrongSSLCipherSuitesParamString());
+	}
+	
+	private static void setHttpClientLogging(boolean enabled) {
+		System.setProperty("com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump", "" + enabled);
+		System.setProperty("com.sun.xml.internal.ws.transport.http.client.HttpTransportPipe.dump", "" + enabled);
+		System.setProperty("com.sun.xml.ws.transport.http.HttpAdapter.dump", "" + enabled);
+		System.setProperty("com.sun.xml.internal.ws.transport.http.HttpAdapter.dump", "" + enabled);
 	}
 }

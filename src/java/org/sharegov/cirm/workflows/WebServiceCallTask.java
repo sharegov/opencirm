@@ -73,6 +73,10 @@ public class WebServiceCallTask implements SWRLBuiltinImplementation
 			if(dataProperty(webService, "hasEndpoint") == null)
 				return M;
 			String requestStylesheet = OWL.unescape(dataProperty(webService, "hasRequestStylesheet")); 
+			System.out.println("webService");
+			System.out.println(webService);
+			System.out.println("requestStylesheet");
+			System.out.println(requestStylesheet);
 			OWLLiteral responseStylesheet = dataProperty(webService, "hasResponseStylesheet");
 			WSClient client = getClient(webService);
 			Document request = newDocument(client.getNamespace());

@@ -108,11 +108,15 @@ public class WSClient
 			}
 			MessageFactory factory = ((SOAPBinding) bp.getBinding()).getMessageFactory();
 			write(request);
+			System.out.println();
 			SOAPMessage reply = null;
 			SOAPMessage message = factory.createMessage();
 			//SOAPHeader header = message.getSOAPHeader();
 			SOAPBody body = message.getSOAPBody();
 			body.addDocument(request);
+			System.out.println("Dispatch: " + dispatch);
+			System.out.println("Msg Request body: " + body);
+			System.out.println();
 			reply = dispatch.invoke(message);
 			body = reply.getSOAPBody();
 			response =  body.extractContentAsDocument();

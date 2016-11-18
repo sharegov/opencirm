@@ -9,20 +9,6 @@
 	<classpathentry kind="lib" path="lib/commons-logging-1.0.4.jar"/>
 	<classpathentry kind="lib" path="lib/commons-net-3.2.jar"/>
 	<classpathentry kind="lib" path="lib/connector.jar"/>
-	<classpathentry kind="lib" path="lib/enunciate/apt-jelly-core-2.14.jar"/>
-	<classpathentry kind="lib" path="lib/enunciate/apt-jelly-freemarker-2.14.jar"/>
-	<classpathentry kind="lib" path="lib/enunciate/commons-beanutils-1.7.0.jar"/>
-	<classpathentry kind="lib" path="lib/enunciate/commons-digester-1.7.jar"/>
-	<classpathentry kind="lib" path="lib/enunciate/commons-logging-1.0.4.jar"/>
-	<classpathentry kind="lib" path="lib/enunciate/enunciate-core-1.24.jar"/>
-	<classpathentry kind="lib" path="lib/enunciate/enunciate-core-annotations-1.24.jar"/>
-	<classpathentry kind="lib" path="lib/enunciate/enunciate-core-rt-1.24.jar"/>
-	<classpathentry kind="lib" path="lib/enunciate/enunciate-docs-1.24.jar"/>
-	<classpathentry kind="lib" path="lib/enunciate/freemarker-2.3.14.jar"/>
-	<classpathentry kind="lib" path="lib/enunciate/jackson-core-asl-1.8.3.jar"/>
-	<classpathentry kind="lib" path="lib/enunciate/jackson-mapper-asl-1.8.3.jar"/>
-	<classpathentry kind="lib" path="lib/enunciate/jdom.jar"/>
-	<classpathentry kind="lib" path="lib/enunciate/tools.jar"/>
 	<classpathentry kind="lib" path="lib/hgbdbje-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/hgdb-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/hgdbmanagement-1.2.jar"/>
