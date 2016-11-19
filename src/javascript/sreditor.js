@@ -15,14 +15,10 @@
  ******************************************************************************/
 define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfaceValidation", "text!../html/srmarkup.ht"], 
    function($, U, rest, ui, store, cirm, legacy, interfaceValidation, srmarkupText)   {
-	
-   
     
     function getMetadataUrl(){
     	return 'https://api.miamidade.gov/s3ws/metadata/update';
     }
-    
-    
 	
     function AddressBluePrint() {
     	var self = this;
@@ -212,63 +208,19 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 		};
 		ko.extenders.standardizeStreet = function(target, overrideMessage) {
 			self.commonExtenderForAll(target, overrideMessage, "STANDARDIZE_STREET");
-		};
+		};				
+		// Apply where a serviceAnswerConstraint is configured and the question is not REQINTAK.
+		var serviceAnswerConstraint = function(target, stringConstraint) {
+			self.charDataConstraintExtenderFunction(target, stringConstraint, false);
+		};		
+
+		ko.extenders.TextLengthConstraint = serviceAnswerConstraint;
+		ko.extenders.serviceAnswerConstraint = serviceAnswerConstraint;		
 		
-		/**
-		 * This extender function for string constraints can be applied to ServiceAnswer literals
-		 * or other SR properties (e.g. hasDetails) that allow single or multi-line char user input.
-		 * Param stringConstraint may have a combination of hasMax int, hasMin int or hasRegexPattern string data properties.
-		 * 
-		 * hilpold: in the future hasRegexPattern should be accompanied by hasRegexPatternDescription 
-		 * 			to show a more meaningful error message to the user.
-		 */
-		var charDataConstraintExtenderFunction = function(target, stringConstraint) {
-			if (ko.isObservable(stringConstraint)) {
-				stringConstraint = ko.toJS(stringConstraint);
-			}
-		    target.hasError = ko.observable();
-		    target.validationMessage = ko.observable();
-			function validate(value) {
-			    if (!value || value == "") {
-			        return true;
-			    }
-			    target.hasError(false);
-			    target.validationMessage("");
-			    // A) hasMax int optional
-			    if (stringConstraint.hasMax && value.length > stringConstraint.hasMax) {
-			        target.hasError(true);
-			        target.validationMessage("Please reduce text from " + value.length + " to less than " + stringConstraint.hasMax + " characters.");
-			    }
-			    // B) hasMin int optional, effective after first char was entered 
-			    //	  (in contrast to independent required (REQINTAK) evaluation)
-			    if (stringConstraint.hasMin && value.length < stringConstraint.hasMin) {
-			        target.hasError(true);
-			        target.validationMessage("Mininum required length is " + stringConstraint.hasMin + " characters.");
-			    }
-			    // C) hasRegexPattern string optional
-			    if (stringConstraint.hasRegexPattern) {
-			    	var pattern = stringConstraint.hasRegexPattern;
-			    	var isValid = true;
-			    	try {
-			    		var matcher = new RegExp(pattern, "im" ); //im = ignore case & multiline
-			    		isValid = matcher.test(value);
-			    	} catch(err) {
-			    		isValid = true;
-			    		console.log("Ignoring Exception in charDataConstraintExtenderFunction while evaluating pattern " + stringConstraint.hasRegexPattern);
-			    	}
-			    	if(!isValid) {
-				        target.hasError(true);
-				        target.validationMessage("Please correct text in this field to match " + pattern + " pattern");
-			    	}
-			    }
-			    return true;
-			} // end function
-			validate(target());
-			target.subscribe(validate);
-			return target;		    
+		// Apply where a serviceAnswerConstraint is configured and the question is REQINTAK configured.
+		ko.extenders.serviceAnswerConstraintAndRequired = function(target, stringConstraint) {
+			self.charDataConstraintExtenderFunction(target, stringConstraint, true);
 		};
-		ko.extenders.TextLengthConstraint = charDataConstraintExtenderFunction;
-		ko.extenders.serviceAnswerConstraint = charDataConstraintExtenderFunction;
 		
 		/**
 		 * Use toolTipTitle as title attribute binding on char answer input fields
@@ -458,6 +410,74 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			target.subscribe(validate);
 			return target;
 		}
+		
+		/**
+		 * This extender function for string constraints can be applied to ServiceAnswer literals
+		 * or other SR properties (e.g. hasDetails) that allow single or multi-line char user input.
+		 * Param stringConstraint may have a combination of hasMax int, hasMin int or hasRegexPattern string data properties.
+		 * Param required true/false determines if the literal is required, which is configured 
+		 * independent of string constraints (REQINTAK) at the ServiceQuestion level.
+		 * 
+		 * An empty value will cause a validation error, if REQINTAK, hasMin > 0, or both are configured. 
+		 * 
+		 * hilpold: in the future hasRegexPattern should be accompanied by hasRegexPatternDescription 
+		 * 			to show a more meaningful error message to the user.
+		 */
+		self.charDataConstraintExtenderFunction = function(target, stringConstraint, required) {
+			if (ko.isObservable(stringConstraint)) {
+				stringConstraint = ko.toJS(stringConstraint);
+			}
+		    target.hasError = ko.observable();
+		    target.validationMessage = ko.observable();
+		    
+			function validate(value) {
+				target.hasError(false);
+			    target.validationMessage("");
+			    if (!required) {
+			    	//even if !required by the parameter, hasMin could imply that a non empty string value is required
+			    	required = stringConstraint.hasMin && stringConstraint.hasMin > 0;
+			    }			    
+			    if (U.isEmptyString(value)) {
+			    	if (required) {
+			    		target.hasError(true);
+					    target.validationMessage("Required");
+			    	} //else ok
+			    	return true;
+			    }
+			    // A) hasMax int optional
+			    if (stringConstraint.hasMax && value.length > stringConstraint.hasMax) {
+			        target.hasError(true);
+			        var nrOfExcessChars = value.length - stringConstraint.hasMax;
+			        target.validationMessage("Maximum length " + stringConstraint.hasMax + " exceeded by " + nrOfExcessChars + ".");
+			    }
+			    // B) hasMin int optional, effective after first char was entered 
+			    //	  (in contrast to required (REQINTAK) evaluation)
+			    if (stringConstraint.hasMin && value.length < stringConstraint.hasMin) {
+			        target.hasError(true);
+			        target.validationMessage("Mininum length is " + stringConstraint.hasMin + ".");
+			    }
+			    // C) hasRegexPattern string optional
+			    if (stringConstraint.hasRegexPattern) {
+			    	var pattern = stringConstraint.hasRegexPattern;
+			    	var isValid = true;
+			    	try {
+			    		var matcher = new RegExp(pattern, "im" ); //im = ignore case & multiline
+			    		isValid = matcher.test(value);
+			    	} catch(err) {
+			    		isValid = true;
+			    		console.log("Ignoring Exception in charDataConstraintExtenderFunction while evaluating pattern " + stringConstraint.hasRegexPattern);
+			    	}
+			    	if(!isValid) {
+				        target.hasError(true);
+				        target.validationMessage("Please correct entry to match " + pattern + " pattern");
+			    	}
+			    }
+			    return true;
+			} // end function
+			validate(target());
+			target.subscribe(validate);
+			return target;		    
+		};
 		//END: define knockoutjs extenders -----------------------------------------
 
         //
@@ -616,12 +636,13 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
     			if (v.hasBusinessCodes && v.hasBusinessCodes().indexOf('EMAIL') != -1) {
     				v.hasAnswerValue().literal.extend({email_required: "Invalid"});
     			} else {
-    				v.hasAnswerValue().literal.extend({ required: "Required" });
+    				if (v.hasAnswerConstraint) {
+    					v.hasAnswerValue().literal.extend({serviceAnswerConstraintAndRequired: v.hasAnswerConstraint});
+    				} else {
+    					v.hasAnswerValue().literal.extend({ required: "Required" });
+    				}
     			}
-				v.hasAnswerValue().literal.extend({charTemplateLiteralExtender: ""});
-				if (v.hasAnswerConstraint) {
-					v.hasAnswerValue().literal.extend({serviceAnswerConstraint: v.hasAnswerConstraint});
-				}
+				v.hasAnswerValue().literal.extend({charTemplateLiteralExtender: ""});				
 			} else { 
 				v.hasAnswerValue().literal.extend({ required: "Required" });
 				v.hasAnswerValue().literal.extend({charTemplateLiteralExtender: ""});
@@ -648,12 +669,13 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 				} else if(v.hasBusinessCodes && v.hasBusinessCodes().indexOf('EMAIL') != -1) {
 					v.hasAnswerValue().literal.extend({email: "Invalid"});
 				} else {
-					v.hasAnswerValue().literal.extend({none: ""}); 
+					if (v.hasAnswerConstraint) {
+						v.hasAnswerValue().literal.extend({serviceAnswerConstraint: v.hasAnswerConstraint});
+					} else {
+						v.hasAnswerValue().literal.extend({none: ""});
+					}
 				}
 				v.hasAnswerValue().literal.extend({charTemplateLiteralExtender: ""});
-				if (v.hasAnswerConstraint) {
-					v.hasAnswerValue().literal.extend({serviceAnswerConstraint: v.hasAnswerConstraint});
-				}
 			}
 		}
 	    
@@ -786,7 +808,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			    currd.setTime(currd.getTime() + Math.round(parseFloat(type.hasDurationDays)*1000*60*60*24));
 			    P.hasDueDate = currd.format();
 			}
-			console.log('created blueprint', blue);
+			//console.log('created blueprint', blue);
     	    return blue;
 	    };
 	    /**
@@ -1279,7 +1301,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 					function(data) {
 						if(data.ok)
 						{
-						    console.log(data.profile);
+						    //console.log(data.profile);
 							self.activeProfile(data.profile);
 							$('#sh_profile_img').attr("src", "https://secure.miamidade.gov/enet/wps/PA_eNet_Profiles/getimage?p1="+s+"&p2=gov.miamidade.enet.profile.Profile&p3=ProfileImage");
 							$('#sh_profile_img').error(function(){
@@ -1296,7 +1318,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 		
 		function duplicateCheck()
 		{
-		    console.log('duplicate check');
+		    //console.log('duplicate check');
 		    if (U.offline())
 		        return;
 			var postData = { "type": self.data().type(), "address" : ko.toJS(self.data().properties().atAddress)};
@@ -2094,10 +2116,10 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
     		jsondata.properties.hasDateCreated = self.getServerDateTime().asISODateString();
             jsondata.properties.isCreatedBy = cirm.user.username;
             var send = prefixMaker(jsondata);
-            console.log("send", send);
+            //console.log("send", send);
 			$("#sh_save_progress").dialog({height: 140, modal: true, dialogClass: 'no-close'});
             cirm.top.async().post("/legacy/kosubmit", {data:JSON.stringify(send)}, function(result) {
-                console.log("result", ko.toJS(result));
+                //console.log("result", ko.toJS(result));
                 if(result.ok == true) {
                     $(document).trigger(legacy.InteractionEvents.UserAction, 
                         ["SR Created", result.bo.type + ":" + result.bo.properties.hasCaseNumber]);
@@ -2135,11 +2157,11 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
           jsondata.properties.hasDateLastModified = self.getServerDateTime().asISODateString();
           jsondata.properties.isModifiedBy = cirm.user.username;
           var send = prefixMaker(jsondata);
-          console.log("send", send);
+          //console.log("send", send);
 		  $("#sh_save_progress").dialog({height: 140, modal: true, dialogClass: 'no-close'});
 
 		  var upcontinuation = function(result) {
-                console.log("result", ko.toJS(result));
+                //console.log("result", ko.toJS(result));
                 if(result.ok == true) {
                     $(document).trigger(legacy.InteractionEvents.UserAction, 
                         ["SR Updated", result.bo.type + ":" + result.bo.properties.hasCaseNumber]);
@@ -2181,7 +2203,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
       		//2561 change the isCreatedBy if it was submitted by 311 direct 
       		if(model.isPendingApproval)
       		{
-      			console.log("SR came from 311 direct changing created by");
+      			//console.log("SR came from 311 direct changing created by");
       			model.data().properties().isCreatedBy(cirm.user.username); 
       		}
       		
@@ -3223,9 +3245,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 				return U.isEmptyString(tempEL) == true ? "" : new Date(Date.parse(tempEL)).format("mm/dd/yyyy HH:MM:ss");
 		};
 
-		self.attachmentCallBack = function(res) {
-			
-			
+		self.attachmentCallBack = function(res) {					
 			if(res.ok == true){
 				self.data().properties().hasAttachment.push(res.url);
 				console.log();
@@ -3234,36 +3254,27 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			}
 			else if(res.ok == false)
 				alertDialog("Error uploading file");
-		};
-		
-		
+		};				
 
-		self.uploadFiles = function(el) {
-			
-		   
-			
+		self.uploadFiles = function(el) {					 			
 			if($('#fileUploader').val())
 			{
 			$('#fileUploader').upload("/upload", self.attachmentCallBack, 'json');
 			$('#fileUploader')[0].value = "";
 			}
-			console.log(self);
-		};
-		
+			//console.log(self);
+		};		
 		
 		function metadata(key, value){
 			this.key = key;
 			this.value = value;
 			
-		}
+		}				
 		
-		
-		
-		function updateMetadata(metadata, images){
-			
+		function updateMetadata(metadata, images){			
 			var url = getMetadataUrl(); 
 			//metadata = [{"key":"sr", "value": "123456"}];
-			console.log("number of images " + images.length);
+			//console.log("number of images " + images.length);
 			var tokens; 
 			var image;
 			for(i=0; i < images.length; i++){
@@ -3271,8 +3282,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			    tokens = image.split("/");
 			    token = tokens[4];
 			    url = url + "/" + token;
-			    console.log("uploading metadata for " + url);
-				
+			    //console.log("uploading metadata for " + url);				
 				
 				$.ajax({
 					url:url,
@@ -3281,12 +3291,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 					contentType:"json",
 					contentType: "application/json; charset=utf-8",
 					success:function(){
-						console.log("submitted metadat successfully");
+						console.log("submitted metadata successfully");
 					}
-				});
-				
-				 
-				
+				});								 			
 			}
 		};
 
@@ -3416,7 +3423,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 						$("#sh_dialog_alert").dialog({ height: 150, width: 500, modal: true, buttons: {
 								"Continue" : function() {
 									$("#sh_dialog_alert").dialog('close');							
-									console.log("closing dialog, validating addresss");
+									//console.log("closing dialog, validating addresss");
 						        	model.searchAddress();														
 								}
 							} 
@@ -3601,12 +3608,10 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 	    //if no images, then add the property for images
     	bo.properties.hasAttachment = U.ensureArray(bo.properties.hasAttachment);
     	bo.properties.hasRemovedAttachment = U.ensureArray(bo.properties.hasRemovedAttachment);
-    	
-    	
-    	
+
     	bo.properties.hasServiceAnswer = U.ensureArray(bo.properties.hasServiceAnswer);
 
-        if(srType.hasServiceField && bo.properties.hasServiceAnswer.length != srType.hasServiceField.length) {
+    	if(srType.hasServiceField && bo.properties.hasServiceAnswer.length != srType.hasServiceField.length) {
 	        //populate the bo with the Service Answers which are not present
         	if(bo.properties.hasServiceAnswer.length < srType.hasServiceField.length) {
 		        var tempServiceAnswerIris = [];
@@ -3712,8 +3717,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
            			delete serviceAnswer.hasAnswerValue;
            			if(serviceField.hasDataType == 'CHARLIST')
            				serviceAnswer.hasDataType = 'CHARLISTOPT';
-           		}
-           			
+           		}           		
            	}
            	if(serviceField.hasAnswerUpdateTimeout)
            		serviceAnswer.hasAnswerUpdateTimeout = serviceField.hasAnswerUpdateTimeout;
@@ -3882,12 +3886,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 		}
 		//END : Old Activities
 		//model.bindData(U.visit(srType, U.makeObservable),U.visit(bo, U.makeObservable), original);
-		model.bindData(srType, U.visit(bo, U.makeObservableTrimmed), original);
-		
-    }
-    
-   
-    
+		model.bindData(srType, U.visit(bo, U.makeObservableTrimmed), original);		
+    }    
     
     /**
      * sr: The service request
@@ -3898,11 +3898,10 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
         self.model = new RequestModel(addressModel);
        
        
-        self.model.getFileInfo = function(url){
-        	
-        	 var obj = {}; 
-             obj.isImage = false;
-             var imageTypes = ['jpg', 'png', 'gif', 'tif','jpeg'];
+        self.model.getFileInfo = function(url){        	
+        	var obj = {}; 
+            obj.isImage = false;
+            var imageTypes = ['jpg', 'png', 'gif', 'tif','jpeg'];
              
         	var tokens; 
         	var name;
@@ -3934,8 +3933,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
         	obj.name = name;
         	return obj;
         }
-        
-       
+               
         ko.applyBindings(self.model, self.markup[0]);
       
 /*
