@@ -17,7 +17,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
    function($, U, rest, ui, store, cirm, legacy, interfaceValidation, srmarkupText)   {
     
     function getMetadataUrl(){
-    	return 'https://api.miamidade.gov/s3ws/metadata/update';
+    	return 'https://api.miamidade.gov/s3wsnc/metadata/update';
     }
 	
     function AddressBluePrint() {
