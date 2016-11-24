@@ -844,7 +844,8 @@ public class ActivityManager
 			
 			bo.deleteObjectProperty(bo.getBusinessObject(), "legacy:hasStatus");
 			bo.addObjectProperty(bo.getBusinessObject(), "legacy:hasStatus", Json.object().set("iri", statusChangeStatus.getIRI().toString()));
-			changeStatus(statusChangeStatus, GenUtils.parseDate(statusChangeDate), statusChangeModifiedOrCreatedBy.getLiteral(), bo, messages);
+			//causing stack overflow.
+			//changeStatus(statusChangeStatus, GenUtils.parseDate(statusChangeDate), statusChangeModifiedOrCreatedBy.getLiteral(), bo, messages);
 		}
 	}
 
