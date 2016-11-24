@@ -742,14 +742,18 @@ public class ActivityManager
 	
 	private void checkOutcomeTrigger(OWLNamedIndividual serviceActivity, OWLNamedIndividual activityType, OWLNamedIndividual outcome, String assignedTo, BOntology bo , List<CirmMessage> messages)
 	{
-		//Create activityType triggers.
-		triggerActivityAssignments(serviceActivity, activityType, outcome, assignedTo, bo, messages);
-		//Create referral SRs.
-		triggerReferralCaseOnOutcome(outcome, bo);
-		//close service case on outcome
-		triggerCloseCaseOnOutcome(serviceActivity, outcome, bo, messages);
-		//Send email when status changes to X-Error
-		triggerSendEmailOnOutCome(outcome, bo, messages);
+		//Status change activities should not trigger additional outcome side effects.
+		if(!activityType.equals(individual("legacy:StatusChangeActivity")))
+		{
+			//Create activityType triggers.
+			triggerActivityAssignments(serviceActivity, activityType, outcome, assignedTo, bo, messages);
+			//Create referral SRs.
+			triggerReferralCaseOnOutcome(outcome, bo);
+			//close service case on outcome
+			triggerCloseCaseOnOutcome(serviceActivity, outcome, bo, messages);
+			//Send email when status changes to X-Error
+			triggerSendEmailOnOutCome(outcome, bo, messages);
+		}
 	}
 	
 	/**
@@ -844,8 +848,7 @@ public class ActivityManager
 			
 			bo.deleteObjectProperty(bo.getBusinessObject(), "legacy:hasStatus");
 			bo.addObjectProperty(bo.getBusinessObject(), "legacy:hasStatus", Json.object().set("iri", statusChangeStatus.getIRI().toString()));
-			//causing stack overflow.
-			//changeStatus(statusChangeStatus, GenUtils.parseDate(statusChangeDate), statusChangeModifiedOrCreatedBy.getLiteral(), bo, messages);
+			changeStatus(statusChangeStatus, GenUtils.parseDate(statusChangeDate), statusChangeModifiedOrCreatedBy.getLiteral(), bo, messages);
 		}
 	}
 
