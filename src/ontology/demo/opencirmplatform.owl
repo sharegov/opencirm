@@ -365,6 +365,9 @@
         <DataProperty IRI="http://opencirm.org#hasDateCreated"/>
     </Declaration>
     <Declaration>
+        <DataProperty IRI="http://opencirm.org#hasDateLastModified"/>
+    </Declaration>
+    <Declaration>
         <DataProperty IRI="http://opencirm.org#hasDriver"/>
     </Declaration>
     <Declaration>
@@ -378,6 +381,9 @@
     </Declaration>
     <Declaration>
         <DataProperty IRI="http://opencirm.org#isCreatedBy"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#isModifiedBy"/>
     </Declaration>
     <Declaration>
         <DataProperty IRI="http://opencirm.org#nextValue"/>
@@ -3586,6 +3592,10 @@
         <Datatype abbreviatedIRI="xsd:dateTimeStamp"/>
     </DataPropertyRange>
     <DataPropertyRange>
+        <DataProperty IRI="http://opencirm.org#hasDateLastModified"/>
+        <Datatype abbreviatedIRI="xsd:dateTimeStamp"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
         <DataProperty IRI="http://opencirm.org#hasDriver"/>
         <Datatype abbreviatedIRI="xsd:string"/>
     </DataPropertyRange>
@@ -3595,6 +3605,10 @@
     </DataPropertyRange>
     <DataPropertyRange>
         <DataProperty IRI="http://opencirm.org#isCreatedBy"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://opencirm.org#isModifiedBy"/>
         <Datatype abbreviatedIRI="xsd:string"/>
     </DataPropertyRange>
     <AnnotationAssertion>

@@ -436,7 +436,9 @@ public class QueryTranslator
 				owlClassTypeList.add(type.asString());
 			}
 			//Join on CIRM_CLASSIFICATION table if type is present. 
-			if(!owlClassTypeList.contains("http://opencirm.org#ServiceRequestType") && column != null) 
+			if(!owlClassTypeList.contains("http://opencirm.org#ServiceRequestType") && 
+			   !owlClassTypeList.contains("legacy:ServiceRequestType") &&
+			   column != null) 
 			{
 				select.JOIN(TABLE_CLASSIFICATION).ON(TABLE_CLASSIFICATION+".SUBJECT", column.getFragment());
 				if(owlClassTypeList.size() == 1)
