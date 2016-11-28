@@ -29,9 +29,6 @@
 		<antcall target="restart-conf-with-fresh-ontodb">
 			<param name="server" value="s0144654"/>
 		</antcall>
-		<antcall target="restart-conf-with-fresh-ontodb">
-			<param name="server" value="s0144839"/>
-		</antcall>
 	</target>
 	<!-- Test User Targets END -->
 	<!-- Production User Targets -->
@@ -204,11 +201,9 @@
 	<target name="deploy-test-conf" depends="make-dist" description="Deploy to test server, does not autorestart.">
 		<echo message="Deploying ${changesetid} to test..."/>
 		<deploy server="s0144654"/>
-		<deploy server="s0144839"/>
 	</target>
 	<target name="restart-test-conf" description="Restart the test configuration server (s0144654).">
 		<restart server="s0144654"/>
-		<restart server="s0144839"/>
 	</target>
 	<target name="prepare-conf-release" depends="make-dist, version-increment, save-version" description="Compile, revision tag, make config server distribution ready for deployment."/>
 	<target name="deploy-prod-conf" depends="prepare-conf-release" description="Deploy to production server, does not autorestart.">
