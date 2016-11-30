@@ -55,12 +55,17 @@ require({
         , urlArgs: "cache_bust=" + (new Date()).getTime()
     },  [ "rest", "U", "user", "jquery", 
            "jquery-ui", "jquery-tmpl", "jquery-cookie", "jquery-knockout"],
-    function (rest, U, user, $) {     
+    function (rest, U, user, $) {
+    	//Check if test system and povide visual differentiation from prod (from Jose Otero)
+    	var hostname = window.location.hostname; 
+    	if (hostname.indexOf('cirm.') != -1 || hostname.indexOf('127.0.0.1') != -1){
+    		$('body').addClass('in-test-mode');
+    		$('body').prepend('<div class="warning-bar">You are currently working on a test server.</div>');
+    	};
+    	//Init login form
         user.initLoginForm();
     });
 
-</script>
-}
 </script>
 </head>
 <body>
