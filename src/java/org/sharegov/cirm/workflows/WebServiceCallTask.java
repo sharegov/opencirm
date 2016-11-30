@@ -91,6 +91,8 @@ public class WebServiceCallTask implements SWRLBuiltinImplementation
 					));
 			if(responseStylesheet != null)
 			{
+				System.out.println("Reponse stylesheet: ");
+				System.out.println(responseStylesheet.getLiteral());
 				response = transform(
 							new DOMSource
 								( 
