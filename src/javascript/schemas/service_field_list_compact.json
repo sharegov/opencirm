@@ -62,6 +62,7 @@
 									"hasStandardizeStreetFormat": {"$ref": "#/definitions/hasStandardizeStreetFormat"},
 									"hasLegacyEvent": {"$ref": "#/definitions/hasLegacyEvent"},
 									"hasActivityAssignment": {"$ref": "#/definitions/hasActivityAssignment"},
+									"hasAnswerUpdateTimeout": {"$ref": "#/definitions/hasAnswerUpdateTimeout"},
 									"type": {
 										"enum": ["ServiceQuestion"]
 									}
@@ -444,6 +445,24 @@
 							"label",
 							"type"
 						]
-					  }
+					  },
+		"hasAnswerUpdateTimeout": {
+						"type": "object",
+						"properties": {
+										"label": {"$ref": "#/definitions/label"},
+										"hasValue": {"type": "string"},
+										"type": {
+													"enum": ["ServiceAnswerUpdateTimeout"]
+												},
+										"iri": {"$ref": "#/definitions/iri"}
+						},
+						"required": [
+							"iri",
+							"label",
+							"type",
+							"hasValue"
+						]
+					}
+		}
 	}
 }
