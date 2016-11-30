@@ -72,6 +72,13 @@ priority: ["jquery", "jqueryconf", "logincheck"]
     "jquery-marquee", "jquery-cookie", "jquery-jec",
     "jquery-upload", "jquery-knockout", "jquery-datatables", "jquery-dt-ko-binding"],
 function (rest, U, cirm, legacy, sreditor, answerhub, store) {     
+		//Check if test system and povide visual differentiation from prod (from Jose Otero)
+    	var hostname = window.location.hostname; 
+    	if (hostname.indexOf('cirm.') != -1 || hostname.indexOf('127.0.0.1') != -1) {
+			$('body').addClass('in-test-mode');
+			$('body').prepend('<div class="warning-bar">You are currently working on a test server.</div>');
+		};
+		//Check user logged in, redirect if not
         if (! cirm.user.ensureLoggedin()) {
             alert('Failed to retrieve profile, the user service may be down, please try again later');
             window.location.href="login.html";
