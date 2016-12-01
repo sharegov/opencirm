@@ -12,7 +12,6 @@
 	"defaultOntologyIRI":"http://www.miamidade.gov/cirm/legacy",
     "metaDatabaseLocation", "c:/cirmservices/dbConf/",
     "mainApplication" : "http://www.miamidade.gov/ontology#CIRMApplication",
-    "ontologyConfigSet":"http://www.miamidade.gov/ontology#TestConfigSet",    
     "ontologyConfigSet":"http://www.miamidade.gov/ontology#ProdConfigSet",    
 	"network" : { "user": "cirmservice_production",
 				"password":"cirmsprod",
