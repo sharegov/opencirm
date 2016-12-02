@@ -107,6 +107,21 @@ public class CityOfMiamiClient extends RestService
 	}
 	
 	/**
+	 * Like encode, but uses () for <>.
+	 * @param src
+	 * @return
+	 */
+	private String encodeSpecial(String src) 
+	{
+		src = replace(src, "&", "&amp;");
+		src = replace(src, "\"", "&quot;");
+		src = replace(src, "'", "&apos;");
+		src = replace(src, "<", "(");
+		src = replace(src, ">", ")");
+		return src;
+	}
+	
+	/**
 	 * Updates a CiRM SR in CiRM with COM response information after sending it as new case to COM.
 	 * Existence of a processMessage means COM rejected the SR. In this case, the SR status is X-ERROR.
 	 * cityCaseNumber will be set as answer <SRYPE>_CASENUM in the CiRM SR, if exists.
@@ -343,7 +358,7 @@ public class CityOfMiamiClient extends RestService
     					//respond as if update was applied, but provide special message.
     					ackResult = respondToCityAfterUpdateHttpPost(update, "Y", CASE_NOT_FOUND_TAG);
     				} else {
-    					ackResult = respondToCityAfterUpdateHttpPost(update, "N", encode(updateResult.at("error").asString()));
+    					ackResult = respondToCityAfterUpdateHttpPost(update, "N", encodeSpecial(updateResult.at("error").asString()));
     				}
         		} else {
         			ackResult = respondToCityAfterUpdateHttpPost(update, "Y", "");
