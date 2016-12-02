@@ -22,6 +22,7 @@ import static org.sharegov.cirm.utils.GenUtils.ok;
 import gov.miamidade.cirm.MDRefs;
 
 import java.text.SimpleDateFormat;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -66,6 +67,11 @@ import org.w3c.dom.NodeList;
  * A special tag "Historic Data" will be sent with our response, so COM staff can report on these updates in their system.<br>
  * 2016.10.22 hilpold<br>
  * Redesigned to use cirm transactions with external calls correctly under high load (sendNewCaseToCity, applyUpdatFromCity and all response processing). <br>s
+ * 2016.12.02 hilpold <br>
+ * Applied ReentrantLock to avoid concurrent processing. Modified TM task to process on 57 only.<br>
+ * <br>
+ * 
+ * Only one server must be allowed to process update from City at any given time to avoid duplicate update applicatoin (duplicate activities).
  * 
  * @author boris, Thomas Hilpold
  */
@@ -74,6 +80,8 @@ import org.w3c.dom.NodeList;
 @Consumes("application/json")
 public class CityOfMiamiClient extends RestService
 {
+	final static ReentrantLock STATIC_LOCK = new ReentrantLock();
+
 	public static final int CASE_NOT_FOUND_CUTOFF_YEAR = 2009;
 	public static final String CASE_NOT_FOUND_TAG = "Case prior " + CASE_NOT_FOUND_CUTOFF_YEAR + " was not available";
 
@@ -363,6 +371,32 @@ public class CityOfMiamiClient extends RestService
 	}
 	
 	/**
+	 * Non concurrent processing of retrieveUpdatesFromCityHttpPost. <br> 
+	 * Implemented with ReentrantLock to only allow one processing to occur VM wide.
+	 * @return see retrieveUpdatesFromCityHttpPost
+	 */
+	@GET
+	@Path("/retrieveUpdates")
+	public synchronized Json retrieveUpdatesFromCityHttpPostSynced() 
+	{
+		boolean noOtherThreadExecuting = STATIC_LOCK.tryLock();
+		if (noOtherThreadExecuting) {
+			//I'm the only thread retrieving and processing Updates From City in any CityOfMiami object on this machine right now.
+			try {
+				return retrieveUpdatesFromCityHttpPost();
+			}
+			finally
+			{
+				STATIC_LOCK.unlock();
+			}
+		} else
+		{
+			ThreadLocalStopwatch.fail("CityOfMiamiClient: retrieveUpdatesFromCityHttpPostSynced problem: another thread is still executing.");
+			return ko("Another thread was still processing updates.");
+		}
+	}
+	
+	/**
 	 * <p>
 	 * Get the multiple updates from COM to apply them to existing SRs in CiRM.
 	 * COM updates lead to up to 3 NEW ACTIVITIES for an SR in CiRM
@@ -372,9 +406,7 @@ public class CityOfMiamiClient extends RestService
 	 * 
 	 * </p>
 	 *   
-	 */
-	@GET
-	@Path("/retrieveUpdates")
+	 */	
 	public Json retrieveUpdatesFromCityHttpPost()
 	{		
 		ThreadLocalStopwatch.startTop("START CityOfMiamiClient /retrieveUpdates");
