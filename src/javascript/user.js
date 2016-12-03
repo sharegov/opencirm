@@ -18,12 +18,12 @@ define(['jquery', 'rest', 'U','store!'], function($, rest, U, store) {
     var baseurl = document.location.protocol + '//' + document.location.host;
     var users = new rest.Client(baseurl + "/users");
     var user = {
-        displayLoggedIn: function() {
+        displayLoggedIn : function() {
             var html = "Logged in as " + user.FirstName + " " + user.LastName + ":&nbsp;";
             $('#loggedInPanel').html(html).append(
                 $('<button type="button">Logout</button>').click(user.logout));            
         },
-        displayLoggedOut: function() {
+        displayLoggedOut : function() {
             var html = "Not logged in:&nbsp;";
             $('#loggedInPanel').html(html);                        
         },
@@ -47,12 +47,13 @@ define(['jquery', 'rest', 'U','store!'], function($, rest, U, store) {
                 profile = r.profile;
                 var cl = $.extend({}, profile);
                 delete cl.access; 
+                //Ensure only one user cookie exists
+                user.deleteAllLocalInfoCookies();
                 user.setLocalInfo(user.username, cl);
             }
             else if (r.error == 'unavailable') { // LDAP down
                 profile = user.getLocalInfo(user.username);
             }
-//            console.log('got profile', profile);
             if (profile == null)
                 return false;
             $.extend(user, profile);
@@ -151,18 +152,16 @@ define(['jquery', 'rest', 'U','store!'], function($, rest, U, store) {
         isNewAllowed : function(object) {
         	return user.isAllowed("BO_New", object);
         },
-        setLocalInfo: function(username, info) {
+        setLocalInfo : function(username, info) {
             if (store.cirmdb()) {
                 store.kv().put("localinfo_" + username, JSON.stringify(info));
             }
             else  {
-//                console.log(info);
                 $.cookie("localinfo_" + username, JSON.stringify(info), { path: '/', expires:9999 });
-//                console.log('set profile cookie', "localinfo_" + username,JSON.stringify(info), $.cookie("localinfo_" + username)); 
             }
         },
         // We store information about every user logged in
-        getLocalInfo: function (username) {
+        getLocalInfo : function (username) {
             var profile = null;
             if (store.cirmdb()) {
                 // use local storage for this
@@ -178,12 +177,35 @@ define(['jquery', 'rest', 'U','store!'], function($, rest, U, store) {
             profile.access = users.postObject('/accesspolicies', profile.groups);
             return profile;
         },
-        deleteLocalInfo:function (username) {
+        deleteLocalInfo : function (username) {
             if (store.cirmdb()) {
                 // TODO
             }
             else
                 $.cookie("localinfo_" + username, null, {path:'/', expire:-5});
+        },
+        deleteAllLocalInfoCookies : function () {
+            if (store.cirmdb()) {
+                // DO nothing
+            }
+            else {
+            	var liCookies = user.getAllLocalInfoCookieKeys();
+            	for (var i = 0; i < liCookies.length; i++) {
+            		console.log("Deleting " + liCookies[i]);
+            		$.cookie(liCookies[i], null, {path:'/', expire:-5});
+            	}
+            }
+        },
+        getAllLocalInfoCookieKeys : function () {
+            var pairs = document.cookie.split('; ');
+            var keys = [];
+            for (var i = 0, pair; pair = pairs[i] && pairs[i].split('='); i++) {
+            	var key = decodeURIComponent(pair[0]);
+            	if (key.indexOf("localinfo_") === 0) {
+                    keys.push(key);
+            	}
+            }
+            return keys;
         },
         username:null,
         FirstName:null,
