@@ -493,7 +493,9 @@
 					},
 		"extendedTypesElement": {
 						"items": {
-									"type": "string"
+									"oneOf":[
+												{"$ref": "#/definitions/label"}
+											]
 								},
 						"minItems": 1,
 						"type": "array"
