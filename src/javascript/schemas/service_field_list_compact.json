@@ -63,6 +63,7 @@
 									"hasLegacyEvent": {"$ref": "#/definitions/hasLegacyEvent"},
 									"hasActivityAssignment": {"$ref": "#/definitions/hasActivityAssignment"},
 									"hasAnswerUpdateTimeout": {"$ref": "#/definitions/hasAnswerUpdateTimeout"},
+									"hasAnswerConstraint": {"$ref": "#/definitions/hasAnswerConstraint"},
 									"type": {
 										"enum": ["ServiceQuestion"]
 									}
@@ -462,7 +463,40 @@
 							"type",
 							"hasValue"
 						]
+					},
+		"hasAnswerConstraint": {
+						"type": "object",
+						"properties": {
+										"label": {"$ref": "#/definitions/label"},
+										"hasMax": {"type": "string"},
+										"hasMin": {"type": "string"},
+										"type": {
+													"enum": ["ServiceAnswerConstraint"]
+												},
+										"iri": {"$ref": "#/definitions/iri"},
+										"extendedTypes": {"$ref": "#/definitions/extendedTypes"}
+						},
+						"required": [
+							"iri",
+							"label",
+							"type"
+						]
+					},
+		"extendedTypes": {
+						"items": {
+									"oneOf":[
+												{"$ref": "#/definitions/extendedTypesElement"}
+											]
+								},
+						"minItems": 1,
+						"type": "array"
+					},
+		"extendedTypesElement": {
+						"items": {
+									"type": "string"
+								},
+						"minItems": 1,
+						"type": "array"
 					}
-		}
 	}
 }
