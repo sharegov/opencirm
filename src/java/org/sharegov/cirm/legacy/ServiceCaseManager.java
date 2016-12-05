@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
@@ -878,8 +879,8 @@ public class ServiceCaseManager extends OntoAdmin {
 											   .set("state", "NORMAL")
 											   .set("description", "Delayed CIRM production ontology only deployment")
 											   .set("restCall", jsonRestCall);
-					
-					return GenUtils.httpPostJson("http://s0141670:9192/timemachine-0.1/task", tmJson);
+					final Json timeMachine = OWL.toJSON((OWLIndividual)Refs.configSet.resolve().get("TimeMachineConfig"));	
+					return GenUtils.httpPostJson(timeMachine.at("hasUrl").asString() + "/task", tmJson);
 				}
 				
 			case "test":
