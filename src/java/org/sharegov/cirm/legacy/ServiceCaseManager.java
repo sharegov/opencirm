@@ -1543,6 +1543,33 @@ public class ServiceCaseManager extends OntoAdmin {
 		}
 	}
 	
+	/**
+	 *  Rename a Service Case
+	 * 
+	 * @param srType individual identifier
+	 * @param newName The new name/label for the Service Case
+	 * @param userName who commits the action
+	 * @return commit success true or false
+	 */
+	public Json rename(String srType, String newName, String userName, String comment) {
 
-
+		srType = MetaOntology.getIndividualIdentifier(srType);
+		
+		OwlRepo repo = getRepo();
+		
+		synchronized (repo) {
+			repo.ensurePeerStarted();
+			List<OWLOntologyChange> changes = MetaOntology.getReplaceObjectAnnotationChanges(srType, newName);
+			comment = (comment==null)?"Rename Service Case "+PREFIX+srType + " - " + getIndividualLabel(srType):comment;
+			
+			boolean r = commit(userName, comment, changes);
+			
+			if (r) {
+				registerChange(srType);
+				clearCache(srType);
+				return getServiceCaseFormated(srType);
+			} else throw new IllegalArgumentException("Unable to rename Service Case Type "+ PREFIX + srType);
+		}
+	}
+	
 }

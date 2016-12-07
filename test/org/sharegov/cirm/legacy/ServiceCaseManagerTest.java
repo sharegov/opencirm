@@ -270,9 +270,4 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
 		return values.contains(OWL.dataFactory().getOWLLiteral(expected));
 
 	}
-	
-		
-	
-	
-
 }

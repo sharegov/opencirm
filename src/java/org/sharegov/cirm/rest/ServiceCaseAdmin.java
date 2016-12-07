@@ -754,6 +754,44 @@ public class ServiceCaseAdmin extends RestService {
 		}
 	}
 	
+	/**
+	 * Adds an existing activity to an existing SR.
+	 * 
+	 */
+	@PUT
+	@Path("{srType}/rename")
+	public Response renameServiceCase(@PathParam("srType") String srType, String aJsonStr)
+	{		
+				
+		Json aData = Json.read(aJsonStr);
+		
+		try
+		{ 
+			if (!aData.has("userName")) throw new IllegalArgumentException("User Name null/empty/Incomplete"); 
+			
+			String userName = aData.at("userName").asString();
+			String comment = aData.has("comment")?aData.at("comment").asString():null;
+			String newName = aData.has("label")?aData.at("label").asString():null;
+			
+			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
+			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
+			if (newName == null || newName.isEmpty()) throw new IllegalArgumentException("SR label null or empty");
+			
+			return Response.ok(ServiceCaseManager.getInstance().rename(srType, newName, userName, comment), MediaType.APPLICATION_JSON).build();
+		}
+		catch(Exception e){
+			ThreadLocalStopwatch.now("Error found Saving Activity.");
+			
+			e.printStackTrace();
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+		
+	}	
+	
 	@GET
 	@Path("test")
 	public Response testEndPoint()
