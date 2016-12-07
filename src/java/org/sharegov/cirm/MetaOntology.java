@@ -642,6 +642,22 @@ public class MetaOntology
 		return L;
 	}
 	
+	protected static OWL2Datatype getDataPropertyType (OWLIndividual individual, OWLDataProperty property){
+		for (OWLOntology O: OWL.ontologies()){					
+			for (OWLAxiom a : O.getDataPropertyAssertionAxioms(individual)) {
+				Set <OWLDataProperty> p = a.getDataPropertiesInSignature();
+				if (p.contains(property)){
+					Set <OWLDatatype> s = a.getDatatypesInSignature();
+					for (OWLDatatype type: s){
+						return type.getBuiltInDatatype();
+					}
+				}
+			}
+		}
+		
+		return null;
+	}
+	
 	protected static List<OWLOntologyChange> addDataProperty(OWLIndividual ind, OWLDataProperty prop, Json value, OWLOntology O, OWLOntologyManager manager, OWLDataFactory factory)
 	{
 		List<OWLOntologyChange> result = new ArrayList<OWLOntologyChange>();
@@ -665,7 +681,7 @@ public class MetaOntology
 		}
 		else
 		{
-			xsdType = null;
+			xsdType = getDataPropertyType(ind, prop);
 			if (!value.isNull())
 			{
 				//TODO: add asString() in BooleanJson function and remove this if condition
@@ -706,14 +722,14 @@ public class MetaOntology
 		}
 		
 		//TODO we could validate here, if the value string matches the builtinDatatype.
-		Set<OWLDataRange> ranges = prop.getRanges(OWL.ontologies());
-		if (ranges.isEmpty() && builtinDatatype != null) {
+		if (builtinDatatype != null){
 			return factory.getOWLLiteral(value, builtinDatatype);
 		}
+		
+		Set<OWLDataRange> ranges = prop.getRanges(OWL.ontologies());
 		for (OWLDataRange range : ranges)
 		{
-			if ((builtinDatatype == null && range instanceof OWLDatatype)
-					|| (builtinDatatype != null && range.equals(builtinDatatype))) 
+			if (range instanceof OWLDatatype) 
 			{
 					return factory.getOWLLiteral(value, (OWLDatatype)range);
 			}
