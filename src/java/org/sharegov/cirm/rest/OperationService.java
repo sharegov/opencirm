@@ -60,6 +60,7 @@ import org.sharegov.cirm.OWLObjectToJson;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.StartUp;
 import org.sharegov.cirm.event.EventDispatcher;
+import org.sharegov.cirm.legacy.Permissions;
 import org.sharegov.cirm.rdb.RelationalOWLPersister;
 import org.sharegov.cirm.rdb.RelationalStoreExt;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
@@ -73,7 +74,7 @@ import org.sharegov.cirm.workflows.WorkflowStep;
 
 @Path("op")
 @Produces("application/json")
-public class OperationService
+public class OperationService extends RestService
 {		
 	public static boolean DBG = true;
 	
@@ -758,21 +759,20 @@ public class OperationService
 	@Path("/db/sequence/reset")
 	public Json resetUserFriendlySequence()
 	{
-		try
-		{
-			RelationalStoreExt store =  getPersister().getStoreExt();
-			store.txn(new CirmTransaction<Object>()
-					{
-						@Override
-						public Object call() throws Exception
-						{
-							store.resetUserFriendlySequenceNumber();
-							return null;
-						}
-					});
+		try {
+			if (!isClientExempt()) {
+				return ko("Permission denied.");
+			}
+			RelationalStoreExt store = getPersister().getStoreExt();
+			store.txn(new CirmTransaction<Object>() {
+				@Override
+				public Object call() throws Exception {
+					store.resetUserFriendlySequenceNumber();
+					return null;
+				}
+			});
 			return ok().set("message", "Sequence was reset");
-		}catch(Throwable t)
-		{
+		} catch (Throwable t) {
 			return ko(t);
 		}
 	}
