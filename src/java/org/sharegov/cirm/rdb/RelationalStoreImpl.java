@@ -488,9 +488,34 @@ public class RelationalStoreImpl implements RelationalStore
 		Connection conn = getConnection();
 		try
 		{
-			 long nextId = dataSourceRef.getHook().nextSequence(conn, USER_FRIENDLY_SEQUENCE);
+			long nextId = dataSourceRef.getHook().nextSequence(conn, USER_FRIENDLY_SEQUENCE);
 			conn.commit();
 			return nextId;
+		} 
+		catch (SQLException e)
+		{
+			rollback(conn);
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		} 
+		finally
+		{
+			DBU.close(conn, null, null);
+		}
+	}
+
+	
+	/* (non-Javadoc)
+	 * @see org.sharegov.cirm.rdb.RelationalStore#nextUserFriendlySequenceNumber()
+	 */
+	//@Override
+	public void resetUserFriendlySequenceNumber()
+	{
+		Connection conn = getConnection();
+		try
+		{
+			dataSourceRef.getHook().resetSequence(conn, USER_FRIENDLY_SEQUENCE);
+			conn.commit();
 		} 
 		catch (SQLException e)
 		{

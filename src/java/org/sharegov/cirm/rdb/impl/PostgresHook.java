@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.Date;
 
 import javax.sql.DataSource;
+
 import mjson.Json;
 
 import org.sharegov.cirm.rdb.DBU;
@@ -99,4 +100,20 @@ public class PostgresHook implements DatabaseHook
     {
         return sql + " offset " + (minValue-1) + " limit  " + (maxValue - minValue + 1);
     }
+    
+	public void resetSequence(Connection conn, String sequenceName)  throws SQLException
+	{
+        ResultSet rs = null;
+        java.sql.Statement stmt = null;
+        try
+        {
+            stmt = conn.createStatement();
+            stmt.execute("alter sequence " + sequenceName + " restart" );
+            conn.commit();
+        }        
+        finally
+        {
+            DBU.close(null, stmt, rs);
+        }	    
+	}
 }
