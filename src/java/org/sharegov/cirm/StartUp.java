@@ -433,6 +433,7 @@ public class StartUp extends ServerResource
    		if (config.has("cachedReasonerPopulate") && config.is("cachedReasonerPopulate", true))
    		{
    			OntoAdmin oa = new OntoAdmin();
+   			oa.populateIndividualSerialEntityCache();
    			oa.cachedReasonerQ1Populate();
    		}
 	    try {

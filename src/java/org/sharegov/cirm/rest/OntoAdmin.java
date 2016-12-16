@@ -52,6 +52,7 @@ import org.sharegov.cirm.owl.CachedReasoner;
 import org.sharegov.cirm.owl.SynchronizedOWLOntologyManager;
 //import org.sharegov.cirm.owl.Wrapper;
 import org.sharegov.cirm.utils.GenUtils;
+import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLOntologyManagerImpl;
 
@@ -64,6 +65,18 @@ public class OntoAdmin extends RestService
 	public final String CACHED_REASONER_RESDIR = "/src/resources/cachedReasoner/";
 	public final String CACHED_REASONER_POPULATE_GET_INSTANCES_CACHE_FILE = CACHED_REASONER_RESDIR + "populateGetInstancesCache.json";
 	
+	public final String[] SERIAL_PRECACHE_IND_QUERIES = new String[] {
+			"legacy:Status",
+			"legacy:Priority",
+			"legacy:IntakeMethod",
+			"legacy:IntakeMethodList",
+			"State__U.S._",
+			"Miami_Dade_City or County",
+			"Direction",
+			"Street_Type",
+			"GeoLayerAttribute",
+			"legacy:ServiceCase"
+	};
 	
 	private VDHGDBOntologyRepository repo()
 	{
@@ -370,8 +383,27 @@ public class OntoAdmin extends RestService
 		else
 			return Json.make("Reasoner is not a CachedReasoner instance.");
 	}
-
 	
+	
+	/**
+	 * Higher level cache population of the serial entity cache by running common login queries and
+	 * caching fully resolved Json objects. e.g. for each SR.
+	 * This leads to ~7x faster login performance after a server restart.
+	 * 
+	 */
+	public void populateIndividualSerialEntityCache() 
+	{
+		RestService.forceClientExempt.set(true);
+		ThreadLocalStopwatch.start("START populateIndividualSerialEntityCache");
+		OWLIndividuals oind = new OWLIndividuals();
+		for (int i = 0; i < SERIAL_PRECACHE_IND_QUERIES.length; i++) {
+			ThreadLocalStopwatch.start("START query " + i + " of " + SERIAL_PRECACHE_IND_QUERIES.length 
+					+ " q=" + SERIAL_PRECACHE_IND_QUERIES[i]);
+			oind.doQuery(SERIAL_PRECACHE_IND_QUERIES[i]);
+			ThreadLocalStopwatch.start("DONE query");
+		}
+		ThreadLocalStopwatch.start("END populateIndividualSerialEntityCache");		
+	}
 	
 	public static void main(String[]args)
 	{
