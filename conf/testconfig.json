@@ -33,5 +33,6 @@
  	 "stopExpansionConditionIRI" : [
 					"http://www.miamidade.gov/cirm/legacy#providedBy",
 					"http://www.miamidade.gov/cirm/legacy#hasChoiceValue"
-					]
+					],
+	 "startDepartmentIntegration" : "s0020284.miamidade.gov"					
 }
