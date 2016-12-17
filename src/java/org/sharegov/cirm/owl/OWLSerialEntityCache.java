@@ -38,8 +38,12 @@ import org.sharegov.cirm.utils.Ref;
  */
 public class OWLSerialEntityCache
 {
-	final ConcurrentHashMap<IRI, Ref<Json>> entityRefs = new ConcurrentHashMap<IRI, Ref<Json>>();
-	final ConcurrentHashMap<String, Ref<Json>> setRefs = new ConcurrentHashMap<String, Ref<Json>>();
+	public static final int CACHE_INITIAL_CAPACITY = 2000;
+	public static final float CACHE_LOAD_FACTOR = 0.5f;
+	public static final int CACHE_CONCURRENCY_LEVEL = 50;
+	
+	final ConcurrentHashMap<IRI, Ref<Json>> entityRefs = new ConcurrentHashMap<IRI, Ref<Json>>(CACHE_INITIAL_CAPACITY, CACHE_LOAD_FACTOR, CACHE_CONCURRENCY_LEVEL);
+	final ConcurrentHashMap<String, Ref<Json>> setRefs = new ConcurrentHashMap<String, Ref<Json>>(CACHE_INITIAL_CAPACITY, CACHE_LOAD_FACTOR, CACHE_CONCURRENCY_LEVEL);
 
 	@SuppressWarnings("unchecked")
 	abstract static class CachedRef<T> implements Ref<T>

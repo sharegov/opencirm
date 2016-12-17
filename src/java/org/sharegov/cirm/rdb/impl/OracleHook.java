@@ -191,4 +191,21 @@ public class OracleHook implements DatabaseHook
                 .WHERE("rnum")
                 .GREATER_THAN_OR_EQUAL("" + minValue).SQL();	    
 	}
+	
+	public void resetSequence(Connection conn, String sequenceName)  throws SQLException
+	{
+        ResultSet rs = null;
+        java.sql.Statement stmt = null;
+        try
+        {
+            stmt = conn.createStatement();
+            stmt.execute("drop sequence " + sequenceName);
+            stmt.execute("CREATE SEQUENCE " + sequenceName + " start with 1 minvalue 1 increment by 1 cache 20 order");
+            conn.commit();
+        }        
+        finally
+        {
+            DBU.close(null, stmt, rs);
+        }	    
+	}
 }
