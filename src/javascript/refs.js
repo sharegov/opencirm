@@ -278,8 +278,7 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
             
             else
                 return "http://opencirm.org#" + parts[1];                
-        };
-        
+        };        
     }
 
     var meta = new MetaDataRefs();
@@ -326,7 +325,8 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
     }
     
     var M = {
-        load: load
+        load: load,
+        reload: function() { reloadAll(function() { console.log("Finished reloading")})}
     };
     if (modulesInGlobalNamespace)
         window.refs = M;

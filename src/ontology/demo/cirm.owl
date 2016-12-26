@@ -641,6 +641,9 @@
         <NamedIndividual abbreviatedIRI=":CellPhoneNumber"/>
     </Declaration>
     <Declaration>
+        <NamedIndividual abbreviatedIRI=":CloseServiceCase"/>
+    </Declaration>
+    <Declaration>
         <NamedIndividual abbreviatedIRI=":Comments"/>
     </Declaration>
     <Declaration>
@@ -654,6 +657,9 @@
     </Declaration>
     <Declaration>
         <NamedIndividual abbreviatedIRI=":Name"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual abbreviatedIRI=":OUTCOME_COMPLETE"/>
     </Declaration>
     <Declaration>
         <NamedIndividual abbreviatedIRI=":ServiceActivity"/>
@@ -1308,6 +1314,10 @@
         <NamedIndividual abbreviatedIRI=":CellPhoneNumber"/>
     </ClassAssertion>
     <ClassAssertion>
+        <Class abbreviatedIRI=":StatusChange"/>
+        <NamedIndividual abbreviatedIRI=":CloseServiceCase"/>
+    </ClassAssertion>
+    <ClassAssertion>
         <Class abbreviatedIRI=":OWLDataProperty"/>
         <NamedIndividual abbreviatedIRI=":Comments"/>
     </ClassAssertion>
@@ -1326,6 +1336,10 @@
     <ClassAssertion>
         <Class abbreviatedIRI=":OWLDataProperty"/>
         <NamedIndividual abbreviatedIRI=":Name"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class abbreviatedIRI=":Outcome"/>
+        <NamedIndividual abbreviatedIRI=":OUTCOME_COMPLETE"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class abbreviatedIRI=":OWLClass"/>
@@ -2532,9 +2546,19 @@
         <NamedIndividual abbreviatedIRI=":CIRM_SR_REQUESTS"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
+        <ObjectProperty abbreviatedIRI=":hasLegacyEvent"/>
+        <NamedIndividual abbreviatedIRI=":CLOSED"/>
+        <NamedIndividual abbreviatedIRI=":CloseServiceCase"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI=":hasColumnMapping"/>
         <NamedIndividual abbreviatedIRI=":CellPhoneNumber"/>
         <NamedIndividual abbreviatedIRI=":CIRM_SR_ACTOR.SR_ACTOR_CELL_PHONE_NO"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty abbreviatedIRI=":hasStatus"/>
+        <NamedIndividual abbreviatedIRI=":CloseServiceCase"/>
+        <NamedIndividual abbreviatedIRI=":CLOSED"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI=":hasColumnMapping"/>
@@ -2565,6 +2589,11 @@
         <ObjectProperty abbreviatedIRI=":hasColumnMapping"/>
         <NamedIndividual abbreviatedIRI=":Name"/>
         <NamedIndividual abbreviatedIRI=":CIRM_SR_ACTOR.SR_ACTOR_NAME"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty abbreviatedIRI=":hasLegacyEvent"/>
+        <NamedIndividual abbreviatedIRI=":OUTCOME_COMPLETE"/>
+        <NamedIndividual abbreviatedIRI=":CloseServiceCase"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI=":hasTableMapping"/>
@@ -2987,6 +3016,11 @@
         <Literal datatypeIRI="&xsd;string">TIMESTAMP</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
+        <DataProperty abbreviatedIRI=":hasLegacyCode"/>
+        <NamedIndividual abbreviatedIRI=":OUTCOME_COMPLETE"/>
+        <Literal datatypeIRI="&xsd;string">COMPLETE</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
         <DataProperty abbreviatedIRI=":storeFragment"/>
         <NamedIndividual abbreviatedIRI=":Street_Direction"/>
         <Literal datatypeIRI="&xsd;string">true</Literal>
@@ -3044,6 +3078,11 @@
         <DataProperty abbreviatedIRI=":isAccepted"/>
         <Datatype abbreviatedIRI="xsd:boolean"/>
     </DataPropertyRange>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <AbbreviatedIRI>:OUTCOME_COMPLETE</AbbreviatedIRI>
+        <Literal datatypeIRI="&xsd;string">Completed.</Literal>
+    </AnnotationAssertion>
 </Ontology>
 
 
