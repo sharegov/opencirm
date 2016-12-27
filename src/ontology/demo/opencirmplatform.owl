@@ -1,146 +1,512 @@
 <?xml version="1.0"?>
-
-
-<!DOCTYPE Ontology [
-    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
-    <!ENTITY xml "http://www.w3.org/XML/1998/namespace" >
-    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
-    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
-]>
-
-
 <Ontology xmlns="http://www.w3.org/2002/07/owl#"
      xml:base="http://opencirm.org/platform"
-     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      ontologyIRI="http://opencirm.org/platform">
-    <Prefix name="" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Prefix name="" IRI="http://opencirm.org/platform"/>
     <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
     <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+    <Prefix name="xml" IRI="http://www.w3.org/XML/1998/namespace"/>
     <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
     <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
     <Import>http://opencirm.org/upper</Import>
     <Declaration>
-        <Class IRI="http://opencirm.org#BO_Action"/>
+        <Class IRI="http://opencirm.org#EventBasedDataSource"/>
     </Declaration>
     <Declaration>
-        <Class IRI="http://opencirm.org#Business_Object"/>
+        <Class IRI="http://opencirm.org#UITable"/>
     </Declaration>
     <Declaration>
-        <Class IRI="http://opencirm.org#CLOB"/>
+        <ObjectProperty IRI="http://opencirm.org#isJoinedWithTable"/>
     </Declaration>
     <Declaration>
-        <Class IRI="http://opencirm.org#ClientSideEventType"/>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#org.sharegov.cirm.legacy.ServiceRequestResolver"/>
     </Declaration>
     <Declaration>
-        <Class IRI="http://opencirm.org#ConfigParam"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#ConfigSet"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#DBColumn"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#DBConstraint"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#DBDataType"/>
+        <NamedIndividual IRI="http://opencirm.org#BO_Cancel"/>
     </Declaration>
     <Declaration>
         <Class IRI="http://opencirm.org#DBForeignKey"/>
     </Declaration>
     <Declaration>
-        <Class IRI="http://opencirm.org#DBNoKey"/>
+        <DataProperty IRI="http://opencirm.org#isModifiedBy"/>
     </Declaration>
     <Declaration>
-        <Class IRI="http://opencirm.org#DBObject"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#DBPrimaryKey"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#DBSchema"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#DBSequence"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#DBTable"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#DBUnique"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#DOUBLE"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#DataConstraint"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#DataSource"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#Data_Structure"/>
+        <Class IRI="http://opencirm.org#OWLNamedObject"/>
     </Declaration>
     <Declaration>
         <Class IRI="http://opencirm.org#DatabaseConnection"/>
     </Declaration>
     <Declaration>
-        <Class IRI="http://opencirm.org#DatabaseType"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#DisplayContext"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#DisplayFormat"/>
-    </Declaration>
-    <Declaration>
         <Class IRI="http://opencirm.org#EmailAddress"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#EntityChangeEvent"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#EventBasedDataSource"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#GeoInformation"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#GeoLayer"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#GeoLayerAttribute"/>
     </Declaration>
     <Declaration>
         <Class IRI="http://opencirm.org#GeoLocator"/>
     </Declaration>
     <Declaration>
+        <Class IRI="http://opencirm.org#DisplayContext"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#PostgresDatabase"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#GeoLayer"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://opencirm.org#hasDatabaseType"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://opencirm.org#isJsonMapper"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#DatabaseType"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#TextLengthConstraint"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rules.PromptUserBuiltIn"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#hasPassword"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#OWLObjectProperty"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#DBUnique"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#Software_Configuration"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#OWLPropertyResolver"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#HttpPost"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#SWRLBuiltIn"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OWLTypes"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#hasDriver"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.SystemMonitorService"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#HttpGet"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#OWLObject"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#string"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#int"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rdb.DBIDFactory"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.utils.JsonEntityProvider"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#DataSource"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#DBPrimaryKey"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#BO_Update"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#PlainLiteral"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#UIComponent"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#UIFormField"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#OracleDatabase"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#UIActionButton"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#ConfigParam"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#VARCHAR"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#OWList"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#hasDatabaseType"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#HttpDel"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#TIMESTAMP"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#DisplayFormat"/>
+    </Declaration>
+    <Declaration>
         <Class IRI="http://opencirm.org#GeoPropertySet"/>
     </Declaration>
     <Declaration>
-        <Class IRI="http://opencirm.org#GisService"/>
+        <Class IRI="http://opencirm.org#GeoInformation"/>
     </Declaration>
     <Declaration>
-        <Class IRI="http://opencirm.org#Hostname"/>
+        <NamedIndividual IRI="http://opencirm.org#DOUBLE"/>
     </Declaration>
     <Declaration>
-        <Class IRI="http://opencirm.org#HtmlTemplate"/>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#gov.miamidade.cirm.other.NewActivityEventHandler"/>
     </Declaration>
     <Declaration>
-        <Class IRI="http://opencirm.org#HttpMethod"/>
+        <ObjectProperty IRI="http://opencirm.org#hasColumn"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.SubClassListToJSONMapper"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#GeoLayerAttribute"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#BO_Action"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.UiService"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://opencirm.org#hasJoinTable"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#UIAutoCompleteInput"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#XSLStylesheet"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#org.sharegov.cirm.legacy.ActivityResolver"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://opencirm.org#hasJoinColumn"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#Software_Application"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#ServiceRequestType"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#RestService"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.event.PushToClientEventTrigger"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#JSR311Application"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#DBObject"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#SoftwareOperation"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#ConfigSet"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#date"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#BO_Delete"/>
     </Declaration>
     <Declaration>
         <Class IRI="http://opencirm.org#INTEGER"/>
     </Declaration>
     <Declaration>
-        <Class IRI="http://opencirm.org#IRI"/>
+        <NamedIndividual IRI="http://opencirm.org#MSSQLDatabase"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#hasUsername"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#CLOB"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#CLOB"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#hasDataSourceFactory"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.KeyValuePropertyMapper"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#BO_View"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#gov.miamidade.cirm.other.NewCaseEventHandler"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#SMTPConnection"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.event.ClearOWLEntityCache"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#QueueConnection"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.miamidade.gov/cirm/legacy#FTPConnection"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#Software_Object"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#UITextBox"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#SoftwareEventType"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#DBColumn"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#hasDateCreated"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ServiceCall"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#Street_Address"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#DOUBLE"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#JavaClass"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#HttpPut"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#GisService"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#BO_Save"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#dateTimeStamp"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.SearchService"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#SoftwareRule"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#TIMESTAMP"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#hasCost"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rules.Merge"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.workflows.WebServiceCallTask"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#WebService"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#Illegal_Dumping_Inquiry"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#org.sharegov.cirm.legacy.DepartmentEmailResolver"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#hasUrl"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#org.sharegov.cirm.legacy.ParticipantEmailResolver"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://opencirm.org#hasTypeMapping"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#hasDateLastModified"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#float"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.ListToJSONMapper"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#dateTime"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#SoftwareOperationType"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#UIInputBox"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#DBSchema"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#OWLClass"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#ServiceCallAction"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#DBConstraint"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rules.StringEqualIgnoreCase"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://opencirm.org#containsTable"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#Hostname"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#isCreatedBy"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#org.sharegov.cirm.legacy.AnswerResolver"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#HttpMethod"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.user.OntoUserProvider"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#base64Binary"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#OWLProperty"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OWLIndividuals"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#long"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#UserBaseDataSource"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#DBNoKey"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#UICheckBox"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#Business_Object"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#DBDataType"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#SubClassListDataSource"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#HtmlTemplate"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rules.StringConcat"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#UIPanel"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#org.sharegov.cirm.legacy.StaffEmailResolver"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#OWLOntology"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.user.DBUserProvider"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#TestActivityAssignByGeoRule"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.CodeService"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rules.NewBusinessObjectBuiltIn"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#JavaInterface"/>
     </Declaration>
     <Declaration>
         <Class IRI="http://opencirm.org#IRIKey"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#UIForm"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#org.sharegov.cirm.legacy.ParticipantResolver"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#integer"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#UIMenu"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#OWLDataProperty"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.services.OWLWebServices"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://opencirm.org#hasJsonMapper"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#hasDataSourceClassName"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#OWL2Datatype"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rules.XSLTransform"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#DataConstraint"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#JavaScriptLibrary"/>
     </Declaration>
     <Declaration>
         <Class IRI="http://opencirm.org#IndividualsListDataSource"/>
@@ -149,493 +515,571 @@
         <Class IRI="http://opencirm.org#JSONTemplate"/>
     </Declaration>
     <Declaration>
-        <Class IRI="http://opencirm.org#JSR311Application"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#JavaClass"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#JavaInterface"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#JavaScriptLibrary"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#LDAPConnection"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#OWL2Datatype"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#OWLClass"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#OWLDataProperty"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#OWLNamedObject"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#OWLObject"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#OWLObjectProperty"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#OWLOntology"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#OWLProperty"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#OWLPropertyResolver"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#OWList"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#QueueConnection"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#QueueType"/>
-    </Declaration>
-    <Declaration>
         <Class IRI="http://opencirm.org#RestQueryDataSource"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#RestService"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#SMTPConnection"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#SWRLBuiltIn"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#ServiceRequestType"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#SoftwareEventType"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#SoftwareOperation"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#SoftwareOperationType"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#SoftwareRule"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#Software_Application"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#Software_Configuration"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#Software_Object"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#SubClassListDataSource"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#TIMESTAMP"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#TextLengthConstraint"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#TextTemplate"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#UIActionButton"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#UIAutoCompleteInput"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#UICheckBox"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#UIComponent"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#UIDropDown"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#UIForm"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#UIFormField"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#UIInputBox"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#UILabel"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#UIListBox"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#UIMenu"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#UIPanel"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#UIRadioButton"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#UITable"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#UITextBox"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#UserBaseDataSource"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#VARCHAR"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#WebService"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://opencirm.org#XSLStylesheet"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="http://www.miamidade.gov/cirm/legacy#FTPConnection"/>
-    </Declaration>
-    <Declaration>
-        <ObjectProperty IRI="http://opencirm.org#containsTable"/>
-    </Declaration>
-    <Declaration>
-        <ObjectProperty IRI="http://opencirm.org#hasColumn"/>
-    </Declaration>
-    <Declaration>
-        <ObjectProperty IRI="http://opencirm.org#hasColumnType"/>
-    </Declaration>
-    <Declaration>
-        <ObjectProperty IRI="http://opencirm.org#hasDatabaseType"/>
-    </Declaration>
-    <Declaration>
-        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
-    </Declaration>
-    <Declaration>
-        <ObjectProperty IRI="http://opencirm.org#hasJoinColumn"/>
-    </Declaration>
-    <Declaration>
-        <ObjectProperty IRI="http://opencirm.org#hasJoinTable"/>
-    </Declaration>
-    <Declaration>
-        <ObjectProperty IRI="http://opencirm.org#hasJsonMapper"/>
-    </Declaration>
-    <Declaration>
-        <ObjectProperty IRI="http://opencirm.org#hasSequence"/>
-    </Declaration>
-    <Declaration>
-        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
-    </Declaration>
-    <Declaration>
-        <ObjectProperty IRI="http://opencirm.org#hasTypeMapping"/>
-    </Declaration>
-    <Declaration>
-        <ObjectProperty IRI="http://opencirm.org#isJoinedWithTable"/>
-    </Declaration>
-    <Declaration>
-        <ObjectProperty IRI="http://opencirm.org#isJsonMapper"/>
-    </Declaration>
-    <Declaration>
-        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
-    </Declaration>
-    <Declaration>
-        <DataProperty IRI="http://opencirm.org#hasCost"/>
-    </Declaration>
-    <Declaration>
-        <DataProperty IRI="http://opencirm.org#hasDataSourceClassName"/>
-    </Declaration>
-    <Declaration>
-        <DataProperty IRI="http://opencirm.org#hasDataSourceFactory"/>
-    </Declaration>
-    <Declaration>
-        <DataProperty IRI="http://opencirm.org#hasDatabaseType"/>
-    </Declaration>
-    <Declaration>
-        <DataProperty IRI="http://opencirm.org#hasDateCreated"/>
-    </Declaration>
-    <Declaration>
-        <DataProperty IRI="http://opencirm.org#hasDateLastModified"/>
-    </Declaration>
-    <Declaration>
-        <DataProperty IRI="http://opencirm.org#hasDriver"/>
-    </Declaration>
-    <Declaration>
-        <DataProperty IRI="http://opencirm.org#hasPassword"/>
-    </Declaration>
-    <Declaration>
-        <DataProperty IRI="http://opencirm.org#hasUrl"/>
-    </Declaration>
-    <Declaration>
-        <DataProperty IRI="http://opencirm.org#hasUsername"/>
-    </Declaration>
-    <Declaration>
-        <DataProperty IRI="http://opencirm.org#isCreatedBy"/>
-    </Declaration>
-    <Declaration>
-        <DataProperty IRI="http://opencirm.org#isModifiedBy"/>
-    </Declaration>
-    <Declaration>
-        <DataProperty IRI="http://opencirm.org#nextValue"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#BO_Cancel"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#BO_Delete"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#BO_New"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#BO_Save"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#BO_Update"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#BO_View"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#CLOB"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#DOUBLE"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#GeoPropertySet"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#HttpDel"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#HttpGet"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#HttpPost"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#HttpPut"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#INTEGER"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#Illegal_Dumping_Inquiry"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#MQSeries"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#MSSQLDatabase"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#OWList"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#OracleDatabase"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#PlainLiteral"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#PostgresDatabase"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#RestServiceOperation"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#ServiceCall"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#ServiceCallAction"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#Street_Address"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#SubClassListDataSource"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#TIMESTAMP"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#Thing"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#base64Binary"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#boolean"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#date"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#dateTime"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#dateTimeStamp"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#double"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#float"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#int"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#integer"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#long"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.KeyValuePropertyMapper"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.ListToJSONMapper"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.SubClassListToJSONMapper"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.event.ClearOWLEntityCache"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.event.PushToClientEventTrigger"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rdb.DBIDFactory"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.CodeService"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.LegacyEmulator"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.MetaService"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OWLIndividuals"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OWLTypes"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rules.LessThan"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OntoAdmin"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OperationService"/>
+        <Class IRI="http://opencirm.org#DBSequence"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.RestServiceAdmin"/>
+        <Class IRI="http://opencirm.org#ClientSideEventType"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.SearchService"/>
+        <NamedIndividual IRI="http://opencirm.org#Thing"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.SystemMonitorService"/>
+        <Class IRI="http://opencirm.org#EntityChangeEvent"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.UiService"/>
+        <Class IRI="http://opencirm.org#LDAPConnection"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.UserService"/>
+        <NamedIndividual IRI="http://opencirm.org#double"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rules.LessThan"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.LegacyEmulator"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rules.Merge"/>
+        <DataProperty IRI="http://opencirm.org#hasValue"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rules.NewBusinessObjectBuiltIn"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rules.PartBuiltIn"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rules.PromptUserBuiltIn"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rules.StringConcat"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rules.StringEqualIgnoreCase"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rules.XSLTransform"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.services.OWLWebServices"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.user.DBUserProvider"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.user.OntoUserProvider"/>
-    </Declaration>
-    <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.utils.JsonEntityProvider"/>
+        <Class IRI="http://opencirm.org#Data_Structure"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.workflows.PromptUserTask"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.workflows.WebServiceCallTask"/>
+        <NamedIndividual IRI="http://opencirm.org#RestServiceOperation"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://opencirm.org#string"/>
+        <Class IRI="http://opencirm.org#UIRadioButton"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#TestActivityAssignByGeoRule"/>
+        <Class IRI="http://opencirm.org#QueueType"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#gov.miamidade.cirm.other.NewActivityEventHandler"/>
+        <NamedIndividual IRI="http://opencirm.org#boolean"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#gov.miamidade.cirm.other.NewCaseEventHandler"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.MetaService"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#org.sharegov.cirm.legacy.ActivityResolver"/>
+        <Class IRI="http://opencirm.org#IRI"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#org.sharegov.cirm.legacy.AnswerResolver"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.RestServiceAdmin"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#org.sharegov.cirm.legacy.DepartmentEmailResolver"/>
+        <Class IRI="http://opencirm.org#UIListBox"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#org.sharegov.cirm.legacy.ParticipantEmailResolver"/>
+        <Class IRI="http://opencirm.org#UILabel"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#org.sharegov.cirm.legacy.ParticipantResolver"/>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.UserService"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#org.sharegov.cirm.legacy.ServiceRequestResolver"/>
+        <DataProperty IRI="http://opencirm.org#nextValue"/>
     </Declaration>
     <Declaration>
-        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#org.sharegov.cirm.legacy.StaffEmailResolver"/>
+        <ObjectProperty IRI="http://opencirm.org#hasImplementation"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#hasColumnDefinition"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#MQSeries"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#UIDropDown"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/new#org.sharegov.cirm.user.LDAPUserProvider"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#VARCHAR"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#OWList"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rules.PartBuiltIn"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.rest.OperationService"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://opencirm.org#hasSequence"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#GeoPropertySet"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://opencirm.org#SubClassListDataSource"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#TextTemplate"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://opencirm.org#DBTable"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILS_GEORULE6"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILS_GEORULE5"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILS_GEORULE7"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILS_GEORULE0"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILS_GEORULE2"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILS_GEORULE1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILS_GEORULE4"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILS_GEORULE3"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCETRE_GEORULE4"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCETRE_GEORULE5"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCETRE_GEORULE6"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCETRE_GEORULE7"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#NOISEVIO_GEORULE0"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#NOISEVIO_GEORULE1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#NOISEVIO_GEORULE6"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#NOISEVIO_GEORULE7"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#NOISEVIO_GEORULE4"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#NOISEVIO_GEORULE5"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#NOISEVIO_GEORULE2"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#NOISEVIO_GEORULE3"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.miamidade.gov/cirm/legacy#GeoBasedUserAssignment"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE5"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE6"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE7"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE8"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE2"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE3"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE4"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCETRE_GEORULE0"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCETRE_GEORULE1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCETRE_GEORULE2"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCETRE_GEORULE3"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILU_GEORULE7"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILU_GEORULE3"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILU_GEORULE4"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILU_GEORULE5"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE0"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILU_GEORULE6"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILU_GEORULE0"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILU_GEORULE1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILU_GEORULE2"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKC_GEORULE0"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILD_GEORULE6"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKC_GEORULE2"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKC_GEORULE1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILD_GEORULE7"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKC_GEORULE4"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKC_GEORULE3"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILD_GEORULE2"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEABV_GEORULE4"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILD_GEORULE3"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEABV_GEORULE5"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILD_GEORULE4"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEABV_GEORULE2"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILD_GEORULE5"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEABV_GEORULE3"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEABV_GEORULE6"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILD_GEORULE0"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILD_GEORULE1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEABV_GEORULE7"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEABV_GEORULE0"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEABV_GEORULE1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILC_GEORULE0"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILC_GEORULE3"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILC_GEORULE4"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILC_GEORULE1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILC_GEORULE2"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILC_GEORULE7"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILC_GEORULE5"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILC_GEORULE6"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCECCV_GEORULE1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCECCV_GEORULE2"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCECCV_GEORULE0"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCECCV_GEORULE5"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCECCV_GEORULE6"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCECCV_GEORULE3"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCECCV_GEORULE4"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCECCV_GEORULE7"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCESGN_GEORULE2"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCESGN_GEORULE1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCESGN_GEORULE0"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCESGN_GEORULE6"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCESGN_GEORULE5"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCESGN_GEORULE4"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCESGN_GEORULE3"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCESGN_GEORULE7"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCENCU_GEORULE7"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCENCU_GEORULE5"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCENCU_GEORULE6"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKC_GEORULE6"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKC_GEORULE5"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCENCU_GEORULE0"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKC_GEORULE7"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCENCU_GEORULE3"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCENCU_GEORULE4"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCENCU_GEORULE1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCENCU_GEORULE2"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEIMR_GEORULE0"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEIMR_GEORULE2"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEIMR_GEORULE1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEIMR_GEORULE7"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEIMR_GEORULE4"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEIMR_GEORULE3"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEIMR_GEORULE6"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEIMR_GEORULE5"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMSWROL_GEORULE1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMSWROL_GEORULE0"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMSWROL_GEORULE2"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEVUS_GEORULE0"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKU_GEORULE2"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKU_GEORULE1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKU_GEORULE0"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKU_GEORULE6"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKU_GEORULE5"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKU_GEORULE4"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKU_GEORULE3"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKU_GEORULE7"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEVUS_GEORULE2"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEVUS_GEORULE1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEVUS_GEORULE4"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEVUS_GEORULE3"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEVUS_GEORULE6"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEVUS_GEORULE5"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEVUS_GEORULE7"/>
+    </Declaration>
+    <Declaration>
+        <AnnotationProperty IRI="http://purl.org/dc/elements/1.1/description"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBLM_GEORULE5"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBLM_GEORULE4"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBLM_GEORULE7"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBLM_GEORULE6"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBLM_GEORULE1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBLM_GEORULE0"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBLM_GEORULE3"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBLM_GEORULE2"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEOGL_GEORULE0"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#POCHGRAZ_GEORULE0"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#POCHGRAZ_GEORULE1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#POCHGRAZ_GEORULE2"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#POCHGRAZ_GEORULE3"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#POCHGRAZ_GEORULE4"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#POCHGRAZ_GEORULE5"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#POCHGRAZ_GEORULE6"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#POCHGRAZ_GEORULE7"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEOGL_GEORULE3"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEOGL_GEORULE4"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEOGL_GEORULE1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEOGL_GEORULE2"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEOGL_GEORULE7"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEOGL_GEORULE5"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEOGL_GEORULE6"/>
     </Declaration>
     <SubClassOf>
         <Class IRI="http://opencirm.org#BO_Action"/>
@@ -2014,1556 +2458,1556 @@
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#HttpDel"/>
-        <Literal datatypeIRI="&rdf;PlainLiteral">del</Literal>
+        <Literal datatypeIRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral">del</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#HttpGet"/>
-        <Literal datatypeIRI="&rdf;PlainLiteral">get</Literal>
+        <Literal datatypeIRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral">get</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#HttpPost"/>
-        <Literal datatypeIRI="&rdf;PlainLiteral">post</Literal>
+        <Literal datatypeIRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral">post</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#Name"/>
         <NamedIndividual IRI="http://opencirm.org#HttpPut"/>
-        <Literal datatypeIRI="&rdf;PlainLiteral">put</Literal>
+        <Literal datatypeIRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral">put</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasDataSourceClassName"/>
         <NamedIndividual IRI="http://opencirm.org#MSSQLDatabase"/>
-        <Literal datatypeIRI="&xsd;string">com.microsoft.sqlserver.jdbc.SQLServerXADataSource</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">com.microsoft.sqlserver.jdbc.SQLServerXADataSource</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasDriver"/>
         <NamedIndividual IRI="http://opencirm.org#MSSQLDatabase"/>
-        <Literal datatypeIRI="&xsd;string">com.microsoft.sqlserver.jdbc.SQLServerDriver</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">com.microsoft.sqlserver.jdbc.SQLServerDriver</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasDataSourceFactory"/>
         <NamedIndividual IRI="http://opencirm.org#OracleDatabase"/>
-        <Literal datatypeIRI="&xsd;string">org.sharegov.cirm.rdb.impl.OracleHook</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">org.sharegov.cirm.rdb.impl.OracleHook</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasDriver"/>
         <NamedIndividual IRI="http://opencirm.org#OracleDatabase"/>
-        <Literal datatypeIRI="&xsd;string">oracle.jdbc.OracleDriver</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">oracle.jdbc.OracleDriver</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasDataSourceFactory"/>
         <NamedIndividual IRI="http://opencirm.org#PostgresDatabase"/>
-        <Literal datatypeIRI="&xsd;string">org.sharegov.cirm.rdb.impl.PostgresHook</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">org.sharegov.cirm.rdb.impl.PostgresHook</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasDriver"/>
         <NamedIndividual IRI="http://opencirm.org#PostgresDatabase"/>
-        <Literal datatypeIRI="&xsd;string">org.postgresql.Driver</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">org.postgresql.Driver</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUrl"/>
         <NamedIndividual IRI="http://opencirm.org#RestServiceOperation"/>
-        <Literal datatypeIRI="&xsd;string">http://s0141668:9192/timemachine-0.1/task</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">http://s0141668:9192/timemachine-0.1/task</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasCost"/>
         <NamedIndividual IRI="http://opencirm.org#org.sharegov.cirm.workflows.PromptUserTask"/>
-        <Literal datatypeIRI="&xsd;double">10.0</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#double">10.0</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEABV_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEABV_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">RBRUNY@CI.MIAMI.FL.US</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">RBRUNY@CI.MIAMI.FL.US</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEABV_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEABV_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">c203095</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203095</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEABV_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEABV_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">c203096</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203096</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEABV_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEABV_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">c203097</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203097</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEABV_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEABV_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">c203098</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203098</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEABV_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEABV_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">c203100</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203100</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEABV_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEABV_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">c203101</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203101</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEABV_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEABV_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">c203103</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203103</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBLM_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBLM_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">RBRUNY@CI.MIAMI.FL.US</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">RBRUNY@CI.MIAMI.FL.US</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBLM_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBLM_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">c203103</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203103</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBLM_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBLM_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">c203098</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203098</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBLM_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBLM_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">c203095</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203095</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBLM_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBLM_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">c203096</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203096</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBLM_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBLM_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">c203101</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203101</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBLM_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBLM_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">c203100</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203100</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBLM_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBLM_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">c203097</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203097</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">c203098</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203098</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">c203049</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203049</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">c203100</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203100</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">c203101</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203101</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">c203103</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203103</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">RBRUNY@CI.MIAMI.FL.US</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">RBRUNY@CI.MIAMI.FL.US</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">c203095</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203095</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">c203096</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203096</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE8"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEBRT_GEORULE8"/>
-        <Literal datatypeIRI="&xsd;string">c203097</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203097</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCECCV_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCECCV_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">RBRUNY@CI.MIAMI.FL.US</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">RBRUNY@CI.MIAMI.FL.US</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCECCV_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCECCV_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">c203095</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203095</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCECCV_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCECCV_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">c203097</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203097</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCECCV_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCECCV_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">c203098</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203098</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCECCV_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCECCV_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">c203096</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203096</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCECCV_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCECCV_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">c203100</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203100</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCECCV_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCECCV_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">c203101</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203101</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCECCV_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCECCV_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">c203103</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203103</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILC_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILC_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">RBRUNY@CI.MIAMI.FL.US</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">RBRUNY@CI.MIAMI.FL.US</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILC_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILC_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">c203095</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203095</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILC_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILC_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">c203096</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203096</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILC_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILC_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">c203097</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203097</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILC_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILC_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">c203098</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203098</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILC_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILC_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">c203100</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203100</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILC_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILC_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">c203101</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203101</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILC_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILC_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">c203103</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203103</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILD_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILD_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">c203100</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203100</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILD_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILD_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">c203101</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203101</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILD_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILD_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">c203103</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203103</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILD_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILD_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">RBRUNY@CI.MIAMI.FL.US</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">RBRUNY@CI.MIAMI.FL.US</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILD_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILD_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">c203095</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203095</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILD_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILD_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">c203096</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203096</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILD_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILD_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">c203097</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203097</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILD_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILD_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">c203098</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203098</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILS_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILS_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">c203095</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203095</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILS_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILS_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">c203096</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203096</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILS_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILS_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">c203097</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203097</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILS_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILS_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">c203098</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203098</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILS_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILS_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">RBRUNY@CI.MIAMI.FL.US</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">RBRUNY@CI.MIAMI.FL.US</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILS_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILS_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">c203100</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203100</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILS_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILS_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">c203101</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203101</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILS_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILS_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">c203103</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203103</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILU_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILU_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">RBRUNY@CI.MIAMI.FL.US</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">RBRUNY@CI.MIAMI.FL.US</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILU_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILU_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">c203095</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203095</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILU_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILU_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">c203096</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203096</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILU_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILU_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">c203097</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203097</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILU_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILU_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">c203098</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203098</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILU_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILU_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">c203100</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203100</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILU_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILU_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">c203101</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203101</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILU_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEILU_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">c203103</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203103</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEIMR_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEIMR_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">RBRUNY@CI.MIAMI.FL.US</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">RBRUNY@CI.MIAMI.FL.US</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEIMR_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEIMR_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">c203095</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203095</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEIMR_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEIMR_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">c203096</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203096</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEIMR_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEIMR_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">c203097</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203097</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEIMR_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEIMR_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">c203098</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203098</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEIMR_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEIMR_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">c203100</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203100</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEIMR_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEIMR_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">c203101</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203101</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEIMR_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEIMR_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">c203103</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203103</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCENCU_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCENCU_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">RBRUNY@CI.MIAMI.FL.US</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">RBRUNY@CI.MIAMI.FL.US</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCENCU_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCENCU_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">c203095</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203095</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCENCU_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCENCU_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">c203096</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203096</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCENCU_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCENCU_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">c203097</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203097</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCENCU_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCENCU_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">c203098</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203098</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCENCU_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCENCU_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">c203100</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203100</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCENCU_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCENCU_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">c203101</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203101</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCENCU_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCENCU_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">c203103</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203103</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEOGL_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEOGL_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">RBRUNY@CI.MIAMI.FL.US</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">RBRUNY@CI.MIAMI.FL.US</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEOGL_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEOGL_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">c203095</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203095</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEOGL_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEOGL_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">c203096</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203096</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEOGL_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEOGL_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">c203097</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203097</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEOGL_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEOGL_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">c203098</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203098</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEOGL_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEOGL_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">c203100</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203100</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEOGL_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEOGL_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">c203101</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203101</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEOGL_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEOGL_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">c203103</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203103</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKC_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKC_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">RBRUNY@CI.MIAMI.FL.US</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">RBRUNY@CI.MIAMI.FL.US</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKC_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKC_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">c203095</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203095</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKC_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKC_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">c203096</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203096</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKC_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKC_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">c203097</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203097</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKC_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKC_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">c203098</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203098</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKC_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKC_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">c203100</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203100</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKC_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKC_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">c203101</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203101</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKC_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKC_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">c203103</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203103</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKU_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKU_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">c203096</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203096</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKU_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKU_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">c203095</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203095</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKU_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKU_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">RBRUNY@CI.MIAMI.FL.US</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">RBRUNY@CI.MIAMI.FL.US</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKU_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKU_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">c203097</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203097</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKU_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKU_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">c203098</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203098</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKU_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKU_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">c203100</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203100</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKU_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKU_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">c203101</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203101</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKU_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEPKU_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">c203103</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203103</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCESGN_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCESGN_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">c203095</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203095</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCESGN_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCESGN_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">c203096</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203096</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCESGN_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCESGN_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">c203097</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203097</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCESGN_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCESGN_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">RBRUNY@CI.MIAMI.FL.US</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">RBRUNY@CI.MIAMI.FL.US</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCESGN_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCESGN_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">c203098</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203098</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCESGN_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCESGN_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">c203100</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203100</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCESGN_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCESGN_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">c203103</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203103</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCESGN_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCESGN_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">c203101</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203101</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCETRE_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCETRE_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">c203095</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203095</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCETRE_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCETRE_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">c203096</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203096</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCETRE_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCETRE_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">c203097</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203097</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCETRE_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCETRE_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">c203098</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203098</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCETRE_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCETRE_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">RBRUNY@CI.MIAMI.FL.US</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">RBRUNY@CI.MIAMI.FL.US</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCETRE_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCETRE_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">c203100</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203100</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCETRE_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCETRE_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">c203103</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203103</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCETRE_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCETRE_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">c203101</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203101</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEVUS_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEVUS_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">c203103</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203103</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEVUS_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEVUS_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">c203101</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203101</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEVUS_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEVUS_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">c203098</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203098</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEVUS_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEVUS_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">RBRUNY@CI.MIAMI.FL.US</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">RBRUNY@CI.MIAMI.FL.US</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEVUS_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEVUS_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">c203095</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203095</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEVUS_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEVUS_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">c203096</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203096</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEVUS_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEVUS_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">c203100</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203100</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEVUS_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMCEVUS_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">c203097</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203097</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMSWROL_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMSWROL_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">c203103</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203103</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMSWROL_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMSWROL_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">c203093</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203093</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMSWROL_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#COMSWROL_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">WOrtiz@ci.miami.fl.us</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">WOrtiz@ci.miami.fl.us</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#NOISEVIO_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#NOISEVIO_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">RBRUNY@CI.MIAMI.FL.US</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">RBRUNY@CI.MIAMI.FL.US</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#NOISEVIO_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#NOISEVIO_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">c203095</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203095</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#NOISEVIO_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#NOISEVIO_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">c203096</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203096</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#NOISEVIO_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#NOISEVIO_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">c203097</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203097</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#NOISEVIO_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#NOISEVIO_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">c203098</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203098</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#NOISEVIO_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#NOISEVIO_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">c203100</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203100</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#NOISEVIO_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#NOISEVIO_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">c203101</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203101</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#NOISEVIO_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#NOISEVIO_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">c203103</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203103</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#POCHGRAZ_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#POCHGRAZ_GEORULE0"/>
-        <Literal datatypeIRI="&xsd;string">c203098</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203098</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#POCHGRAZ_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#POCHGRAZ_GEORULE1"/>
-        <Literal datatypeIRI="&xsd;string">c203095</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203095</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#POCHGRAZ_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#POCHGRAZ_GEORULE2"/>
-        <Literal datatypeIRI="&xsd;string">c203096</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203096</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#POCHGRAZ_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#POCHGRAZ_GEORULE3"/>
-        <Literal datatypeIRI="&xsd;string">c203097</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203097</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#POCHGRAZ_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#POCHGRAZ_GEORULE4"/>
-        <Literal datatypeIRI="&xsd;string">c203100</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203100</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#POCHGRAZ_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#POCHGRAZ_GEORULE5"/>
-        <Literal datatypeIRI="&xsd;string">RBRUNY@CI.MIAMI.FL.US</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">RBRUNY@CI.MIAMI.FL.US</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#POCHGRAZ_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#POCHGRAZ_GEORULE6"/>
-        <Literal datatypeIRI="&xsd;string">c203101</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203101</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#POCHGRAZ_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">CESECTNAME</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">CESECTNAME</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#POCHGRAZ_GEORULE7"/>
-        <Literal datatypeIRI="&xsd;string">c203103</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">c203103</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasName"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#TestActivityAssignByGeoRule"/>
-        <Literal datatypeIRI="&rdf;PlainLiteral">OBJECTID</Literal>
+        <Literal datatypeIRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral">OBJECTID</Literal>
     </DataPropertyAssertion>
     <DataPropertyAssertion>
         <DataProperty IRI="http://opencirm.org#hasUsername"/>
         <NamedIndividual IRI="http://www.miamidade.gov/cirm/legacy#TestActivityAssignByGeoRule"/>
-        <Literal datatypeIRI="&rdf;PlainLiteral">e132216</Literal>
+        <Literal datatypeIRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral">e132216</Literal>
     </DataPropertyAssertion>
     <InverseObjectProperties>
-        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
         <ObjectProperty IRI="http://opencirm.org#hasColumn"/>
+        <ObjectProperty IRI="http://opencirm.org#hasTable"/>
     </InverseObjectProperties>
     <InverseObjectProperties>
         <ObjectProperty IRI="http://opencirm.org#hasJsonMapper"/>
@@ -3614,26 +4058,26 @@
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
         <IRI>http://opencirm.org#BO_Delete</IRI>
-        <Literal datatypeIRI="&xsd;string">Delete Permanently</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Delete Permanently</Literal>
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
         <IRI>http://opencirm.org#BO_Update</IRI>
-        <Literal datatypeIRI="&xsd;string">Update</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Update</Literal>
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
         <IRI>http://opencirm.org#Illegal_Dumping_Inquiry</IRI>
-        <Literal datatypeIRI="&xsd;string">Illegal Dumping</Literal>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">Illegal Dumping</Literal>
     </AnnotationAssertion>
     <AnnotationAssertion>
         <AnnotationProperty IRI="http://purl.org/dc/elements/1.1/description"/>
         <IRI>http://opencirm.org#ServiceCall</IRI>
-        <Literal datatypeIRI="&rdf;PlainLiteral">Represents an interaction between a call taker and a caller. It is composed of a sequence of ServiceCallAction individuals, each timestamped and the timestamping determines the ordering. A ServiceCall uses the following properties: hasUsername, startAt, endAt, notes, resolution.</Literal>
+        <Literal datatypeIRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral">Represents an interaction between a call taker and a caller. It is composed of a sequence of ServiceCallAction individuals, each timestamped and the timestamping determines the ordering. A ServiceCall uses the following properties: hasUsername, startAt, endAt, notes, resolution.</Literal>
     </AnnotationAssertion>
 </Ontology>
 
 
 
-<!-- Generated by the OWL API (version 3.4.2) http://owlapi.sourceforge.net -->
+<!-- Generated by the OWL API (version 4.2.6.20160910-2108) https://github.com/owlcs/owlapi -->
 
