@@ -66,5 +66,73 @@ public class GisService extends RestService
 		}
 		return result;
 	}
-		
+			
+	/**
+	 * Tries to find an address to a folio number and returns the address in CiRM form.<br>
+	 * For CiRM form, see an SR with atAddress parameter.<br>
+	 * Example: <br>
+	 * <code>
+     *   	  {
+     *   	"server": "77",
+     *   	"atAddress": {
+     *   		"Street_Address_State": {
+     *   			"iri": "http://www.miamidade.gov/ontology#Florida"
+     *   		},
+     *   		"Street_Name": "137TH",
+     *   		"Street_Number": "15751",
+     *   		"Street_Unit_Number": "204",
+     *   		"Street_Direction": {
+     *   			"iri": "http://www.miamidade.gov/ontology#South_West"
+     *   		},
+     *   		"fullAddress": "15751 SW 137TH AVE",
+     *   		"Zip_Code": "33177",
+     *   		"type": "Street_Address",
+     *   		"Street_Address_City": {
+     *   			"iri": "http://www.miamidade.gov/ontology#Geo_UNINCORPORATED_MIAMI_DADE"
+     *   		},
+     *   		"hasStreetType": {
+     *   			"iri": "http://www.miamidade.gov/ontology#Street_Type_Avenue"
+     *   		}
+     *   	},
+     *   	"ok": true
+     *   }
+	 * </code>
+	 * 
+	 * @param folio a MD GIS folio inside MiamiDade 
+	 * @return ok with atAddress property or ko with error message. 
+	 */
+	@GET
+	@Path("/addressByFolio")
+	@Produces("application/json")
+	public Json getCirmAddressByFolio(@QueryParam("folio") long folio)
+	{
+		Json result;
+		try {
+			//This can block up to 2 minutes, retries are configured:
+			result = ServiceCaseJsonHelper.getCirmAddressByFolio(folio);
+			if (result.isNull()) {
+				result = GenUtils.ko("MD GIS getAddressFromFolio was unable to " 
+						+ "find an address for folio "  + folio
+						+ ". Ensure it's inside Miami Dade."); 
+			} else {
+				// resolve usps prefixes to iris
+				ServiceCaseJsonHelper.assignIris(result);
+				// clean up and set type
+				if (result.has("Street_Direction") && result.at("Street_Direction").has("USPS_Abbreviation")) {
+					result.at("Street_Direction").delAt("USPS_Abbreviation");
+				}
+				if (result.has("hasStreetType") && result.at("hasStreetType").has("USPS_Suffix")) {
+					result.at("hasStreetType").delAt("USPS_Suffix");
+				}
+				result.set("type" , "Street_Address");
+				result = GenUtils.ok().set("atAddress", result);
+			}
+		} catch (Exception e) {
+			String msg = e.toString() + " during getCirmAddressByFolio with param: folio " + folio + " : ";
+			System.err.println(msg);
+			e.printStackTrace();
+			result = GenUtils.ko(msg);
+		}
+		return result;
+	}
 }

@@ -457,18 +457,35 @@ public class ServiceCaseJsonHelper
     public static Json reverseGeoCode(double xcoord, double ycoord)
     {
 		Json gis = GisClient.getAddressFromCoordinates(xcoord, ycoord, 3, 1000*30); 
-		if (gis.isArray())
-			gis = gis.at(0);
-		else if (gis.isNull() || gis.asJsonMap().isEmpty() || !gis.has("parsedAddress"))
+		return makeCirmAddress(gis, false);
+    }
+
+    public static Json getCirmAddressByFolio(long folio)
+    {
+		Json gis = GisClient.getAddressFromFolio(folio, 5, 1000); 
+		return makeCirmAddress(gis, true);
+    }
+
+    /**
+     * Converts the parsedAddress from a GIS client result with parsedAddress into a Cirm compatible address json.
+     * @param gisResult
+     * @param tryIncludeUnit
+     * @return
+     */
+    public static Json makeCirmAddress(Json gisResult, boolean tryIncludeUnit)
+    {
+		if (gisResult.isArray())
+			gisResult = gisResult.at(0);
+		else if (gisResult.isNull() || gisResult.asJsonMap().isEmpty() || !gisResult.has("parsedAddress"))
 			return Json.nil();
 		Json addr =  Json.object();
-		Json parsed = gis.at("parsedAddress");
+		Json parsed = gisResult.at("parsedAddress");
 		Set<OWLNamedIndividual> S = OWL.queryIndividuals("Place and (Name value \"" + 
-				gis.at("municipality").asString() +
-				"\" or Alias value \"" + gis.at("municipality").asString() + "\")");
+				gisResult.at("municipality").asString() +
+				"\" or Alias value \"" + gisResult.at("municipality").asString() + "\")");
 		if (S.isEmpty())
-			throw new IllegalArgumentException("Cannot find municipality in ontology " + gis.at("municipality"));
-		String streetAddress = gis.at("address").asString().split(",")[0];
+			throw new IllegalArgumentException("Cannot find municipality in ontology " + gisResult.at("municipality"));
+		String streetAddress = gisResult.at("address").asString().split(",")[0];
 		addr.set("Street_Number", parsed.at("House"))
 			.set("Zip_Code", parsed.at("zip"))
 			// We shouldn't be hard-coding the state here as there may be out of state cases, though unlikely when coming from departments...
@@ -476,11 +493,15 @@ public class ServiceCaseJsonHelper
 				  Json.object("iri", "http://www.miamidade.gov/ontology#Florida"))
 			.set("Street_Address_City", Json.object("iri", S.iterator().next().getIRI().toString()))
 			.set("Street_Name", parsed.at("StreetName"))
-			.set("fullAddress", streetAddress);
+			.set("fullAddress", streetAddress);		
 		if (parsed.has("PreDir") && !parsed.is("PreDir", ""))
 			addr.set("Street_Direction", Json.object("USPS_Abbreviation", parsed.at("PreDir").asString()));
 		if (parsed.has("SufType") && !parsed.is("SufType", ""))
 			addr.set("hasStreetType", Json.object("USPS_Suffix", parsed.at("SufType").asString()));
+		//Unit
+    	if(tryIncludeUnit && parsed.has("unit")) {
+    		addr.set("Street_Unit_Number", parsed.at("unit").asString());
+    	}
 		return addr;		
     }
     
