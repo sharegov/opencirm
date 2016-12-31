@@ -37,20 +37,27 @@
       }
 
       function doMap() {
-        console.log('positioning Google Map on ', 
-            window.address, window.zip, window.municipalityId, window.unit,
-            window.originalResult.geometry.location);
-        var location = window.originalResult.geometry.location;
-        var position = {lat:location.lat(),lng:location.lng()};
-        googleMap.setCenter(position);
-        marker.setPosition(position);
-        google.maps.event.addListener(googleMap, "click", function (e) {
-          var latlng = {lat:e.latLng.lat(), lng:e.latLng.lng() };
-          console.log(e.latLng, latlng);
-          marker.setPosition(latlng);
-          window.opener['mapReverseGeocode'].call(window.opener, latlng);
-          //window.opener['mapInitializedCallback'].call(window.opener);          
-        });        
+        if (window.coordinates) {
+          console.log('set map with position', window.coordinates);
+          googleMap.setCenter(window.coordinates);
+          marker.setPosition(window.coordinates);
+        }
+        else {
+          console.log('positioning Google Map on ', 
+              window.address, window.zip, window.municipalityId, window.unit,
+              window.originalResult.geometry.location);
+          var location = window.originalResult.geometry.location;
+          var position = {lat:location.lat(),lng:location.lng()};
+          googleMap.setCenter(position);
+          marker.setPosition(position);
+          google.maps.event.addListener(googleMap, "click", function (e) {
+            var latlng = {lat:e.latLng.lat(), lng:e.latLng.lng() };
+            console.log(e.latLng, latlng);
+            marker.setPosition(latlng);
+            window.opener['mapReverseGeocode'].call(window.opener, latlng);
+            //window.opener['mapInitializedCallback'].call(window.opener);          
+          });
+        }
       }
       
             
