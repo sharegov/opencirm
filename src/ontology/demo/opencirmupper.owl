@@ -439,13 +439,34 @@
         <DataProperty IRI="http://opencirm.org#Alias"/>
     </Declaration>
     <Declaration>
+        <DataProperty IRI="http://opencirm.org#BusinessPhoneNumber"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#CellPhoneNumber"/>
+    </Declaration>
+    <Declaration>
         <DataProperty IRI="http://opencirm.org#Dept_Code"/>
     </Declaration>
     <Declaration>
         <DataProperty IRI="http://opencirm.org#Division_Code"/>
     </Declaration>
     <Declaration>
+        <DataProperty IRI="http://opencirm.org#FaxNumber"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#FirstName"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#HomePhoneNumber"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#LastName"/>
+    </Declaration>
+    <Declaration>
         <DataProperty IRI="http://opencirm.org#Name"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#OtherPhoneNumber"/>
     </Declaration>
     <Declaration>
         <DataProperty IRI="http://opencirm.org#Street_Name"/>
@@ -464,6 +485,9 @@
     </Declaration>
     <Declaration>
         <DataProperty IRI="http://opencirm.org#hasContents"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://opencirm.org#hasEmailAddress"/>
     </Declaration>
     <Declaration>
         <DataProperty IRI="http://opencirm.org#hasLocationName"/>
@@ -6580,6 +6604,14 @@
         <Datatype abbreviatedIRI="xsd:string"/>
     </DataPropertyRange>
     <DataPropertyRange>
+        <DataProperty IRI="http://opencirm.org#BusinessPhoneNumber"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://opencirm.org#CellPhoneNumber"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
         <DataProperty IRI="http://opencirm.org#Dept_Code"/>
         <DataUnionOf>
             <Datatype abbreviatedIRI="xsd:int"/>
@@ -6594,7 +6626,19 @@
         </DataUnionOf>
     </DataPropertyRange>
     <DataPropertyRange>
+        <DataProperty IRI="http://opencirm.org#FaxNumber"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://opencirm.org#HomePhoneNumber"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
         <DataProperty IRI="http://opencirm.org#Name"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://opencirm.org#OtherPhoneNumber"/>
         <Datatype abbreviatedIRI="xsd:string"/>
     </DataPropertyRange>
     <DataPropertyRange>
@@ -6611,6 +6655,10 @@
     </DataPropertyRange>
     <DataPropertyRange>
         <DataProperty IRI="http://opencirm.org#Zip_Code"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://opencirm.org#hasEmailAddress"/>
         <Datatype abbreviatedIRI="xsd:string"/>
     </DataPropertyRange>
     <DataPropertyRange>

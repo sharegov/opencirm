@@ -185,12 +185,17 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 			if(!self.map() || self.map().closed) {
 			  var mapWindow = null;
 				var callback = function () {
-  			  self.setAddressOnMap( self.address.fullAddress(), 
-                                self.address.zip(),
-                                self.address.addressData().propertyInfo,
-                                self.address.unit(),
-                                self.address.municipalityId()
-                              );
+          if (self.address.addressData())
+    			  self.setAddressOnMap( self.address.fullAddress(), 
+                                  self.address.zip(),
+                                  self.address.addressData().propertyInfo,
+                                  self.address.unit(),
+                                  self.address.municipalityId()
+                                );
+          else{
+            self.map().coordinates = {lat:25.690639, lng:-80.165207};
+            self.map().doMap();
+          }
   			  $(document).unbind("mapInitializedEvent", callback);			        
   			};
 			  $(document).bind("mapInitializedEvent", callback);

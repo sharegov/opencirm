@@ -2547,7 +2547,7 @@
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI=":hasLegacyEvent"/>
-        <NamedIndividual abbreviatedIRI=":CLOSED"/>
+        <NamedIndividual abbreviatedIRI=":Closed"/>
         <NamedIndividual abbreviatedIRI=":CloseServiceCase"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
@@ -2558,7 +2558,7 @@
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI=":hasStatus"/>
         <NamedIndividual abbreviatedIRI=":CloseServiceCase"/>
-        <NamedIndividual abbreviatedIRI=":CLOSED"/>
+        <NamedIndividual abbreviatedIRI=":Closed"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty abbreviatedIRI=":hasColumnMapping"/>
@@ -3081,7 +3081,7 @@
     <AnnotationAssertion>
         <AnnotationProperty abbreviatedIRI="rdfs:label"/>
         <AbbreviatedIRI>:OUTCOME_COMPLETE</AbbreviatedIRI>
-        <Literal datatypeIRI="&xsd;string">Completed.</Literal>
+        <Literal datatypeIRI="&xsd;string">Case Closed</Literal>
     </AnnotationAssertion>
 </Ontology>
 
