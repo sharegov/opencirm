@@ -38,7 +38,7 @@
 
       function doMap() {
         if (window.coordinates) {
-          console.log('set map with position', window.coordinates);
+          console.log('set map with position', window.coordinates)
           googleMap.setCenter(window.coordinates);
           marker.setPosition(window.coordinates);
         }
@@ -50,14 +50,15 @@
           var position = {lat:location.lat(),lng:location.lng()};
           googleMap.setCenter(position);
           marker.setPosition(position);
-          google.maps.event.addListener(googleMap, "click", function (e) {
-            var latlng = {lat:e.latLng.lat(), lng:e.latLng.lng() };
-            console.log(e.latLng, latlng);
-            marker.setPosition(latlng);
-            window.opener['mapReverseGeocode'].call(window.opener, latlng);
-            //window.opener['mapInitializedCallback'].call(window.opener);          
-          });
         }
+        google.maps.event.addListener(googleMap, "click", function (e) {
+          console.log('maps clicked!', e);
+          var latlng = {lat:e.latLng.lat(), lng:e.latLng.lng() };
+          console.log(e.latLng, latlng);
+          marker.setPosition(latlng);
+          window.opener['mapReverseGeocode'].call(window.opener, latlng);
+          //window.opener['mapInitializedCallback'].call(window.opener);          
+        });
       }
       
             

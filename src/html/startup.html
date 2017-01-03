@@ -79,56 +79,68 @@ function (rest, U, cirm, legacy, sreditor, answerhub, store, cirmgis) {
       window.location.href="login.html";
   }
   
-  window.mapReverseGeocode = function(latlng) 
-  {
+  window.mapReverseGeocode = function(latlng) {
     //console.log("reverse geo coding on", latlng);
     cirmgis.reverseGeoCode(latlng, function(address) {
 //      console.log("address back from map", address);
       answerHubModel.addressSearch.setAddress(address, false);
     });
   }
-  
-        //
-        // Application update event
-        //
-		cirm.events.bind("http://www.miamidade.gov/ontology#CIRMApplication", function () {
-				$('#applicationUpdateDiv').show();        		
-	   	}); 
-        
-        legacy.marquee().embed($('#marqueeContainer'));
+
+// --------------------------------------------------------------------------
+// GIS setup
+  function initGis() {
+    var config = cirm.top.get("/individuals/predefined/configset");
+    var fullUrl = config.GisConfig.hasUrl;
+    var url = fullUrl.substring(0,fullUrl.lastIndexOf("/"));
+    var path = fullUrl.substring(fullUrl.lastIndexOf("/"));
+    cirmgis.initConnection(url, path);
+  }
+
+  initGis();
+// --------------------------------------------------------------------------
+
+  //
+  // Application update event
+  //
+	cirm.events.bind("http://www.miamidade.gov/ontology#CIRMApplication", function () {
+			$('#applicationUpdateDiv').show();        		
+ 	}); 
+      
+  legacy.marquee().embed($('#marqueeContainer'));
 
 // comment out for non-MDC context
 //		var electionsComponent = legacy.elections();
 //		electionsComponent.embed($('#electionsDiv'));
-		$('#birthDate').datepicker();
+	$('#birthDate').datepicker();
 
-        // Emptying and filling the mainContent div doesn't work because everything time it is emptied,
-        // all DOM elements loose their event handlers. On the other hand, we need to have state maintained
-        // when users switch from one tab to another, so we need global permanent references to the editor
-        // and answerhub component. Therefore, they are stored in a top-level divs that are hidden and shown.
-        var currentDiv = $('#mainContent');
-        var answerhubComponent = answerhub.makeAnswerHub();
-		// this needs to be global because we are calling a global function that access it
-		window.answerHubModel = answerhubComponent.model;
-		answerhubComponent.embed($('#answerHubDiv'));
-		//pass answer hub address to service hub.
-        var editor = sreditor.edit(null, answerHubModel.addressSearch.address);
-		window.serviceHubModel = editor.model;
-        editor.embed($('#editorDiv'));
-		caseEditor = editor;
+  // Emptying and filling the mainContent div doesn't work because everything time it is emptied,
+  // all DOM elements loose their event handlers. On the other hand, we need to have state maintained
+  // when users switch from one tab to another, so we need global permanent references to the editor
+  // and answerhub component. Therefore, they are stored in a top-level divs that are hidden and shown.
+  var currentDiv = $('#mainContent');
+  var answerhubComponent = answerhub.makeAnswerHub();
+	// this needs to be global because we are calling a global function that access it
+	window.answerHubModel = answerhubComponent.model;
+	answerhubComponent.embed($('#answerHubDiv'));
+	//pass answer hub address to service hub.
+      var editor = sreditor.edit(null, answerHubModel.addressSearch.address);
+	window.serviceHubModel = editor.model;
+      editor.embed($('#editorDiv'));
+	caseEditor = editor;
 		
-		// var wcsComponent = legacy.wcs(answerHubModel.addressSearch.address);
-		// wcsComponent.embed($('#wcsDiv'));
-		
-		// var asdComponent = legacy.asd();
-		// asdComponent.embed($('#asdDiv'));
-		
-		var advSearchComponent = legacy.advancedSearch(new answerhub.AddressModel() ); //answerHubModel.addressSearch.address);
-		advSearchComponent.embed($('#advancedSearchDiv'));
+	// var wcsComponent = legacy.wcs(answerHubModel.addressSearch.address);
+	// wcsComponent.embed($('#wcsDiv'));
+	
+	// var asdComponent = legacy.asd();
+	// asdComponent.embed($('#asdDiv'));
+	
+	var advSearchComponent = legacy.advancedSearch(new answerhub.AddressModel() ); //answerHubModel.addressSearch.address);
+	advSearchComponent.embed($('#advancedSearchDiv'));
 
-		$('input:button').not('.button_icon').addClass('button blue');
-		
-		patchPlaceholdersforIE();
+	$('input:button').not('.button_icon').addClass('button blue');
+	
+	patchPlaceholdersforIE();
 		
         // Top menu handling functions
         var menuHandlers = {
@@ -287,17 +299,20 @@ function (rest, U, cirm, legacy, sreditor, answerhub, store, cirmgis) {
 	      if (!behindTheScenes)
 					editor.model.dupChecker();
 			};
-			
-			if(!behindTheScenes && editor.model.data().type() != "")
-			{
-				var type = editor.model.data().type();
-				editor.model.validateTypeOnXY(type.replace(/[a-zA-Z0-9]+\:/, ""), data.coordinates().x
-						, data.coordinates().y, callback, "The address you are validating is not valid for the Service Request Type curently active in ServiceHub? Clear the S/R if you wish to continue your search.");
-			}
-			else
-			{
+
+  // The check for validate SR type only works for Miami-Dade...another piece of refactoring
+  // needed here to abstract away this kind of validation.
+
+			// if(!behindTheScenes && editor.model.data().type() != "")
+			// {
+			// 	var type = editor.model.data().type();
+			// 	editor.model.validateTypeOnXY(type.replace(/[a-zA-Z0-9]+\:/, ""), data.coordinates().x
+			// 			, data.coordinates().y, callback, "The address you are validating is not valid for the Service Request Type curently active in ServiceHub? Clear the S/R if you wish to continue your search.");
+			// }
+			// else
+			// {
 				callback();
-			}
+			// }
 		});
 
         $('[menuHandler=answerHub]').click();

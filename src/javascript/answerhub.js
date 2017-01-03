@@ -119,7 +119,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 		self.address = new AddressModel();
 		self.addresses = ko.observableArray([]);
 		self.commonLocations =  ko.observableArray([]);
-		self.gis = null;
+		self.gis = cirmgis;
 		self.map = ko.observable(null);
 		self.last5Addr = ko.observableArray([]);
   	self.clear = function() {
@@ -337,9 +337,9 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 //		};
 		
 		self.searchCommonLocation = function(){
-			if(!self.gis) {
-				initGis();
-			}
+			// if(!self.gis) {
+			// 	initGis();
+			// }
 			self.showProgress("#ah_dialog_location_search");
 		    $(document).trigger(legacy.InteractionEvents.UserAction, 
 		            ['Search Common Location', self.address.commonLocation.name()]);			
@@ -377,9 +377,9 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 
 		self.standardizeStreet = function(data, fromServiceHub) {
 			self.showProgress("#ah_dialog_address_search");
-			if(!self.gis) {
-				initGis();
-			}
+			// if(!self.gis) {
+			// 	initGis();
+			// }
 			var stdStr = (typeof data == 'function') ? data() : data;
 			self.gis.getStandardizedStreet(stdStr 
 				, function(street) {
@@ -407,9 +407,9 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 			$(document).trigger(legacy.InteractionEvents.UserAction, 
 			                    ['Validate Address', 
 			                      self.address.fullAddress() + ',' + self.address.zip()]);
-			if(!self.gis) {
-				initGis();
-			}
+			// if(!self.gis) {
+			// 	initGis();
+			// }
 			if(!behindTheScenes)
 			{
 				$('body').css('cursor', 'url(/html/images/hourglass.cur),auto');
@@ -565,9 +565,9 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 		
 		self.searchFolio = function() {
 			self.showProgress("#ah_dialog_address_search");
-			if(!self.gis) {
-				initGis();
-			}
+			// if(!self.gis) {
+			// 	initGis();
+			// }
 		    $(document).trigger(legacy.InteractionEvents.UserAction, 
                                 ['Search Folio', self.address.folio()]);
 			self.gis.getAddressByFolio (self.address.folio(), function(candidate){
@@ -632,14 +632,14 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 			$( id ).dialog('close');
 		};
 		
-		function initGis() {
-			var config = cirm.top.get("/individuals/predefined/configset");
-			var fullUrl = config.GisConfig.hasUrl;
-			var url = fullUrl.substring(0,fullUrl.lastIndexOf("/"));
-			var path = fullUrl.substring(fullUrl.lastIndexOf("/"));
-			cirmgis.initConnection(url, path);
-			self.gis = cirmgis;
-		}
+		// function initGis() {
+		// 	var config = cirm.top.get("/individuals/predefined/configset");
+		// 	var fullUrl = config.GisConfig.hasUrl;
+		// 	var url = fullUrl.substring(0,fullUrl.lastIndexOf("/"));
+		// 	var path = fullUrl.substring(fullUrl.lastIndexOf("/"));
+		// 	cirmgis.initConnection(url, path);
+		// 	self.gis = cirmgis;
+		// }
 		
 		return self;
 	}
