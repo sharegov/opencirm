@@ -544,7 +544,11 @@ public class MetaOntology
 	protected static List<OWLOntologyChange> makeObjectIndividual (OWLIndividual parent, Json properties, OWLOntology O, OWLOntologyManager manager, OWLDataFactory factory){
 		List<OWLOntologyChange> result = new ArrayList<OWLOntologyChange>();
 		
-		result.addAll(getRemoveOnlyPropertiesIndividualChanges(parent));
+		if (properties.asJsonMap().containsKey("reference")) {
+			return result;
+		}
+		
+		result.addAll(getRemoveOnlyPropertiesIndividualChanges(parent));			
 		
 		for (Map.Entry<String, Json> e : properties.asJsonMap().entrySet())
 		{
@@ -1080,7 +1084,7 @@ public class MetaOntology
 					return;
 				} else {
 					j.set("reference", true);
-					System.out.println("Infinite recursive definition found for object : " + j.at("iri").asString());
+					System.out.println("Recursive Definition detected for individual: " + j.at("iri").asString());
 					return;
 				}
 			} else {

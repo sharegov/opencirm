@@ -6,9 +6,22 @@
     "uniqueItems": true,
     "type": "array",
 	"definitions":{
+		"reference": {
+							"additionalProperties": true,
+							"properties": {
+								"iri": {"$ref": "#/definitions/iri"},
+								"reference": {"$ref": "#/definitions/booleanValue"}
+							},
+							"required": [
+								"iri",
+								"reference"
+							],
+							"type": "object"
+						},
 		"ServiceField": {
 							"type": "object",
 							"oneOf": [
+								{"$ref": "#/definitions/reference"},
 								{"$ref": "#/definitions/ServiceNote"},
 								{"$ref": "#/definitions/ServiceQuestion"}                      
 							]
@@ -112,7 +125,7 @@
 							"type": "string"
 						},
 		"hasServiceFieldAlert":	{	
-									"oneOf":[
+									"oneOf":[	
 												{"$ref": "#/definitions/hasServiceFieldAlertList"},
 												{"$ref": "#/definitions/ServiceFieldAlert"}
 											]
@@ -128,6 +141,12 @@
 										"type": "array"
 									},
 		"ServiceFieldAlert": {
+								"oneOf": [
+											{"$ref": "#/definitions/reference"},
+											{"$ref": "#/definitions/ServiceFieldAlertObject"}
+										 ]
+							},
+		"ServiceFieldAlertObject": {
 								"properties": {
 									"hasLegacyEvent": {"$ref": "#/definitions/hasLegacyEvent"},
 									"hasAnswerObject": {"$ref": "#/definitions/hasAnswerObject"},
@@ -141,7 +160,6 @@
 									"iri",
 									"label",
 									"hasLegacyEvent",
-									"hasAnswerObject",
 									"type"
 								],
 								"type": "object"
@@ -160,6 +178,7 @@
 						},
 		"hasChoiceValueList": {
 								"oneOf":[
+											{"$ref": "#/definitions/reference"},
 											{"$ref": "#/definitions/hasChoiceValueListObject"}
 									    ]
 							  },
@@ -203,6 +222,12 @@
 								"type": "array"
 							},
 		"ChoiceValue": {
+							"oneOf": [
+										{"$ref": "#/definitions/reference"},
+										{"$ref": "#/definitions/ChoiceValueObject"}
+									 ]
+					   },
+		"ChoiceValueObject": {
 							"type": "object",
 							"additionalProperties": false,
 							"properties": {
@@ -229,6 +254,12 @@
 								]
 					},
 		"hasDefaultIntakeMethod": {
+									"oneOf": [
+										{"$ref": "#/definitions/reference"},
+										{"$ref": "#/definitions/hasDefaultIntakeMethodObject"}
+									 ]
+								  },
+		"hasDefaultIntakeMethodObject": {
 									"type": "object",
 									"properties": {
 										"hasOrderBy": {"$ref": "#/definitions/hasOrderBy"},
@@ -256,20 +287,26 @@
 							},
 		"hasLegacyEvent": {							
 							"oneOf":[
-										{"$ref": "#/definitions/LegacyEventObject"},
-										{"$ref": "#/definitions/ListOfLegacyEventObject"}
+										{"$ref": "#/definitions/LegacyEvent"},
+										{"$ref": "#/definitions/ListOfLegacyEvent"}
 									]
 						  },
-	    "ListOfLegacyEventObject": {
+	    "ListOfLegacyEvent": {
 								"items": {
 											"type": "object",
 											"oneOf":[
-														{"$ref": "#/definitions/LegacyEventObject"}
+														{"$ref": "#/definitions/LegacyEvent"}
 													]
 										},
 								"minItems": 1,
 								"type": "array"
 							},
+		"LegacyEvent": {
+							"oneOf": [
+										{"$ref": "#/definitions/reference"},
+										{"$ref": "#/definitions/LegacyEventObject"}
+									 ]
+					   },
 		"LegacyEventObject": {
 								"type": "object",
 								"properties": {
@@ -284,6 +321,12 @@
 								}
 							},
 		"hasStatus": {
+						"oneOf": [
+									{"$ref": "#/definitions/reference"},
+									{"$ref": "#/definitions/hasStatusObject"}
+								 ]
+					 },
+		"hasStatusObject": {
 						"type": "object",
 						"properties": {
 							"label": {"$ref": "#/definitions/label"},
@@ -302,6 +345,12 @@
 									"type": "string"
 								},
 		"Activity": {
+						"oneOf": [
+									{"$ref": "#/definitions/reference"},
+									{"$ref": "#/definitions/ActivityObject"}
+								 ]
+					},
+		"ActivityObject": {
 						"type": "object",
 						"properties": {
 							"label": {"$ref": "#/definitions/label"},
@@ -324,6 +373,12 @@
 						}
 					},
 		"hasAssignmentRule": {
+						"oneOf": [
+									{"$ref": "#/definitions/reference"},
+									{"$ref": "#/definitions/hasAssignmentRuleObject"}
+								 ]
+					},
+		"hasAssignmentRuleObject": {
 								"type": "object",
 								"properties": {
 									"label": {"$ref": "#/definitions/label"},
@@ -336,6 +391,7 @@
 							},
 		"Outcome": {						
 						"oneOf":[
+									{"$ref": "#/definitions/reference"},
 									{"$ref": "#/definitions/OutcomeObject"},
 									{"$ref": "#/definitions/ListOfOutcomeObject"}
 								]
@@ -344,6 +400,7 @@
 								"items": {
 											"type": "object",
 											"oneOf":[
+														{"$ref": "#/definitions/reference"},
 														{"$ref": "#/definitions/OutcomeObject"}
 													]
 										},
@@ -364,6 +421,7 @@
 					},
 		"hasActivityAssignment": {
 									"oneOf":[
+												{"$ref": "#/definitions/reference"},
 												{"$ref": "#/definitions/ActivityAssignmentObject"},
 												{"$ref": "#/definitions/ListOfActivityAssignmentObject"}
 											]
@@ -372,6 +430,7 @@
 								"items": {
 											"type": "object",
 											"oneOf":[
+														{"$ref": "#/definitions/reference"},
 														{"$ref": "#/definitions/ActivityAssignmentObject"}
 													]
 										},
@@ -385,7 +444,7 @@
 										"hasActivity": {"$ref": "#/definitions/Activity"},
 										"hasOutcome": {"$ref": "#/definitions/Outcome"},
 										"hasLegacyEvent": {"$ref": "#/definitions/hasLegacyEvent"},
-										"hasAnswerObject": {"$ref": "#/definitions/hasAnswerObject"},
+										"hasAnswerObject": {"$ref": "#/definitions/hasAnswer"},
 										"type": {
 													"enum": ["ActivityTrigger", "Activity Trigger", "QuestionTrigger"]
 												},
@@ -394,6 +453,12 @@
 								},
 		"username": {
 						"type": "string"
+					},
+		"hasAnswer": {
+						"oneOf": [
+									{"$ref": "#/definitions/reference"},
+									{"$ref": "#/definitions/hasAnswerObject"}
+								 ]
 					},
 		"hasAnswerObject": {
 								"type": "object",
@@ -414,6 +479,12 @@
 											]
             },
 		"hasDataSource": {
+						"oneOf": [
+									{"$ref": "#/definitions/reference"},
+									{"$ref": "#/definitions/hasDataSourceObject"}
+								 ]
+					},
+		"hasDataSourceObject": {
 							"type": "object",
 							"properties": {
 											  "providedBy": {"$ref": "#/definitions/providedBy"},
@@ -433,6 +504,12 @@
 							]
 						},
 		"providedBy": {
+						"oneOf": [
+									{"$ref": "#/definitions/reference"},
+									{"$ref": "#/definitions/providedByObject"}
+								 ]
+					},
+		"providedByObject": {
 						"type": "object",
 						"properties": {
 										"label": {"$ref": "#/definitions/label"},
@@ -448,6 +525,12 @@
 						]
 					  },
 		"hasAnswerUpdateTimeout": {
+						"oneOf": [
+									{"$ref": "#/definitions/reference"},
+									{"$ref": "#/definitions/hasAnswerUpdateTimeoutObject"}
+								 ]
+					},
+		"hasAnswerUpdateTimeoutObject": {
 						"type": "object",
 						"properties": {
 										"label": {"$ref": "#/definitions/label"},
@@ -465,6 +548,12 @@
 						]
 					},
 		"hasAnswerConstraint": {
+						"oneOf": [
+									{"$ref": "#/definitions/reference"},
+									{"$ref": "#/definitions/hasAnswerConstraintObject"}
+								 ]
+					},
+		"hasAnswerConstraintObject": {
 						"type": "object",
 						"properties": {
 										"label": {"$ref": "#/definitions/label"},
