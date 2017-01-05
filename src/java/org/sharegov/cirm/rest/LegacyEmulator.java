@@ -1802,6 +1802,7 @@ public class LegacyEmulator extends RestService
 
 	/**
 	 * Saves a new non Cirm originated (e.g. PW, CMS Interfaces, Open311) or referral service case into the cirm database.
+	 * If the SR is saved in pending state autoOnPending activities may be created and emails be sent.
 	 * 
 	 * Must be called from within a CirmTransaction.
 	 * @param legacyform
@@ -1820,10 +1821,17 @@ public class LegacyEmulator extends RestService
 		createCaseNumber(legacyForm);
 		// 2 Parse all legacyForm data into a business ontology
 		bontology = BOntology.makeRuntimeBOntology(legacyForm);
-		populateGisData(legacyForm, bontology);		
-		// 3 Save BO		
+		populateGisData(legacyForm, bontology);	
+		//3 Check pending and create autoOnPending activities
+		if (OWL.individual("legacy:O-PENDNG").equals(bontology.getObjectProperty("legacy:hasStatus"))) {
+			List<CirmMessage> messages = new ArrayList<>();
+			ActivityManager amgr = new ActivityManager();
+			amgr.createAutoOnPendingActivities(bontology, new Date(), messages);
+			CirmTransaction.get().addTopLevelEventListener(new SendEmailOnTxSuccessListener(messages));
+		}
+		//4 Save BO		
 		getPersister().saveBusinessObjectOntology(bontology.getOntology());
-		// 4 Extend BO by adding meta data axioms		
+		// 5 Extend BO by adding meta data axioms		
 		final BOntology bontologyVerbose;
 		try
 		{
@@ -1835,7 +1843,7 @@ public class LegacyEmulator extends RestService
 		}
 		final Json bontologyVerboseJson = OWL.toJSON(bontologyVerbose.getOntology(), bontology.getBusinessObject()); 
 		bontologyVerboseJson.set("boid", bontology.getObjectId());
-		// 5 Fire a legacy:NewServiceCaseExternalEvent only if the overall transaction finishes successfully.
+		// 6 Fire a legacy:NewServiceCaseExternalEvent only if the overall transaction finishes successfully.
 		// This ignores retries (we're inside a repeatable transaction!), so the event is guaranteed to fire only once.
 		// Assumes access to final variables bontologyVerboseJson, bontologyVerbose during event processing,
 		// so we must not change the json bontologyVerboseJson points to after returning it.

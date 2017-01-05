@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.sharegov.cirm.OWL;
 
 /**
  * Utility functions for Activity Types.
@@ -68,6 +69,38 @@ public class ActivityUtils {
 			result = isAutoCreateValue.getLiteral().equalsIgnoreCase("Y");
 		}
 		return result;		
+	}
+	
+	/**
+	 * Gets all activities that should be auto created on pending state for the given srType and intakeMethod. <br>
+	 * i.e. srType legacy:isAutoOnPending intakeMethod was configured. <br>
+	 * 
+	 * @param srType an SR type individual (NOT Class)
+	 * @param intakeMethod an intake Method individuals
+	 * @return set of legacy:Activity individuals
+	 */
+	public Set<OWLNamedIndividual> getAutoOnPendingActivities(OWLNamedIndividual srType, OWLNamedIndividual intakeMethod) {
+		String prefixedSrType = OWL.prefixedIRI(srType.getIRI());
+		String prefixedIntakeMethod = OWL.prefixedIRI(intakeMethod.getIRI());		
+		String expression = "legacy:Activity and legacy:isAutoOnPending value " + prefixedIntakeMethod 
+			+ " and inverse legacy:hasActivity value " + prefixedSrType;
+		return OWL.queryIndividuals(expression);
+	}
+	
+	/**
+	 * Gets all activities that should be auto created on locked state for the given srType and intakeMethod. <br>
+	 * i.e. srType legacy:isAutoOnLocked intakeMethod was configured. <br>
+	 * 
+	 * @param srType an SR type individual (NOT Class)
+	 * @param intakeMethod an intake Method individuals
+	 * @return set of legacy:Activity individuals
+	 */
+	public Set<OWLNamedIndividual> getAutoOnLockedActivities(OWLNamedIndividual srType, OWLNamedIndividual intakeMethod) {
+		String prefixedSrType = OWL.prefixedIRI(srType.getIRI());
+		String prefixedIntakeMethod = OWL.prefixedIRI(intakeMethod.getIRI());		
+		String expression = "legacy:Activity and legacy:isAutoOnLocked value " + prefixedIntakeMethod
+			+ " and inverse legacy:hasActivity value " + prefixedSrType;
+		return OWL.queryIndividuals(expression);
 	}
 	
 	/**

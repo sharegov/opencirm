@@ -197,8 +197,78 @@ public class ActivityManager
 		createActivitiesFromQuestions(bo, messages);
 	}
 	
+	/**
+	 * Creates activities that should be created when case transitions into pending state, if any are defined for the type and intake method.
+	 * @param serviceCaseType
+	 * @param bo
+	 * @param createdDate
+	 * @param messages
+	 */
+	public void createAutoOnPendingActivities(BOntology bo, Date createdDate, List<CirmMessage> messages)
+	{
+		try {
+			OWLNamedIndividual intakeMethodInd = bo.getObjectProperty("legacy:hasIntakeMethod");
+			OWLNamedIndividual srTypeInd = OWL.individual("legacy:" + bo.getTypeIRI().getFragment());
+			ThreadLocalStopwatch.start("START createAutoOnPendingActivities " + srTypeInd + " IntakeMethod: " + intakeMethodInd);
+						Set<OWLNamedIndividual> autoActivities = utils.getAutoOnPendingActivities(srTypeInd, intakeMethodInd);
+			for (OWLNamedIndividual activityType : autoActivities) {
+				if (!utils.isDisabled(activityType)) 
+				{	
+					ThreadLocalStopwatch.now("Found AutoOnPendingActivity " + activityType);					
+					Date completedDate = null;
+    				OWLNamedIndividual outcome = null; 
+        			List<CirmMessage> localMessages = new ArrayList<CirmMessage>();
+        			createActivity(activityType, outcome, null, null, bo, createdDate, completedDate, null, localMessages);
+        			for (CirmMessage lm : localMessages) 
+        			{
+        				lm.addExplanation("createAutoOnPendingActivities T: " + srTypeInd.getIRI().getFragment());
+        				messages.add(lm);
+        			}
+    			}
+    		} //for
+			ThreadLocalStopwatch.start("END createAutoOnPendingActivities ");
+		} catch(Exception e) {
+			ThreadLocalStopwatch.fail("FAIL createAutoOnPendingActivities " + e);
+			e.printStackTrace();
+		}
+	}
 
-
+	/**
+	 * Creates activities that should be created when case transitions into locked state, if any are defined for the bo type and intake method.
+	 * @param serviceCaseType
+	 * @param bo
+	 * @param createdDate
+	 * @param messages
+	 */
+	public void createAutoOnLockedActivities(BOntology bo, Date createdDate, List<CirmMessage> messages)
+	{
+		try {
+    		OWLNamedIndividual intakeMethodInd = bo.getObjectProperty("legacy:hasIntakeMethod");		
+			OWLNamedIndividual srTypeInd = OWL.individual("legacy:" + bo.getTypeIRI().getFragment());
+    		ThreadLocalStopwatch.start("START createAutoOnLockedActivities " + srTypeInd + " IntakeMethod: " + intakeMethodInd);
+    		Set<OWLNamedIndividual> autoActivities = utils.getAutoOnLockedActivities(srTypeInd, intakeMethodInd);
+    		for (OWLNamedIndividual activityType : autoActivities) {
+    			if (!utils.isDisabled(activityType)) 
+    			{
+    				ThreadLocalStopwatch.now("Found AutoOnLockedActivity " + activityType);
+    				Date completedDate = null;
+    				OWLNamedIndividual outcome = null; 
+        			List<CirmMessage> localMessages = new ArrayList<CirmMessage>();
+        			createActivity(activityType, outcome, null, null, bo, createdDate, completedDate, null, localMessages);
+        			for (CirmMessage lm : localMessages) 
+        			{
+        				lm.addExplanation("createAutoOnLockedActivities T: " + srTypeInd.getIRI().getFragment());
+        				messages.add(lm);
+        			}
+    			}
+    		} //for
+    		ThreadLocalStopwatch.start("END createAutoOnLockedActivities ");
+		} catch(Exception e) {
+			ThreadLocalStopwatch.fail("FAIL createAutoOnLockedActivities " + e);
+			e.printStackTrace();
+		}
+	}
+	
 	/** 
 	 * Creates an activity now and ignores a potentially configured occurday setting. 
 	 * This method is used to create already scheduled activities on TM callback.
