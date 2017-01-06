@@ -1239,6 +1239,9 @@ public class LegacyEmulator extends RestService
 				throw new ConcurrentLockedToOpenException();
 			} else {
 				mngr.changeStatus(currentStatus, newStatus, updatedDate, (srModifiedBy != null)?srModifiedBy.getLiteral():null, bontology, emailsToSend);
+				if (individual("legacy:O-LOCKED").equals(newStatus)) {
+					mngr.createAutoOnLockedActivities(bontology, new Date(), emailsToSend);
+				}
 			}
 		}
 
