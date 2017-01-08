@@ -51,12 +51,12 @@ import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.RequestScopeFilter;
 import org.sharegov.cirm.legacy.CirmMessage;
-import org.sharegov.cirm.legacy.MessageManager;
 import org.sharegov.cirm.rest.LegacyEmulator;
 import org.sharegov.cirm.rest.RestService;
 import org.sharegov.cirm.stats.CirmStatisticsFactory;
 import org.sharegov.cirm.stats.SRCirmStatsDataReporter;
 import org.sharegov.cirm.utils.GenUtils;
+import org.sharegov.cirm.utils.SendEmailOnTxSuccessListener;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
 import gov.miamidade.cirm.other.JMSClient;
@@ -859,11 +859,12 @@ public class LegacyJMSListener extends Thread
 			{
 				//Issue #705 : X-Error Email Notification. Emails were not getting triggered while response was received from the interface.
 				ThreadLocalStopwatch.now("LegacyJMSListener.process responseTxn & sending emails if any");					
-				final ArrayList<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();				
 				Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
 				public Json call() throws JMSException
 				{												
-					Json R = responseTxn(emulator, jmsg, emailsToSend);
+					ArrayList<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();
+					CirmTransaction.get().addTopLevelEventListener(new SendEmailOnTxSuccessListener(emailsToSend));					
+					Json R = responseTxn(emulator, jmsg, emailsToSend);				
 					if (R.is("ok", false))
 					{
 						ThreadLocalStopwatch.error("LegacyJMSListener.process responseTxn failed with ");					
@@ -871,7 +872,6 @@ public class LegacyJMSListener extends Thread
 					}
 					return R;
 				}});
-				MessageManager.get().sendEmails(emailsToSend);								
 				break;
 			}
 			default:
