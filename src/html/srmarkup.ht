@@ -32,7 +32,11 @@
     <div id="sr_details" class="grid_breaker" data-bind="visible: currentSection().div == 'sr_details'">
         <div class="grid_5 alpha" id="srTypeList">
 			<span class="input_clear">
-	        	<input id="srTypeID" data-bind="jqueryui: {widget: 'autocomplete', options:{source:getFilteredSCList()} }, event: {keydown: validateOnEnter}, css: {color_green: data().type().length > 0}" class="ic_field" style="width:312px" type="text" placeholder="Service Request Type">
+        <select id="selType" data-bind="value:requestDropDownSelection, options: availabeRequestTypes, optionsText: 'label', optionsValue: 'iri', optionsCaption:'Select One..', attr:{disabled: $root.isCustomerLocked()}, event:{change:startNewServiceRequestFromDropDown}" class="ic_field" style="width:312px">
+        </select>
+        <!--
+      	<input id="srTypeID" data-bind="jqueryui: {widget: 'autocomplete', options:{source:getFilteredSCList()} }, event: {keydown: validateOnEnter}, css: {color_green: data().type().length > 0}" class="ic_field" style="width:312px" type="text" placeholder="Service Request Type">
+-->
 				<input class="ic_clear button_icon" type="button" value="Clear" data-bind="event: {click: function(data,event){$root.clearSR();}}" style="border-top-right-radius:0; -moz-border-radius-topright:0; border-bottom-right-radius:0; -moz-border-radius-bottomright:0;">
             	<input class="submit h23_submit" type="button" value="Search" data-bind="click: srTypeLookup">
             </span>

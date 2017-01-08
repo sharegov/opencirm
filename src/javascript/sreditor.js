@@ -15,508 +15,514 @@
  ******************************************************************************/
 define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", 
         "interfaceValidation", "text!../html/srmarkup.ht"], 
-   function($, U, rest, ui, store, cirm, legacy, interfaceValidation, srmarkupText)   {
+function($, U, rest, ui, store, cirm, legacy, interfaceValidation, srmarkupText)   {
 	
    
     
-    function getMetadataUrl(){
-    	return 'https://api.miamidade.gov/s3ws/metadata/update';
-    }
+function getMetadataUrl(){
+	return 'https://api.miamidade.gov/s3ws/metadata/update';
+}
     
     
 	
-    function AddressBluePrint() {
-    	var self = this;
-		  self.Street_Number = "";
-  		self.Street_Name = "";
-  		self.fullAddress = ""; 
-  		self.Street_Unit_Number = ""; 
-  		self.Zip_Code = "";
-  		self.folio = "";
-  		self.hasLocationName = "";
-  		self.type = "Street_Address";
-  		self.Street_Address_City = {"iri":"", "label":"" };
-  		self.Street_Address_State = {"iri":"http://opencirm.org#Florida", "label":"Florida" };
-  		self.Street_Direction = {"label":"", "iri":""};
-  		self.hasStreetType = {"label":"", "iri":""};
-  		self.addressType = "";
-    }
-    
-    function ServiceActorAddressBluePrint()
-    {
-    	var self = this;
-  		self.fullAddress = ""; 
-  		self.Street_Unit_Number = ""; 
-  		self.Zip_Code = "";
-  		self.type = "Street_Address";
-  		self.Street_Address_City = {"iri":"", "label":"" };
-  		self.Street_Address_State = {"iri":"http://opencirm.org#Florida", "label":"Florida" };
-    }
-    
-    function ServiceActor(iri, label, username, serverDate, isNew) {
-    	var self = this;
-    	self.hasServiceActor = {"iri":iri, "label":label};
-    	self.Name = "";
-    	self.LastName = "";
-    	self.BusinessPhoneNumber = [{"number":"", "extn":""}];
-    	self.HomePhoneNumber = [{"number":"", "extn":""}];
-    	self.CellPhoneNumber = [{"number":"", "extn":""}];
-    	self.OtherPhoneNumber = [{"number":"", "extn":""}];
-    	self.FaxNumber = [{"number":"", "extn":""}];
-    	self.hasEmailAddress = {"iri":"", "label":"", "type":"EmailAddress"};
-    	self.atAddress = new ServiceActorAddressBluePrint();
-    	self.type = "legacy:ServiceCaseActor";
-  		if(!isNew) {
-  			self.hasUpdatedDate = serverDate;
-  			self.isModifiedBy = username;
-      		self.isCreatedBy = "";
-  		}
-    	else if(isNew) {
-    		self.hasDateCreated = serverDate;
-    		self.isCreatedBy = username;
-    	}
-    	self.emailCustomer = false;
-    	if(isCitizenActor(iri))
-	    		self.isAnonymous = false;
-    }
-    
-  	function isCitizenActor(iri) {
-  		return (iri === 'http://opencirm.org#CITIZEN');
-  	}
+function AddressBluePrint() {
+	var self = this;
+  self.Street_Number = "";
+	self.Street_Name = "";
+	self.fullAddress = ""; 
+	self.Street_Unit_Number = ""; 
+	self.Zip_Code = "";
+	self.folio = "";
+	self.hasLocationName = "";
+	self.type = "Street_Address";
+	self.Street_Address_City = {"iri":"", "label":"" };
+	self.Street_Address_State = {"iri":"http://opencirm.org#Florida", "label":"Florida" };
+	self.Street_Direction = {"label":"", "iri":""};
+	self.hasStreetType = {"label":"", "iri":""};
+	self.addressType = "";
+}
 
-    function ServiceActivity(iri, label, username, serverDate, isNew) {
-    	var self = this;
-    	self.isOldData = false;
-    	self.isAccepted = false;
-		self.hasCompletedTimestamp = "";
-		self.hasDueDate = "";
-		self.isAssignedTo = "";
-		self.isAutoAssign = undefined;
-		self.hasLegacyCode = undefined;
-		self.hasDetails = "";
-		self.hasActivity = {"iri":iri, "type":"legacy:Activity", "label":label};
-		self.hasOutcome = {"iri":"", "type":"legacy:Outcome"};
-		self.type = "legacy:ServiceActivity";
-		if(!isNew) {
-			self.hasUpdatedDate = serverDate;
-			self.isModifiedBy = username;
-   			self.isCreatedBy = "";
-		}
-		else if(isNew) {
-			self.hasDateCreated = serverDate;
-    		self.isCreatedBy = username;
-		}
-    }
+function ServiceActorAddressBluePrint()
+{
+	var self = this;
+	self.fullAddress = ""; 
+	self.Street_Unit_Number = ""; 
+	self.Zip_Code = "";
+	self.type = "Street_Address";
+	self.Street_Address_City = {"iri":"", "label":"" };
+	self.Street_Address_State = {"iri":"http://opencirm.org#Florida", "label":"Florida" };
+}
+
+function ServiceActor(iri, label, username, serverDate, isNew) {
+	var self = this;
+	self.hasServiceActor = {"iri":iri, "label":label};
+	self.Name = "";
+	self.LastName = "";
+	self.BusinessPhoneNumber = [{"number":"", "extn":""}];
+	self.HomePhoneNumber = [{"number":"", "extn":""}];
+	self.CellPhoneNumber = [{"number":"", "extn":""}];
+	self.OtherPhoneNumber = [{"number":"", "extn":""}];
+	self.FaxNumber = [{"number":"", "extn":""}];
+	self.hasEmailAddress = {"iri":"", "label":"", "type":"EmailAddress"};
+	self.atAddress = new ServiceActorAddressBluePrint();
+	self.type = "legacy:ServiceCaseActor";
+	if(!isNew) {
+		self.hasUpdatedDate = serverDate;
+		self.isModifiedBy = username;
+  		self.isCreatedBy = "";
+	}
+	else if(isNew) {
+		self.hasDateCreated = serverDate;
+		self.isCreatedBy = username;
+	}
+	self.emailCustomer = false;
+	if(isCitizenActor(iri))
+  		self.isAnonymous = false;
+}
+
+function isCitizenActor(iri) {
+	return (iri === 'http://opencirm.org#CITIZEN');
+}
+
+function ServiceActivity(iri, label, username, serverDate, isNew) {
+	var self = this;
+	self.isOldData = false;
+	self.isAccepted = false;
+  self.hasCompletedTimestamp = "";
+  self.hasDueDate = "";
+  self.isAssignedTo = "";
+  self.isAutoAssign = undefined;
+  self.hasLegacyCode = undefined;
+  self.hasDetails = "";
+  self.hasActivity = {"iri":iri, "type":"legacy:Activity", "label":label};
+  self.hasOutcome = {"iri":"", "type":"legacy:Outcome"};
+  self.type = "legacy:ServiceActivity";
+  if(!isNew) {
+  	self.hasUpdatedDate = serverDate;
+  	self.isModifiedBy = username;
+  			self.isCreatedBy = "";
+  }
+  else if(isNew) {
+  	self.hasDateCreated = serverDate;
+  		self.isCreatedBy = username;
+  }
+}
     
-    function RequestModel(addressModel) {
-        var self = this;
-        var emptyModel = {
-          data : {
-        	properties: { 
-        		atAddress: new AddressBluePrint(),
-        		hasServiceActivity:[],
-        		hasServiceCaseActor:[],
-        		hasAttachment: [],
-        		hasRemovedAttachment:[],
-        		hasStatus:{"iri":"", "label":""},
-        		hasPriority:{"iri":"", "label":""},
-        		hasIntakeMethod:{"iri":"", "label":""},
-       			hasDetails:"",
-       			hasXCoordinate:"",
-       			hasYCoordinate:"",
-       			hasDueDate:"",
-       			hasCaseNumber:""
-        	},
-       		boid:"",
-       		type:""
-          },
-          srType:{hasActivity:[], hasServiceActor:[],hasServiceField:[]},
-          allStatus:[],
-          allPriority:[],
-          allIntake:[],
-          allStates:[],
-          isLockedStatus:false,
-          isAddressValidationEnabled:false,
-          hasTypeMapping:{},
-          originalData:{},
-          saveButtonLabel:"Save",
-          gisInfoLabel:"Gis Info",
-          activeProfile: {},
-          duplicateCount: -1,
-          duplicateDetails: {},
-          defaultSCAnswerUpdateTimeoutMins:"",
-          emailData:{"subject":"", "to":"", "cc":"", "bcc":"","comments":""},
-          currentServerTime: {}
-        };
+function RequestModel(addressModel) {
+  var self = this;
+  var emptyModel = {
+    data : {
+  	properties: { 
+  		atAddress: new AddressBluePrint(),
+  		hasServiceActivity:[],
+  		hasServiceCaseActor:[],
+  		hasAttachment: [],
+  		hasRemovedAttachment:[],
+  		hasStatus:{"iri":"", "label":""},
+  		hasPriority:{"iri":"", "label":""},
+  		hasIntakeMethod:{"iri":"", "label":""},
+ 			hasDetails:"",
+ 			hasXCoordinate:"",
+ 			hasYCoordinate:"",
+ 			hasDueDate:"",
+ 			hasCaseNumber:""
+  	},
+ 		boid:"",
+ 		type:""
+    },
+    srType:{hasActivity:[], hasServiceActor:[],hasServiceField:[]},
+    allStatus:[],
+    allPriority:[],
+    allIntake:[],
+    allStates:[],
+    isLockedStatus:false,
+    isAddressValidationEnabled:false,
+    hasTypeMapping:{},
+    originalData:{},
+    saveButtonLabel:"Save",
+    gisInfoLabel:"Gis Info",
+    activeProfile: {},
+    duplicateCount: -1,
+    duplicateDetails: {},
+    defaultSCAnswerUpdateTimeoutMins:"",
+    emailData:{"subject":"", "to":"", "cc":"", "bcc":"","comments":""},
+    currentServerTime: {}
+  };
+
+	$.extend(self, emptyModel);		
+	U.visit(self, U.makeObservableTrimmed);
 		
-		$.extend(self, emptyModel);		
-		U.visit(self, U.makeObservableTrimmed);
+  self.availabeRequestTypes =  $.map(cirm.refs.serviceCases, function(v) { return v; })
+                     .filter(function(sr) {
+                      return !sr.isDisabled
+                     });
+  self.requestDropDownSelection = ko.observable();
+
+	self.allStatus.call('push', cirm.refs.caseStatuses);
+	self.allPriority.call('push', cirm.refs.casePriorities);
+	self.allIntake.call('push', cirm.refs.caseIntakeMethods);
+	self.allStates.call('push', cirm.refs.statesInUS);
+	self.hasTypeMapping(cirm.refs.typeToXSDMappings);
+	if (cirm.refs.serviceCaseClass && cirm.refs.serviceCaseClass.hasAnswerUpdateTimeout) {
+		self.defaultSCAnswerUpdateTimeoutMins(parseInt(cirm.refs.serviceCaseClass.hasAnswerUpdateTimeout.hasValue));
+	} 
+	else
+	{
+		self.defaultSCAnswerUpdateTimeoutMins(0);
+	}
 		
-		self.allStatus.call('push', cirm.refs.caseStatuses);
-		self.allPriority.call('push', cirm.refs.casePriorities);
-		self.allIntake.call('push', cirm.refs.caseIntakeMethods);
-		self.allStates.call('push', cirm.refs.statesInUS);
-		self.hasTypeMapping(cirm.refs.typeToXSDMappings);
-		if (cirm.refs.serviceCaseClass && cirm.refs.serviceCaseClass.hasAnswerUpdateTimeout) {
-			self.defaultSCAnswerUpdateTimeoutMins(parseInt(cirm.refs.serviceCaseClass.hasAnswerUpdateTimeout.hasValue));
-		} 
-		else
-		{
-			self.defaultSCAnswerUpdateTimeoutMins(0);
+	//START: extenders
+	ko.extenders.required = function(target, overrideMessage) {
+		self.commonExtenderForAll(target, overrideMessage);
+	};
+	ko.extenders.addr_required = function(target, overrideMessage) {
+		self.commonExtenderForAll(target, overrideMessage, "ADDRESS_REQ");
+	};
+	ko.extenders.numeric = function(target, overrideMessage) {
+		self.commonExtenderForAll(target, overrideMessage, "NUMBER");
+	};
+	ko.extenders.numeric_required = function(target, overrideMessage) {
+		self.commonExtenderForAll(target, overrideMessage, "NUMBER_REQ");
+	};
+	ko.extenders.valiDATE = function(target, overrideMessage) {
+		self.commonExtenderForAll(target, overrideMessage, "DATE");
+	};
+	ko.extenders.valiDATE_required = function(target, overrideMessage) {
+		self.commonExtenderForAll(target, overrideMessage, "DATE_REQ");
+	};
+	ko.extenders.email = function(target, overrideMessage) {
+		self.commonExtenderForAll(target, overrideMessage, "EMAIL");
+	};
+	ko.extenders.email_required = function(target, overrideMessage) {
+		self.commonExtenderForAll(target, overrideMessage, "EMAIL_REQ");
+	};
+	ko.extenders.phone = function(target, overrideMessage) {
+		self.commonExtenderForAll(target, overrideMessage, "PHONE");
+	};
+	ko.extenders.phone_required = function(target, overrideMessage) {
+		self.commonExtenderForAll(target, overrideMessage, "PHONE_REQ");
+	};
+	ko.extenders.extension = function(target, overrideMessage) {
+		self.commonExtenderForAll(target, overrideMessage, "EXTENSION");
+	};
+	ko.extenders.time = function(target, overrideMessage) {
+		self.commonExtenderForAll(target, overrideMessage, "TIME");
+	};
+	ko.extenders.time_required = function(target, overrideMessage) {
+		self.commonExtenderForAll(target, overrideMessage, "TIME_REQ");
+	};
+	ko.extenders.multiUnit = function(target, overrideMessage) {
+		self.commonExtenderForAll(target, overrideMessage, "MULTI");
+	};
+	ko.extenders.none = function(target, overrideMessage) {
+		self.commonExtenderForAll(target, overrideMessage, "NONE");
+	};
+	ko.extenders.standardizeStreet = function(target, overrideMessage) {
+		self.commonExtenderForAll(target, overrideMessage, "STANDARDIZE_STREET");
+	};
+	ko.extenders.TextLengthConstraint = function(target, constraints) {
+	    target.hasError = ko.observable();
+	    target.validationMessage = ko.observable();
+		function validate(newValue) {
+		    if (!newValue) {
+		        //console.log('new value falsy', newValue);
+		        return true;
+		    }
+		    //console.log('new value of TextLengthConstraint', newValue);
+		    target.hasError(false);
+		    target.validationMessage("");
+		    if (constraints.hasMax && newValue.length > constraints.hasMax) {
+		        target.hasError(true);
+		        target.validationMessage("Text exceeds maximum length allowed of " + constraints.hasMax);
+		    }
+		    if (constraints.hasMin && newValue.length < constraints.hasMax) {
+		        target.hasError(true);
+		        target.validationMessage("Text is too short, minimum allowed length is " + constraints.hasMax);
+		    }			    
+		    return true;
+		}
+		validate(target());
+		target.subscribe(validate);
+		return target;		    
+	};
+		
+	self.commonExtenderForAll = function(target, overrideMessage, type) {
+		target.hasError = ko.observable();
+		target.validationMessage = ko.observable();
+		if(type == "NONE") {
+			target.conditionallyRequired = ko.observable();
+			target.conditionallyRequired(false);
+		}
+		if(type =="STANDARDIZE_STREET") {
+			target.conditionallyRequired = ko.observable();
+			target.isStandardizedStreet = ko.observable();
+			target.conditionallyRequired(false);
+			target.isStandardizedStreet(false);
 		}
 		
-		//START: extenders
-		ko.extenders.required = function(target, overrideMessage) {
-			self.commonExtenderForAll(target, overrideMessage);
-		};
-		ko.extenders.addr_required = function(target, overrideMessage) {
-			self.commonExtenderForAll(target, overrideMessage, "ADDRESS_REQ");
-		};
-		ko.extenders.numeric = function(target, overrideMessage) {
-			self.commonExtenderForAll(target, overrideMessage, "NUMBER");
-		};
-		ko.extenders.numeric_required = function(target, overrideMessage) {
-			self.commonExtenderForAll(target, overrideMessage, "NUMBER_REQ");
-		};
-		ko.extenders.valiDATE = function(target, overrideMessage) {
-			self.commonExtenderForAll(target, overrideMessage, "DATE");
-		};
-		ko.extenders.valiDATE_required = function(target, overrideMessage) {
-			self.commonExtenderForAll(target, overrideMessage, "DATE_REQ");
-		};
-		ko.extenders.email = function(target, overrideMessage) {
-			self.commonExtenderForAll(target, overrideMessage, "EMAIL");
-		};
-		ko.extenders.email_required = function(target, overrideMessage) {
-			self.commonExtenderForAll(target, overrideMessage, "EMAIL_REQ");
-		};
-		ko.extenders.phone = function(target, overrideMessage) {
-			self.commonExtenderForAll(target, overrideMessage, "PHONE");
-		};
-		ko.extenders.phone_required = function(target, overrideMessage) {
-			self.commonExtenderForAll(target, overrideMessage, "PHONE_REQ");
-		};
-		ko.extenders.extension = function(target, overrideMessage) {
-			self.commonExtenderForAll(target, overrideMessage, "EXTENSION");
-		};
-		ko.extenders.time = function(target, overrideMessage) {
-			self.commonExtenderForAll(target, overrideMessage, "TIME");
-		};
-		ko.extenders.time_required = function(target, overrideMessage) {
-			self.commonExtenderForAll(target, overrideMessage, "TIME_REQ");
-		};
-		ko.extenders.multiUnit = function(target, overrideMessage) {
-			self.commonExtenderForAll(target, overrideMessage, "MULTI");
-		};
-		ko.extenders.none = function(target, overrideMessage) {
-			self.commonExtenderForAll(target, overrideMessage, "NONE");
-		};
-		ko.extenders.standardizeStreet = function(target, overrideMessage) {
-			self.commonExtenderForAll(target, overrideMessage, "STANDARDIZE_STREET");
-		};
-		ko.extenders.TextLengthConstraint = function(target, constraints) {
-		    target.hasError = ko.observable();
-		    target.validationMessage = ko.observable();
-			function validate(newValue) {
-			    if (!newValue) {
-			        //console.log('new value falsy', newValue);
-			        return true;
-			    }
-			    //console.log('new value of TextLengthConstraint', newValue);
-			    target.hasError(false);
-			    target.validationMessage("");
-			    if (constraints.hasMax && newValue.length > constraints.hasMax) {
-			        target.hasError(true);
-			        target.validationMessage("Text exceeds maximum length allowed of " + constraints.hasMax);
-			    }
-			    if (constraints.hasMin && newValue.length < constraints.hasMax) {
-			        target.hasError(true);
-			        target.validationMessage("Text is too short, minimum allowed length is " + constraints.hasMax);
-			    }			    
-			    return true;
-			}
-			validate(target());
-			target.subscribe(validate);
-			return target;		    
-		};
-		
-		self.commonExtenderForAll = function(target, overrideMessage, type) {
-			target.hasError = ko.observable();
-			target.validationMessage = ko.observable();
-			if(type == "NONE") {
-				target.conditionallyRequired = ko.observable();
-				target.conditionallyRequired(false);
-			}
-			if(type =="STANDARDIZE_STREET") {
-				target.conditionallyRequired = ko.observable();
-				target.isStandardizedStreet = ko.observable();
-				target.conditionallyRequired(false);
-				target.isStandardizedStreet(false);
-			}
-			
-			function validate(newValue) { //all required fields empty check
-				if(U.isEmptyString(newValue) && !target.conditionallyRequired) {
-					if(type != undefined && type.indexOf("REQ") == -1) {
-						target.hasError(false);
-		   				target.validationMessage("");
-					}
-					else {
-						target.hasError(true);
-		   				target.validationMessage("Required");
-					}
-	   				return true;
+		function validate(newValue) { //all required fields empty check
+			if(U.isEmptyString(newValue) && !target.conditionallyRequired) {
+				if(type != undefined && type.indexOf("REQ") == -1) {
+					target.hasError(false);
+	   				target.validationMessage("");
 				}
-				if(type == "NONE" || type == "STANDARDIZE_STREET") {
-					if(target.conditionallyRequired() == false) {
-						target.hasError(false);
-						target.validationMessage("");
-					}
-					else {
-						if(U.isEmptyString(newValue)) {
-							target.hasError(true);
-							target.validationMessage("Required");
-							if(type == 'STANDARDIZE_STREET')
-								target.isStandardizedStreet(false);
-						}
-						else {
-							target.hasError(false);
-							target.validationMessage("");
-						}
-					}
-					return true;
+				else {
+					target.hasError(true);
+	   				target.validationMessage("Required");
 				}
-				if(type =="MULTI"){
-					if(newValue=="MULTI"){
-						target.hasError(true);
-						target.validationMessage("");
-					}else{
+   				return true;
+			}
+			if(type == "NONE" || type == "STANDARDIZE_STREET") {
+				if(target.conditionallyRequired() == false) {
 					target.hasError(false);
 					target.validationMessage("");
-					}
-					return true;
 				}
-				if(type == "NUMBER" || type == "NUMBER_REQ") { //required NUMBER field
-					if(!isNaN(newValue) && isFinite(newValue)) {
+				else {
+					if(U.isEmptyString(newValue)) {
+						target.hasError(true);
+						target.validationMessage("Required");
+						if(type == 'STANDARDIZE_STREET')
+							target.isStandardizedStreet(false);
+					}
+					else {
 						target.hasError(false);
 						target.validationMessage("");
 					}
-					else {
-						target.hasError(true);
-		   				target.validationMessage("Invalid Number");
-		   			}
-	   				return true;
 				}
-				else if(type == "TIME" || type == "TIME_REQ") {
-					//var timeFilter = /(0[1-9]|1[0-2]):([0-5][0-9]) (AM|am|PM|pm)/;
-					//hilpold allowing single digit hour:
-					var timeFilter = /(^[0-9]|0[1-9]|1[0-2]):([0-5][0-9]) (AM|am|PM|pm)/;
-					if(timeFilter.test(newValue)) {
-						target.hasError(false);
-						target.validationMessage("");
-					}
-					else {
-						target.hasError(true);
-						target.validationMessage("HH:MM AM");
-					}
-					return true;
+				return true;
+			}
+			if(type =="MULTI"){
+				if(newValue=="MULTI"){
+					target.hasError(true);
+					target.validationMessage("");
+				}else{
+				target.hasError(false);
+				target.validationMessage("");
 				}
-				else if(type == "EMAIL" || type == "EMAIL_REQ") { //validate email field
-					//var emailFilter = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+(?:[A-Z]{2}|com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|museum)/;
-					var emailFilter = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-					if(emailFilter.test(newValue)) {
-						target.hasError(false);
-						target.validationMessage("");
-					}
-					else {
-						target.hasError(true);
-						target.validationMessage("Invalid format");
-					}
-	   				return true;
+				return true;
+			}
+			if(type == "NUMBER" || type == "NUMBER_REQ") { //required NUMBER field
+				if(!isNaN(newValue) && isFinite(newValue)) {
+					target.hasError(false);
+					target.validationMessage("");
 				}
-				else if(type == "PHONE" || type == "PHONE_REQ") {
-					var phoneFilter = /^(?:\d){10}$|^(?:\d{3}-\d{3}-\d{4})$/ //pre v2.0.9 format /^(?:\W*\d){10,16}$/;
-					if(phoneFilter.test(newValue)) {
-						target.hasError(false);
-						target.validationMessage("");
-					}
-					else {
-						target.hasError(true);
-						target.validationMessage("Invalid phone format, use 305-123-1234 OR 3051231234");
-					}
-					return true;
+				else {
+					target.hasError(true);
+	   				target.validationMessage("Invalid Number");
+	   			}
+   				return true;
+			}
+			else if(type == "TIME" || type == "TIME_REQ") {
+				//var timeFilter = /(0[1-9]|1[0-2]):([0-5][0-9]) (AM|am|PM|pm)/;
+				//hilpold allowing single digit hour:
+				var timeFilter = /(^[0-9]|0[1-9]|1[0-2]):([0-5][0-9]) (AM|am|PM|pm)/;
+				if(timeFilter.test(newValue)) {
+					target.hasError(false);
+					target.validationMessage("");
 				}
-				else if(type == "EXTENSION") {
-					var extnFilter = /^[0-9]{1,6}$/;
-					if(extnFilter.test(newValue)) {
-						target.hasError(false);
-						target.validationMessage("");
-					}
-					else {
-						target.hasError(true);
-						target.validationMessage("Invalid extension format, use 1 to 6 digits only");
-					}
-					return true;
+				else {
+					target.hasError(true);
+					target.validationMessage("HH:MM AM");
 				}
-				else if(type == "DATE" || type == "DATE_REQ") { //required DATE field
-					var datePat = /^(\d{2,2})(\/)(\d{2,2})\2(\d{4}|\d{4})$/;
-					var matchArray = newValue.match(datePat); // is the format ok?
-					if (matchArray == null) {
+				return true;
+			}
+			else if(type == "EMAIL" || type == "EMAIL_REQ") { //validate email field
+				//var emailFilter = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+(?:[A-Z]{2}|com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|museum)/;
+				var emailFilter = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+				if(emailFilter.test(newValue)) {
+					target.hasError(false);
+					target.validationMessage("");
+				}
+				else {
+					target.hasError(true);
+					target.validationMessage("Invalid format");
+				}
+   				return true;
+			}
+			else if(type == "PHONE" || type == "PHONE_REQ") {
+				var phoneFilter = /^(?:\d){10}$|^(?:\d{3}-\d{3}-\d{4})$/ //pre v2.0.9 format /^(?:\W*\d){10,16}$/;
+				if(phoneFilter.test(newValue)) {
+					target.hasError(false);
+					target.validationMessage("");
+				}
+				else {
+					target.hasError(true);
+					target.validationMessage("Invalid phone format, use 305-123-1234 OR 3051231234");
+				}
+				return true;
+			}
+			else if(type == "EXTENSION") {
+				var extnFilter = /^[0-9]{1,6}$/;
+				if(extnFilter.test(newValue)) {
+					target.hasError(false);
+					target.validationMessage("");
+				}
+				else {
+					target.hasError(true);
+					target.validationMessage("Invalid extension format, use 1 to 6 digits only");
+				}
+				return true;
+			}
+			else if(type == "DATE" || type == "DATE_REQ") { //required DATE field
+				var datePat = /^(\d{2,2})(\/)(\d{2,2})\2(\d{4}|\d{4})$/;
+				var matchArray = newValue.match(datePat); // is the format ok?
+				if (matchArray == null) {
+					target.hasError(true);
+       				target.validationMessage("Invalid Date format");
+       				return true;
+				}
+				else {
+					month = matchArray[1];
+					day = matchArray[3];
+					year = matchArray[4];
+					if (month < 1 || month > 12) {
 						target.hasError(true);
-	       				target.validationMessage("Invalid Date format");
+	       				target.validationMessage("Invalid Month");
 	       				return true;
 					}
-					else {
-						month = matchArray[1];
-						day = matchArray[3];
-						year = matchArray[4];
-						if (month < 1 || month > 12) {
-							target.hasError(true);
-		       				target.validationMessage("Invalid Month");
-		       				return true;
-						}
-						if (day < 1 || day > 31) {
-							target.hasError(true);
-		       				target.validationMessage("Invalid Date");
-		       				return true;
-						}
-						if ((month==4 || month==6 || month==9 || month==11) && day==31) {
+					if (day < 1 || day > 31) {
+						target.hasError(true);
+	       				target.validationMessage("Invalid Date");
+	       				return true;
+					}
+					if ((month==4 || month==6 || month==9 || month==11) && day==31) {
+						target.hasError(true);
+	       				target.validationMessage("Invalid Date");
+	       				return true;
+					}
+					if (month == 2) { 
+						var isleap = (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0));
+						if (day>29 || (day==29 && !isleap)) {
 							target.hasError(true);
 		       				target.validationMessage("Invalid Date");
 		       				return true;
 						}
-						if (month == 2) { 
-							var isleap = (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0));
-							if (day>29 || (day==29 && !isleap)) {
-								target.hasError(true);
-			       				target.validationMessage("Invalid Date");
-			       				return true;
-							}
-						}
-						target.hasError(false);
-	       				target.validationMessage("");
-       					return true;
 					}
-				}
-				else { //Rest all required fields
-					if(U.isArray(newValue)) {
-						target.hasError(newValue[0] ? false : true);
-	       				target.validationMessage(newValue[0] ? "" : overrideMessage || "Required");
-					}
-					else {
-						target.hasError(newValue ? false : true);
-	       				target.validationMessage(newValue ? "" : overrideMessage || "Required");
-					}
-					return true;
+					target.hasError(false);
+       				target.validationMessage("");
+     					return true;
 				}
 			}
-
-			validate(target());
-			target.subscribe(validate);
-			return target;
+			else { //Rest all required fields
+				if(U.isArray(newValue)) {
+					target.hasError(newValue[0] ? false : true);
+       				target.validationMessage(newValue[0] ? "" : overrideMessage || "Required");
+				}
+				else {
+					target.hasError(newValue ? false : true);
+       				target.validationMessage(newValue ? "" : overrideMessage || "Required");
+				}
+				return true;
+			}
 		}
+
+		validate(target());
+		target.subscribe(validate);
+		return target;
+	}
 		//END: extenders
 
-        //
-        // Client-side event listeners associated with this model. They are updated during the 'bindData'
-        // operation when the SR changes. Important not to have this variable be a KO observable
-        // because the $.each loop below ends up unbinding all jquery events!
-		self.listeners = []; 
-	    self.isNew = true;
-	    self.isPendingApproval = false;
-	    self.bindData = function(type, request, original) {
-	    	self.data(emptyModel.data);
-	    	self.srType(ko.toJS(emptyModel.srType));
-	    	self.originalData(emptyModel.originalData);
+  //
+  // Client-side event listeners associated with this model. They are updated during the 'bindData'
+  // operation when the SR changes. Important not to have this variable be a KO observable
+  // because the $.each loop below ends up unbinding all jquery events!
+	self.listeners = []; 
+  self.isNew = true;
+  self.isPendingApproval = false;
+  self.bindData = function(type, request, original) {
+  	self.data(emptyModel.data);
+  	self.srType(ko.toJS(emptyModel.srType));
+  	self.originalData(emptyModel.originalData);
 			
-			self.currentServerTime(self.getServerDateTime(true));
+		self.currentServerTime(self.getServerDateTime(true));
 			
-			if (type) {
-			    //console.log('set type', type, ko.toJS(type));
-				self.srType(type);
-			}
-			if (request) {
-			    //console.log('set request', request, ko.toJS(request));
-				//START : various extenders
-				//Extend all required questions
-				self.isNew = U.isEmptyString(request.boid());
-				$.each(self.srType().hasDataConstraint, function(i,constraint) {
-				      var propname = constraint.appliesTo.iri.split('#')[1];
-				      var extensions = {};
-				      extensions[constraint.type] = constraint;
-				      //console.log('Applying constraint ', constraint, propname, extensions,' to ', self.data().properties());				      
-				      request.properties()[propname].extend(extensions);
-				      //request.properties()['hasDetails'].extend({required:"Mandatory"});				      
-				});
+		if (type) {
+		    //console.log('set type', type, ko.toJS(type));
+			self.srType(type);
+		}
+		if (request) {
+		    //console.log('set request', request, ko.toJS(request));
+			//START : various extenders
+			//Extend all required questions
+			self.isNew = U.isEmptyString(request.boid());
+			$.each(self.srType().hasDataConstraint, function(i,constraint) {
+			      var propname = constraint.appliesTo.iri.split('#')[1];
+			      var extensions = {};
+			      extensions[constraint.type] = constraint;
+			      //console.log('Applying constraint ', constraint, propname, extensions,' to ', self.data().properties());				      
+			      request.properties()[propname].extend(extensions);
+			      //request.properties()['hasDetails'].extend({required:"Mandatory"});				      
+			});
 				//request.properties()['hasDetails'].extend({required:"Mandatory"});
-				$.each(request.properties().hasServiceAnswer(), function(i,v) {
-					self.serviceQuestionExtenders(v);
+			$.each(request.properties().hasServiceAnswer(), function(i,v) {
+				self.serviceQuestionExtenders(v);
+          	});
+         		//Extend email and Phone numbers of each Actor to check for validity
+         		// Why only new SRs and not existing SRs ? May be a BUG. All new and existing SRs have to be checked.
+         		//if(U.isEmptyString(request.boid()))
+         		//{
+          		var firstCitizen = self.getFirstCitizenActor(request.properties().hasServiceCaseActor());
+            	$.each(request.properties().hasServiceCaseActor(), function(i,v) {
+            		//Check if first Citizen actor, make first cellphone required
+          			if(firstCitizen != null && isCitizenActor(v.hasServiceActor().iri())) {
+          				if(!self.isNew && !self.isCustomerLocked() && firstCitizen.iri() == v.iri())
+          					self.addExtendersToActor(v, true);
+          				else if(self.isNew && !self.isCustomerLocked())
+          					self.addExtendersToActor(v, true);
+          				else
+          					self.addExtendersToActor(v);
+          			}
+          			else
+          				self.addExtendersToActor(v);
             	});
-           		//Extend email and Phone numbers of each Actor to check for validity
-           		// Why only new SRs and not existing SRs ? May be a BUG. All new and existing SRs have to be checked.
-           		//if(U.isEmptyString(request.boid()))
-           		//{
-            		var firstCitizen = self.getFirstCitizenActor(request.properties().hasServiceCaseActor());
-	            	$.each(request.properties().hasServiceCaseActor(), function(i,v) {
-	            		//Check if first Citizen actor, make first cellphone required
-            			if(firstCitizen != null && isCitizenActor(v.hasServiceActor().iri())) {
-            				if(!self.isNew && !self.isCustomerLocked() && firstCitizen.iri() == v.iri())
-            					self.addExtendersToActor(v, true);
-            				else if(self.isNew && !self.isCustomerLocked())
-            					self.addExtendersToActor(v, true);
-            				else
-            					self.addExtendersToActor(v);
-            			}
-            			else
-            				self.addExtendersToActor(v);
-	            	});
-           		//}
-            	//Status, Priority, Method Received are required fields
-            	request.properties().hasStatus().iri.extend({ required: "Required" });
-            	request.properties().hasPriority().iri.extend({ required: "Required" });
-            	request.properties().hasIntakeMethod().iri.extend({ required: "Required" });
+         		//}
+          	//Status, Priority, Method Received are required fields
+          	request.properties().hasStatus().iri.extend({ required: "Required" });
+          	request.properties().hasPriority().iri.extend({ required: "Required" });
+          	request.properties().hasIntakeMethod().iri.extend({ required: "Required" });
             	//Extend fullAddress, City and Zip fields
-				self.addAddressExtenders(request);				
+			self.addAddressExtenders(request);				
+			
+			//END : various extenders
+			self.data(request);
 				
-				//END : various extenders
-				self.data(request);
-				
-				if(!self.isNew && !U.isEmptyString(request.properties().atAddress().fullAddress()))
-				{
-			    	if(request.properties().gisAddressData)
-			    	{
-						$(document).trigger(legacy.InteractionEvents.SetAddress, 
-											[ko.toJS(request.properties().gisAddressData), true]);
-						delete request.properties().gisAddressData;
-			    	}
-			    	else
-			    	{
-				    	var tempAddress = ko.toJS(request.properties().atAddress);
-				    	var tempCity = $.map(cirm.refs.cities, function(v,i) { 
-				    		if(v.iri == tempAddress.Street_Address_City.iri) 
-				    			return v; 
-				    	});
-				    	if(tempCity.length > 0)
-				    		tempAddress.municipality = tempCity[0].Alias;
-						U.visit(tempAddress, U.makeObservableTrimmed);
-						$(document).trigger(legacy.InteractionEvents.SearchAddress, [tempAddress, true]);
-					}
+			if(!self.isNew && !U.isEmptyString(request.properties().atAddress().fullAddress()))
+			{
+		    	if(request.properties().gisAddressData)
+		    	{
+					$(document).trigger(legacy.InteractionEvents.SetAddress, 
+										[ko.toJS(request.properties().gisAddressData), true]);
+					delete request.properties().gisAddressData;
+		    	}
+		    	else
+		    	{
+			    	var tempAddress = ko.toJS(request.properties().atAddress);
+			    	var tempCity = $.map(cirm.refs.cities, function(v,i) { 
+			    		if(v.iri == tempAddress.Street_Address_City.iri) 
+			    			return v; 
+			    	});
+			    	if(tempCity.length > 0)
+			    		tempAddress.municipality = tempCity[0].Alias;
+					U.visit(tempAddress, U.makeObservableTrimmed);
+					$(document).trigger(legacy.InteractionEvents.SearchAddress, [tempAddress, true]);
 				}
 			}
-			if (original) {
-			    //console.log('set original', original);
-				self.originalData(original);
-			}
+		}
+		if (original) {
+		    //console.log('set original', original);
+			self.originalData(original);
+		}
 			
-			//
-			// Cleanup existing event listeners and register new ones if necessary:
-			//
+		//
+		// Cleanup existing event listeners and register new ones if necessary:
+		//
 
-			$.each(self.listeners, function(i, l) {
-			        //console.log('unbind', l);
-			        $(document).unbind(l.event, l.handler);
-			});
-			self.listeners = [];
-			// Bind fields with client-side event data providers.
+		$.each(self.listeners, function(i, l) {
+		        //console.log('unbind', l);
+		        $(document).unbind(l.event, l.handler);
+		});
+		self.listeners = [];
+		// Bind fields with client-side event data providers.
 			if(self.srType().hasServiceField) {
 				$.each(self.srType().hasServiceField, function(i, field) {
 				        if (!field.hasDataSource || field.hasDataSource.type != "EventBasedDataSource")
@@ -731,10 +737,17 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy",
 	    		legacy.wcsModel.setValidationForBULKYTRA(srType == "BULKYTRA");
 	    	}
 	    };
-	    
+
+	    self.startNewServiceRequestFromDropDown = function() {
+        var type = self.requestDropDownSelection();
+        if (type) {
+          self.startNewServiceRequest(type);
+        }
+      };
+
 	    self.startNewServiceRequest = function(type) {
 			 var typeiri = cirm.refs.fulliri(type);
-      // !type.startsWith("http:") ? 'http://www.miamidade.gov/cirm/legacy#' + type : type;	        
+        // !type.startsWith("http:") ? 'http://www.miamidade.gov/cirm/legacy#' + type : type;	        
 			if (cirm.user.isConfigAllowed()) {
 				//hilpold Check server for new version of SR type 
 				cirm.refs.reloadServiceCaseTypeIfNeeded(type);
@@ -1739,7 +1752,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy",
     		if(event.keyCode == 13)
     			event.preventDefault();
     	    if(event.keyCode == 9 || event.keyCode == 13) {
-   	            self.srTypeLookup();
+            self.srTypeLookup();
     	    }
     	    return true;    	    
     	};
@@ -3735,9 +3748,6 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy",
 		model.bindData(srType, U.visit(bo, U.makeObservableTrimmed), original);
 		
     }
-    
-   
-    
     
     /**
      * sr: The service request
