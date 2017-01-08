@@ -1625,7 +1625,10 @@ public class LegacyEmulator extends RestService
 		return Json.nil();
 	}
 
-	
+	/**
+	 * Endpoint that creates a case number (Exempt client only)
+	 * @return json object with property hasCaseNumber : String
+	 */
 	@POST
 	@Path("createNewCaseNumber")
 	@Produces("application/json")
