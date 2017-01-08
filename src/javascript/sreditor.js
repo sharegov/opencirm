@@ -35,7 +35,7 @@ function AddressBluePrint() {
 	self.folio = "";
 	self.hasLocationName = "";
 	self.type = "Street_Address";
-	self.Street_Address_City = {"iri":"", "label":"" };
+	self.Street_Address_City = {"iri":"http://opencirm.org#Village_of_Key_Biscayne", "label":"KEY BISCAYNE" };
 	self.Street_Address_State = {"iri":"http://opencirm.org#Florida", "label":"Florida" };
 	self.Street_Direction = {"label":"", "iri":""};
 	self.hasStreetType = {"label":"", "iri":""};
