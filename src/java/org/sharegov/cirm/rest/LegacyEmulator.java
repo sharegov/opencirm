@@ -1625,6 +1625,26 @@ public class LegacyEmulator extends RestService
 		return Json.nil();
 	}
 
+	
+	@POST
+	@Path("createNewCaseNumber")
+	@Produces("application/json")
+	public synchronized Json createNewCaseNumber() {
+		if (!isClientExempt()) {
+			return GenUtils.ko("Not authorized.");
+		}
+		String newCaseNumber = getPersister().getStore().txn(new CirmTransaction<String> () {
+			@Override
+			public String call() throws Exception
+			{
+				DBIDFactory idFactory = (DBIDFactory) Refs.idFactory.resolve(); 
+				long seq = idFactory.generateUserFriendlySequence();
+				return GenUtils.makeCaseNumber(seq);
+			}
+		});
+		return GenUtils.ok().set("newCaseNumber", newCaseNumber);
+	}
+	
 	/**
 	 * Adds the Case Number as a dataProperty in the bo
 	 * @param legacyForm : bo in Json format
@@ -1632,8 +1652,7 @@ public class LegacyEmulator extends RestService
 	private void createCaseNumber(Json legacyForm) {
 		long seq = ((DBIDFactory) Refs.idFactory.resolve())
 						.generateUserFriendlySequence();
-		legacyForm.at("properties")
-			.set("legacy:hasCaseNumber", GenUtils.makeCaseNumber(seq));
+		legacyForm.at("properties").set("legacy:hasCaseNumber", GenUtils.makeCaseNumber(seq));
 	}
 	
 	/**
@@ -1650,6 +1669,9 @@ public class LegacyEmulator extends RestService
 	{
 		ThreadLocalStopwatch.startTop("START createNewKOSR");
 		final Json legacyForm = read(formData);		
+		final boolean hasCaseNumber = legacyForm.has("properties")
+				&& legacyForm.at("properties").has("legacy:hasCaseNumber") 
+				&& legacyForm.at("properties").at("legacy:hasCaseNumber").isString();
 		try
 		{
 			// System.out.println("new SR to save: " + legacyForm);
@@ -1669,7 +1691,9 @@ public class LegacyEmulator extends RestService
 				public Object call() throws Exception
 				{
 					legacyForm.set("boid", Refs.idFactory.resolve().newId(null));
-					createCaseNumber(legacyForm);
+					if (!hasCaseNumber) {
+						createCaseNumber(legacyForm);
+					}
 					return null;
 				}
 			}
@@ -1813,6 +1837,9 @@ public class LegacyEmulator extends RestService
 	 */
 	public Json saveNewCaseTransaction(Json legacyForm)
 	{
+		boolean hasCaseNumber = legacyForm.has("properties")
+				&& legacyForm.at("properties").has("legacy:hasCaseNumber") 
+				&& legacyForm.at("properties").at("legacy:hasCaseNumber").isString();
 		OperationService op = new OperationService();
 		// 1 Determine SR type and create a new case number
 		String type = legacyForm.at("type").asString();
@@ -1821,7 +1848,9 @@ public class LegacyEmulator extends RestService
 			type = "legacy:" + type;
 		BOntology bontology = op.createBusinessObject(owlClass(type));
 		legacyForm.set("boid", bontology.getObjectId());
-		createCaseNumber(legacyForm);
+		if (!hasCaseNumber) {
+			createCaseNumber(legacyForm);
+		}
 		// 2 Parse all legacyForm data into a business ontology
 		bontology = BOntology.makeRuntimeBOntology(legacyForm);
 		populateGisData(legacyForm, bontology);	
