@@ -536,13 +536,25 @@ public class MetaOntology
 		return null;
 	}
 	
-	protected static List<OWLOntologyChange> addNewClassAssertion (OWLIndividual parent, Map.Entry<String, Json> e, OWLOntology O, OWLDataFactory factory){
+	protected static void handleClassesArray (Json result, Json e){
+		if (!result.isArray()) result = Json.array();
+		
+		if (e.isArray()){
+			for (Json v: e.asJsonList()){	
+				handleClassesArray(result, v);
+			}
+		}
+		else if (e.isString()){
+			result.add(e.asString());
+		}
+	}
+	
+	protected static List<OWLOntologyChange> addNewClassAssertion (OWLIndividual parent, Json e, OWLOntology O, OWLDataFactory factory){
 		List<OWLOntologyChange> result = new ArrayList<OWLOntologyChange>();
 		
 		Json classes = Json.array();
 		
-		if (e.getValue().isArray()) classes = e.getValue();
-		else classes.add(e.getValue());
+		handleClassesArray (classes, e);
 		
 		for (Json v: classes.asJsonList()){		
 			String classPrefix = getClassPrefix(v.asString());
@@ -577,7 +589,7 @@ public class MetaOntology
 			if (key.equals("label") || key.equals("iri") || key.equals("type") || key.equals("extendedTypes"))
 			{
 				if (key.equals("type") || key.equals("extendedTypes")){
-					result.addAll(addNewClassAssertion (parent, e, O, factory));
+					result.addAll(addNewClassAssertion (parent, e.getValue(), O, factory));
 					
 				}else if (key.equals("label")){
 					result.add(new  AddAxiom(O,factory.getOWLAnnotationAssertionAxiom(((OWLEntity) parent).getIRI(), 
