@@ -536,6 +536,25 @@ public class MetaOntology
 		return null;
 	}
 	
+	protected static List<OWLOntologyChange> addNewClassAssertion (OWLIndividual parent, Map.Entry<String, Json> e, OWLOntology O, OWLDataFactory factory){
+		List<OWLOntologyChange> result = new ArrayList<OWLOntologyChange>();
+		
+		Json classes = Json.array();
+		
+		if (e.getValue().isArray()) classes = e.getValue();
+		else classes.add(e.getValue());
+		
+		for (Json v: classes.asJsonList()){		
+			String classPrefix = getClassPrefix(v.asString());
+			
+			if (classPrefix == null) throw new RuntimeException("Undeclared OWL class: " + v.asString());
+			
+			result.add(new AddAxiom(O, factory.getOWLClassAssertionAxiom(owlClass(fullIri(classPrefix + v.asString())),parent)));
+		}
+		
+		return result;
+	}
+	
 	/*
 	 * Refactored code coming from BOntology class 
 	 * 
@@ -553,15 +572,13 @@ public class MetaOntology
 		for (Map.Entry<String, Json> e : properties.asJsonMap().entrySet())
 		{
 			String key = e.getKey();
+			
 			Json value = e.getValue();
-			if (key.equals("label") || key.equals("iri") || key.equals("type"))
+			if (key.equals("label") || key.equals("iri") || key.equals("type") || key.equals("extendedTypes"))
 			{
-				if (key.equals("type")){
-					String classPrefix = getClassPrefix(e.getValue().asString());
+				if (key.equals("type") || key.equals("extendedTypes")){
+					result.addAll(addNewClassAssertion (parent, e, O, factory));
 					
-					if (classPrefix == null) throw new RuntimeException("Undeclared OWL class: " + e.getValue().asString());
-					
-					result.add(new AddAxiom(O, factory.getOWLClassAssertionAxiom(owlClass(fullIri(classPrefix + e.getValue().asString())),parent)));
 				}else if (key.equals("label")){
 					result.add(new  AddAxiom(O,factory.getOWLAnnotationAssertionAxiom(((OWLEntity) parent).getIRI(), 
 																					  factory.getOWLAnnotation(OWL.annotationProperty("http://www.w3.org/2000/01/rdf-schema#label"), 
