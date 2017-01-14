@@ -2977,23 +2977,49 @@ public class LegacyEmulator extends RestService
 	@Path("sr/approve")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Json approveCase(Json legacyform)
+	public Json approveCase(final Json legacyform)
 	{
 		ThreadLocalStopwatch.startTop("START approveCase");
-		try{
-			//We could optionally choose to lookup the current SR in the DB to ensure approval state
-			//is still APPROVAL_PENDING
-			ApprovalProcess approvalProcess = new ApprovalProcess();
-			approvalProcess.setSr(legacyform);
-			approvalProcess.getSideEffects().add(new AttachSendEmailListener());
-			approvalProcess.getSideEffects().add(new CreateDefaultActivities());
-			approvalProcess.getSideEffects().add(new PopulateGisData());
-			approvalProcess.getSideEffects().add(new SaveOntology());
-			approvalProcess.getSideEffects().add(new CreateNewSREmail());
-			approvalProcess.getSideEffects().add(new AddTxnListenerForNewSR());
-			approvalProcess.approve();
-			ThreadLocalStopwatch.stop("END approveCase");
-			return ok().set("bo", approvalProcess.getBOntology().toJSON());
+		//We check if another user approved the case already after this user loaded the case to ensure
+		//the case is only approved once. This must be done in the same transaction as the approval.
+		//Status history of the case would need to be checked, because certain users can set a case from Locked to pending,
+		//but we allow this for now until we are certain that this would never be needed.
+		//For non-interface cases it may not be a problem and certain interface situations are thinkable,
+		//where a repeated approval would make sense.
+		try
+		{
+			return Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
+			public Json call()
+			{				
+				Json result = null; 
+				Json bo = legacyform.has("bo")? legacyform.at("bo") : legacyform;
+				long boid = bo.at("boid").asLong();
+				//Check if another user has approved case in the meantime.
+				Json currentSR = lookupServiceCase(boid);
+				String currentStatus = currentSR.at("bo").at("properties").at("hasStatus").at("iri").asString();
+				if (!currentStatus.contains("O-PENDNG")) {
+					return ko("The status of the SR you tried to approve was modified by another user and is not Pending anymore.\n Please reload SR.");
+				} else {
+					//Still pending, approve case
+					ThreadLocalStopwatch.stop("NOW SR is still in pending, approving with side effects");
+    				ApprovalProcess approvalProcess = new ApprovalProcess();
+    				approvalProcess.setSr(legacyform);
+    				approvalProcess.getSideEffects().add(new AttachSendEmailListener());
+    				approvalProcess.getSideEffects().add(new CreateDefaultActivities());
+    				approvalProcess.getSideEffects().add(new PopulateGisData());
+    				approvalProcess.getSideEffects().add(new SaveOntology());
+    				approvalProcess.getSideEffects().add(new CreateNewSREmail());
+    				approvalProcess.getSideEffects().add(new AddTxnListenerForNewSR());
+    				try {
+    					approvalProcess.approve();
+    				} catch (Exception e) {
+    					throw new RuntimeException("Exception during approve SR", e);
+    				}
+    				ThreadLocalStopwatch.stop("END approveCase");
+    				result = ok().set("bo", approvalProcess.getBOntology().toJSON());
+    				return result;
+				}
+			}});			
 		}catch(Exception e)
 		{
 			ThreadLocalStopwatch.fail("FAIL approveCase");

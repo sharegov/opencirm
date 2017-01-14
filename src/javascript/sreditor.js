@@ -2161,6 +2161,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 		  $("#sh_save_progress").dialog({height: 140, modal: true, dialogClass: 'no-close'});
 
 		  var upcontinuation = function(result) {
+		  		var wasPendingApprovalBeforeSave = model.isPendingApproval;
                 //console.log("result", ko.toJS(result));
                 if(result.ok == true) {
                     $(document).trigger(legacy.InteractionEvents.UserAction, 
@@ -2174,6 +2175,12 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
                     }
                     self.removeDuplicates();
                     setModel(result.bo, model, model.srType(), type, true, false);
+                    //continue isPendingApproval if sr was pending approval before update
+                    //and is in pending state after update
+                    if (result.bo.properties().hasStatus().iri().indexOf('O-PENDNG') >=0
+                    	&& wasPendingApprovalBeforeSave) {
+                    	model.isPendingApproval = true;
+                    }
                 }
                 else if(result.ok == false) {
                     $("#sh_save_progress").dialog('close');
@@ -2187,7 +2194,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
           }
           else if(model.isPendingApproval && send.properties['legacy:hasStatus'].iri.indexOf('O-OPEN') > -1)
           {
-        	  console.log("validating addresss from open");
+          	  //This must fail at the server if another user already approved the same case,
+          	  //after this user loaded the case in needsApproval status.
+        	  console.log("validating address from open");
         	  self.searchAddress();
         	  cirm.top.async().postObject('/legacy/sr/approve', send, upcontinuation);
           }
