@@ -146,6 +146,7 @@
 	</target>
 	<macrodef name="deploy" description="Deploy to server specified in the 'server' parameter">
 		<attribute name="server"/>
+		<attribute name="cert"/>
 		<sequential>
 			<antcall target="backup-deployment">
 				<param name="server" value="@{server}"/>
@@ -160,6 +161,8 @@
 					<exclude name="bin\wrapper.dll"/>
 				</fileset>
 			</copy>
+			<!--rename the cert file-->
+			<copy file="\\@{server}\cirmservices\conf\@{cert}" tofile="\\@{server}\cirmservices\conf\cirm.jks" overwrite="true" />
 		</sequential>
 	</macrodef>
 	<target name="backup-deployment" if="backupDeployment" description="Backs up cirm on a given deployment 'server'">
@@ -200,7 +203,7 @@
 	</macrodef>
 	<target name="deploy-test-conf" depends="make-dist" description="Deploy to test server, does not autorestart.">
 		<echo message="Deploying ${changesetid} to test..."/>
-		<deploy server="s0144654"/>
+		<deploy server="s0144654" cert="cirmadmin-test.jks"/>
 	</target>
 	<target name="restart-test-conf" description="Restart the test configuration server (s0144654).">
 		<restart server="s0144654"/>

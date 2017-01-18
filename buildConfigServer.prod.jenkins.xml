@@ -146,6 +146,7 @@
 	</target>
 	<macrodef name="deploy" description="Deploy to server specified in the 'server' parameter">
 		<attribute name="server"/>
+		<attribute name="cert"/>
 		<sequential>
 			<antcall target="backup-deployment">
 				<param name="server" value="@{server}"/>
@@ -160,6 +161,8 @@
 					<exclude name="bin\wrapper.dll"/>
 				</fileset>
 			</copy>
+			<!--rename the cert file-->
+			<copy file="\\@{server}\cirmservices\conf\@{cert}" tofile="\\@{server}\cirmservices\conf\cirm.jks" overwrite="true" />
 		</sequential>
 	</macrodef>
 	<target name="backup-deployment" if="backupDeployment" description="Backs up cirm on a given deployment 'server'">
@@ -208,7 +211,7 @@
 	<target name="prepare-conf-release" depends="make-dist, version-increment, save-version" description="Compile, revision tag, make config server distribution ready for deployment."/>
 	<target name="deploy-prod-conf" depends="prepare-conf-release" description="Deploy to production server, does not autorestart.">
 		<echo message="Deploying ${changesetid} to production..."/>
-		<deploy server="s2030075"/>
+		<deploy server="s2030075" cert="cirmadmin-prod.jks" />
 	</target>
 	<target name="restart-prod-conf" description="Restart the production configuration server (s2030075).">
 		<restart server="s2030075"/>
