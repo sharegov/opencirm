@@ -1326,20 +1326,20 @@ public class ServiceCaseManager extends OntoAdmin {
 	}
 	
 	public boolean validateJson (String schemaUri, Json o){	
-		try {
-			Json.Schema schema = Json.schema(new URI(schemaUri));
-			Json errors = schema.validate(o);
-			
-			if (errors.has("errors"))	{	
-				for (Json error : errors.at("errors").asJsonList())  System.out.println("Validation error " + error.asString());
-				return false;
-			}
-		
-		} catch (Exception e) {
-			System.out.println("Error ocurred while validating JSON using Schema: " + schemaUri);
-			e.printStackTrace();
-			return false;
-		}		
+//		try {
+//			Json.Schema schema = Json.schema(new URI(schemaUri));
+//			Json errors = schema.validate(o);
+//			
+//			if (errors.has("errors"))	{	
+//				for (Json error : errors.at("errors").asJsonList())  System.out.println("Validation error " + error.asString());
+//				return false;
+//			}
+//		
+//		} catch (Exception e) {
+//			System.out.println("Error ocurred while validating JSON using Schema: " + schemaUri);
+//			e.printStackTrace();
+//			return false;
+//		}		
 		
 		return true;		
 	}

@@ -1112,7 +1112,7 @@ public class MetaOntology
 					j.with(objectMap.get(j.at("iri").asString()).dup());
 					return;
 				} else {
-					j.set("reference", true);
+					j.set("reference", true).set("type", "ObjectReference");
 					System.out.println("Recursive Definition detected for individual: " + j.at("iri").asString());
 					return;
 				}

@@ -182,28 +182,24 @@
 		},
 		"hasServiceFieldAlert": {
 			"oneOf": [{
+				"$ref": "#/definitions/reference"
+			}, {
 				"$ref": "#/definitions/hasServiceFieldAlertList"
 			}, {
-				"$ref": "#/definitions/ServiceFieldAlert"
+				"$ref": "#/definitions/ServiceFieldAlertObject"
 			}]
 		},
 		"hasServiceFieldAlertList": {
 			"items": {
 				"type": "object",
 				"oneOf": [{
-					"$ref": "#/definitions/ServiceFieldAlert"
+					"$ref": "#/definitions/reference"
+				}, {
+					"$ref": "#/definitions/ServiceFieldAlertObject"
 				}]
 			},
 			"minItems": 1,
 			"type": "array"
-		},
-		"ServiceFieldAlert": {
-			"type": "object",
-			"oneOf": [{
-				"$ref": "#/definitions/reference"
-			}, {
-				"$ref": "#/definitions/ServiceFieldAlertObject"
-			}]
 		},
 		"ServiceFieldAlertObject": {
 			"properties": {
@@ -243,6 +239,7 @@
 				"PHONENUM"
 			]
 		},
+		}
 		"hasChoiceValueList": {
 			"type": "object",
 			"properties": {
@@ -277,6 +274,8 @@
 			"items": {
 				"type": "object",
 				"oneOf": [{
+					"$ref": "#/definitions/reference"
+				}, {
 					"$ref": "#/definitions/ChoiceValue"
 				}]
 			},
@@ -370,6 +369,8 @@
 			"items": {
 				"type": "object",
 				"oneOf": [{
+					"$ref": "#/definitions/reference"
+				}, {
 					"$ref": "#/definitions/LegacyEventObject"
 				}]
 			},
@@ -517,6 +518,8 @@
 			"items": {
 				"type": "object",
 				"oneOf": [{
+					"$ref": "#/definitions/reference"
+				}, {
 					"$ref": "#/definitions/OutcomeObject"
 				}]
 			},
