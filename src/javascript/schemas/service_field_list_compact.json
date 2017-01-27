@@ -965,6 +965,12 @@
         "hasBody": {
           "$ref": "#/definitions/label"
         },
+        "hasAttachmentCodes": {
+          "$ref": "#/definitions/label"
+        },
+        "hasLegacyBody": {
+          "$ref": "#/definitions/label"
+        },
         "type": {
           "enum": [
             "MessageTemplate"
