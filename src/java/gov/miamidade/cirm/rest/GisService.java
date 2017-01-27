@@ -75,24 +75,24 @@ public class GisService extends RestService
      *   	  {
      *   	"server": "77",
      *   	"atAddress": {
-     *   		"Street_Address_State": {
-     *   			"iri": "http://www.miamidade.gov/ontology#Florida"
-     *   		},
-     *   		"Street_Name": "137TH",
-     *   		"Street_Number": "15751",
-     *   		"Street_Unit_Number": "204",
-     *   		"Street_Direction": {
-     *   			"iri": "http://www.miamidade.gov/ontology#South_West"
-     *   		},
-     *   		"fullAddress": "15751 SW 137TH AVE",
-     *   		"Zip_Code": "33177",
-     *   		"type": "Street_Address",
-     *   		"Street_Address_City": {
-     *   			"iri": "http://www.miamidade.gov/ontology#Geo_UNINCORPORATED_MIAMI_DADE"
-     *   		},
-     *   		"hasStreetType": {
-     *   			"iri": "http://www.miamidade.gov/ontology#Street_Type_Avenue"
-     *   		}
+  	 *			"Street_Name": "149TH CIRCLE",
+     *          "Street_Address_State": {
+     *             "iri": "http://www.miamidade.gov/ontology#Florida"
+     *          },
+     *          "Street_Number": "13807",
+     *          "Street_Unit_Number": "4-67",
+     *          "Street_Direction": {
+     *             "iri": "http://www.miamidade.gov/ontology#South_West"
+     *          },
+     *          "fullAddress": "13807 SW 149TH CIRCLE LN",
+     *          "Zip_Code": "33186",
+     *          "type": "Street_Address",
+     *          "Street_Address_City": {
+     *             "iri": "http://www.miamidade.gov/ontology#Miami_Dade_County"
+     *          },
+     *          "hasStreetType": {
+     *             "iri": "http://www.miamidade.gov/ontology#Street_Type_Lane"
+     *          }
      *   	},
      *   	"ok": true
      *   }
