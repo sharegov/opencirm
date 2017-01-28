@@ -29,11 +29,16 @@ define(['jquery', 'rest', 'U','store!'], function($, rest, U, store) {
         },
         initLoginForm: function() {
           $('#iPassword').keydown(function(event) {
-            if (event.which == 13)
-              user.authenticate('', $('#iUsername').val(), $('#iPassword').val());
+            if (event.which == 13) {
+            	var userName = $('#iUsername').val();
+           		userName = ("" + userName).toLowerCase().trim();
+                user.authenticate('', userName, $('#iPassword').val());            	
+            }
           });
           $('#btnLogin').click(function () {
-              user.authenticate('', $('#iUsername').val(), $('#iPassword').val());
+          	var userName = $('#iUsername').val();
+       		userName = ("" + userName).toLowerCase().trim();
+            user.authenticate('', userName, $('#iPassword').val());
           });
            $('#loginForm')[0].reset();                
         },
