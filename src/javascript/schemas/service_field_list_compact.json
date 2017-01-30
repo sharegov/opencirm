@@ -550,6 +550,9 @@
         "iri": {
           "$ref": "#/definitions/iri"
         },
+		"hasOverdueActivity": {
+		  "$ref": "#/definitions/Activity"
+		},
         "hasLegacyCode": {
           "$ref": "#/definitions/hasLegacyCode"
         },
