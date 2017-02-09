@@ -2,51 +2,48 @@ package org.sharegov.cirm.legacy;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import mjson.Json;
 
-import org.hypergraphdb.app.owl.versioning.RevisionID;
-import org.hypergraphdb.app.owl.versioning.VersionedOntology;
-import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.semanticweb.owlapi.model.AddAxiom;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyChange;
-import org.semanticweb.owlapi.model.RemoveAxiom;
-import org.sharegov.cirm.MetaOntology;
 import org.sharegov.cirm.OWL;
-import org.sharegov.cirm.Refs;
-import org.sharegov.cirm.owl.OwlRepo;
 import org.sharegov.cirm.test.OpenCirmTestBase;
+import org.sharegov.cirmx.maintenance.ScriptAddClassificationToActivity;
 
 /**
  * Used to test Service Case Manager
- * @author dawong
+ * @author dawong, Syed Abbas
  *
  */
 public class ServiceCaseManagerTest extends OpenCirmTestBase {
 
-	static ServiceCaseManager serviceCaseManager;
+	private static Logger logger = Logger.getLogger(ServiceCaseManagerTest.class.getName());
+	private static ServiceCaseManager serviceCaseManager;
 	
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		serviceCaseManager = ServiceCaseManager.getInstance();	
-		
+		ConsoleHandler handler = new ConsoleHandler();
+		handler.setFormatter(new SimpleFormatter());
+		logger.addHandler(handler);
 	} 
 	
 	@AfterClass
@@ -270,4 +267,39 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
 		return values.contains(OWL.dataFactory().getOWLLiteral(expected));
 
 	}
+	
+	@Test
+	public void testAllActivitiesIndividualsHaveClassAssertionAxioms() {
+//		ScriptAddClassificationToActivity.main(null);
+		Set<OWLNamedIndividual> activityIndividualsMissingClassDeclarations = new HashSet<OWLNamedIndividual>();
+		for(OWLNamedIndividual activity: serviceCaseManager.getAllActivityIndividuals())
+		{
+			//Set<OWLClassAssertionAxiom> classAssertion = OWL.ontology().getClassAssertionAxioms(activity);
+			
+			Set<OWLClassExpression> classes = activity.getTypes(OWL.ontology().getImportsClosure());
+
+				if(!classes.contains(OWL.owlClass("legacy:Activity")))
+				{
+					activityIndividualsMissingClassDeclarations.add(activity);
+				}else
+				{
+					if(activityIndividualsMissingClassDeclarations.contains(activity))
+						activityIndividualsMissingClassDeclarations.remove(activity);
+			}
+		}
+		
+	
+		if(activityIndividualsMissingClassDeclarations.size() > 0 )
+		{
+			logger.log(Level.WARNING, "The following activities have no class assertions", activityIndividualsMissingClassDeclarations);
+			for(OWLNamedIndividual i : activityIndividualsMissingClassDeclarations)
+			{
+				System.out.println(i.getIRI().toString());
+			}
+			System.out.println(activityIndividualsMissingClassDeclarations.size());
+			fail("There are activities defined in the ontology with no class assertion.");
+		}
+		
+	}
+
 }
