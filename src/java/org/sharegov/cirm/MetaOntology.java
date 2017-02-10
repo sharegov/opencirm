@@ -306,7 +306,10 @@ public class MetaOntology
 			if (!data.has("iri")){
 				throw new RuntimeException("root iri not found : " + data.toString());
 			}
-			OWLIndividual newInd = factory.getOWLNamedIndividual(fullIri(PREFIX + data.at("iri").asString())); 
+			String iri = getIdFromUri(data.at("iri").asString());
+			String prefix = correctedPrefix (iri);
+			
+			OWLNamedIndividual newInd = OWL.individual(prefix + iri);
 						
 			result.addAll(makeObjectIndividual (newInd, data, O, manager, factory));
 			
@@ -318,16 +321,18 @@ public class MetaOntology
 		
 		if (data.isArray()){
 			for (Json e: data.asJsonList()){
-				String iri = "";
-				if (e.isObject())
-					if (e.has("iri")){
-						iri = e.at("iri").asString();
-					} else throw new IllegalArgumentException("Cannot find iri property for question: "+ e.asString());
-				else throw new IllegalArgumentException("element is not an object: "+ e.asString());
+				if (e.isObject()){
+					if (!e.has("iri")){
+						throw new IllegalArgumentException("Cannot find iri property for question: "+ e.asString());
+					}  
+				} else {
+					throw new IllegalArgumentException("element is not an object: "+ e.asString());
+				}
 				
-				iri = getIdFromUri(iri);
+				String iri = getIdFromUri(e.at("iri").asString());
+				String prefix = correctedPrefix (iri);
 				
-				OWLNamedIndividual newInd = OWL.individual(PREFIX + iri);
+				OWLNamedIndividual newInd = OWL.individual(prefix + iri);
 							
 				result.addAll(makeObjectIndividual (newInd, e, O, manager, factory));
 				
@@ -499,11 +504,11 @@ public class MetaOntology
 		return L;
 	}
 	
-	protected static PropertyDescriptor findPropertyIri(String irifragment) {
+	protected static PropertyDescriptor findPropertyIri(String iriFragment) {
 		PropertyDescriptor result = new PropertyDescriptor();
-		Json prefixes = Json.array().add("legacy:").add("mdc:");
+		Json prefixes = Json.array().add("legacy:").add("mdc:").add("legacy:");
 		for (Json prefix : prefixes.asJsonList()) {
-			IRI propIri = fullIri(prefix.asString() + irifragment);
+			IRI propIri = fullIri(prefix.asString() + iriFragment);
 			OWLOntology o = OWL.ontology();
 			if (o.containsObjectPropertyInSignature(propIri, true)) {
 				result.setIri(propIri);
@@ -523,10 +528,10 @@ public class MetaOntology
 		return null;
 	}
 	
-	protected static String getClassPrefix (String irifragment){
-		Json prefixes = Json.array().add("legacy:").add("mdc:").add(":");
+	protected static String getClassPrefix (String iriFragment){
+		Json prefixes = Json.array().add("mdc:").add(":").add("legacy:");
 		for (Json prefix : prefixes.asJsonList()) {
-			IRI propIri = fullIri(prefix.asString() + irifragment);
+			IRI propIri = fullIri(prefix.asString() + iriFragment);
 			for (OWLOntology o : OWL.ontologies()) {
 				if (o.containsClassInSignature(propIri)) {
 					return prefix.asString();
@@ -534,6 +539,30 @@ public class MetaOntology
 			}
 		}
 		return null;
+	}
+	
+	protected static String detectIndividualPrefix (String iriFragment){
+		Json prefixes = Json.array().add("mdc:").add(":").add("legacy:");
+		for (Json prefix : prefixes.asJsonList()) {
+			IRI propIri = fullIri(prefix.asString() + iriFragment);
+			for (OWLOntology o : OWL.ontologies()) {
+				if (o.containsIndividualInSignature(propIri)) {
+					return prefix.asString();
+				}
+			}
+		}
+		return null;
+	}
+	
+	protected static String correctedPrefix (String iriFragment){
+		String detected = detectIndividualPrefix(iriFragment);
+		
+		if (detected == null){
+			return "legacy:";
+		} else {
+			return detected;
+		}
+		
 	}
 	
 	protected static void handleClassesArray (Json result, Json e){
@@ -643,10 +672,14 @@ public class MetaOntology
 		List<OWLOntologyChange> result = new ArrayList<OWLOntologyChange>();
 		
 		if (value.isObject())
-		{
+		{			
 			if (value.has("iri")){
-				if (value.at("iri").asString().contains("#")) value.set("iri", getIdFromUri(value.at("iri").asString()));
-				OWLNamedIndividual object = factory.getOWLNamedIndividual(fullIri(PREFIX + value.at("iri").asString()));
+				String iri = value.at("iri").asString();
+				if (iri.contains("#")){
+					iri = getIdFromUri(iri);
+				}
+				String prefix = correctedPrefix(iri);
+				OWLNamedIndividual object = factory.getOWLNamedIndividual(fullIri(prefix + iri));
 				result.add(new AddAxiom(O, factory.getOWLObjectPropertyAssertionAxiom(prop, ind, object)));
 				result.addAll(setPropertiesFor(object, value, O, manager, factory));
 			}
@@ -656,9 +689,12 @@ public class MetaOntology
 			}
 		}
 		else{
-			OWLNamedIndividual object;
-			if (!value.asString().contains("#")) object = factory.getOWLNamedIndividual(fullIri(PREFIX + value.asString()));
-			else object = factory.getOWLNamedIndividual(fullIri(PREFIX + getIdFromUri(value.asString())));			
+			String iri = value.asString();
+			if (iri.contains("#")){
+				iri = getIdFromUri(iri);
+			}
+			String prefix = correctedPrefix(iri);
+			OWLNamedIndividual object = factory.getOWLNamedIndividual(fullIri(prefix + iri));			
 			result.add(new AddAxiom(O, factory.getOWLObjectPropertyAssertionAxiom(prop, ind, object)));
 		}
 		
@@ -871,66 +907,7 @@ public class MetaOntology
 		}
 		
 	}
-	
-	/**
-	 * Resolves all fulliri strings in the owlSerialized json 
-	 * and modifies the json by replacing all fulliri strings with the resolved json objects.
-	 */
-	public static Json resolveAllIris(Json owlSerialized) {
-		resolveAllIris(owlSerialized, owlSerialized, RESOLVE_ALL_IRI_MAX_DEPTH);
 		
-		return owlSerialized;
-	}
-
-
-	/**
-	 * Resolves all fulliri strings starting at root in the context of owlSerialized  
-	 * and modifies the owlSerialized by replacing all fulliri strings with the resolved json objects.
-	 * Root must be within owlSerialized.
-	 */
-	public static void resolveAllIris(Json owlSerialized, Json root, int maxDepth) {
-		if (maxDepth == 0) return;
-		if (root.isObject()) {
-			Map<String,Json> properties = root.asJsonMap();
-			for (Map.Entry<String, Json> propKeyValue : properties.entrySet()) {
-				if (!propKeyValue.getKey().equals("iri") && isFullIriString(propKeyValue.getValue())) {
-					//modify Json key to fully resolved json object
-					Json serializedOwlEntity = findByIri(owlSerialized, propKeyValue.getValue().asString(), RESOLVE_ALL_IRI_MAX_DEPTH);
-					if (serializedOwlEntity.isNull()) {
-						serializedOwlEntity = getSerializedOntologyObject(propKeyValue.getValue().asString());
-					} 
-					if (serializedOwlEntity.isNull()){
-						throw new IllegalArgumentException("parameter contains IRI for which no serialized object could be found: " + propKeyValue.getValue());
-					}
-					//replace key with full object instead of string IRI.
-					propKeyValue.setValue(serializedOwlEntity.dup());
-				} 
-				resolveAllIris(owlSerialized, propKeyValue.getValue(), maxDepth - 1);
-			}
-		} else if (root.isArray()) {
-			ListIterator<Json> arrayIt = root.asJsonList().listIterator();
-			while(arrayIt.hasNext()) {
-				Json elem = arrayIt.next();
-				if (isFullIriString(elem)) {
-					Json serializedOwlEntity = findByIri(owlSerialized, elem.asString(), RESOLVE_ALL_IRI_MAX_DEPTH);
-					if (serializedOwlEntity.isNull()) {
-						serializedOwlEntity = getSerializedOntologyObject(elem.asString());
-					} 
-					if (serializedOwlEntity.isNull()){
-						throw new IllegalArgumentException("parameter contains IRI for which no serialized object could be found: " + elem.asString());
-					}
-					//replace cur elem.
-					arrayIt.set(serializedOwlEntity.dup());
-					//needed so recursion continues with object not iri string.
-					elem = serializedOwlEntity;
-				} 
-				resolveAllIris(owlSerialized, elem, maxDepth - 1);
-			}
-		} else {
-			// nothing to do for primitives
-		}  				
-	}
-	
 	/**
 	 * Simple method to check if a Json is a fullIRI.
 	 * TODO This needs improvement.
@@ -942,44 +919,7 @@ public class MetaOntology
 				&& iriCandidate.asString().contains("#")
 			    && iriCandidate.asString().startsWith("http://");
 	}
-	
-	/**
-	 * Finds any object with an IRI attribute that's fully serialized.
-	 * Ignores fullIris that are Strings and not objects.
-	 * 
-	 * @param fullIRI
-	 * @return
-	 */
-	public static Json findByIri(Json owlSerialized, String fullIRI, int maxDepth) {
-		if (maxDepth == 0){
-			return Json.nil();
-		}
 		
-		if (owlSerialized.isObject()) {
-			if (owlSerialized.has("iri") && fullIRI.equals(owlSerialized.at("iri").asString()))
-				return owlSerialized;
-			else {
-				Map<String,Json> properties = owlSerialized.asJsonMap();
-				for (Json propValue : properties.values()) {
-					Json result = findByIri(propValue, fullIRI, maxDepth-1);
-					if (!result.isNull()) {
-						return result;
-					}
-				}
-				return Json.nil();
-			}
-		} else if (owlSerialized.isArray()) {
-			List<Json> array = owlSerialized.asJsonList();
-			for (Json elem : array) {
-				Json result = findByIri(elem, fullIRI, maxDepth-1);
-				if (!result.isNull()) {
-					return result;
-				}
-			}
-			return Json.nil();
-		} else return Json.nil();				
-	}
-	
 	private static Json getSerializedOntologyObject (String fullIRI){			
 		String individualID = fullIRI.substring(fullIRI.indexOf("#")+1, fullIRI.length());
 		OWLIndividuals q = new OWLIndividuals();
@@ -1113,7 +1053,7 @@ public class MetaOntology
 					return;
 				} else {
 					j.set("reference", true).set("type", "ObjectReference");
-					System.out.println("Recursive Definition detected for individual: " + j.at("iri").asString());
+					//System.out.println("Recursive Definition detected for individual: " + j.at("iri").asString());
 					return;
 				}
 			} else {
