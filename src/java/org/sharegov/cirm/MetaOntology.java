@@ -578,7 +578,7 @@ public class MetaOntology
 		}
 	}
 	
-	protected static List<OWLOntologyChange> addNewClassAssertion (OWLIndividual parent, Json e, OWLOntology O, OWLDataFactory factory){
+	public static List<OWLOntologyChange> addNewClassAssertion (OWLIndividual parent, Json e, OWLOntology O, OWLDataFactory factory){
 		List<OWLOntologyChange> result = new ArrayList<OWLOntologyChange>();
 		
 		Json classes = Json.array();

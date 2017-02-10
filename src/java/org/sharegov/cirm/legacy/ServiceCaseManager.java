@@ -16,9 +16,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.sharegov.cirm.MetaOntology;
@@ -1452,7 +1454,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	 * @return a list of individuals that belong to the class Activity
 	 */
 
-	private Set<OWLNamedIndividual> getAllActivityIndividuals() {
+	public Set<OWLNamedIndividual> getAllActivityIndividuals() {
 		return getAllIndividualsOfClass("Activity");
 	}
 	
@@ -1569,6 +1571,65 @@ public class ServiceCaseManager extends OntoAdmin {
 				clearCache(srType);
 				return getServiceCaseFormated(srType);
 			} else throw new IllegalArgumentException("Unable to rename Service Case Type "+ PREFIX + srType);
+		}
+	}
+	
+	
+	/**
+	 *  Classify individuals as an Activity
+	 * 
+	 * @param unclassifiedActivities individuals identifier
+	 * @param userName who commits the action
+	 * @return commit success true or false
+	 */
+	public Json classifyAsActivity(Set<OWLNamedIndividual> unclassifiedActivities, String userName, String comment) {
+
+		OwlRepo repo = getRepo();
+		
+		synchronized (repo) {
+			repo.ensurePeerStarted();
+			OWLOntology o = OWL.ontology();
+			OWLDataFactory factory = o.getOWLOntologyManager().getOWLDataFactory();
+			List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+			for(OWLNamedIndividual activity: unclassifiedActivities) {
+				List<OWLOntologyChange> thisChange = MetaOntology.addNewClassAssertion(activity, Json.array().add("Activity"), o, factory);
+				changes.addAll(thisChange);
+			}
+			comment = (comment==null)?"Classifying a total of " + unclassifiedActivities.size() + " Activity (ies), which were unclassified":comment;
+			
+			boolean r = commit(userName, comment, changes);
+			
+			if (!r) throw new IllegalArgumentException("Unable to classify activities " + unclassifiedActivities.toArray().toString());
+			return Json.object();
+		}
+	}
+	
+	/**
+	 *  Classify individuals as an QuestionTrigger
+	 * 
+	 * @param unclassifiedQuestionTriggers individuals identifier
+	 * @param userName who commits the action
+	 * @return commit success true or false
+	 */
+	public Json classifyAsQuestionTrigger(Set<OWLNamedIndividual> unclassifiedQuestionTriggers, String userName, String comment) {
+
+		OwlRepo repo = getRepo();
+		
+		synchronized (repo) {
+			repo.ensurePeerStarted();
+			OWLOntology o = OWL.ontology();
+			OWLDataFactory factory = o.getOWLOntologyManager().getOWLDataFactory();
+			List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+			for(OWLNamedIndividual activity: unclassifiedQuestionTriggers) {
+				List<OWLOntologyChange> thisChange = MetaOntology.addNewClassAssertion(activity, Json.array().add("QuestionTrigger"), o, factory);
+				changes.addAll(thisChange);
+			}
+			comment = (comment==null)?"Classifying a total of " + unclassifiedQuestionTriggers.size() + " QuestionTriggers, which were unclassified":comment;
+			
+			boolean r = commit(userName, comment, changes);
+			
+			if (!r) throw new IllegalArgumentException("Unable to classify Question triggers " + unclassifiedQuestionTriggers.toArray().toString());
+			return Json.object();
 		}
 	}
 	
