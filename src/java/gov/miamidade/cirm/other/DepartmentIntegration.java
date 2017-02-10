@@ -147,7 +147,7 @@ public class DepartmentIntegration extends RestService
         Json R =  this.getOpenCasesReport(new LegacyEmulator(), numberOfDays);
         if (R.is("ok", true))
         {
-            MessageManager.get().emailAsAttachment("cirm@miamidade.gov", "hilpold@miamidade.gov;sabbas@miamidade.gov;jorgefi@miamidade.gov",
+            MessageManager.get().emailAsAttachment("cirm@miamidade.gov", "hilpold@miamidade.gov;chirino@miamidade.gov;sabbas@miamidade.gov;jorgefi@miamidade.gov",
                     "CIRM Open Cases Report " + R.at("from").asString() + " to " +
                     R.at("to").asString(), JsonUtil.csvTable(R.at("results"), 
                             "hasCaseNumber,type,hasStatus,hasDateCreated,hasLegacyInterface", 
