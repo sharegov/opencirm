@@ -29,6 +29,7 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -112,8 +113,8 @@ public class GisInfoTableCSVUpdate
 				throw e;
 			}
 			String col3Str = lineTok.nextToken();
-			if (col3Str.length() < 6) {
-				throw new IllegalStateException("Column 3 (Case type) < 6 characters: " + col3Str);
+			if (col3Str.length() < 4) {
+				throw new IllegalStateException("Column 3 (Case type) < 4 characters: " + col3Str);
 			}
 		} // headerline		
 	}
@@ -121,7 +122,16 @@ public class GisInfoTableCSVUpdate
 	public void processAll() throws Exception {
 		List<String> lines = loadFile(this.getClass().getResource(INPUT_CSV_FILE).toURI());
 		for (String line : lines) {
-			processOneLine(line);
+			try {
+				processOneLine(line);
+			} catch(Exception e) {
+				ThreadLocalStopwatch.error("FAIL: Update line " + line);
+				ThreadLocalStopwatch.error("FAIL: Exception " + e + " at " + new Date());
+				e.printStackTrace();
+				try {
+					Thread.sleep(120 * 1000);
+				} catch(Exception ie) {}
+			}
 		}
 	}
 	private void processOneLine(String line) {
