@@ -748,7 +748,7 @@ public class ServiceCaseAdmin extends RestService {
 			
 			try
 			{ 
-				if (!(aData.has("userName") && aData.has("payload") && aData.at("payload").has("iri"))) throw new IllegalArgumentException("User Name or Object data null/empty/Incomplete"); 
+				if (!(aData.has("userName") && aData.has("payload") && aData.at("payload").has("iri") && aData.at("payload").has("type"))) throw new IllegalArgumentException("User Name or Object data null/empty/Incomplete"); 
 				
 				String userName = aData.at("userName").asString();			
 				String comment = aData.has("comment")?aData.at("comment").asString():null;
