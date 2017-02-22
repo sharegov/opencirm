@@ -25,7 +25,7 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.test.OpenCirmTestBase;
-import org.sharegov.cirmx.maintenance.ScriptAddClassificationToActivity;
+import org.sharegov.cirmx.maintenance.ScriptAddClassificationToIndividual;
 
 /**
  * Used to test Service Case Manager
@@ -270,36 +270,36 @@ public class ServiceCaseManagerTest extends OpenCirmTestBase {
 	
 	@Test
 	public void testAllActivitiesIndividualsHaveClassAssertionAxioms() {
-//		ScriptAddClassificationToActivity.main(null);
-		Set<OWLNamedIndividual> activityIndividualsMissingClassDeclarations = new HashSet<OWLNamedIndividual>();
-		for(OWLNamedIndividual activity: serviceCaseManager.getAllActivityIndividuals())
-		{
-			//Set<OWLClassAssertionAxiom> classAssertion = OWL.ontology().getClassAssertionAxioms(activity);
-			
-			Set<OWLClassExpression> classes = activity.getTypes(OWL.ontology().getImportsClosure());
-
-				if(!classes.contains(OWL.owlClass("legacy:Activity")))
-				{
-					activityIndividualsMissingClassDeclarations.add(activity);
-				}else
-				{
-					if(activityIndividualsMissingClassDeclarations.contains(activity))
-						activityIndividualsMissingClassDeclarations.remove(activity);
-			}
-		}
-		
-	
-		if(activityIndividualsMissingClassDeclarations.size() > 0 )
-		{
-			logger.log(Level.WARNING, "The following activities have no class assertions", activityIndividualsMissingClassDeclarations);
-			for(OWLNamedIndividual i : activityIndividualsMissingClassDeclarations)
-			{
-				System.out.println(i.getIRI().toString());
-			}
-			System.out.println(activityIndividualsMissingClassDeclarations.size());
-			fail("There are activities defined in the ontology with no class assertion.");
-		}
-		
+		ScriptAddClassificationToIndividual.main(null);
+//		Set<OWLNamedIndividual> activityIndividualsMissingClassDeclarations = new HashSet<OWLNamedIndividual>();
+//		for(OWLNamedIndividual activity: serviceCaseManager.getAllActivityIndividuals())
+//		{
+//			//Set<OWLClassAssertionAxiom> classAssertion = OWL.ontology().getClassAssertionAxioms(activity);
+//			
+//			Set<OWLClassExpression> classes = activity.getTypes(OWL.ontology().getImportsClosure());
+//
+//				if(!classes.contains(OWL.owlClass("legacy:Activity")))
+//				{
+//					activityIndividualsMissingClassDeclarations.add(activity);
+//				}else
+//				{
+//					if(activityIndividualsMissingClassDeclarations.contains(activity))
+//						activityIndividualsMissingClassDeclarations.remove(activity);
+//			}
+//		}
+//		
+//	
+//		if(activityIndividualsMissingClassDeclarations.size() > 0 )
+//		{
+//			logger.log(Level.WARNING, "The following activities have no class assertions", activityIndividualsMissingClassDeclarations);
+//			for(OWLNamedIndividual i : activityIndividualsMissingClassDeclarations)
+//			{
+//				System.out.println(i.getIRI().toString());
+//			}
+//			System.out.println(activityIndividualsMissingClassDeclarations.size());
+//			fail("There are activities defined in the ontology with no class assertion.");
+//		}
+//		
 	}
 
 }

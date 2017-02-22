@@ -1633,4 +1633,14 @@ public class ServiceCaseManager extends OntoAdmin {
 		}
 	}
 	
+	/**
+	 * 
+	 * @return a list of individuals that belong to the class LegacyTrigger.
+	 */
+
+	public Set<OWLNamedIndividual> getAllLegacyTriggerIndividuals() {
+		return getAllIndividualsOfClass("LegacyTrigger");
+	}
+	
+	
 }
