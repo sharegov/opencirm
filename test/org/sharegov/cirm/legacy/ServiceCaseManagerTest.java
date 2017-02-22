@@ -11,23 +11,20 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-import mjson.Json;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
-import org.semanticweb.owlapi.model.OWLOntology;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.test.OpenCirmTestBase;
-import org.sharegov.cirmx.maintenance.ScriptAddClassificationToActivity;
 
-/**
+import mjson.Json;
+
+/**	
  * Used to test Service Case Manager
  * @author dawong, Syed Abbas
  *

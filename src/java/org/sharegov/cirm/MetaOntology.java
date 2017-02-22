@@ -286,7 +286,59 @@ public class MetaOntology
 	}
 	
 	/*
-	 * function creates a new named idividual using properties described on the json structure and attach it to the parent on property described by propertyID.
+	 * create a list of changes to be commited in order to create a new new individual
+	 * 
+	 */
+	public static List<OWLOntologyChange> getCreateIndividualObjectFromJsonChanges (Json data){
+		String ontologyIri = Refs.defaultOntologyIRI.resolve();
+		OWLOntology O = OWL.ontology(ontologyIri);		
+
+		if (O == null) {
+			throw new RuntimeException("Ontology not found: " + ontologyIri);
+		}		
+		
+		OWLOntologyManager manager = OWL.manager();
+		OWLDataFactory factory = manager.getOWLDataFactory();
+		
+		List<OWLOntologyChange> result = new ArrayList<OWLOntologyChange>();
+		
+		if (data.isObject()){
+			if (!data.has("iri")){
+				throw new RuntimeException("root iri not found : " + data.toString());
+			}
+			String iri = getIdFromUri(data.at("iri").asString());
+			String prefix = correctedPrefix (iri);
+			
+			OWLNamedIndividual newInd = OWL.individual(prefix + iri);
+						
+			result.addAll(makeObjectIndividual (newInd, data, O, manager, factory));
+		}
+		
+		if (data.isArray()){
+			for (Json e: data.asJsonList()){
+				if (e.isObject()){
+					if (!e.has("iri")){
+						throw new IllegalArgumentException("Cannot find iri property for question: "+ e.asString());
+					}  
+				} else {
+					throw new IllegalArgumentException("element is not an object: "+ e.asString());
+				}
+				
+				String iri = getIdFromUri(e.at("iri").asString());
+				String prefix = correctedPrefix (iri);
+				
+				OWLNamedIndividual newInd = OWL.individual(prefix + iri);
+							
+				result.addAll(makeObjectIndividual (newInd, e, O, manager, factory));
+			}
+		}
+		
+		return result;
+	}
+	
+	
+	/*
+	 * function creates a new named individual using properties described on the json structure and attach it to the parent on property described by propertyID.
 	 * 
 	 */
 	public static List<OWLOntologyChange> getAddIndividualObjectFromJsonChanges (String parentID, String propertyID,  Json data){
@@ -920,7 +972,7 @@ public class MetaOntology
 			    && iriCandidate.asString().startsWith("http://");
 	}
 		
-	private static Json getSerializedOntologyObject (String fullIRI){			
+	public static Json getSerializedOntologyObject (String fullIRI){			
 		String individualID = fullIRI.substring(fullIRI.indexOf("#")+1, fullIRI.length());
 		OWLIndividuals q = new OWLIndividuals();
 		Json S = Json.nil();
