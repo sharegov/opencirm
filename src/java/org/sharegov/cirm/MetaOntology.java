@@ -688,15 +688,19 @@ public class MetaOntology
 			String key = e.getKey();
 			
 			Json value = e.getValue();
-			if (key.equals("label") || key.equals("iri") || key.equals("type") || key.equals("extendedTypes"))
+			if (key.equals("label") || key.equals("iri") || key.equals("type") || key.equals("extendedTypes") || key.equals("transient$protected") || key.equals("comment"))
 			{
 				if (key.equals("type") || key.equals("extendedTypes")){
 					result.addAll(addNewClassAssertion (parent, e.getValue(), O, factory));
 					
-				}else if (key.equals("label")){
+				} else if (key.equals("label")){
 					result.add(new  AddAxiom(O,factory.getOWLAnnotationAssertionAxiom(((OWLEntity) parent).getIRI(), 
 																					  factory.getOWLAnnotation(OWL.annotationProperty("http://www.w3.org/2000/01/rdf-schema#label"), 
 																				      factory.getOWLLiteral(value.asString())))));
+				} else if (key.equals("comment")){
+					result.add(new  AddAxiom(O,factory.getOWLAnnotationAssertionAxiom(((OWLEntity) parent).getIRI(),
+                            factory.getOWLAnnotation(OWL.annotationProperty("http://www.w3.org/2000/01/rdf-schema#comment"),
+                            factory.getOWLLiteral(value.asString())))));
 				}
 				continue;
 			}
@@ -1191,13 +1195,47 @@ public class MetaOntology
 		return false;
 	}
 	
+	protected static Json expandRealtedObjects (String id, Json obj){
+		if (obj.isArray()) {
+			return expandArray(id, obj);
+		} else if (obj.isObject()){
+			return expandObject(id, obj);
+		}
+		
+		return obj;
+	}
+	
+	private static Json expandArray(String id, Json arr){
+		ListIterator<Json> arrayIt = arr.asJsonList().listIterator();
+		while(arrayIt.hasNext()) {
+			Json elem = arrayIt.next();
+			if (isFullIriString(elem) && elem.asString().contains("#" + id)) {
+				elem = getSerializedOntologyObject(elem.asString());
+			}
+			elem = expandRealtedObjects(id, elem); 
+			arrayIt.set(elem);
+		}
+		return arr;
+	}
+	
+	private static Json expandObject(String id, Json obj){
+		Map<String,Json> properties = obj.asJsonMap();
+		for (Map.Entry<String, Json> propKeyValue : properties.entrySet()) {
+			if (!propKeyValue.getKey().equals("iri") && isFullIriString(propKeyValue.getValue()) && propKeyValue.getValue().asString().contains("#" + id)) {
+				propKeyValue.setValue(getSerializedOntologyObject(propKeyValue.getValue().asString()));
+			} 
+			propKeyValue.setValue(expandRealtedObjects(id, propKeyValue.getValue()));				
+		}
+		return obj;
+	}
+	
 	public static Json cloneSerializedIndividual(String donor, String dolly){
 		if (individualExists(dolly)) {
 			throw new IllegalArgumentException(dolly + " is already present on the Ontology.");
 		}
 		
 		String donorPrefix = correctedPrefix(donor);
-		Json serializedDonor = getSerializedOntologyObject(donorPrefix + donor);
+		Json serializedDonor = expandRealtedObjects (donor, getSerializedOntologyObject(donorPrefix + donor));
 		String strDonor = serializedDonor.toString();
 		
 		String regex = "\\(?\\b(http://|www[.])[-A-Za-z0-9+&amp;@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&amp;@#/%=~_()|]";
@@ -1205,7 +1243,7 @@ public class MetaOntology
 		Matcher m = p.matcher(strDonor);
 		while(m.find()) {
 			String urlStr = m.group();
-			String newIri = urlStr.replace(donor, dolly);
+			String newIri = urlStr.replace("#" + donor, "#" + dolly);
 			strDonor = strDonor.replace(urlStr, newIri);
 		}
 		        
