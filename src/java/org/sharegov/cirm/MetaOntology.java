@@ -27,6 +27,8 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
@@ -524,6 +526,25 @@ public class MetaOntology
 			}
 		}
 		
+		lim = changes.size();
+		toRemove.clear();
+		for (int i=0; i<lim; i++){
+			OWLOntologyChange changex = changes.get(i);
+			if (changex.getClass().toString().contains("Add")){
+				for (OWLOntology o : OWL.ontologies()) {
+					if (o.containsAxiom(changex.getAxiom())) {
+						toRemove.add(i);
+					}
+				}
+			}
+		}
+		
+		for (int i=lim-1; i>-1; i--){
+			if (toRemove.contains(i)){
+				changes.remove(i);
+			}
+		}
+		
 		return changes;
 	}
 	
@@ -893,10 +914,21 @@ public class MetaOntology
 	/*
 	 * Utility functions
 	 * 
-	 */
+	 */	
 	
 	public static String getOntologyFromUri(String uri){		
 		return uri.substring(uri.lastIndexOf("/")+1,uri.indexOf("#"));
+	}
+	
+	public static String getOntologyFromIdentifier(String uri){		
+		return uri.replace("http:", "").substring(uri.lastIndexOf("/")+1,uri.indexOf(":"));
+	}
+	
+	public static String getIndividualOntologyPrefix(String id){
+		if (id.replace("http:", "").contains(":")) return getOntologyFromIdentifier(id);
+		else if (id.contains("#")) return getOntologyFromUri(id);
+		
+		return id;
 	}
 		
 	public static String getIdFromUri(String uri)
@@ -906,11 +938,11 @@ public class MetaOntology
 	
 	public static String getIdFromIdentifier(String uri)
 	{
-		return uri.substring(uri.indexOf(":")+1, uri.length());
+		return uri.replace("http:", "").substring(uri.indexOf(":")+1, uri.length());
 	}
 		
 	public static String getIndividualIdentifier(String id){
-		if (id.contains(":")) return getIdFromIdentifier(id);
+		if (id.replace("http:", "").contains(":")) return getIdFromIdentifier(id);
 		else if (id.contains("#")) return getIdFromUri(id);
 		
 		return id;
@@ -973,24 +1005,25 @@ public class MetaOntology
 	}
 		
 	public static Json getSerializedOntologyObject (String fullIRI){			
-		String individualID = fullIRI.substring(fullIRI.indexOf("#")+1, fullIRI.length());
+		String individualID = getIndividualIdentifier(fullIRI);
+		String individualOntology = correctedPrefix(individualID);
 		OWLIndividuals q = new OWLIndividuals();
 		Json S = Json.nil();
 		
 		try {
 			
-			S = q.doInternalQuery("{legacy:" + individualID + "}");			
+			S = q.doInternalQuery("{" + individualOntology + individualID + "}");			
 			
 		} catch (Exception e) {
-			System.out.println("Error while querying the Ontology for legacy:" + individualID);
+			System.out.println("Error while querying the Ontology for "+ individualOntology + individualID);
 			System.out.println("Querying individual's endpoint instead...");
 			try {
 				
-				S = q.getOWLIndividualByName("legacy:" + individualID);		
-				System.out.println("Resolved: legacy:" + individualID);
+				S = q.getOWLIndividualByName(individualOntology + individualID);		
+				System.out.println("Resolved: "+ individualOntology + individualID);
 				
 			} catch (Exception ex){
-				System.out.println("Unable to resolve Object: legacy:" + individualID);
+				System.out.println("Unable to resolve Object: " + individualOntology + individualID);
 				ex.printStackTrace();
 			}					
 		}
@@ -1143,6 +1176,40 @@ public class MetaOntology
 	
 	private static boolean isObjectOnMap(String objectIRI, Map<String, Json> map){
 		return map.containsKey(objectIRI);
+	}
+	
+	protected static boolean individualExists (String individualID){
+		Json prefixes = Json.array().add("mdc:").add(":").add("legacy:");
+		for (Json prefix : prefixes.asJsonList()) {
+			IRI propIri = fullIri(prefix.asString() + individualID);
+			for (OWLOntology o : OWL.ontologies()) {
+				if (o.containsIndividualInSignature(propIri)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public static Json cloneSerializedIndividual(String donor, String dolly){
+		if (individualExists(dolly)) {
+			throw new IllegalArgumentException(dolly + " is already present on the Ontology.");
+		}
+		
+		String donorPrefix = correctedPrefix(donor);
+		Json serializedDonor = getSerializedOntologyObject(donorPrefix + donor);
+		String strDonor = serializedDonor.toString();
+		
+		String regex = "\\(?\\b(http://|www[.])[-A-Za-z0-9+&amp;@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&amp;@#/%=~_()|]";
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher(strDonor);
+		while(m.find()) {
+			String urlStr = m.group();
+			String newIri = urlStr.replace(donor, dolly);
+			strDonor = strDonor.replace(urlStr, newIri);
+		}
+		        
+        return Json.read(strDonor);              
 	}
 
 	

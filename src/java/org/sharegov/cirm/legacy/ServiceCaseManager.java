@@ -1212,7 +1212,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	}
 	
 	public Json addObjectOnto (String individualIRI, Json data, String userName, String comment){	
-		String individualID = MetaOntology.getIdFromIdentifier(individualIRI);
+		String individualID = MetaOntology.getIndividualIdentifier(individualIRI);
 		
 		List<String> evictionList = new ArrayList<String>();
 		evictionList.add(individualID);		
@@ -1225,13 +1225,13 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 						
-			ThreadLocalStopwatch.now("---- Start Creating New Objects for individual: ");
+			ThreadLocalStopwatch.now("---- Start Creating New Objects for individual: " + individualID);
 			
 			changes.addAll(MetaOntology.getCreateIndividualObjectFromJsonChanges(data));
 			
 			changes = MetaOntology.clearChanges(changes);
 			
-			ThreadLocalStopwatch.now("---- Ended Creating New Objects for individual: ");
+			ThreadLocalStopwatch.now("---- Ended Creating New Objects for individual: " + individualID);
 
 			
 			ThreadLocalStopwatch.now("---- Start Commiting Changes.");
@@ -1245,11 +1245,46 @@ public class ServiceCaseManager extends OntoAdmin {
 		if (r){
 			registerChange(individualID);
 			clearCache(evictionList);
-			return MetaOntology.resolveIRIs(MetaOntology.getSerializedOntologyObject(individualIRI));
+			return MetaOntology.getSerializedOntologyObject(individualIRI);
 		} throw new IllegalArgumentException("Cannot add new object: "+ PREFIX +  individualID + " to the ontology.");	
  	
 	}
 	
+	public Json cloneObjectOnto (String sourceID, String newID, String userName, String comment){	
+		Json data = MetaOntology.cloneSerializedIndividual(sourceID, newID);
+		
+		boolean r = false;
+		
+		OwlRepo repo = getRepo();
+		synchronized (repo) {
+			repo.ensurePeerStarted();		
+			
+			List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+						
+			ThreadLocalStopwatch.now("---- Start Creating New Objects for individual: " + newID);
+			
+			changes.addAll(MetaOntology.getCreateIndividualObjectFromJsonChanges(data));
+			
+			changes = MetaOntology.clearChanges(changes);
+			
+			ThreadLocalStopwatch.now("---- Ended Creating New Objects for individual: " + newID);
+
+			
+			ThreadLocalStopwatch.now("---- Start Commiting Changes.");
+			
+			r = commit(userName, comment, changes);
+			
+			ThreadLocalStopwatch.now("---- Ended Commiting Changes.");	
+							
+		}
+		
+		if (r){
+			registerChange(newID);
+			MetaOntology.clearCacheAndSynchronizeReasoner();
+			return MetaOntology.getSerializedOntologyObject(data.at("iri").asString());
+		} throw new IllegalArgumentException("Cannot add new object: "+ PREFIX +  newID + " to the ontology.");	
+ 	
+	}
 
 	public boolean addObjectsToIndividualProperty (String individualID, String propertyID, Json data, String userName, String comment, List<String> evictionList, Json toRemove){
 		individualID = MetaOntology.getIndividualIdentifier(individualID);						

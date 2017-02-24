@@ -731,7 +731,7 @@ public class ServiceCaseAdmin extends RestService {
 	
 	@POST
 	@Path("ontology/add")
-	public Response createActivity(String aJsonStr)
+	public Response createIndividual(String aJsonStr)
 	{		
 		synchronized (cache){
 			Json result = cache.get(aJsonStr);
@@ -756,6 +756,57 @@ public class ServiceCaseAdmin extends RestService {
 				if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
 				
 				result = ServiceCaseManager.getInstance().addObjectOnto(aData.at("payload").at("iri").asString(), aData.at("payload"), userName, comment);			
+				
+				cache.put(aJsonStr, result);
+				
+				ThreadLocalStopwatch.now("End Saving Objects to Ontology.");
+				
+				return Response.ok(result, MediaType.APPLICATION_JSON).build();
+			}
+			catch(Exception e){
+				ThreadLocalStopwatch.now("Error found Saving Activities.");
+				
+				e.printStackTrace();
+				return Response
+						.status(Status.INTERNAL_SERVER_ERROR)
+						.type(MediaType.APPLICATION_JSON)
+						.entity(Json.object().set("error", e.getClass().getName())
+								.set("message", e.getMessage())).build();
+			}
+		}
+		
+	}
+	
+	// create a copy of the individual {individualID} on the ontology identified under newID
+
+	
+	@POST
+	@Path("{individualID}/clone/{newID}")
+	public Response cloneIndividual(@PathParam("individualID") String individualID, @PathParam("newID") String newID, String aJsonStr)
+	{		
+		synchronized (cache){
+			Json result = cache.get(aJsonStr);
+			
+			if (result != null && !result.isNull()){
+				ThreadLocalStopwatch.now("Identical Request, cache results used as response. End Saving Activities.");
+				
+				return Response.ok(result, MediaType.APPLICATION_JSON).build();
+			}
+					
+			ThreadLocalStopwatch.startTop("Started Saving Objects to Ontology.");
+			
+			Json aData = Json.read(aJsonStr);
+			
+			try
+			{ 
+				if (!(aData.has("userName"))) throw new IllegalArgumentException("User Name or Object data null/empty/Incomplete"); 
+				
+				String userName = aData.at("userName").asString();			
+				String comment = aData.has("comment")?aData.at("comment").asString():null;
+				
+				if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
+				
+				result = ServiceCaseManager.getInstance().cloneObjectOnto(individualID, newID, userName, comment);			
 				
 				cache.put(aJsonStr, result);
 				
