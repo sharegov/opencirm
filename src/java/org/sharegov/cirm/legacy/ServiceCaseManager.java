@@ -1287,7 +1287,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	 * @param userName
 	 * @return
 	 */
-	public Json removeActivityFromServiceCase (String individualID, String activityID, String userName){	
+	public Json removeActivityFromServiceCase (String individualID, String activityID, String userName, String comment){	
 		
 			individualID = MetaOntology.getIndividualIdentifier(individualID);
 			activityID = MetaOntology.getIndividualIdentifier(activityID);
@@ -1295,7 +1295,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			List<String> evictionList = new ArrayList<String>();
 			evictionList.add(individualID);
 			String propertyID = "hasActivity";
-			String comment = "Remove Activity: " + activityID + " to SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID);	
+			comment = (comment==null)? "Remove Activity: " + activityID + " to SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID):comment;	
 			
 			if (commit(userName, comment, MetaOntology.getRemoveIndividualObjectProperty (individualID, propertyID, activityID))){
 				registerChange(individualID);

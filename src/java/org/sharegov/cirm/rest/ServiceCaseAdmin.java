@@ -653,7 +653,7 @@ public class ServiceCaseAdmin extends RestService {
 	 */
 	@DELETE
 	@Path("{srType}/activity/{activityFragment}")
-	public Response removeActivity(@PathParam("srType") String srType, @PathParam ("activityFragment") String activityFragment,  @QueryParam ("userName") String userName)
+	public Response removeActivity(@PathParam("srType") String srType, @PathParam ("activityFragment") String activityFragment,  @QueryParam ("userName") String userName, @QueryParam ("comment") String comment)
 	{			
 		try
 		{ 
@@ -661,7 +661,7 @@ public class ServiceCaseAdmin extends RestService {
 			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
 			if (activityFragment == null || activityFragment.isEmpty()) throw new IllegalArgumentException("Activity Fragment null or empty");		
 			
-			return Response.ok(ServiceCaseManager.getInstance().removeActivityFromServiceCase(srType, activityFragment, userName), MediaType.APPLICATION_JSON).build();
+			return Response.ok(ServiceCaseManager.getInstance().removeActivityFromServiceCase(srType, activityFragment, userName, comment), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
 			ThreadLocalStopwatch.now("Error found Removing Activity.");
