@@ -2,32 +2,26 @@ package org.sharegov.cirm.legacy;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.ConsoleHandler;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
-
-import mjson.Json;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
-import org.semanticweb.owlapi.model.OWLOntology;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.test.OpenCirmTestBase;
 import org.sharegov.cirmx.maintenance.ScriptAddClassificationToIndividual;
 
-/**
+import mjson.Json;
+
+/**	
  * Used to test Service Case Manager
  * @author dawong, Syed Abbas
  *
