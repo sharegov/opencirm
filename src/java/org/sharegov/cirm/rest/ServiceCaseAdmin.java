@@ -901,6 +901,56 @@ public class ServiceCaseAdmin extends RestService {
 		return Response.ok (Json.object().set("result", ServiceCaseManager.getInstance().getFullSchema("http://localhost:8182/javascript/schemas/service_field_compact.json")), MediaType.APPLICATION_JSON).build();
 	}
 	
+	@PUT
+	@Path("/activity/{activity}/disable")
+	public Response disableActivity(@PathParam("activity") String activity, Json aData)
+	{		
+		try
+		{ 
+			if (!(aData.has("userName"))) throw new IllegalArgumentException("User Name not found"); 
+			
+			String userName = aData.at("userName").asString();
+			String comment = aData.has("comment")?aData.at("comment").asString():null;
+			
+			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
+			if (activity == null || activity.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
+						
+			return Response.ok(ServiceCaseManager.getInstance().disableActivity(activity, userName, comment), MediaType.APPLICATION_JSON).build();
+		}
+		catch(Exception e){
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
+	@PUT
+	@Path("/activity/{activity}/enable")
+	public Response enableActivity(@PathParam("activity") String activity, Json aData)
+	{
+		try
+		{ 
+			if (!(aData.has("userName"))) throw new IllegalArgumentException("User Name not found"); 
+			
+			String userName = aData.at("userName").asString();
+			String comment = aData.has("comment")?aData.at("comment").asString():null;
+			
+			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
+			if (activity == null || activity.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
+						
+			return Response.ok(ServiceCaseManager.getInstance().enableActivity(activity, userName, comment), MediaType.APPLICATION_JSON).build();
+		}
+		catch(Exception e){
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
 }
 
 
