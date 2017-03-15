@@ -82,9 +82,9 @@ public class RestServiceAdmin extends RestService
 	{
 		try
 		{
-			JaxRsApplication app = (JaxRsApplication)StartUp.server.getDefaultHost().getApplication(); 
-			StartUp.server.getDefaultHost().detach(StartUp.jsonpFilter);
-			StartUp.server.getDefaultHost().detach(app);
+			JaxRsApplication app = (JaxRsApplication)StartUp.getServer().getDefaultHost().getApplication(); 
+			StartUp.getServer().getDefaultHost().detach(StartUp.getJsonpFilter());
+			StartUp.getServer().getDefaultHost().detach(app);
 			return ok();
 		}
 		catch (Throwable t)

@@ -852,4 +852,24 @@ td:hover {
 	z-index: 99;
 }
 
+/* 
+	CSS FOR DIFFERENTIATION OF TEST systems from PRODUCTION 
+	see 3025 provided by Jose Otero
+*/
+.in-test-mode > .container_12 > .grid_12 {	padding-top: 30px; }
+.in-test-mode .app_title, .in-test-mode .login_title { color: #c6cd0a; }
+.in-test-mode .banner { background-color: #c6cd0a; }
+.in-test-mode .warning-bar {
+    background:#c6cd0a;
+    color: #333;
+    padding:8px;
+    text-transform:uppercase;
+    text-align:center;
+    font-weight:bold;
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    z-index:3001;
+    border-bottom:2px solid #fff;
 }

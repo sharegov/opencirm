@@ -1239,6 +1239,9 @@ public class LegacyEmulator extends RestService
 				throw new ConcurrentLockedToOpenException();
 			} else {
 				mngr.changeStatus(currentStatus, newStatus, updatedDate, (srModifiedBy != null)?srModifiedBy.getLiteral():null, bontology, emailsToSend);
+				if (individual("legacy:O-LOCKED").equals(newStatus)) {
+					mngr.createAutoOnLockedActivities(bontology, new Date(), emailsToSend);
+				}
 			}
 		}
 
@@ -1378,8 +1381,7 @@ public class LegacyEmulator extends RestService
 				Response current = Response.getCurrent();
 				Long boid = serviceCaseParam.at("boid").asLong();
 				Json bo = findServiceCaseOntology(boid).toJSON();
-				//TODO hilpold not always cirmuser, could be CityOfMIamiClient or DepartmentIntegration also!
-				Json result = updateServiceCaseTransaction(serviceCaseParam, bo, updateDate, emailsToSend, originator); //"cirmuser"
+				Json result = updateServiceCaseTransaction(serviceCaseParam, bo, updateDate, emailsToSend, originator);
 				Response.setCurrent(current);
 				return result;
 			}});			
@@ -1388,11 +1390,16 @@ public class LegacyEmulator extends RestService
 		}
 		catch (Throwable e)
 		{
-			//Do not catch error here.
-			ThreadLocalStopwatch.fail("FAIL updateServiceCase (str)");
-			System.out.println("formData passed into updateServiceCase: "+ serviceCaseParam.toString());
-			e.printStackTrace();
-			return ko(e);
+			if (CirmTransaction.isExecutingOnThisThread()) {
+				//We're still inside a higher level transaction and must not hide/catch a potentially retriable exception.
+				throw e;
+			} else {
+				//Top level transaction completed, all possible retries completed, return error json. 
+    			ThreadLocalStopwatch.fail("FAIL updateServiceCase (str)");
+    			System.out.println("formData passed into updateServiceCase: "+ serviceCaseParam.toString());
+    			e.printStackTrace();
+    			return ko(e);
+			}
 		}
 	}
 	
@@ -1619,14 +1626,36 @@ public class LegacyEmulator extends RestService
 	}
 
 	/**
+	 * Endpoint that creates a case number (Exempt client only)
+	 * @return json object with property hasCaseNumber : String
+	 */
+	@POST
+	@Path("createNewCaseNumber")
+	@Produces("application/json")
+	public synchronized Json createNewCaseNumber() {
+		if (!isClientExempt()) {
+			return GenUtils.ko("Not authorized.");
+		}
+		String newCaseNumber = getPersister().getStore().txn(new CirmTransaction<String> () {
+			@Override
+			public String call() throws Exception
+			{
+				DBIDFactory idFactory = (DBIDFactory) Refs.idFactory.resolve(); 
+				long seq = idFactory.generateUserFriendlySequence();
+				return GenUtils.makeCaseNumber(seq);
+			}
+		});
+		return GenUtils.ok().set("newCaseNumber", newCaseNumber);
+	}
+	
+	/**
 	 * Adds the Case Number as a dataProperty in the bo
 	 * @param legacyForm : bo in Json format
 	 */
 	private void createCaseNumber(Json legacyForm) {
 		long seq = ((DBIDFactory) Refs.idFactory.resolve())
 						.generateUserFriendlySequence();
-		legacyForm.at("properties")
-			.set("legacy:hasCaseNumber", GenUtils.makeCaseNumber(seq));
+		legacyForm.at("properties").set("legacy:hasCaseNumber", GenUtils.makeCaseNumber(seq));
 	}
 	
 	/**
@@ -1643,6 +1672,9 @@ public class LegacyEmulator extends RestService
 	{
 		ThreadLocalStopwatch.startTop("START createNewKOSR");
 		final Json legacyForm = read(formData);		
+		final boolean hasCaseNumber = legacyForm.has("properties")
+				&& legacyForm.at("properties").has("legacy:hasCaseNumber") 
+				&& legacyForm.at("properties").at("legacy:hasCaseNumber").isString();
 		try
 		{
 			// System.out.println("new SR to save: " + legacyForm);
@@ -1662,7 +1694,9 @@ public class LegacyEmulator extends RestService
 				public Object call() throws Exception
 				{
 					legacyForm.set("boid", Refs.idFactory.resolve().newId(null));
-					createCaseNumber(legacyForm);
+					if (!hasCaseNumber) {
+						createCaseNumber(legacyForm);
+					}
 					return null;
 				}
 			}
@@ -1798,6 +1832,7 @@ public class LegacyEmulator extends RestService
 
 	/**
 	 * Saves a new non Cirm originated (e.g. PW, CMS Interfaces, Open311) or referral service case into the cirm database.
+	 * If the SR is saved in pending state autoOnPending activities may be created and emails be sent.
 	 * 
 	 * Must be called from within a CirmTransaction.
 	 * @param legacyform
@@ -1805,6 +1840,9 @@ public class LegacyEmulator extends RestService
 	 */
 	public Json saveNewCaseTransaction(Json legacyForm)
 	{
+		boolean hasCaseNumber = legacyForm.has("properties")
+				&& legacyForm.at("properties").has("legacy:hasCaseNumber") 
+				&& legacyForm.at("properties").at("legacy:hasCaseNumber").isString();
 		OperationService op = new OperationService();
 		// 1 Determine SR type and create a new case number
 		String type = legacyForm.at("type").asString();
@@ -1813,13 +1851,22 @@ public class LegacyEmulator extends RestService
 			type = "legacy:" + type;
 		BOntology bontology = op.createBusinessObject(owlClass(type));
 		legacyForm.set("boid", bontology.getObjectId());
-		createCaseNumber(legacyForm);
+		if (!hasCaseNumber) {
+			createCaseNumber(legacyForm);
+		}
 		// 2 Parse all legacyForm data into a business ontology
 		bontology = BOntology.makeRuntimeBOntology(legacyForm);
-		populateGisData(legacyForm, bontology);		
-		// 3 Save BO		
+		populateGisData(legacyForm, bontology);	
+		//3 Check pending and create autoOnPending activities
+		if (OWL.individual("legacy:O-PENDNG").equals(bontology.getObjectProperty("legacy:hasStatus"))) {
+			List<CirmMessage> messages = new ArrayList<>();
+			ActivityManager amgr = new ActivityManager();
+			amgr.createAutoOnPendingActivities(bontology, new Date(), messages);
+			CirmTransaction.get().addTopLevelEventListener(new SendEmailOnTxSuccessListener(messages));
+		}
+		//4 Save BO		
 		getPersister().saveBusinessObjectOntology(bontology.getOntology());
-		// 4 Extend BO by adding meta data axioms		
+		// 5 Extend BO by adding meta data axioms		
 		final BOntology bontologyVerbose;
 		try
 		{
@@ -1831,7 +1878,7 @@ public class LegacyEmulator extends RestService
 		}
 		final Json bontologyVerboseJson = OWL.toJSON(bontologyVerbose.getOntology(), bontology.getBusinessObject()); 
 		bontologyVerboseJson.set("boid", bontology.getObjectId());
-		// 5 Fire a legacy:NewServiceCaseExternalEvent only if the overall transaction finishes successfully.
+		// 6 Fire a legacy:NewServiceCaseExternalEvent only if the overall transaction finishes successfully.
 		// This ignores retries (we're inside a repeatable transaction!), so the event is guaranteed to fire only once.
 		// Assumes access to final variables bontologyVerboseJson, bontologyVerbose during event processing,
 		// so we must not change the json bontologyVerboseJson points to after returning it.
@@ -2930,23 +2977,49 @@ public class LegacyEmulator extends RestService
 	@Path("sr/approve")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Json approveCase(Json legacyform)
+	public Json approveCase(final Json legacyform)
 	{
 		ThreadLocalStopwatch.startTop("START approveCase");
-		try{
-			//We could optionally choose to lookup the current SR in the DB to ensure approval state
-			//is still APPROVAL_PENDING
-			ApprovalProcess approvalProcess = new ApprovalProcess();
-			approvalProcess.setSr(legacyform);
-			approvalProcess.getSideEffects().add(new AttachSendEmailListener());
-			approvalProcess.getSideEffects().add(new CreateDefaultActivities());
-			approvalProcess.getSideEffects().add(new PopulateGisData());
-			approvalProcess.getSideEffects().add(new SaveOntology());
-			approvalProcess.getSideEffects().add(new CreateNewSREmail());
-			approvalProcess.getSideEffects().add(new AddTxnListenerForNewSR());
-			approvalProcess.approve();
-			ThreadLocalStopwatch.stop("END approveCase");
-			return ok().set("bo", approvalProcess.getBOntology().toJSON());
+		//We check if another user approved the case already after this user loaded the case to ensure
+		//the case is only approved once. This must be done in the same transaction as the approval.
+		//Status history of the case would need to be checked, because certain users can set a case from Locked to pending,
+		//but we allow this for now until we are certain that this would never be needed.
+		//For non-interface cases it may not be a problem and certain interface situations are thinkable,
+		//where a repeated approval would make sense.
+		try
+		{
+			return Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
+			public Json call()
+			{				
+				Json result = null; 
+				Json bo = legacyform.has("bo")? legacyform.at("bo") : legacyform;
+				long boid = bo.at("boid").asLong();
+				//Check if another user has approved case in the meantime.
+				Json currentSR = lookupServiceCase(boid);
+				String currentStatus = currentSR.at("bo").at("properties").at("hasStatus").at("iri").asString();
+				if (!currentStatus.contains("O-PENDNG")) {
+					return ko("The status of the SR you tried to approve was modified by another user and is not Pending anymore.\n Please reload SR.");
+				} else {
+					//Still pending, approve case
+					ThreadLocalStopwatch.stop("NOW SR is still in pending, approving with side effects");
+    				ApprovalProcess approvalProcess = new ApprovalProcess();
+    				approvalProcess.setSr(legacyform);
+    				approvalProcess.getSideEffects().add(new AttachSendEmailListener());
+    				approvalProcess.getSideEffects().add(new CreateDefaultActivities());
+    				approvalProcess.getSideEffects().add(new PopulateGisData());
+    				approvalProcess.getSideEffects().add(new SaveOntology());
+    				approvalProcess.getSideEffects().add(new CreateNewSREmail());
+    				approvalProcess.getSideEffects().add(new AddTxnListenerForNewSR());
+    				try {
+    					approvalProcess.approve();
+    				} catch (Exception e) {
+    					throw new RuntimeException("Exception during approve SR", e);
+    				}
+    				ThreadLocalStopwatch.stop("END approveCase");
+    				result = ok().set("bo", approvalProcess.getBOntology().toJSON());
+    				return result;
+				}
+			}});			
 		}catch(Exception e)
 		{
 			ThreadLocalStopwatch.fail("FAIL approveCase");

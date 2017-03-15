@@ -16,7 +16,6 @@
 package org.sharegov.cirm.rest;
 
 import static org.sharegov.cirm.OWL.businessObjectId;
-
 import static org.sharegov.cirm.OWL.dataProperty;
 import static org.sharegov.cirm.OWL.fullIri;
 import static org.sharegov.cirm.OWL.individual;
@@ -55,12 +54,15 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.sharegov.cirm.BOntology;
+import org.sharegov.cirm.CirmTransaction;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.OWLObjectToJson;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.StartUp;
 import org.sharegov.cirm.event.EventDispatcher;
+import org.sharegov.cirm.legacy.Permissions;
 import org.sharegov.cirm.rdb.RelationalOWLPersister;
+import org.sharegov.cirm.rdb.RelationalStoreExt;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 import org.sharegov.cirm.workflows.UserInputRequest;
 import org.sharegov.cirm.workflows.Workflow;
@@ -72,7 +74,7 @@ import org.sharegov.cirm.workflows.WorkflowStep;
 
 @Path("op")
 @Produces("application/json")
-public class OperationService
+public class OperationService extends RestService
 {		
 	public static boolean DBG = true;
 	
@@ -753,6 +755,28 @@ public class OperationService
 		}
 	}
 
+	@POST
+	@Path("/db/sequence/reset")
+	public Json resetUserFriendlySequence()
+	{
+		try {
+			if (!isClientExempt()) {
+				return ko("Permission denied.");
+			}
+			RelationalStoreExt store = getPersister().getStoreExt();
+			store.txn(new CirmTransaction<Object>() {
+				@Override
+				public Object call() throws Exception {
+					store.resetUserFriendlySequenceNumber();
+					return null;
+				}
+			});
+			return ok().set("message", "Sequence was reset");
+		} catch (Throwable t) {
+			return ko(t);
+		}
+	}
+	
 	// This is not a main program, just used for quick&dirty tests
 	public static void main(String [] argv)
 	{

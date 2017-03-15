@@ -516,7 +516,14 @@ public class GenUtils
 		}
 	}
 	
-	public static java.util.Date parseDate(String s)
+	/**
+	 * Parses a date string in iso format. 
+	 * Fully thread safe and non blocking, by keeping one date format per thread.
+	 * 
+	 * @param s
+	 * @return
+	 */
+	public static java.util.Date parseDate(String isoDateString)
 	{
 		try
 		{
@@ -526,7 +533,7 @@ public class GenUtils
 				myDateFormat = new SimpleDateFormat(isoDatePattern); 
 				ISO_DATE_FORMATS.set(myDateFormat);
 			}
-			return myDateFormat.parse(s);
+			return myDateFormat.parse(isoDateString);
 		}
 		catch (ParseException ex)
 		{
@@ -534,6 +541,13 @@ public class GenUtils
 		}
 	}
 	
+	/**
+	 * Formats a date in iso format.
+	 * Fully thread safe and non blocking, by keeping one date format per thread.
+	 * 
+	 * @param d
+	 * @return a date as iso formatted string.
+	 */
 	public static String formatDate(java.util.Date d)
 	{
 		SimpleDateFormat myDateFormat = ISO_DATE_FORMATS.get();

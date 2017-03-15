@@ -140,7 +140,7 @@ public class MessageManager
 	/**
 	 * Used when to-field has no addresses to avoid exception.
 	 */
-	public static final String DEFAULT_TO_ADDRESS = "hilpold@miamidade.gov;sanchoo@miamidade.gov";
+	public static final String DEFAULT_TO_ADDRESS = "hilpold@miamidade.gov;sanchoo@miamidade.gov;chirino@miamidade.gov";
 	public static final String SR_DOM_ROOT_NODE = "sr";
 	public static final Pattern VAR_NAME_PATTERN = Pattern.compile("\\$\\$(.*?)\\$\\$");
 	public static Logger logger = Refs.logger.resolve();
@@ -324,7 +324,6 @@ public class MessageManager
 				//
 				if (isTestMode())
 				{
-					//String temporaryToList = "assiasabbas@miamidade.gov;hilpold@miamidade.gov;SARASTI@miamidade.gov";
 					//testmode do not send to real recipients, but bcc as to only
 					body = getTestModeHeader(to, cc, messageTemplate) + body;
 					if (TEST_MODE_USE_DEFAULT_TO)

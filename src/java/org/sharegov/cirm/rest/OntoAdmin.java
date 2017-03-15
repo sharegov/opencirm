@@ -65,6 +65,7 @@ import org.sharegov.cirm.owl.SynchronizedOWLOntologyManager;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.OntoChangesReference;
 import org.sharegov.cirm.utils.OntologyCommit;
+import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
 import mjson.Json;
 import uk.ac.manchester.cs.owl.owlapi.OWLOntologyManagerImpl;
@@ -81,6 +82,18 @@ public class OntoAdmin extends RestService
 	public final String CACHED_REASONER_POPULATE_GET_INSTANCES_CACHE_FILE = CACHED_REASONER_RESDIR + "populateGetInstancesCache.json";
 	public static int ACTIVITY_TIMEOUT_SECS = 180;
 	
+	public final String[] SERIAL_PRECACHE_IND_QUERIES = new String[] {
+			"legacy:Status",
+			"legacy:Priority",
+			"legacy:IntakeMethod",
+			"legacy:IntakeMethodList",
+			"State__U.S._",
+			"Miami_Dade_City or County",
+			"Direction",
+			"Street_Type",
+			"GeoLayerAttribute",
+			"legacy:ServiceCase"
+	};
 	
 	protected VDHGDBOntologyRepository repo()
 	{
@@ -147,7 +160,7 @@ public class OntoAdmin extends RestService
 			OWLOntology O = OWL.manager().getOntology(IRI.create(iri)); 
 			if (O == null)
 				return ko("Ontology not found: " + iri);
-			repo.printAllOntologies();
+			//repo.printAllOntologies();
 			VersionedOntology vo = repo.getVersionControlledOntology(O);
 			return ok().set("version", vo.getHeadRevision().getRevision())
 					   .set("comment", vo.getHeadRevision().getRevisionComment())
@@ -709,7 +722,6 @@ public class OntoAdmin extends RestService
 		else
 			return Json.make("Reasoner is not a CachedReasoner instance.");
 	}
-
 	
 	public synchronized Json compare(String ontologyName){
 		Refs.owlRepo.resolve().ensurePeerStarted();
@@ -790,6 +802,26 @@ public class OntoAdmin extends RestService
 		return json;
 	}
 	
+	
+	/**
+	 * Higher level cache population of the serial entity cache by running common login queries and
+	 * caching fully resolved Json objects. e.g. for each SR.
+	 * This leads to ~7x faster login performance after a server restart.
+	 * 
+	 */
+	public void populateIndividualSerialEntityCache() 
+	{
+		RestService.forceClientExempt.set(true);
+		ThreadLocalStopwatch.start("START populateIndividualSerialEntityCache");
+		OWLIndividuals oind = new OWLIndividuals();
+		for (int i = 0; i < SERIAL_PRECACHE_IND_QUERIES.length; i++) {
+			ThreadLocalStopwatch.start("START query " + i + " of " + SERIAL_PRECACHE_IND_QUERIES.length 
+					+ " q=" + SERIAL_PRECACHE_IND_QUERIES[i]);
+			oind.doQuery(SERIAL_PRECACHE_IND_QUERIES[i]);
+			ThreadLocalStopwatch.start("DONE query");
+		}
+		ThreadLocalStopwatch.start("END populateIndividualSerialEntityCache");		
+	}
 	
 	public static void main(String[]args)
 	{

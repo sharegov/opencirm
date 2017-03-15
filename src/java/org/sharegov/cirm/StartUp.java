@@ -88,6 +88,7 @@ public class StartUp extends ServerResource
 			.set("defaultOntologyIRI", "http://www.miamidade.gov/cirm/legacy")
 			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#ProdConfigSet")
 			.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#TestConfigSet")
+			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#DevConfigSet")
 			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#LocalConfigSetXE")
 			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#LocalConfigSet")
 			.set("nameBase", "http://www.miamidade.gov/ontology" )
@@ -107,8 +108,11 @@ public class StartUp extends ServerResource
 					"mdc:", "http://www.miamidade.gov/ontology#",
 					":", "http://www.miamidade.gov/ontology#"
 					))
-			.set("cachedReasonerPopulate", false);
+			.set("cachedReasonerPopulate", false)
+			.set("startDepartmentIntegration", "x.x.xxx");
 
+	private final static StartupHttpInitializer HTTP_INIT = new StartupHttpInitializer();
+	
 	/**
 	 * Switch for stress testing. If true, disables most external calls and dbg output.
 	 */
@@ -117,11 +121,11 @@ public class StartUp extends ServerResource
 	public static Level LOGGING_LEVEL = Level.INFO;
 
 	private volatile static Json config = DEFAULT_CONFIG;		
-	
-	public static Component server = null; 
-	public static Component redirectServer = null;
-	public static PaddedJSONFilter jsonpFilter = null;
-	public static Encoder encoder = null;
+		
+	private static Component server = null; 
+	private static Component redirectServer = null;
+	private static PaddedJSONFilter jsonpFilter = null;
+	private static Encoder encoder = null;
 	private static boolean productionMode = false;
 	
 	/**
@@ -129,6 +133,15 @@ public class StartUp extends ServerResource
 	 */
 	private static volatile RequestScopeFilter requestScopeFilter = null;
 	
+
+	public static Component getServer() {
+		return server;
+	}
+
+	public static PaddedJSONFilter getJsonpFilter() {
+		return jsonpFilter;
+	}
+
 	/**
 	 * Gets the global json configuration.
 	 * @return
@@ -241,7 +254,7 @@ public class StartUp extends ServerResource
 //	    TrafficMonitor trafficMonitor = new TrafficMonitor(app.getContext());
 //	    trafficMonitor.setNext(jsonpFilter);
 	    requestScopeFilter = new RequestScopeFilter(); 
-	    requestScopeFilter.setNext(jsonpFilter);
+	    requestScopeFilter.setNext(getJsonpFilter());
 	    
 	    encoder = new Encoder(app.getContext(), 
 	    		true,
@@ -433,12 +446,16 @@ public class StartUp extends ServerResource
    		if (config.has("cachedReasonerPopulate") && config.is("cachedReasonerPopulate", true))
    		{
    			OntoAdmin oa = new OntoAdmin();
+   			oa.populateIndividualSerialEntityCache();
    			oa.cachedReasonerQ1Populate();
    		}
 	    try {
 	    	ServiceCaseManager.getInstance();
 	    	server.start();
-	    	if (redirectServer != null) redirectServer.start();
+	    	if (redirectServer != null) {
+	    		redirectServer.start();
+	    	}
+	    	HTTP_INIT.initialize();
 	    } catch (Exception e) {
 	    	System.err.println("ERROR ON STARTUP - EXITING");
 	    	throw new RuntimeException(e);

@@ -39,7 +39,7 @@ import mjson.Json;
  * Else if hasLegacyCode starts with REGEX_DETECT_STR "(", the result will contain answers to all questions matching the regex pattern by iri fragment in the given sr.
  * (Separarted by ";", no ")
  * 
- * Date answer literals will be formatted.
+ * Date answer literals will be formatted. Optionally a DateModifier can be passed to the constructor for date manipulation, if dates are detected.
  *  
  * @author Thomas Hilpold
  */
@@ -55,6 +55,29 @@ public class AnswerResolver implements VariableResolver
 	public static final char ANSWER_SEPARATOR_CHAR = ';';
 	public static final String REGEX_DETECT_STR = "(";
 	
+	private DateModifier dateModifier = null;
+	
+	/**
+	 * Creates an AnswerResolver. Detected dates will be formatted, but not modified.
+	 */
+	public AnswerResolver() {
+		//Date modification disabled
+	}
+
+	/**
+	 * Creates an AnswerResolver with date modification enabled.
+	 * If an answer can be parsed as date, the dateModifier will be called 
+	 * to modify the date.
+	 * 
+	 * @param dateModifier a date modifier
+	 * @throws IllegalArgumentException if dateModifier is null
+	 */
+	public AnswerResolver(DateModifier dateModifier) {
+		if (dateModifier == null) throw new IllegalArgumentException("DateModifier must not be null for this contructor.");
+		//Date modification enabled
+		this.dateModifier = dateModifier;
+	}
+
 	@Override
 	public String resolve(String variableName, Json sr, Properties properties)
 	{
@@ -97,7 +120,7 @@ public class AnswerResolver implements VariableResolver
 	 * @param serviceQuestionSuffix
 	 * @return
 	 */
-	private String resolveQuestionAnswer(Json sr, String serviceQuestionSuffixOrRegex)
+	String resolveQuestionAnswer(Json sr, String serviceQuestionSuffixOrRegex)
 	{
 		//TODO: use a cache for allAnswers by key (BOID  UPDATEDTIME) 
 		List<Json> allAnswers = sr.at("hasServiceAnswer").isArray()? sr.at("hasServiceAnswer").asJsonList() : Collections.singletonList(sr.at("hasServiceAnswer"));
@@ -120,7 +143,7 @@ public class AnswerResolver implements VariableResolver
 		}
 	}
 	
-	protected String getServiceAnswer(String serviceFieldFragmentSuffix, List<Json> allAnswers)
+	String getServiceAnswer(String serviceFieldFragmentSuffix, List<Json> allAnswers)
 	{
 		String result = "";
 		for (Json tempObj : allAnswers)
@@ -162,7 +185,7 @@ public class AnswerResolver implements VariableResolver
 	 * @param allAnswers
 	 * @return
 	 */
-	protected String getAllServiceAnswers(Pattern serviceFieldFragmentRegex, List<Json> allAnswers)
+	String getAllServiceAnswers(Pattern serviceFieldFragmentRegex, List<Json> allAnswers)
 	{
 		String result = "";
 		for (Json tempObj : allAnswers)
@@ -207,29 +230,67 @@ public class AnswerResolver implements VariableResolver
 	/**
 	 * Attempt to detect if a string is a date and formats it accordingly.
 	 * Day only format is used if hours and minutes are zero.
+	 * Optionally a dateModifier will be called to manipulate the date.
 	 * 
 	 * @param dateLiteralCandidate
 	 * @return
 	 */
 	String tryDateFormat(String dateLiteralCandidate) {
-		if (dateLiteralCandidate == null) return dateLiteralCandidate;
-		String result = dateLiteralCandidate;
-		if (dateLiteralCandidate.contains("T") && dateLiteralCandidate.contains("0:00")) {
+		String result;
+		Date date = tryParseDate(dateLiteralCandidate);
+		if (date != null) {
+    		if (isDateModificationEnabled()) {
+    			date = dateModifier.modifyDate(date);
+    		}
+			result = formatDateOrDateTime(date);
+		} else {
+			result = dateLiteralCandidate;
+		}
+		return result;
+	}
+	
+	/**
+	 * Tries to parse a date if the parameter contains T and 00.
+	 * e.g.: 2016-11-04T20:09:28.916-0400
+	 * @param dateLiteralCandidate
+	 * @return null or a valid date
+	 */
+	Date tryParseDate(String dateLiteralCandidate) {
+		if (dateLiteralCandidate == null) return null;
+		Date result = null;
+		if (dateLiteralCandidate != null && dateLiteralCandidate.contains("T") && dateLiteralCandidate.contains("00")) {
 			try {
 				Date date = GenUtils.parseDate(dateLiteralCandidate.trim());
-				Calendar cal = Calendar.getInstance();
-				cal.setTime(date);
-				SimpleDateFormat dFormat;
-				if (cal.get(Calendar.HOUR_OF_DAY) == 0 && cal.get(Calendar.MINUTE) == 0) {
-					dFormat = new SimpleDateFormat(DATE_FORMAT_PATTERNS[0]);
-				} else {
-					dFormat = new SimpleDateFormat(DATE_FORMAT_PATTERNS[1]);
-				}
-				result = dFormat.format(date);
+				result = date;				
 			} catch (Exception  e) {
 				System.err.println("Ignored that date parsing failed for " + dateLiteralCandidate);
 			}
 		}
-		return result;
+		return result;		
+	}
+	
+	/**
+	 * Never true, intended to be overwritten by subclass.
+	 * @return
+	 */
+	boolean isDateModificationEnabled() {
+		return dateModifier != null;
+	}
+	
+	/**
+	 * Formats date as date, if hour and minute are zero, dateTime otherwise.
+	 * @param date
+	 * @return
+	 */
+	String formatDateOrDateTime(Date date) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		SimpleDateFormat dFormat;
+		if (cal.get(Calendar.HOUR_OF_DAY) == 0 && cal.get(Calendar.MINUTE) == 0) {
+			dFormat = new SimpleDateFormat(DATE_FORMAT_PATTERNS[0]);
+		} else {
+			dFormat = new SimpleDateFormat(DATE_FORMAT_PATTERNS[1]);
+		}
+		return dFormat.format(date);
 	}
 }

@@ -15,4 +15,5 @@ public interface DatabaseHook
 	String nextSequenceClause(String sequenceName);
 	Date timeStamp(Connection conn)  throws SQLException;
 	String paginate(String sql, long minValue, long maxValue);
+	void resetSequence(Connection conn, String sequenceName) throws SQLException;
 }
