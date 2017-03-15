@@ -166,6 +166,69 @@ public class GisClient implements GisInterface
         }			
 	}
 	
+	/**
+	 * Gets an address to a folio number (with parsedAddress, municipality, propertyInfo, x,y, and various other information).
+	 * 
+	 * @param folio
+	 * @param maxRetries
+	 * @param sleepTimeMs
+	 * @return
+	 */
+	public static Json getAddressFromFolio(long folio, int maxRetries, long sleepTimeMs) {
+		if (maxRetries < 0) throw new IllegalArgumentException("maxRetries < 0");
+		Json result;
+		int attempts = 0;
+		do {
+			attempts ++;
+			try {				
+				result = getAddressFromFolio(folio);
+			} catch (Exception e) {
+				result = null;
+				try {
+					Thread.sleep(sleepTimeMs);
+				} catch(InterruptedException ie) {};
+			}
+		} while (result == null && attempts <= maxRetries);
+		return result;
+	}
+
+	/**
+	 * Gets an address to a folio number (with parsedAddress, municipality, propertyInfo, x,y, and various other information).
+	 * @param folio
+	 * @return
+	 */
+	public static Json getAddressFromFolio(long folio)
+	{
+		if (!USE_GIS_SERVICE) return GenUtils.ok().set("USE_GIS_SERVICE", "DISABLED");
+		// /address/?folio=3050070430001
+        HttpClient client = new HttpClient();
+        StringBuffer url = new StringBuffer(getGisServerUrl() + "/address/?folio=" + folio);
+        GetMethod method = new GetMethod(url.toString());
+        try
+        {
+            int statusCode = client.executeMethod(method);
+            if (statusCode != HttpStatus.SC_OK)
+                throw new GisException("HTTP Error " + statusCode + " while calling " + url.toString());
+            Json result = Json.read(method.getResponseBodyAsString());
+            if (result.is("ok", true))
+            	return result.at("address");
+            else 
+            	throw new GisException("Can't fetch address to folio " + folio + " error : " + result.at("message"));
+        }
+        catch (GisException ex)
+        {
+        	throw ex;
+        }
+        catch (Exception ex)
+        {
+        	throw new GisException(ex);
+        }
+        finally
+        {
+            method.releaseConnection();
+        }			
+	}
+	
 	public Json getLocationInfo(double x, double y, String [] layers)
 	{
 		if (!USE_GIS_SERVICE) 

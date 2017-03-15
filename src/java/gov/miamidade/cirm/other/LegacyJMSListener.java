@@ -51,12 +51,12 @@ import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.RequestScopeFilter;
 import org.sharegov.cirm.legacy.CirmMessage;
-import org.sharegov.cirm.legacy.MessageManager;
 import org.sharegov.cirm.rest.LegacyEmulator;
 import org.sharegov.cirm.rest.RestService;
 import org.sharegov.cirm.stats.CirmStatisticsFactory;
 import org.sharegov.cirm.stats.SRCirmStatsDataReporter;
 import org.sharegov.cirm.utils.GenUtils;
+import org.sharegov.cirm.utils.SendEmailOnTxSuccessListener;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
 import gov.miamidade.cirm.other.JMSClient;
@@ -254,27 +254,33 @@ public class LegacyJMSListener extends Thread
     	
 	private void gisToAtAddress(Json gis, Json addr)
 	{
-		if (!gis.has("parsedAddress"))
+		Json newAddr = ServiceCaseJsonHelper.makeCirmAddress(gis, false);
+		if (newAddr == null || newAddr.isNull()) {
 			return;
-		Json parsed = gis.at("parsedAddress");		
-		Set<OWLNamedIndividual> S = OWL.queryIndividuals("Place and (Name value \"" + 
-				gis.at("municipality").asString() +
-				"\" or Alias value \"" + gis.at("municipality").asString() + "\")");
-		if (S.isEmpty())
-			throw new IllegalArgumentException("Cannot find municipality in ontology " + gis.at("municipality"));
+		}
+		addr.with(newAddr);
 		
-		String streetAddress = gis.at("address").asString().split(",")[0];
-		addr.set("Street_Number", parsed.at("House"))
-			.set("Zip_Code", parsed.at("zip"))
-			.set("Street_Address_State", 
-				  Json.object("iri", "http://www.miamidade.gov/ontology#Florida"))
-			.set("Street_Address_City", Json.object("iri", S.iterator().next().getIRI().toString()))
-			.set("Street_Name", parsed.at("StreetName"))
-			.set("fullAddress", streetAddress);
-		if (parsed.has("PreDir") && !parsed.is("PreDir", ""))
-			addr.set("Street_Direction", Json.object("USPS_Abbreviation", parsed.at("PreDir").asString()));
-		if (parsed.has("SufType") && !parsed.is("SufType", ""))
-			addr.set("hasStreetType", Json.object("USPS_Suffix", parsed.at("SufType").asString()));		
+//		if (!gis.has("parsedAddress"))
+//			return;
+//		Json parsed = gis.at("parsedAddress");		
+//		Set<OWLNamedIndividual> S = OWL.queryIndividuals("Place and (Name value \"" + 
+//				gis.at("municipality").asString() +
+//				"\" or Alias value \"" + gis.at("municipality").asString() + "\")");
+//		if (S.isEmpty())
+//			throw new IllegalArgumentException("Cannot find municipality in ontology " + gis.at("municipality"));
+//		
+//		String streetAddress = gis.at("address").asString().split(",")[0];
+//		addr.set("Street_Number", parsed.at("House"))
+//			.set("Zip_Code", parsed.at("zip"))
+//			.set("Street_Address_State", 
+//				  Json.object("iri", "http://www.miamidade.gov/ontology#Florida"))
+//			.set("Street_Address_City", Json.object("iri", S.iterator().next().getIRI().toString()))
+//			.set("Street_Name", parsed.at("StreetName"))
+//			.set("fullAddress", streetAddress);
+//		if (parsed.has("PreDir") && !parsed.is("PreDir", ""))
+//			addr.set("Street_Direction", Json.object("USPS_Abbreviation", parsed.at("PreDir").asString()));
+//		if (parsed.has("SufType") && !parsed.is("SufType", ""))
+//			addr.set("hasStreetType", Json.object("USPS_Suffix", parsed.at("SufType").asString()));		
 	}
 	
 	/**
@@ -859,11 +865,12 @@ public class LegacyJMSListener extends Thread
 			{
 				//Issue #705 : X-Error Email Notification. Emails were not getting triggered while response was received from the interface.
 				ThreadLocalStopwatch.now("LegacyJMSListener.process responseTxn & sending emails if any");					
-				final ArrayList<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();				
 				Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
 				public Json call() throws JMSException
 				{												
-					Json R = responseTxn(emulator, jmsg, emailsToSend);
+					ArrayList<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();
+					CirmTransaction.get().addTopLevelEventListener(new SendEmailOnTxSuccessListener(emailsToSend));					
+					Json R = responseTxn(emulator, jmsg, emailsToSend);				
 					if (R.is("ok", false))
 					{
 						ThreadLocalStopwatch.error("LegacyJMSListener.process responseTxn failed with ");					
@@ -871,7 +878,6 @@ public class LegacyJMSListener extends Thread
 					}
 					return R;
 				}});
-				MessageManager.get().sendEmails(emailsToSend);								
 				break;
 			}
 			default:

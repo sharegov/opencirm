@@ -119,10 +119,10 @@ public class ReportEmergencyHourlyXls
 	public static final boolean EMAIL_TEST_MODE = false; //true overrides a MessageManager.isTestMode()==false, false respects MM setting.
 	
 	public static final String EMAIL_TO = "ajabss@miamidade.gov";
-	public static final String EMAIL_CC = "hilpold@miamidade.gov";
-	public static final String EMAIL_BCC = "cirmtest@miamidade.gov;hilpold@miamidade.gov";
+	public static final String EMAIL_CC = "hilpold@miamidade.gov;chirino@miamidade.gov";
+	public static final String EMAIL_BCC = "cirmtest@miamidade.gov;hilpold@miamidade.gov;chirino@miamidade.gov";
 	public static final String EMAIL_FROM = "cirm@miamidade.gov";
-	public static final String EMAIL_TEST_TO = "cirmtest@miamidade.gov;hilpold@miamidade.gov";
+	public static final String EMAIL_TEST_TO = "cirmtest@miamidade.gov;hilpold@miamidade.gov;chirino@miamidade.gov";
 	public static final String EMAIL_TEST_FROM = "cirmtest@miamidade.gov";
 	public static final String EMAIL_SUBJECT = "MDC CIAO 311HUB - Emergency Service Request Report";
 	public static final String EMAIL_TEXT = "Dear Sir or Madam, \r\n\r\n\r\n"

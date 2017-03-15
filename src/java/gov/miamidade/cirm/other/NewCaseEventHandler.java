@@ -43,6 +43,11 @@ public class NewCaseEventHandler implements EventTrigger
 {
 	public static final boolean USE_DELAY_SEND_SR_TO_DEPARTMENT = true;
 	
+	/**
+	 * Send all WEB intake cases immediately. 
+	 */
+	public final static String DELAY_EXEMPT_INTAKE_METHOD = "WEB";
+	
     private static Logger logger = Logger.getLogger("gov.miamidade.cirm.other");
     
     @Override
@@ -89,7 +94,7 @@ public class NewCaseEventHandler implements EventTrigger
         if (needsToBeSent) 
         {
         	newSR.at("case").set("hasLegacyInterface", deptInterface);
-            if (USE_DELAY_SEND_SR_TO_DEPARTMENT) // send immediately or delay...for debugging purposes (normally we delay)
+            if (USE_DELAY_SEND_SR_TO_DEPARTMENT && !isDelayExempt(newSR)) // send immediately or delay...for debugging purposes (normally we delay)
             {
                 Json delay = D.delaySendToDepartment(newSR.at("case"), newSR.at("locationInfo"), -1); 
                 if (!delay.is("ok", true))
@@ -108,5 +113,39 @@ public class NewCaseEventHandler implements EventTrigger
             }
         }
         return needsToBeSent;
+    }
+    
+    private boolean isDelayExempt(Json newSR) {
+    	boolean result = false;
+    	try {
+    		Json properties = newSR.at("case");
+    		Json intakeMethod = null;
+    		if (properties.has("legacy:hasIntakeMethod")) {
+    			intakeMethod = properties.at("legacy:hasIntakeMethod");
+    		} else if (properties.has("hasIntakeMethod")) {
+    			intakeMethod = properties.at("hasIntakeMethod");
+    		} else {
+    			//not found, null, return false
+    		}
+    		if (intakeMethod != null) {
+    			if (intakeMethod.isObject()) {
+    				intakeMethod = intakeMethod.at("iri");
+    			}
+    			String intakeMethodStr = intakeMethod.asString();
+    			int hashIdx = intakeMethodStr.indexOf("#");
+    			if (hashIdx > 0) {
+    				intakeMethodStr = intakeMethodStr.substring(hashIdx + 1, intakeMethodStr.length());
+    			}
+    			result = intakeMethodStr.equalsIgnoreCase(DELAY_EXEMPT_INTAKE_METHOD);
+    			if (result) {
+    				ThreadLocalStopwatch.now("NewCaseEventHandler: WEB intake SR detected, sending immediately");
+    			}
+    		} else {
+    			throw new IllegalStateException();
+    		}
+    	} catch (Exception e) {
+    		ThreadLocalStopwatch.error("ERROR: NewCaseEventHandler: Could not determine intake method of SR: " + newSR);
+    	}
+    	return result;
     }
 }

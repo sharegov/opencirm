@@ -147,7 +147,7 @@ public class DepartmentIntegration extends RestService
         Json R =  this.getOpenCasesReport(new LegacyEmulator(), numberOfDays);
         if (R.is("ok", true))
         {
-            MessageManager.get().emailAsAttachment("cirm@miamidade.gov", "hilpold@miamidade.gov;sabbas@miamidade.gov;jorgefi@miamidade.gov",
+            MessageManager.get().emailAsAttachment("cirm@miamidade.gov", "hilpold@miamidade.gov;chirino@miamidade.gov;sabbas@miamidade.gov;jorgefi@miamidade.gov",
                     "CIRM Open Cases Report " + R.at("from").asString() + " to " +
                     R.at("to").asString(), JsonUtil.csvTable(R.at("results"), 
                             "hasCaseNumber,type,hasStatus,hasDateCreated,hasLegacyInterface", 
@@ -569,52 +569,61 @@ public class DepartmentIntegration extends RestService
         
         newcase.at("properties").set("legacy:hasStatus", Json.object("iri", "legacy:O-OPEN"));
         newcase.at("properties").delAt("legacy:hasDepartmentError");
-        return Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
-        public Json call()
-        {       
-            Json data = emulator.updateServiceCase(newcase, "cirmuser");
-            if (!data.is("ok", true)) 
-            {
-                return data;
-            }
-            data = data.at("bo");
-            String type = "legacy:" + data.at("type").asString();
-            Json deptInterface = getDepartmentInterfaceCode(type);
-            if (deptInterface.isNull()) 
-                return ko("The type " + type + " is not configured to an external interface.");
-            try
-            {
+        Json result;
+        try {
+        	result = Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
+            public Json call()
+            {       
+            	Json newCaseTx = newcase.dup();
+                Json data = emulator.updateServiceCase(newCaseTx, "cirmuser");
+                if (!data.is("ok", true)) 
+                {
+                    return data;
+                }
+                data = data.at("bo");
+                String type = "legacy:" + data.at("type").asString();
+                Json deptInterface = getDepartmentInterfaceCode(type);
+                if (deptInterface.isNull()) 
+                {
+                    return ko("The type " + type + " is not configured to an external interface.");
+                }
                 BOntology bo = BOntology.makeRuntimeBOntology(data);
-                if (deptInterface.is("hasLegacyCode", "COM-CITY"))
+                if (deptInterface.is("hasLegacyCode", "COM-CITY"))                	
                 {
-                    new gov.miamidade.cirm.other.CityOfMiamiClient().sendCaseToCOM(
-                            Json.object("caseNumber", data.at("properties").at("legacy:hasCaseNumber")));
-                    //delaySendToDepartment(bo, deptInterface, 1);
-                    return ok().set("bo", bo.toJSON());
-                }
+                	//Exit transaction, but mark for Sending to City of Miami directly using web service
+                	return Json.object().set("SendToCom", true).set("caseNumber", data.at("properties").at("legacy:hasCaseNumber"));
+                	
+                } else 
+                {
+                	//Send to MDCEAI via MQ queue
                 
-                // First, check the GIS is ok, this is extra work because we don't
-                // have easy means to obtain the return values from the service calls upstream
-                // during the update.
-                Json locationInfo = emulator.populateGisData(data.dup().at("properties").set("hasLegacyInterface", deptInterface).up(), bo);
-                if (locationInfo.has("extendedInfo") && locationInfo.at("extendedInfo").has("error"))
-                {
-                    GenUtils.reportPWGisProblem(data.at("properties").at("legacy:hasCaseNumber").asString(),
-                            locationInfo.at("extendedInfo").at("error"));
-                    return ko("GIS extended validation failed: " + locationInfo.at("extendedInfo").at("error"));
+                    // First, check the GIS is ok, this is extra work because we don't
+                    // have easy means to obtain the return values from the service calls upstream
+                    // during the update.
+                    Json locationInfo = emulator.populateGisData(data.dup().at("properties").set("hasLegacyInterface", deptInterface).up(), bo);
+                    if (locationInfo.has("extendedInfo") && locationInfo.at("extendedInfo").has("error"))
+                    {
+                        GenUtils.reportPWGisProblem(data.at("properties").at("legacy:hasCaseNumber").asString(),
+                                locationInfo.at("extendedInfo").at("error"));
+                        return ko("GIS extended validation failed: " + locationInfo.at("extendedInfo").at("error"));
+                    }
+                    sendToDepartment(bo, deptInterface, null);
+                    srStatsReporter.succeeded("resendNewCase", data);
+                    return ok().set("bo", bo.toJSON()); 
                 }
-                sendToDepartment(bo, deptInterface, null);
-                srStatsReporter.succeeded("resendNewCase", data);
-                return ok().set("bo", bo.toJSON()); 
-            }
-            catch (Throwable t)
-            {
-                srStatsReporter.failed("resendNewCase", data, t.toString(), t.getMessage());
-            	// this will print out the "can't serialize exeption", which we don't want 'cause it's normal
-//              t.printStackTrace(System.err);
-                return ko(t); 
-            }
-        }});
+            }});
+        	if (result.has("SendToCom") && result.is("SendToCom", true)) {
+            	//Send to City of Miami directly using web service
+        		CityOfMiamiClient cityClient = new CityOfMiamiClient();
+        		result = cityClient.sendCaseToCity(Json.object("caseNumber", result.at("caseNumber")));
+                //return ok().set("bo", bo.toJSON());
+        	}
+        } catch (Throwable t) 
+        {
+        	srStatsReporter.failed("resendNewCase", newcase, t.toString(), t.getMessage());
+        	result = ko(t);
+        }
+        return result;
     }
     
 	/**

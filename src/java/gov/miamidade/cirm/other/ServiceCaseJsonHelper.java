@@ -457,31 +457,107 @@ public class ServiceCaseJsonHelper
     public static Json reverseGeoCode(double xcoord, double ycoord)
     {
 		Json gis = GisClient.getAddressFromCoordinates(xcoord, ycoord, 3, 1000*30); 
-		if (gis.isArray())
-			gis = gis.at(0);
-		else if (gis.isNull() || gis.asJsonMap().isEmpty() || !gis.has("parsedAddress"))
+		return makeCirmAddress(gis, false);
+    }
+
+    public static Json getCirmAddressByFolio(long folio)
+    {
+		Json gis = GisClient.getAddressFromFolio(folio, 5, 1000); 
+		return makeCirmAddress(gis, true);
+    }
+
+    /**
+     * Converts the parsedAddress from a GIS client result with parsedAddress into a Cirm compatible address json.
+     * 311hub hack: If SufType contains multiple words, only the last will become a CiRM Street type, while all 
+     * but the last are added to Street_Name.
+     * 
+     * @param mdcgisData
+     * @param tryIncludeUnit
+     * @return
+     */
+    public static Json makeCirmAddress(Json mdcgisData, boolean tryIncludeUnit)
+    {
+		if (mdcgisData.isArray()) {
+			mdcgisData = mdcgisData.at(0);
+		} else if (mdcgisData.isNull() || mdcgisData.asJsonMap().isEmpty() || !mdcgisData.has("parsedAddress")) {
 			return Json.nil();
-		Json addr =  Json.object();
-		Json parsed = gis.at("parsedAddress");
-		Set<OWLNamedIndividual> S = OWL.queryIndividuals("Place and (Name value \"" + 
-				gis.at("municipality").asString() +
-				"\" or Alias value \"" + gis.at("municipality").asString() + "\")");
-		if (S.isEmpty())
-			throw new IllegalArgumentException("Cannot find municipality in ontology " + gis.at("municipality"));
-		String streetAddress = gis.at("address").asString().split(",")[0];
-		addr.set("Street_Number", parsed.at("House"))
-			.set("Zip_Code", parsed.at("zip"))
-			// We shouldn't be hard-coding the state here as there may be out of state cases, though unlikely when coming from departments...
-			.set("Street_Address_State", 
-				  Json.object("iri", "http://www.miamidade.gov/ontology#Florida"))
-			.set("Street_Address_City", Json.object("iri", S.iterator().next().getIRI().toString()))
-			.set("Street_Name", parsed.at("StreetName"))
-			.set("fullAddress", streetAddress);
-		if (parsed.has("PreDir") && !parsed.is("PreDir", ""))
-			addr.set("Street_Direction", Json.object("USPS_Abbreviation", parsed.at("PreDir").asString()));
-		if (parsed.has("SufType") && !parsed.is("SufType", ""))
-			addr.set("hasStreetType", Json.object("USPS_Suffix", parsed.at("SufType").asString()));
-		return addr;		
+		}
+		
+		//Find Municipality IRI in Ontology
+		String gisMunicipality = mdcgisData.at("municipality").asString();
+		OWLNamedIndividual streetAddrCityInd = findMunicipality(gisMunicipality); 
+		if (streetAddrCityInd == null) {
+			throw new IllegalArgumentException("Cannot find municipality in ontology " + gisMunicipality);
+		}
+		//Read fullAddress
+		String fullAddress = mdcgisData.at("address").asString().split(",")[0];
+		//Read address components in order as 111 NW 1ST ST Unit2501 Miami FL 33123
+		Json mdcgisParsed = mdcgisData.at("parsedAddress");
+		String streetNumber = mdcgisParsed.at("House").asString();
+		String streetDirectionOpt = mdcgisParsed.has("PreDir") && !mdcgisParsed.is("PreDir", "")? mdcgisParsed.at("PreDir").asString() : null;
+		String streetName = mdcgisParsed.at("StreetName").asString();
+		String streetTypeOpt = mdcgisParsed.has("SufType") && !mdcgisParsed.is("SufType", "")? mdcgisParsed.at("SufType").asString() : null;
+		String streetUnitOpt = tryIncludeUnit && mdcgisParsed.has("unit") && !mdcgisParsed.is("unit", "")? mdcgisParsed.at("unit").asString() : null;
+		String streetAddrCityIRI = streetAddrCityInd.getIRI().toString();
+		// We shouldn't be hard-coding the state here as there may be out of state cases, though unlikely when coming from departments...
+		String streetAddressStateIri = "http://www.miamidade.gov/ontology#Florida";
+		String zipCode = mdcgisParsed.at("zip").asString();
+		//Special streetNumber / streetType handling
+		if (streetTypeOpt != null) {
+			String[] stComponents = streetTypeOpt.split(" ");
+			if (stComponents.length > 1) {
+				//eg. Avenue RD, add all but RD to streetName
+				for (int i = 0; i < stComponents.length - 1; i++) {
+					streetName += " " + stComponents[i];
+				}
+				//Use RD only as street type, as we only have single word street types in ontology.
+				streetTypeOpt = stComponents[stComponents.length - 1];
+			}
+		}
+		
+		//Set result, starting with fullAddress, then in natural order
+		Json result =  Json.object();
+		result.set("fullAddress", fullAddress);
+		//Set address components in order as 111 NW 1ST ST Unit2501 Miami FL 33123		
+		result.set("Street_Number", streetNumber);
+		if (streetDirectionOpt != null) {
+			result.set("Street_Direction", Json.object("USPS_Abbreviation", streetDirectionOpt));
+		}
+		//Street name should include all but last sufType word as 311hub UI processes this
+		result.set("Street_Name", streetName);
+		if (streetTypeOpt != null) {
+			result.set("hasStreetType", Json.object("USPS_Suffix", streetTypeOpt));
+		}
+		if(streetUnitOpt != null) {
+    		result.set("Street_Unit_Number", streetUnitOpt);
+    	}
+		result.set("Street_Address_City", Json.object("iri", streetAddrCityIRI));
+		result.set("Street_Address_State", Json.object("iri", streetAddressStateIri));
+		result.set("Zip_Code", zipCode);
+		return result;
+    }
+    
+    /**
+     * Finds a municipality by first checking City or County and then all Place subtypes to avoid returning a Geo_Area individual unless necessary.
+     * 
+     * @param gisMunicipality name or alias of municipality
+     * @return
+     */
+    private static OWLNamedIndividual findMunicipality(String gisMunicipality) {
+    	//e.g (City or County) and (Name value " MIAMI" or Alias value "MIAMI")
+		Set<OWLNamedIndividual> S = OWL.queryIndividuals("(City or County) and (Name value \"" + gisMunicipality 
+				+ "\" or Alias value \"" + gisMunicipality + "\")");
+		if (S.isEmpty()) {
+	    	//e.g Place and (Name value "MIAMI" or Alias value "MIAMI")
+			//e.g. Place and (Name value "UNINCORPORATED MIAMI-DADE" or Alias value "UNINCORPORATED MIAMI-DADE")
+			S = OWL.queryIndividuals("Place and (Name value \"" + gisMunicipality 
+					+ "\" or Alias value \"" + gisMunicipality + "\")");
+		}
+		if (S.isEmpty()) {
+			return null; 
+		} else {
+			return S.iterator().next();
+		}
     }
     
     /**

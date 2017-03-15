@@ -28,10 +28,11 @@
      "ftpPassword":"Allen2010",
      "ftpLocation":"test\\phani",
      "changeset":"",
-     "version":"2.3.1b",
+     "version":"2.4.3b",
 	 "nameBase" : "http://www.miamidade.gov/ontology",
  	 "stopExpansionConditionIRI" : [
 					"http://www.miamidade.gov/cirm/legacy#providedBy",
 					"http://www.miamidade.gov/cirm/legacy#hasChoiceValue"
-					]
+					],
+	 "startDepartmentIntegration" : "s0020284.miamidade.gov"					
 }
