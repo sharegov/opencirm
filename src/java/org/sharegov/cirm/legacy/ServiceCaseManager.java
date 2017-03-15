@@ -1361,7 +1361,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	 * @param userName
 	 * @return
 	 */
-	public Json removeActivityFromServiceCase (String individualID, String activityID, String userName){	
+	public Json removeActivityFromServiceCase (String individualID, String activityID, String userName, String comment){	
 		
 			individualID = MetaOntology.getIndividualIdentifier(individualID);
 			activityID = MetaOntology.getIndividualIdentifier(activityID);
@@ -1369,7 +1369,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			List<String> evictionList = new ArrayList<String>();
 			evictionList.add(individualID);
 			String propertyID = "hasActivity";
-			String comment = "Remove Activity: " + activityID + " to SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID);	
+			comment = (comment==null)? "Remove Activity: " + activityID + " to SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID):comment;	
 			
 			if (commit(userName, comment, MetaOntology.getRemoveIndividualObjectProperty (individualID, propertyID, activityID))){
 				registerChange(individualID);
@@ -1716,5 +1716,80 @@ public class ServiceCaseManager extends OntoAdmin {
 		return getAllIndividualsOfClass("LegacyTrigger");
 	}
 	
+	
+	/**
+	 * Disables an Activity
+	 * 
+	 * @param activity individual identifier 
+	 * @param userName who commits the action
+	 * @return commit success true or false
+	 */
+
+	public Json disableActivity(String activity, String userName, String comment) {
+
+		activity = MetaOntology.getIndividualIdentifier(activity);
+		
+		OwlRepo repo = getRepo();
+
+		synchronized (repo) {
+			repo.ensurePeerStarted();
+						
+			List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+	
+			changes.addAll(MetaOntology.getRemoveIndividualPropertyChanges(activity, "isDisabled"));			
+
+			AddAxiom isDisabledCreateAddAxiom = MetaOntology.getIndividualLiteralAddAxiom(activity, "isDisabled", true);
+			
+			changes.add(isDisabledCreateAddAxiom);
+			
+			comment = (comment==null)?"Disable Activity "+PREFIX+activity + " - " + getIndividualLabel(activity):comment;
+			
+			boolean r = commit(userName, comment, changes);
+			
+			if (r) {
+				registerChange(activity);
+				clearCache(activity);
+				return getSerializedMetaIndividual(activity);
+			} else throw new IllegalArgumentException("Unable to disable Activity Type "+ PREFIX + activity);
+		}
+	}
+	
+	/**
+	 * Enables an Activity
+	 * 
+	 * @param activity individual identifier 
+	 * @param userName who commits the action
+	 * @return commit success true or false
+	 */
+	
+
+	public Json enableActivity(String activity, String userName, String comment) {
+
+		activity = MetaOntology.getIndividualIdentifier(activity);
+		
+		OwlRepo repo = getRepo();
+		
+		synchronized (repo) {
+			repo.ensurePeerStarted();
+			
+			List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+				
+			changes.addAll(MetaOntology.getRemoveIndividualPropertyChanges(activity, "isDisabled"));			
+
+			AddAxiom isDisabledCreateAddAxiom = MetaOntology.getIndividualLiteralAddAxiom(activity, "isDisabled", false);
+			
+			changes.add(isDisabledCreateAddAxiom);
+			
+			comment = (comment==null)?"Enable Activity "+PREFIX+activity + " - " + getIndividualLabel(activity):comment;
+			
+			boolean r = commit(userName, comment, changes);
+			
+			if (r) {
+				registerChange(activity);
+				clearCache(activity);
+				return  getSerializedMetaIndividual(activity);
+			} else throw new IllegalArgumentException("Unable to enable Activity Type "+ PREFIX + activity);
+		}
+	}
 	
 }
