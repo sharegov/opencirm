@@ -157,7 +157,6 @@ define(['jquery', 'rest', 'U','store!'], function($, rest, U, store) {
         isNewAllowed : function(object) {
         	return user.isAllowed("BO_New", object);
         },
-<<<<<<< HEAD
         /** 
          * Is the current user allowed to modify ontology configuration.
          * 
@@ -170,9 +169,6 @@ define(['jquery', 'rest', 'U','store!'], function($, rest, U, store) {
         	return true;
         },
         setLocalInfo: function(username, info) {
-=======
-        setLocalInfo : function(username, info) {
->>>>>>> fe04c09dc0e052f974698090a476ac38dab60023
             if (store.cirmdb()) {
                 store.kv().put("localinfo_" + username, JSON.stringify(info));
             }
