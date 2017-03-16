@@ -1007,6 +1007,20 @@ public class MetaOntology
 				&& iriCandidate.asString().contains("#")
 			    && iriCandidate.asString().startsWith("http://");
 	}
+	
+	public static boolean isTargetObject (Json candidate, String targetOntology){
+		if (candidate.isArray()) return true;
+		
+		Json iriCandidate = null;
+		
+		if (candidate.isObject() && candidate.has("iri")) {
+			iriCandidate = candidate.at("iri");
+		} else {
+			iriCandidate = candidate;
+		}
+		
+		return isFullIriString(iriCandidate) && iriCandidate.isString()	&& iriCandidate.asString().contains(targetOntology);
+	}
 		
 	public static Json getSerializedOntologyObject (String fullIRI){			
 		String individualID = getIndividualIdentifier(fullIRI);
@@ -1045,28 +1059,30 @@ public class MetaOntology
 		return S;
 	}
 
-	public static Json resolveIRIs(Json j){
+	public static Json resolveIRIs(Json j, String targetOntology){
+		if (targetOntology == null) targetOntology = "#";
+		
 		Map<String, Json> objectMap = new ConcurrentHashMap<String, Json>();
 		Map<String, Boolean> resolutionMap  = new ConcurrentHashMap<String, Boolean>();
 		
 		Json result = j.dup();
 		
-		mapJsonObject(result, objectMap);
+		mapJsonObject(result, objectMap, targetOntology, 1);
 		
-		resolveEmptyObjects(objectMap);
+		resolveEmptyObjects(objectMap, targetOntology);
 		
 		String error = "";
 		
-		if (!checkAllObjects(objectMap, error)){
+		if (!checkAllObjects(objectMap, error, targetOntology)){
 			throw new IllegalArgumentException("Unable to resolve object: " + error);
 		}
 				
-		expandJson(result, objectMap, resolutionMap);
+		expandJson(result, objectMap, resolutionMap, targetOntology, 1);
 		
 		return result;
 	}
 	
-	private static void mapJsonObject(Json j, Map<String, Json> map){
+	private static void mapJsonObject(Json j, Map<String, Json> map, String targetOntology, int depth){
 		if (j.isObject()) {
 			Map<String,Json> properties = j.asJsonMap();
 			for (Map.Entry<String, Json> propKeyValue : properties.entrySet()) {
@@ -1078,10 +1094,16 @@ public class MetaOntology
 					}
 				} else if (isFullIriString(value)) {
 					if (!map.containsKey(value.asString())){
-						map.put(value.asString(), Json.nil());
+						if (isTargetObject(value, targetOntology)) {
+							map.put(value.asString(), Json.nil());
+						} else {
+							map.put(value.asString(), value);
+						}
 					}
 				} 
-				mapJsonObject(value, map);
+				if (isTargetObject(value, targetOntology)) {
+					mapJsonObject(value, map, targetOntology, depth+1);
+				}
 				
 			}
 		} else if (j.isArray()) {
@@ -1090,17 +1112,23 @@ public class MetaOntology
 				Json elem = arrayIt.next();
 				if (isFullIriString(elem)) {
 					if (!map.containsKey(elem.asString())){
-						map.put(elem.asString(), Json.nil());
+						if (isTargetObject(elem, targetOntology)) {
+							map.put(elem.asString(), Json.nil());
+						} else {
+							map.put(elem.asString(), elem);
+						}
 					}
 				} 
-				mapJsonObject(elem, map);
+				if (isTargetObject(elem, targetOntology)) {
+					mapJsonObject(elem, map, targetOntology, depth+1);
+				}
 			}
 		} else {
 			// nothing to do for primitives
 		}  	
 	}
 	
-	private static void resolveEmptyObjects(Map<String, Json> map){
+	private static void resolveEmptyObjects(Map<String, Json> map, String targetOntology){
 		boolean newObjects;
 		do {
 			newObjects = false;
@@ -1111,15 +1139,18 @@ public class MetaOntology
 						throw new IllegalArgumentException("Unable to serialize invividual legacy: " + propKeyValue.getKey());
 					}
 					propKeyValue.setValue(value);
-					mapJsonObject(propKeyValue.getValue(), map);
-					newObjects = true;
+					if (isTargetObject(value, targetOntology)) {
+						mapJsonObject(propKeyValue.getValue(), map, targetOntology, 1);
+						newObjects = true;
+					}
 				}
 			}
 		}while(newObjects);
 	}
 	
-	private static boolean checkAllObjects(Map<String, Json> map, String failedIRI){
+	private static boolean checkAllObjects(Map<String, Json> map, String failedIRI, String targetOntology){
 		for (Map.Entry<String, Json> propKeyValue : map.entrySet()) {
+			if (isTargetObject(Json.object().set("iri", propKeyValue.getKey()), targetOntology))
 			if (propKeyValue.getValue().isNull()||!propKeyValue.getValue().isObject()){
 				failedIRI = propKeyValue.getKey();
 				return false;
@@ -1128,8 +1159,8 @@ public class MetaOntology
 		return true;
 	}
 	
-	private static void expandJson(Json j, Map<String, Json> objectMap, Map<String, Boolean> resolutionMap){
-		if (j.isObject()) {
+	private static void expandJson(Json j, Map<String, Json> objectMap, Map<String, Boolean> resolutionMap, String targetOntology, int depth){	
+		if (j.isObject() && isTargetObject(j, targetOntology)) {
 			if (!j.has("iri")){ 
 				throw new IllegalArgumentException("Object missing IRI property: " + j.asString());
 			}
@@ -1150,13 +1181,13 @@ public class MetaOntology
 			}
 			Map<String,Json> properties = j.asJsonMap();
 			for (Map.Entry<String, Json> propKeyValue : properties.entrySet()) {
-				if (!propKeyValue.getKey().equals("iri")&&isFullIriString(propKeyValue.getValue())) {
+				if (!propKeyValue.getKey().equals("iri")&&isFullIriString(propKeyValue.getValue())&&isTargetObject(propKeyValue.getValue(), targetOntology)) {
 					if (!isObjectOnMap(propKeyValue.getValue().asString(), objectMap)){
 						throw new IllegalArgumentException("Object missing on the map: " + propKeyValue.getValue().asString());
 					}
 					propKeyValue.setValue(objectMap.get(propKeyValue.getValue().asString()).dup());
 				} 
-				expandJson(propKeyValue.getValue(), objectMap, resolutionMap);				
+				expandJson(propKeyValue.getValue(), objectMap, resolutionMap, targetOntology, depth+1);				
 			}
 			objectMap.put(j.at("iri").asString(), j.dup());
 			resolutionMap.put(j.at("iri").asString(), true);
@@ -1164,13 +1195,13 @@ public class MetaOntology
 			ListIterator<Json> arrayIt = j.asJsonList().listIterator();
 			while(arrayIt.hasNext()) {
 				Json elem = arrayIt.next();
-				if (isFullIriString(elem)) {
+				if (isFullIriString(elem)&&isTargetObject(elem, targetOntology)) {
 					if (!isObjectOnMap(elem.asString(), objectMap)){
 						throw new IllegalArgumentException("Object missing on the map: " + elem.asString());
 					}
 					elem = objectMap.get(elem.asString()).dup();
 				}
-				expandJson(elem, objectMap, resolutionMap); 
+				expandJson(elem, objectMap, resolutionMap, targetOntology, depth+1); 
 				arrayIt.set(elem);
 			}
 		} else {
