@@ -60,7 +60,7 @@ public class JsonEntityProvider implements MessageBodyReader<Json>,
 //    	httpHeaders.put("Content-Type", Collections.singletonList((Object)"application/json"));
 //    	httpHeaders.put("Content-Encoding", Collections.singletonList((Object)"gzip"));
     	//java.util.zip.GZIPOutputStream gzip = new java.util.zip.GZIPOutputStream(entityStream);
-        entityStream.write(t.toString().getBytes());
+        entityStream.write(t.toString().getBytes("UTF-8"));
     }
 
     public boolean isReadable(Class<?> type, Type genericType,
@@ -76,7 +76,7 @@ public class JsonEntityProvider implements MessageBodyReader<Json>,
                          MultivaluedMap<String, String> httpHeaders,
                          InputStream entityStream) throws IOException, WebApplicationException
     {
-        Reader reader = new InputStreamReader(entityStream);
+        Reader reader = new InputStreamReader(entityStream, "UTF-8");
         StringBuilder builder = new StringBuilder();
         CharBuffer buf = CharBuffer.allocate(1024);
         while (true)
