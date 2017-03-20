@@ -34,7 +34,6 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.sharegov.cirm.OWL;
-import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.StartUp;
 import org.sharegov.cirm.owl.OWLEntityCondition;
 
@@ -98,6 +97,7 @@ public class OntologyGraphSearch {
 	protected void findAllConnectedDFS(final OWLEntity e, final OWLEntityCondition stopExpansionCondition, final Set<OWLObjectProperty> reverseTraversalObjectProperties, Set<OWLEntity> exploredE, List<OWLAxiom> result) {
 		if (!shouldExplore(e, stopExpansionCondition)) return;
 		exploredE.add(e);
+		System.out.println("Exploring: " + e);
 		Set<OWLAxiom> eAxioms = entityToAxioms.get(e);
 		if (eAxioms == null) 
 			{
@@ -112,7 +112,10 @@ public class OntologyGraphSearch {
 				OWLObjectProperty op = oax.getProperty().isAnonymous()? null : oax.getProperty().asOWLObjectProperty(); 
 				if (oax.getSubject().equals(e))
 				{
-					if (!result.contains(ax)) result.add(ax);
+					if (!result.contains(ax)) {
+						System.out.println("Added opa: " + ax);
+						result.add(ax);
+					}
 					//else don't add OPA where e is object
 					//Check if we shall traverse down this OPA to expand the object.
 					OWLNamedIndividual object = (OWLNamedIndividual)((OWLObjectPropertyAssertionAxiom)ax).getObject();
@@ -134,7 +137,10 @@ public class OntologyGraphSearch {
 			else
 			{
 				// add class assertions, data prop, et.c. for e.
-				if (!result.contains(ax)) result.add(ax);					
+				if (!result.contains(ax)) {
+					System.out.println(ax);
+					result.add(ax);					
+				}
 			}					
 		}
 	}

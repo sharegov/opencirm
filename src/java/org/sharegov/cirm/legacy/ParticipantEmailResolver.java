@@ -16,12 +16,20 @@
 package org.sharegov.cirm.legacy;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import mjson.Json;
 
-
+/**
+ * Finds all emails of all actors in an Sr and returns them as a list of strings semicolon delimited.
+ * All emails returned are ensured to be unique (no 2 equal emails will be returned; case sensitive comparison).
+ * 
+ * @author ?, Thomas Hilpold
+ *
+ */
 public class ParticipantEmailResolver implements VariableResolver
 {
 	public static boolean DBG = true;
@@ -45,7 +53,8 @@ public class ParticipantEmailResolver implements VariableResolver
 	
 	private String resolveParticipantEmail(Json sr, Properties properties)
 	{
-		String result = "";
+		String result = null;
+		Set<String> emails = new HashSet<String>();
 		if(sr.has("hasServiceCaseActor"))
 		{
 			List<Json> serviceCaseActors = (sr.at("hasServiceCaseActor").isArray()) ? sr.at("hasServiceCaseActor").asJsonList() : Collections.singletonList(sr.at("hasServiceCaseActor"));
@@ -62,7 +71,7 @@ public class ParticipantEmailResolver implements VariableResolver
 							{
 								emailAddress = emailAddress.substring("mailto:".length());
 								//add valid email
-								result = result + emailAddress + ";";
+								emails.add(emailAddress); //+ ";";
 							} 
 							else
 								System.out.println("ParticipantEmailResolver: user enter bad email in hasServiceCaseActor: " + emailAddress + sr.at("boid"));
@@ -71,6 +80,10 @@ public class ParticipantEmailResolver implements VariableResolver
 				}
 			}
 		}
-		return (result.length() > 0)? result : null;
+		for (String email : emails) {
+			if (result == null) result = "";
+			result += email + ";";
+		}
+		return result;
 	}
 }

@@ -121,6 +121,7 @@ public class SRAxiomExtractor
 			//stopExpandEntities.add(OWL.objectProperty("legacy:hasDefaultOutcome"));
 			//stopExpandEntities.add(OWL.objectProperty("legacy:hasAllowableOutcome"));
 			//stopExpandEntities.add(OWL.objectProperty("legacy:hasOutcome"));
+			stopExpandEntities.add(OWL.individual("legacy:MDC_DEPARTMENTS"));			
 			return new OWLEntityConditionImpl(stopExpandEntities);
 		}
 

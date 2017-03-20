@@ -143,7 +143,7 @@ public class OntoAdmin extends RestService
 			OWLOntology O = OWL.manager().getOntology(IRI.create(iri)); 
 			if (O == null)
 				return ko("Ontology not found: " + iri);
-			repo.printAllOntologies();
+			//repo.printAllOntologies();
 			VersionedOntology vo = repo.getVersionControlledOntology(O);
 			return ok().set("version", vo.getHeadRevision().getRevision())
 					   .set("comment", vo.getHeadRevision().getRevisionComment())
