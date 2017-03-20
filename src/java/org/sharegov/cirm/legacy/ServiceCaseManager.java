@@ -96,7 +96,11 @@ public class ServiceCaseManager extends OntoAdmin {
 	 * 
 	 */
 	private void registerChange (String srType){
-		changes.put(PREFIX + srType, System.currentTimeMillis());
+		if (!srType.contains("legacy:")){
+			srType = PREFIX + srType;
+		}
+			
+		changes.put(srType, System.currentTimeMillis());
 	}
 	
 	/**

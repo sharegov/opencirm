@@ -109,7 +109,8 @@ public class StartUp extends ServerResource
 					":", "http://www.miamidade.gov/ontology#"
 					))
 			.set("cachedReasonerPopulate", false)
-			.set("startDepartmentIntegration", "x.x.xxx");
+			.set("startDepartmentIntegration", "x.x.xxx")
+			.set("configurationServers", "S2030075,s0144654,W014CHIRI");
 
 	private final static StartupHttpInitializer HTTP_INIT = new StartupHttpInitializer();
 	
@@ -450,7 +451,12 @@ public class StartUp extends ServerResource
    			oa.cachedReasonerQ1Populate();
    		}
 	    try {
-	    	ServiceCaseManager.getInstance();
+	    	if (config.has("configurationServers") && 
+	    	   (config.at("configurationServers").asString().toLowerCase().contains(java.net.InetAddress.getLocalHost().getHostName().toLowerCase()))){
+	    		System.out.println("Create Configuration Server cache...");
+	    		ServiceCaseManager.getInstance();
+	    		System.out.println("Done creating Configuration Server cache.");
+	    	}
 	    	server.start();
 	    	if (redirectServer != null) {
 	    		redirectServer.start();

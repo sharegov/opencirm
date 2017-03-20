@@ -177,30 +177,35 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
          * @return true reload needed and success, false reload not needed
          */
         self.reloadServiceCaseTypeIfNeeded = function(serviceCaseTypeIri) {
-        	var serviceCaseTypeFullIri = serviceCaseTypeIri;
-        	//Ensure valid full iri
-        	var prefixIdx = serviceCaseTypeFullIri.indexOf("legacy:");
-        	if (prefixIdx == 0) {
-        		serviceCaseTypeFullIri = serviceCaseTypeFullIri.slice("legacy:".length);
-        	}        	
-        	if (serviceCaseTypeFullIri.indexOf("http://") == -1) {
-        		serviceCaseTypeFullIri = "http://www.miamidade.gov/cirm/legacy#" + serviceCaseTypeFullIri;
+        	console.log("check if this is a configuration server...");
+        	if (cirm.configServers.names.includes(cirm.host.name)){
+        		console.log("this is a configuration server! will reload SR configuration if necessary.")
+	        	var serviceCaseTypeFullIri = serviceCaseTypeIri;
+	        	//Ensure valid full iri
+	        	var prefixIdx = serviceCaseTypeFullIri.indexOf("legacy:");
+	        	if (prefixIdx == 0) {
+	        		serviceCaseTypeFullIri = serviceCaseTypeFullIri.slice("legacy:".length);
+	        	}        	
+	        	if (serviceCaseTypeFullIri.indexOf("http://") == -1) {
+	        		serviceCaseTypeFullIri = "http://www.miamidade.gov/cirm/legacy#" + serviceCaseTypeFullIri;
+	        	}
+	        	//1 check if IRI in list & get last load time
+	        	var lastSRLoadTimeMs = self.serviceCaseLoadTime[serviceCaseTypeFullIri];
+	        	//2 check server if modified after last load time
+	        	var serviceCasePrefixedIri = "legacy:" + U.IRI.name(serviceCaseTypeFullIri);
+	        	var modifiedAfter = top.get("/individuals/" 
+	        			+ serviceCasePrefixedIri 
+	        			+ "/modifiedAfter/" + lastSRLoadTimeMs).modifiedAfter;
+	        	//3 reload and update cache
+	        	if (modifiedAfter) {
+	        		reloadServiceCaseType(serviceCaseTypeFullIri);
+	        		console.log("reloadServiceCaseTypeIfNeeded " + serviceCasePrefixedIri + " reloaded.")
+	        	} else {
+	        		console.log("reloadServiceCaseTypeIfNeeded " + serviceCasePrefixedIri + " not reloaded.")
+	        	}
+	        	return modifiedAfter;
         	}
-        	//1 check if IRI in list & get last load time
-        	var lastSRLoadTimeMs = self.serviceCaseLoadTime[serviceCaseTypeFullIri];
-        	//2 check server if modified after last load time
-        	var serviceCasePrefixedIri = "legacy:" + U.IRI.name(serviceCaseTypeFullIri);
-        	var modifiedAfter = top.get("/individuals/" 
-        			+ serviceCasePrefixedIri 
-        			+ "/modifiedAfter/" + lastSRLoadTimeMs).modifiedAfter;
-        	//3 reload and update cache
-        	if (modifiedAfter) {
-        		reloadServiceCaseType(serviceCaseTypeFullIri);
-        		console.log("reloadServiceCaseTypeIfNeeded " + serviceCasePrefixedIri + " reloaded.")
-        	} else {
-        		console.log("reloadServiceCaseTypeIfNeeded " + serviceCasePrefixedIri + " not reloaded.")
-        	}
-        	return modifiedAfter;
+        	console.log("this is not a configuration server.");
         }
         
         /**
