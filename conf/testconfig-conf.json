@@ -34,5 +34,6 @@
  	 "stopExpansionConditionIRI" : [
 					"http://www.miamidade.gov/cirm/legacy#providedBy",
 					"http://www.miamidade.gov/cirm/legacy#hasChoiceValue"
-					]
+					],
+	 "isConfigMode" : true
 }

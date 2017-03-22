@@ -32,5 +32,6 @@
 					"http://www.miamidade.gov/cirm/legacy#providedBy",
 					"http://www.miamidade.gov/cirm/legacy#hasChoiceValue"
 					],
-	 "startDepartmentIntegration" : "s2030060.miamidade.gov"					
+	 "startDepartmentIntegration" : "s2030060.miamidade.gov",
+	 "isConfigMode" : false					
 }
