@@ -110,7 +110,7 @@ public class StartUp extends ServerResource
 					))
 			.set("cachedReasonerPopulate", false)
 			.set("startDepartmentIntegration", "x.x.xxx")
-			.set("configurationServers", "S2030075,s0144654,W014CHIRI");
+			.set("isConfigMode", false);
 
 	private final static StartupHttpInitializer HTTP_INIT = new StartupHttpInitializer();
 	
@@ -451,8 +451,7 @@ public class StartUp extends ServerResource
    			oa.cachedReasonerQ1Populate();
    		}
 	    try {
-	    	if (config.has("configurationServers") && 
-	    	   (config.at("configurationServers").asString().toLowerCase().contains(java.net.InetAddress.getLocalHost().getHostName().toLowerCase()))){
+	    	if (config.has("isConfigMode") && config.at("isConfigMode").asBoolean()){
 	    		System.out.println("Create Configuration Server cache...");
 	    		ServiceCaseManager.getInstance();
 	    		System.out.println("Done creating Configuration Server cache.");

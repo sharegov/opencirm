@@ -93,8 +93,8 @@ define(['jquery', 'rest', 'U','user', 'store!', 'refs!all'], function($, rest, U
     var search = new rest.Client(baseurl + "/search");
     var users = new rest.Client(baseurl + "/users");
     var top = new rest.Client(baseurl);
-    var configServers = {};
-    var host = {};
+    
+    var isConfigMode = {};
     
     var dataCache = {};
     
@@ -265,11 +265,14 @@ define(['jquery', 'rest', 'U','user', 'store!', 'refs!all'], function($, rest, U
             console.log('Sysinfo', info);
             if (info.config && info.config.allClientsExempt !== undefined) {
             	 user.allClientsExempt = info.config.allClientsExempt;
-            	 configServers['names'] = info.config.configurationServers != undefined ? info.config.configurationServers : "";
-            	 host['name'] = info.host != undefined ? info.host : "";
+            	 isConfigMode['value'] = info.config.isConfigMode != undefined ? info.config.isConfigMode : false;
             }
             $('#span_hostname').html(info.host);
     });
+    
+    function getConfigModeValue (){
+    	return isConfigMode.value;
+    }
     
     var cirm =  {    
         baseurl: baseurl,
@@ -288,8 +291,7 @@ define(['jquery', 'rest', 'U','user', 'store!', 'refs!all'], function($, rest, U
         viewBusinessObject:viewBusinessObject,
         events:eventManager,
         refs:refs,
-        configServers: configServers,
-        host: host
+        isConfigMode: getConfigModeValue
      };
     
     if (modulesInGlobalNamespace)

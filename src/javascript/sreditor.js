@@ -824,7 +824,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 	    };
 	    
 	    self.startNewServiceRequest = function(type) {
-			if (cirm.user.isConfigAllowed()) {
+			if (cirm.isConfigMode) {
 				//hilpold Check server for new version of SR type 
 				cirm.refs.reloadServiceCaseTypeIfNeeded(type);
 			}
@@ -871,7 +871,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			if(!U.isEmptyString(self.data().type()))
 			{
 				if(!U.isEmptyString(type)){
-					if (cirm.user.isConfigAllowed()) {
+					if (cirm.isConfigMode) {
 						//hilpold Check server for new version of SR type 
 						cirm.refs.reloadServiceCaseTypeIfNeeded(type);
 					}
@@ -886,7 +886,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			else
 			{
 				if(!U.isEmptyString(type)){
-					if (cirm.user.isConfigAllowed()) {
+					if (cirm.isConfigMode) {
 						//hilpold Check server for new version of SR type 
 						cirm.refs.reloadServiceCaseTypeIfNeeded(type);
 					}
@@ -896,7 +896,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 						self.startNewServiceRequest(type);
 				}
 				else if(!U.isEmptyString(cirm.refs.serviceCases['http://www.miamidade.gov/cirm/legacy#' + srTypeID])){
-					if (cirm.user.isConfigAllowed()) {
+					if (cirm.isConfigMode) {
 						//hilpold Check server for new version of SR type 
 						cirm.refs.reloadServiceCaseTypeIfNeeded(type);
 					}
