@@ -94,7 +94,7 @@ define(['jquery', 'rest', 'U','user', 'store!', 'refs!all'], function($, rest, U
     var users = new rest.Client(baseurl + "/users");
     var top = new rest.Client(baseurl);
     
-    var isConfigMode = {};
+    var isConfigMode = false;
     
     var dataCache = {};
     
@@ -261,37 +261,33 @@ define(['jquery', 'rest', 'U','user', 'store!', 'refs!all'], function($, rest, U
           }
         });
     }
-    top.async().get('/manage/sysinfo', '', function (info) {
+    top.get('/manage/sysinfo', '', function (info) {
             console.log('Sysinfo', info);
             if (info.config && info.config.allClientsExempt !== undefined) {
-            	 user.allClientsExempt = info.config.allClientsExempt;
-            	 isConfigMode['value'] = info.config.isConfigMode != undefined ? info.config.isConfigMode : false;
+            	 user.allClientsExempt = info.config.allClientsExempt;            	 
+            }
+            if (info.config && info.config.isConfigMode !== undefined) {
+            	isConfigMode = info.config.isConfigMode;
             }
             $('#span_hostname').html(info.host);
     });
     
-    function getConfigModeValue (){
-    	return isConfigMode.value;
-    }
-    
     var cirm =  {    
         baseurl: baseurl,
-        user : user, /*{
-            username: 'guest'
-        }, */
+        user : user,
         op : op,
         ui : ui,
         meta : meta,
         top : top,
         search: search,
-        users:users,
-        delayDataFetch:delayDataFetch,
-        fetchNow:fetchNow,
-        toQueryString:toQueryString,
-        viewBusinessObject:viewBusinessObject,
-        events:eventManager,
-        refs:refs,
-        isConfigMode: getConfigModeValue
+        users : users,
+        delayDataFetch : delayDataFetch,
+        fetchNow : fetchNow,
+        toQueryString : toQueryString,
+        viewBusinessObject : viewBusinessObject,
+        events : eventManager,
+        refs : refs,
+        isConfigMode : isConfigMode
      };
     
     if (modulesInGlobalNamespace)
