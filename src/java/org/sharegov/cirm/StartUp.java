@@ -109,7 +109,8 @@ public class StartUp extends ServerResource
 					":", "http://www.miamidade.gov/ontology#"
 					))
 			.set("cachedReasonerPopulate", false)
-			.set("startDepartmentIntegration", "x.x.xxx");
+			.set("startDepartmentIntegration", "x.x.xxx")
+			.set("isConfigMode", false);
 
 	private final static StartupHttpInitializer HTTP_INIT = new StartupHttpInitializer();
 	
@@ -450,7 +451,11 @@ public class StartUp extends ServerResource
    			oa.cachedReasonerQ1Populate();
    		}
 	    try {
-	    	ServiceCaseManager.getInstance();
+	    	if (config.has("isConfigMode") && config.at("isConfigMode").asBoolean()){
+	    		System.out.println("Create Configuration Server cache...");
+	    		ServiceCaseManager.getInstance();
+	    		System.out.println("Done creating Configuration Server cache.");
+	    	}
 	    	server.start();
 	    	if (redirectServer != null) {
 	    		redirectServer.start();

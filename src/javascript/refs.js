@@ -177,7 +177,7 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
          * @return true reload needed and success, false reload not needed
          */
         self.reloadServiceCaseTypeIfNeeded = function(serviceCaseTypeIri) {
-        	var serviceCaseTypeFullIri = serviceCaseTypeIri;
+    	   	var serviceCaseTypeFullIri = serviceCaseTypeIri;
         	//Ensure valid full iri
         	var prefixIdx = serviceCaseTypeFullIri.indexOf("legacy:");
         	if (prefixIdx == 0) {

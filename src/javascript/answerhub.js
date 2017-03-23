@@ -811,7 +811,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 		}
 		
 		self.ontologyClick = function(data) {
-			if (cirm.user.isConfigAllowed()) {
+			if (cirm.isConfigMode) {
 				//hilpold Check server for new version of SR type 
 				cirm.refs.reloadServiceCaseTypeIfNeeded(type);
 			}

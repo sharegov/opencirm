@@ -96,7 +96,11 @@ public class ServiceCaseManager extends OntoAdmin {
 	 * 
 	 */
 	private void registerChange (String srType){
-		changes.put(PREFIX + srType, System.currentTimeMillis());
+		if (!srType.contains("legacy:")){
+			srType = PREFIX + srType;
+		}
+			
+		changes.put(srType, System.currentTimeMillis());
 	}
 	
 	/**
@@ -317,8 +321,9 @@ public class ServiceCaseManager extends OntoAdmin {
 								   .set("label", OWL.getEntityLabel(individual))
 								   .set("disabled", isSrDisabledOrDisabledCreate(individual));
 		
-		try {		
-			Json jIndividual = getSerializedMetaIndividual(individual.getIRI().getFragment());
+		try {
+			
+			Json jIndividual = getSerializedMetaIndividual(individual.getIRI().getFragment());			
 			
 			String jurisdiction;		
 			if (jIndividual.has("hasJurisdictionDescription")){
@@ -366,7 +371,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			addActitivitesByDepartment(individual.getIRI().getFragment(), jIndividual, depdiv.at("department").at("fragment").asString());
 			
 		} catch (Exception e) {
-			System.out.println("Error while trying to resolve data for legacy:" + individual.getIRI().getFragment());
+			System.out.println("Error while trying to resolve data for legacy:" + individual.getIRI().getFragment());			
 			if (e.getMessage() != null ){
 				System.out.println(e.getMessage());
 			} else {
@@ -387,7 +392,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	private void addActitivitesByDepartment(String srType, Json serializedSrType, String departmentIriFragment){
 		if (serializedSrType.has("hasActivity")){
 			
-			Json srTypeActivities = MetaOntology.resolveIRIs(serializedSrType.at("hasActivity"));
+			Json srTypeActivities = MetaOntology.resolveIRIs(serializedSrType.at("hasActivity"), "legacy");
 			
 			Set <String> S = new HashSet<>();
 						
@@ -1088,7 +1093,7 @@ public class ServiceCaseManager extends OntoAdmin {
 				
 		if (sr.has("hasServiceField")){
 			
-			Json questions = MetaOntology.resolveIRIs(sr.at("hasServiceField"));
+			Json questions = MetaOntology.resolveIRIs(sr.at("hasServiceField"), "legacy");
 			
 			if (!questions.isArray()){
 				return Json.array().add(questions);						
@@ -1112,7 +1117,7 @@ public class ServiceCaseManager extends OntoAdmin {
 				
 		if (sr.has("hasActivity")){
 			
-			Json activities = MetaOntology.resolveIRIs(sr.at("hasActivity"));
+			Json activities = MetaOntology.resolveIRIs(sr.at("hasActivity"), "legacy");
 			
 			if (!activities.isArray()){
 				return Json.array().add(activities);						

@@ -94,6 +94,8 @@ define(['jquery', 'rest', 'U','user', 'store!', 'refs!all'], function($, rest, U
     var users = new rest.Client(baseurl + "/users");
     var top = new rest.Client(baseurl);
     
+    var isConfigMode = false;
+    
     var dataCache = {};
     
     function toQueryString(params)
@@ -259,31 +261,33 @@ define(['jquery', 'rest', 'U','user', 'store!', 'refs!all'], function($, rest, U
           }
         });
     }
-    top.async().get('/manage/sysinfo', '', function (info) {
+    top.get('/manage/sysinfo', '', function (info) {
             console.log('Sysinfo', info);
             if (info.config && info.config.allClientsExempt !== undefined) {
-            	 user.allClientsExempt = info.config.allClientsExempt;
+            	 user.allClientsExempt = info.config.allClientsExempt;            	 
+            }
+            if (info.config && info.config.isConfigMode !== undefined) {
+            	isConfigMode = info.config.isConfigMode;
             }
             $('#span_hostname').html(info.host);
     });
     
     var cirm =  {    
         baseurl: baseurl,
-        user : user, /*{
-            username: 'guest'
-        }, */
+        user : user,
         op : op,
         ui : ui,
         meta : meta,
         top : top,
         search: search,
-        users:users,
-        delayDataFetch:delayDataFetch,
-        fetchNow:fetchNow,
-        toQueryString:toQueryString,
-        viewBusinessObject:viewBusinessObject,
-        events:eventManager,
-        refs:refs
+        users : users,
+        delayDataFetch : delayDataFetch,
+        fetchNow : fetchNow,
+        toQueryString : toQueryString,
+        viewBusinessObject : viewBusinessObject,
+        events : eventManager,
+        refs : refs,
+        isConfigMode : isConfigMode
      };
     
     if (modulesInGlobalNamespace)

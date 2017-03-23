@@ -9,6 +9,16 @@
   "type": "array",
   "definitions": {
     "reference": {
+	  "oneOf": [
+				{
+				  "$ref": "#/definitions/referenceObject"
+				},
+				{
+				  "$ref": "#/definitions/iri"
+				}
+			  ]
+	},
+    "referenceObject": {
       "additionalProperties": true,
       "properties": {
         "iri": {
@@ -185,7 +195,7 @@
       ]
     },
     "hasBusinessCodes": {
-      "pattern": "^,?(((NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD|5DAYWORK|INSSPEC|DUPSTAFF|REQRESAC|REQMASS),?)*)+$",
+      "pattern": "^,?(((NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD|5DAYWORK|INSSPEC|DUPSTAFF|REQRESAC|REQMASS|EMAIL),?)*)+$",
       "type": "string"
     },
     "hasOrderBy": {
@@ -204,6 +214,7 @@
       "type": "string"
     },
     "iri": {
+	  "pattern": "^(ftp|http|https):\/\/[^ ]+$",
       "type": "string"
     },
     "hasLegacyCode": {
@@ -362,7 +373,9 @@
         },
         "type": {
           "enum": [
-            "ChoiceValue"
+            "ChoiceValue",
+			"Department_County",
+			"Commission_County"
           ]
         }
       },
