@@ -27,6 +27,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -1226,37 +1227,50 @@ public class MetaOntology
 		return false;
 	}
 	
-	protected static Json expandRealtedObjects (String id, Json obj){
+	protected static Json expandRealtedObjects (String id, Json obj, List<String> expanded){
 		if (obj.isArray()) {
-			return expandArray(id, obj);
+			return expandArray(id, obj, expanded);
 		} else if (obj.isObject()){
-			return expandObject(id, obj);
+			return expandObject(id, obj, expanded);
 		}
 		
 		return obj;
 	}
 	
-	private static Json expandArray(String id, Json arr){
+	private static Json expandArray(String id, Json arr, List<String> expanded){
 		ListIterator<Json> arrayIt = arr.asJsonList().listIterator();
 		while(arrayIt.hasNext()) {
 			Json elem = arrayIt.next();
 			if (isFullIriString(elem) && elem.asString().contains("#" + id)) {
 				elem = getSerializedOntologyObject(elem.asString());
 			}
-			elem = expandRealtedObjects(id, elem); 
+			elem = expandRealtedObjects(id, elem, expanded); 
 			arrayIt.set(elem);
 		}
 		return arr;
 	}
 	
-	private static Json expandObject(String id, Json obj){
+	private static Json expandObject(String id, Json obj, List<String> expanded){
+		if (obj.has("iri")){
+			if (expanded.contains(obj.at("iri").asString())){
+				return obj;
+			} else {
+				expanded.add(obj.at("iri").asString());
+			}
+		} else {
+			throw new IllegalArgumentException("Object missing on the iri property: ");
+		}
+		
 		Map<String,Json> properties = obj.asJsonMap();
 		for (Map.Entry<String, Json> propKeyValue : properties.entrySet()) {
 			if (!propKeyValue.getKey().equals("iri") && isFullIriString(propKeyValue.getValue()) && propKeyValue.getValue().asString().contains("#" + id)) {
 				propKeyValue.setValue(getSerializedOntologyObject(propKeyValue.getValue().asString()));
 			} 
-			propKeyValue.setValue(expandRealtedObjects(id, propKeyValue.getValue()));				
+			propKeyValue.setValue(expandRealtedObjects(id, propKeyValue.getValue(), expanded));				
 		}
+		
+		expanded.remove(obj.at("iri").asString());
+		
 		return obj;
 	}
 	
@@ -1265,19 +1279,14 @@ public class MetaOntology
 			throw new IllegalArgumentException(dolly + " is already present on the Ontology.");
 		}
 		
+
+		List<String> expanded = new CopyOnWriteArrayList<>();
 		String donorPrefix = correctedPrefix(donor);
-		Json serializedDonor = expandRealtedObjects (donor, getSerializedOntologyObject(donorPrefix + donor));
+		Json serializedDonor = expandRealtedObjects (donor, getSerializedOntologyObject(donorPrefix + donor), expanded);
 		String strDonor = serializedDonor.toString();
 		
-		String regex = "\\(?\\b(http://|www[.])[-A-Za-z0-9+&amp;@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&amp;@#/%=~_()|]";
-		Pattern p = Pattern.compile(regex);
-		Matcher m = p.matcher(strDonor);
-		while(m.find()) {
-			String urlStr = m.group();
-			String newIri = urlStr.replace("#" + donor, "#" + dolly);
-			strDonor = strDonor.replace(urlStr, newIri);
-		}
-		        
+		strDonor = strDonor.replaceAll(donor, dolly);
+			        
         return Json.read(strDonor);              
 	}
 
