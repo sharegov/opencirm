@@ -45,6 +45,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	private static final String PREFIX = "legacy:";
 	private static String jenkingsEndpointRefreshOntosOnlyTest = "https://api.miamidade.gov/jenkins/job/CIRM-ADMIN-TEST-REFRESH-ONTOS/build?token=1a85a585ef7c424191c7c58ee3c4a97d556eec91";
 	private static String jenkingsEndpointRefreshOntosOnlyProduction = "https://api.miamidade.gov/jenkins/job/CIRM-ADMIN-PRODUCTION-REFRESH-ONTOS/build?token=1a85a585ef7c424191c7c58ee3c4a97d556ffc91";
+	private static String jenkingsEndpointRefreshOntosOnlySandbox = "https://api.miamidade.gov/jenkins/job/CRIM-ADMIN-TEST-RESTART-SANDBOX/build?token=x1a85a585ef7c424191c7c58ee3c4a97d556eec91x";
 	private static ServiceCaseManager instance = null; 
 	private Map<String, Json> cache;
 	private Map<String, Long> changes;
@@ -892,6 +893,8 @@ public class ServiceCaseManager extends OntoAdmin {
 				
 			case "test":
 				return GenUtils.httpPostWithBasicAuth(jenkingsEndpointRefreshOntosOnlyTest, "cirm", "admin", "");
+			case "sandbox":
+				return GenUtils.httpPostWithBasicAuth(jenkingsEndpointRefreshOntosOnlySandbox, "cirm", "admin", "");
 		}
 		
 		throw new IllegalArgumentException("Not a valid target value was passed to the refresh ontologies method.");		

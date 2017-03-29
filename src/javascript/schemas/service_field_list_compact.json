@@ -532,6 +532,9 @@
         },
         "isAlwaysPublic": {
           "$ref": "#/definitions/ynQuestion"
+        },
+        "extendedTypes": {
+          "$ref": "#/definitions/extendedTypes"
         }
       }
     },
