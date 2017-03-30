@@ -128,7 +128,14 @@ public class ServiceCaseManager extends OntoAdmin {
 	 */
 	private synchronized void clearCache (String aKey){
 		cache.remove(aKey);
-		cache.remove(PREFIX + aKey);	
+		cache.remove(PREFIX + aKey);
+		cache.remove("http://www.miamidade.gov/cirm/legacy#" + aKey);
+		activities.remove(aKey);
+		activities.remove(PREFIX + aKey);
+		activities.remove("http://www.miamidade.gov/cirm/legacy#" + aKey);
+		outcomes.remove(aKey);
+		outcomes.remove(PREFIX + aKey);
+		outcomes.remove("http://www.miamidade.gov/cirm/legacy#" + aKey);	
 		
 		MetaOntology.clearCacheAndSynchronizeReasoner();
 	}
@@ -143,6 +150,13 @@ public class ServiceCaseManager extends OntoAdmin {
 		for (String key: keys){
 			cache.remove(key);
 			cache.remove(PREFIX + key);
+			cache.remove("http://www.miamidade.gov/cirm/legacy#" + key);
+			activities.remove(key);
+			activities.remove(PREFIX + key);
+			activities.remove("http://www.miamidade.gov/cirm/legacy#" + key);
+			outcomes.remove(key);
+			outcomes.remove(PREFIX + key);
+			outcomes.remove("http://www.miamidade.gov/cirm/legacy#" + key);
 		}
 		MetaOntology.clearCacheAndSynchronizeReasoner();
 	}
@@ -476,7 +490,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			for (OWLNamedIndividual indx: all){
 				String iri = indx.getIRI().toString();
 				if (!activities.containsKey(iri)){
-					Json atx = getSerializedIndividual(MetaOntology.getIdFromUri(iri), MetaOntology.getOntologyFromUri(iri));
+					Json atx = MetaOntology.resolveIRIs(getSerializedIndividual(MetaOntology.getIdFromUri(iri), MetaOntology.getOntologyFromUri(iri)), "legacy");
 					if (atx.has("iri")){
 						activities.put(iri, atx);
 					}
@@ -1240,7 +1254,6 @@ public class ServiceCaseManager extends OntoAdmin {
 			changes = MetaOntology.clearChanges(changes);
 			
 			ThreadLocalStopwatch.now("---- Ended Creating New Objects for individual: " + individualID);
-
 			
 			ThreadLocalStopwatch.now("---- Start Commiting Changes.");
 			
