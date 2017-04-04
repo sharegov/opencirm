@@ -99,7 +99,10 @@
           "enum": [
             "ServiceNote"
           ]
-        }
+        },
+		"hasAnswerUpdateTimeout": {
+			"$ref": "#/definitions/hasAnswerUpdateTimeout"
+		}
       },
       "required": [
         "iri",
@@ -165,7 +168,10 @@
           "enum": [
             "ServiceQuestion"
           ]
-        }
+        },
+		"hasAnswerUpdateTimeout": {
+			"$ref": "#/definitions/hasAnswerUpdateTimeout"
+		}
       },
       "required": [
         "iri",
@@ -1021,6 +1027,42 @@
       "minItems": 1,
       "uniqueItems": true,
       "type": "array"
-    }
+    },
+	"hasAnswerUpdateTimeout": {
+		"oneOf": [
+        {
+          "$ref": "#/definitions/reference"
+        },
+        {
+          "$ref": "#/definitions/hasAnswerUpdateTimeoutObject"
+        }
+      ]
+	},
+	"hasAnswerUpdateTimeoutObject": {
+	  "additionalProperties": false,
+	  "properties": {
+		"iri": {
+		  "$ref": "#/definitions/iri"
+		},
+		"label": {
+		  "$ref": "#/definitions/label"
+		},
+		"hasValue": {
+		  "$ref": "#/definitions/floatNumber"
+		},
+		"type": {
+		  "enum": [
+			"ServiceAnswerUpdateTimeout"
+		  ]
+		}
+	  },
+	  "required": [
+		"iri",
+		"label",
+		"hasValue",
+		"type"
+	  ],
+	  "type": "object"
+	}
   }
 }
