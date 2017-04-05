@@ -201,7 +201,7 @@
       ]
     },
     "hasBusinessCodes": {
-      "pattern": "^,?(((NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD|5DAYWORK|INSSPEC|DUPSTAFF|REQRESAC|REQMASS|EMAIL),?)*)+$",
+      "pattern": "^,?(((NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD|5DAYWORK|INSSPEC|DUPSTAFF|REQRESAC|REQMASS|EMAIL|TIMENOUP),?)*)+$",
       "type": "string"
     },
     "hasOrderBy": {
