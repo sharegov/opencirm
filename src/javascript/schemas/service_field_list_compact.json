@@ -201,7 +201,7 @@
       ]
     },
     "hasBusinessCodes": {
-      "pattern": "^,?(((NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD|5DAYWORK|INSSPEC|DUPSTAFF|REQRESAC|REQMASS|EMAIL|TIMENOUP),?)*)+$",
+      "pattern": "^,?(((NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD|5DAYWORK|INSSPEC|DUPSTAFF|REQRESAC|REQMASS|EMAIL|TIMENOUP|7DAYWORK),?)*)+$",
       "type": "string"
     },
     "hasOrderBy": {
@@ -232,16 +232,15 @@
           "$ref": "#/definitions/reference"
         },
         {
-          "$ref": "#/definitions/hasServiceFieldAlertList"
+          "$ref": "#/definitions/ServiceFieldAlertObject"
         },
         {
-          "$ref": "#/definitions/ServiceFieldAlertObject"
+          "$ref": "#/definitions/hasServiceFieldAlertList"
         }
       ]
     },
     "hasServiceFieldAlertList": {
       "items": {
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/definitions/reference"
@@ -260,7 +259,7 @@
           "$ref": "#/definitions/hasLegacyEvent"
         },
         "hasAnswerObject": {
-          "$ref": "#/definitions/hasAnswerObject"
+          "$ref": "#/definitions/hasAnswer"
         },
         "label": {
           "$ref": "#/definitions/label"
@@ -632,7 +631,8 @@
         "type": {
           "enum": [
             "AssignActivityToUserRule",
-            "CaseActivityAssignmentRule"
+            "CaseActivityAssignmentRule",
+			"AssignActivityFromGeoAttribute"
           ]
         },
         "iri": {
@@ -970,7 +970,7 @@
       ]
     },
     "hasEmailTemplateObject": {
-      "additionalProperties": false,
+      "additionalProperties": true,
       "properties": {
         "iri": {
           "$ref": "#/definitions/iri"
@@ -1000,7 +1000,10 @@
           "enum": [
             "MessageTemplate"
           ]
-        }
+        },
+		"hasHighPriority": {
+		   "$ref": "#/definitions/booleanValue"
+		}
       },
       "required": [
         "iri",
