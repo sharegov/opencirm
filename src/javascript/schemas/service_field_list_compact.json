@@ -433,7 +433,6 @@
       "required": [
         "iri",
         "label",
-        "hasLegacyCode",
         "type"
       ]
     },
@@ -610,7 +609,12 @@
         "hasEmailTemplate": {
           "$ref": "#/definitions/hasEmailTemplate"
         }
-      }
+      },
+      "required": [
+        "iri",
+        "label",
+        "type"
+      ]
     },
     "hasAssignmentRule": {
       "oneOf": [
@@ -691,7 +695,12 @@
         "iri": {
           "$ref": "#/definitions/iri"
         }
-      }
+      },
+      "required": [
+        "iri",
+        "label",
+        "type"
+      ]
     },
     "hasActivityAssignment": {
       "oneOf": [
@@ -788,7 +797,6 @@
       "required": [
         "iri",
         "label",
-        "hasLegacyCode",
         "type"
       ]
     },
