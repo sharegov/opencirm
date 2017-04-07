@@ -157,7 +157,7 @@ define(['jquery', 'rest', 'U','store!'], function($, rest, U, store) {
         isNewAllowed : function(object) {
         	return user.isAllowed("BO_New", object);
         },
-        setLocalInfo : function(username, info) {
+        setLocalInfo: function(username, info) {
             if (store.cirmdb()) {
                 store.kv().put("localinfo_" + username, JSON.stringify(info));
             }
@@ -217,7 +217,7 @@ define(['jquery', 'rest', 'U','store!'], function($, rest, U, store) {
         FastName:null,
         provider:null,
         email:null,
-        allClientsExempt:false
+        allClientsExempt:false,
     };
     return user;
 });

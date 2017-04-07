@@ -32,8 +32,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
-import mjson.Json;
-
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -44,9 +42,13 @@ import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.StartUp;
 import org.sharegov.cirm.legacy.Permissions;
+import org.sharegov.cirm.legacy.ServiceCaseManager;
 import org.sharegov.cirm.owl.OWLSerialEntityCache;
+import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 import org.sharegov.cirm.utils.TraceUtils;
+
+import mjson.Json;
 
 @Path("individuals")
 @Produces("application/json")
@@ -157,23 +159,50 @@ public class OWLIndividuals extends RestService
 	{
 		try
 		{
-			OWLNamedIndividual ind = individual(individualName);
-			OWLSerialEntityCache jsonEntities = Refs.owlJsonCache.resolve();
-			Json el = jsonEntities.individual(ind.getIRI()).resolve(); //OWL.toJSON(ontology(), ind);
-			if (!isClientExempt() &&
-				reasoner().getTypes(ind, false).containsEntity(OWL.owlClass("Protected")) &&
-				!Permissions.check(individual("BO_View"), 
-									individual(individualName), 
-									getUserActors()))
-				return ko("Permission denied.");
-			return el;
+			return getOWLIndividualByName(individualName);	
 		}
 		catch (Throwable t)
 		{
 			t.printStackTrace(System.err);
 			return Json.object();
-		}		
+		}	
 	}	
+	
+	public Json getOWLIndividualByName(String individualName) throws OWLException
+	{
+		
+		OWLNamedIndividual ind = individual(individualName);
+		Json el = OWL.toJSON(ontology(), ind);
+		if (!isClientExempt() &&
+			reasoner().getTypes(ind, false).containsEntity(OWL.owlClass("Protected")) &&
+			!Permissions.check(individual("BO_View"), 
+								individual(individualName), 
+								getUserActors()))
+			return ko("Permission denied.");
+		return el;				
+	}
+	
+	/**
+	 * Determines if an OWL individual was modified after a specified time.
+	 * 
+	 * This currently works for service case types, but not yet for other individuals.
+	 * Also, currently only local changes that were applied to an sr type after the server was started 
+	 * are considered in determining modifiedAfter.
+	 * TODO consider changes in persisted managed ontology history
+	 *  
+	 * @param indPrefixedIri the prefixed IRI of the individual (format "legacy:xxx")
+	 * @param timeMs specified time in milliseconds
+	 * @return ok with a boolean modifiedAfter property; false means not modified or individual changes not found.
+	 * @throws OWLException
+	 */
+	@GET
+	@Path("/{individual}/modifiedAfter/{timeMs}")
+	@Produces("application/json")
+	public Json isOWLIndividualModifiedAfter(@PathParam("individual") String indPrefixedIri, @PathParam("timeMs") Long timeMs) throws OWLException {
+		if (timeMs == null) return GenUtils.ko("timeMs parameter was null");
+		if (indPrefixedIri == null || indPrefixedIri.isEmpty()) return  GenUtils.ko("indPrefixedIri was null or empty");
+		return GenUtils.ok().set("modifiedAfter", ServiceCaseManager.getInstance().isInvididualModifiedAfter(indPrefixedIri, timeMs));
+	}
 	
 	/**
 	 * <p>
@@ -242,4 +271,43 @@ public class OWLIndividuals extends RestService
 			return ko(ex);
 		}
 	}
+	
+	public synchronized Json doInternalQuery (String queryAsString)
+	{
+		OWLOntology ontology = ontology();
+		OWLReasoner reasoner = reasoner(ontology);
+			
+		OWLClassExpression expr = OWL.parseDL(queryAsString, ontology);
+		Set<OWLNamedIndividual> allAllowed = null;
+		if (!isClientExempt() && reasoner.getSuperClasses(expr, false).containsEntity(owlClass("Protected")))
+		{
+				
+			allAllowed = new HashSet<OWLNamedIndividual>();
+			Set<OWLNamedIndividual> policies = Permissions.policiesForActors(getUserActors());
+			for (OWLNamedIndividual x : policies)
+			{
+					
+				Set<OWLNamedIndividual> policyObjects = OWL.objectProperties(x, "hasObject");					
+					
+				allAllowed.addAll(policyObjects);
+			}
+		}
+		// The following is not a 100% test for protection. To be 100%, we'd have
+		// to check that getInstances returns an empty set rather than getSubClasses, but
+		// this will work in practice and it's a hopefully faster test
+		else if (!isClientExempt() && !reasoner.getSubClasses(and(expr, owlClass("Protected")), false).isBottomSingleton())
+		{
+			throw new IllegalAccessError ("Access denied - protected resources could be returned, please split the query.");
+		}
+		
+//			
+		OWLSerialEntityCache jsonEntities = Refs.owlJsonCache.resolve();
+		Json j = Json.array();
+		for (OWLNamedIndividual ind : OWL.queryIndividuals(queryAsString))
+			if (allAllowed == null || allAllowed.contains(ind))
+				j.add(jsonEntities.individual(ind.getIRI()).resolve());
+		
+		return j;
+	}
+
 }

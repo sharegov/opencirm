@@ -194,7 +194,7 @@ public class StartupUtils
 		// Install the all-trusting trust manager
 		try
 		{
-			SSLContext ctx = SSLContext.getInstance("TLS");
+			SSLContext ctx = SSLContext.getInstance("TLSv1.2");
 			ctx.init(new KeyManager[0], trustAllCerts, new SecureRandom());
 			HttpsURLConnection.setDefaultSSLSocketFactory(ctx
 					.getSocketFactory());

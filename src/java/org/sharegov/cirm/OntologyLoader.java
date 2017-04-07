@@ -157,6 +157,7 @@ public class OntologyLoader
 				if (o == null)
 				{
 					o = manager.loadOntology(iri);
+					
 					lastLoaded.put(iri, System.currentTimeMillis());
 				}
 			}

@@ -55,6 +55,7 @@ import org.restlet.routing.Template;
 import org.restlet.service.EncoderService;
 import org.sharegov.cirm.legacy.ActivityManager;
 import org.sharegov.cirm.legacy.MessageManager;
+import org.sharegov.cirm.legacy.ServiceCaseManager;
 import org.sharegov.cirm.owl.CachedReasoner;
 import org.sharegov.cirm.rdb.RelationalOWLMapper;
 import org.sharegov.cirm.rest.MainRestApplication;
@@ -95,7 +96,7 @@ public class StartUp extends ServerResource
 					"http://www.miamidade.gov/cirm/legacy#providedBy",
 					"http://www.miamidade.gov/cirm/legacy#hasChoiceValue"
 					))
-			.set("metaDatabaseLocation", "c:/temp/testontodb")
+			.set("metaDatabaseLocation", "c:/temp/dbConf")
 			.set("allClientsExempt", true)
 			.set("network", Json.object(				
 					"user", "cirmservice_production",
@@ -108,7 +109,8 @@ public class StartUp extends ServerResource
 					":", "http://www.miamidade.gov/ontology#"
 					))
 			.set("cachedReasonerPopulate", false)
-			.set("startDepartmentIntegration", "x.x.xxx");
+			.set("startDepartmentIntegration", "x.x.xxx")
+			.set("isConfigMode", false);
 
 	private final static StartupHttpInitializer HTTP_INIT = new StartupHttpInitializer();
 	
@@ -449,6 +451,11 @@ public class StartUp extends ServerResource
    			oa.cachedReasonerQ1Populate();
    		}
 	    try {
+	    	if (config.has("isConfigMode") && config.at("isConfigMode").asBoolean()){
+	    		System.out.println("Create Configuration Server cache...");
+	    		ServiceCaseManager.getInstance();
+	    		System.out.println("Done creating Configuration Server cache.");
+	    	}
 	    	server.start();
 	    	if (redirectServer != null) {
 	    		redirectServer.start();
