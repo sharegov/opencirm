@@ -220,9 +220,9 @@ public class MessageManager
 			if (bcc != null)
 				msg.setRecipients(Message.RecipientType.BCC, toRecipients(bcc));
 			if(subject != null)
-				msg.setSubject(subject);
+				msg.setSubject(subject, "UTF-8");
 			if(body != null)
-				msg.setContent(body, "text/html");
+				msg.setContent(body, "text/html; charset=UTF-8");
 			msg.setFrom(messageSenderAddress);
 			msg.setSentDate(new java.util.Date());
 			//creation explanation
@@ -348,8 +348,9 @@ public class MessageManager
 					body = "No body defined (in template)!";
 				msg.setFrom(messageSenderAddress);
 				msg.setSentDate(new java.util.Date());
-				msg.setSubject(subject);
-				msg.setContent(body, "text/html");
+				msg.setSubject(subject, "UTF-8");
+				msg.setContent(body, "text/html; charset=UTF-8");				
+				msg.saveChanges();
 				if (highPriority) 
 					msg.setHeader("X-Priority", "1");
 				//creation explanation
@@ -585,7 +586,7 @@ public class MessageManager
 					body = body + "<br>Initial send success to : " + toStr(validSent);
 					body = body + "<br>Initial valid but not sent to : " + toStr(validUnSent);
 					recoveryMsg.setContent(body, msg.getContentType());
-					recoveryMsg.setSubject(msg.getSubject() + " [R]");
+					recoveryMsg.setSubject(msg.getSubject() + " [R]", "UTF-8");
 					for (Address valid : validUnSent) 
 						recoveryMsg.addRecipient(RecipientType.TO, valid);
 					recoveryMsg.setFrom(messageSenderAddress);
@@ -813,8 +814,13 @@ public class MessageManager
 				msg.setFrom(sender);
 				msg.setRecipients(Message.RecipientType.TO, recipients);
 				msg.setSentDate(new java.util.Date());
-				msg.setSubject(subject);
-				msg.setContent(body, "text/html");
+				msg.setSubject(subject, "UTF-8");
+				if (containsHtmlOrXmlTags(body)) {
+					msg.setContent(body, "text/html; charset=UTF-8");
+				} else {
+					msg.setContent(body, "text/plain; charset=UTF-8");
+				}
+				msg.saveChanges();
 				sendEmail(msg);
 			}
 		}
@@ -877,7 +883,7 @@ public class MessageManager
 			msg.setRecipients(Message.RecipientType.CC, ccA);
 			msg.setRecipients(Message.RecipientType.BCC, bccA);
 			msg.setSentDate(new java.util.Date());
-			msg.setSubject(subject);
+			msg.setSubject(subject, "UTF-8");
 			msg.setContent(body);
 			sendEmail(msg);
 		}
@@ -903,7 +909,7 @@ public class MessageManager
 				msg.setFrom(sender);
 				msg.setRecipients(Message.RecipientType.TO, recipients);
 				msg.setSentDate(new java.util.Date());
-				msg.setSubject(subject);
+				msg.setSubject(subject, "UTF-8");
 				msg.setContent(body);
 				sendEmail(msg);
 			}
@@ -980,6 +986,7 @@ public class MessageManager
 			TransformerFactory xformFactory = TransformerFactory.newInstance();
 			Transformer idTransform = xformFactory.newTransformer();
 			idTransform.setOutputProperty(OutputKeys.INDENT, "yes");
+			idTransform.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
 			Source input = new StAXSource(reader);
 			idTransform.transform(input, new StreamResult(writer));
 			if (DBGXML)
