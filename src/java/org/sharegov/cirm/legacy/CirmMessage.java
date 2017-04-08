@@ -141,7 +141,6 @@ public class CirmMessage extends MimeMessage
 			if (content !=null && content instanceof String) 
 			{
 				String cStr = (String) content;
-				System.out.println(content);
 				String explanation = "<br><br><br><p style=\"color:white\" \r\n";
 				explanation = explanation + getExplanationHTML();
 				explanation = explanation + "</p>";
