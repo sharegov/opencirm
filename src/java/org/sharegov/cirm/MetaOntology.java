@@ -15,7 +15,6 @@
  ******************************************************************************/
 package org.sharegov.cirm;
 
-import static org.sharegov.cirm.OWL.fullIri;
 import static org.sharegov.cirm.OWL.owlClass;
 
 import java.util.ArrayList;
@@ -32,6 +31,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+
+import mjson.Json;
 
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
@@ -55,13 +56,14 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.reasoner.BufferingMode;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.util.BidirectionalShortFormProviderAdapter;
+import org.semanticweb.owlapi.util.DefaultPrefixManager;
+import org.semanticweb.owlapi.util.ShortFormProvider;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.sharegov.cirm.event.ClearOWLEntityCacheForSrTypeModification;
 import org.sharegov.cirm.rest.OWLIndividuals;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
-
-import mjson.Json;
 
 
 /**
@@ -75,27 +77,35 @@ public class MetaOntology
 {
 
 	private static String PREFIX = "legacy:";
+	private static volatile ShortFormProvider prefixShortFormProvider; 
+	
+	
 	public static final int RESOLVE_ALL_IRI_MAX_DEPTH = 5;
 	
-	 /*
-	 * Generic Ontology handling functions.
-	 */
-	
-	public static void setPrefix(String p){
-		PREFIX = p;
+	public static synchronized ShortFormProvider getPrefixShortFormProvider(){
+			if (prefixShortFormProvider == null)
+			{
+				DefaultPrefixManager pm = new DefaultPrefixManager();
+				if (StartUp.getConfig().has("ontologyPrefixes"))
+					for (Map.Entry<String, Json> e : StartUp.getConfig().at("ontologyPrefixes", Json.object()).asJsonMap().entrySet())
+						if (!e.getKey().equals(":"))
+							pm.setPrefix(e.getKey(), e.getValue().asString());
+				prefixShortFormProvider = pm;
+			}
+			return prefixShortFormProvider;
 	}
 	
 	public static List<OWLOntologyChange> getReplaceObjectAnnotationChanges (String individualID, String newAnnotationContent){
 		OWLOntology O = OWL.ontology();
 		//get the individual
-		OWLEntity entity = OWL.dataFactory().getOWLNamedIndividual(OWL.fullIri(PREFIX + individualID));
+		OWLEntity entity = OWL.dataFactory().getOWLNamedIndividual(MetaOntology.fullIri(individualID));
 		String existingLabel = OWL.getEntityLabel(entity);
 		//create existing annotation
 		OWLAnnotationAssertionAxiom toRemove = OWL.dataFactory().getOWLAnnotationAssertionAxiom(
-				entity.getIRI(), OWL.dataFactory().getOWLAnnotation(OWL.annotationProperty("http://www.w3.org/2000/01/rdf-schema#label"), OWL.dataFactory().getOWLLiteral(existingLabel)));
+				entity.getIRI(), OWL.dataFactory().getOWLAnnotation(OWL.annotationProperty(fullIri("rdfs:label")), OWL.dataFactory().getOWLLiteral(existingLabel)));
 		//create new annotation
 		OWLAnnotationAssertionAxiom toAdd = OWL.dataFactory().getOWLAnnotationAssertionAxiom(
-				entity.getIRI(), OWL.dataFactory().getOWLAnnotation(OWL.annotationProperty("http://www.w3.org/2000/01/rdf-schema#label"), OWL.dataFactory().getOWLLiteral(newAnnotationContent)));		
+				entity.getIRI(), OWL.dataFactory().getOWLAnnotation(OWL.annotationProperty(fullIri("rdfs:label")), OWL.dataFactory().getOWLLiteral(newAnnotationContent)));		
 		
 		RemoveAxiom removeAxiom = new RemoveAxiom(O, toRemove);			
 		AddAxiom addAxiom = new AddAxiom(O, toAdd); 
@@ -145,8 +155,8 @@ public class MetaOntology
 		OWLOntologyManager manager = OWL.manager();
 		OWLDataFactory factory = manager.getOWLDataFactory();
 
-		OWLNamedIndividual individual = factory.getOWLNamedIndividual(OWL.fullIri(PREFIX + individualID));
-		OWLDataProperty property = factory.getOWLDataProperty(OWL.fullIri(PREFIX + propertyID));
+		OWLNamedIndividual individual = factory.getOWLNamedIndividual(MetaOntology.fullIri(individualID));
+		OWLDataProperty property = factory.getOWLDataProperty(MetaOntology.fullIri(propertyID));
 		
 		OWLLiteral newLiteralValue = createTypedLiteral(newValue);		 
 		
@@ -158,7 +168,8 @@ public class MetaOntology
 	public static List <RemoveAxiom> getIndividualLiteralRemoveAxioms (String individualID, String propertyID){
 		OWLOntology O = OWL.ontology();
 		String ontologyIri = Refs.defaultOntologyIRI.resolve();
-
+		
+		
 		if (O == null) {
 			throw new RuntimeException("Ontology not found: " + ontologyIri);
 		}
@@ -166,8 +177,8 @@ public class MetaOntology
 		OWLOntologyManager manager = OWL.manager();
 		OWLDataFactory factory = manager.getOWLDataFactory();
 
-		OWLNamedIndividual individual = factory.getOWLNamedIndividual(OWL.fullIri(PREFIX + individualID));
-		OWLDataProperty property = factory.getOWLDataProperty(OWL.fullIri(PREFIX + propertyID));
+		OWLNamedIndividual individual = factory.getOWLNamedIndividual(MetaOntology.fullIri(individualID));
+		OWLDataProperty property = factory.getOWLDataProperty(MetaOntology.fullIri(propertyID));
 		
 		Set<OWLLiteral> propValues = OWL.reasoner().getDataPropertyValues(individual, property);
 		
@@ -213,8 +224,8 @@ public class MetaOntology
 		OWLOntologyManager manager = OWL.manager();
 		OWLDataFactory factory = manager.getOWLDataFactory();
 
-		OWLNamedIndividual individual = factory.getOWLNamedIndividual(OWL.fullIri(PREFIX + individualID));
-		OWLObjectPropertyExpression property = factory.getOWLObjectProperty(OWL.fullIri(PREFIX + propertyID));
+		OWLNamedIndividual individual = factory.getOWLNamedIndividual(MetaOntology.fullIri(individualID));
+		OWLObjectPropertyExpression property = factory.getOWLObjectProperty(MetaOntology.fullIri(propertyID));
 		
 		Set <OWLNamedIndividual> propObjects = OWL.reasoner().getObjectPropertyValues(individual, property).getFlattened();
 		
@@ -259,7 +270,7 @@ public class MetaOntology
 		
 		OWLOntologyManager manager = OWL.manager();
 		OWLDataFactory factory = manager.getOWLDataFactory();
-		OWLIndividual individual = factory.getOWLNamedIndividual(fullIri(PREFIX + individualID)); 
+		OWLIndividual individual = factory.getOWLNamedIndividual(MetaOntology.fullIri(individualID)); 
 		
 		return getRemoveOnlyPropertiesIndividualChanges (individual);		
 	}
@@ -275,9 +286,9 @@ public class MetaOntology
 		OWLOntologyManager manager = OWL.manager();
 		OWLDataFactory factory = manager.getOWLDataFactory();
 		
-		OWLNamedIndividual newInd = OWL.individual(PREFIX + individualID);		
-		OWLIndividual parent = factory.getOWLNamedIndividual(fullIri(PREFIX + parentID));
-		OWLObjectProperty property =  factory.getOWLObjectProperty(fullIri(PREFIX + propertyID));
+		OWLNamedIndividual newInd = OWL.individual(MetaOntology.fullIri(individualID));		
+		OWLIndividual parent = factory.getOWLNamedIndividual(MetaOntology.fullIri(parentID));
+		OWLObjectProperty property =  factory.getOWLObjectProperty(MetaOntology.fullIri(propertyID));
 		
 		List<OWLOntologyChange> result = new ArrayList<OWLOntologyChange>();
 		
@@ -310,7 +321,7 @@ public class MetaOntology
 			String iri = getIdFromUri(data.at("iri").asString());
 			String prefix = correctedPrefix (iri);
 			
-			OWLNamedIndividual newInd = OWL.individual(prefix + iri);
+			OWLNamedIndividual newInd = OWL.individual(MetaOntology.fullIri(prefix + iri));
 						
 			result.addAll(makeObjectIndividual (newInd, data, O, manager, factory));
 		}
@@ -328,7 +339,7 @@ public class MetaOntology
 				String iri = getIdFromUri(e.at("iri").asString());
 				String prefix = correctedPrefix (iri);
 				
-				OWLNamedIndividual newInd = OWL.individual(prefix + iri);
+				OWLNamedIndividual newInd = OWL.individual(MetaOntology.fullIri(prefix + iri));
 							
 				result.addAll(makeObjectIndividual (newInd, e, O, manager, factory));
 			}
@@ -362,12 +373,12 @@ public class MetaOntology
 			String iri = getIdFromUri(data.at("iri").asString());
 			String prefix = correctedPrefix (iri);
 			
-			OWLNamedIndividual newInd = OWL.individual(prefix + iri);
+			OWLNamedIndividual newInd = OWL.individual(MetaOntology.fullIri(prefix + iri));
 						
 			result.addAll(makeObjectIndividual (newInd, data, O, manager, factory));
 			
-			OWLIndividual parent = factory.getOWLNamedIndividual(fullIri(PREFIX + parentID));
-			OWLObjectProperty property =  factory.getOWLObjectProperty(fullIri(PREFIX + propertyID));
+			OWLIndividual parent = factory.getOWLNamedIndividual(MetaOntology.fullIri(parentID));
+			OWLObjectProperty property =  factory.getOWLObjectProperty(MetaOntology.fullIri(propertyID));
 			
 			result.add(new AddAxiom(O, factory.getOWLObjectPropertyAssertionAxiom(property, parent, newInd)));
 		}
@@ -385,12 +396,12 @@ public class MetaOntology
 				String iri = getIdFromUri(e.at("iri").asString());
 				String prefix = correctedPrefix (iri);
 				
-				OWLNamedIndividual newInd = OWL.individual(prefix + iri);
+				OWLNamedIndividual newInd = OWL.individual(MetaOntology.fullIri(prefix + iri));
 							
 				result.addAll(makeObjectIndividual (newInd, e, O, manager, factory));
 				
-				OWLIndividual parent = factory.getOWLNamedIndividual(fullIri(PREFIX + parentID));
-				OWLObjectProperty property =  factory.getOWLObjectProperty(fullIri(PREFIX + propertyID));
+				OWLIndividual parent = factory.getOWLNamedIndividual(MetaOntology.fullIri(parentID));
+				OWLObjectProperty property =  factory.getOWLObjectProperty(MetaOntology.fullIri(propertyID));
 				
 				result.add(new AddAxiom(O, factory.getOWLObjectPropertyAssertionAxiom(property, parent, newInd)));
 			}
@@ -418,7 +429,7 @@ public class MetaOntology
 	public static OWLNamedIndividual getMetaIndividual (String individualID){		
 		OWLOntologyManager manager = OWL.manager();
 		OWLDataFactory factory = manager.getOWLDataFactory();
-		return  factory.getOWLNamedIndividual(fullIri(PREFIX + individualID)); 
+		return  factory.getOWLNamedIndividual(MetaOntology.fullIri(individualID)); 
 	}
 
 	
@@ -430,9 +441,9 @@ public class MetaOntology
 		}		
 		OWLOntologyManager manager = OWL.manager();
 		OWLDataFactory factory = manager.getOWLDataFactory();
-		OWLIndividual existingInd = factory.getOWLNamedIndividual(fullIri(PREFIX + objectPropertyValue)); 
-		OWLIndividual parent = factory.getOWLNamedIndividual(fullIri(PREFIX + parentID));
-		OWLObjectProperty property =  factory.getOWLObjectProperty(fullIri(PREFIX + propertyID));
+		OWLIndividual existingInd = factory.getOWLNamedIndividual(MetaOntology.fullIri(objectPropertyValue)); 
+		OWLIndividual parent = factory.getOWLNamedIndividual(MetaOntology.fullIri(parentID));
+		OWLObjectProperty property =  factory.getOWLObjectProperty(MetaOntology.fullIri(propertyID));
 		return factory.getOWLObjectPropertyAssertionAxiom(property, parent, existingInd);
 	}
 	
@@ -454,8 +465,8 @@ public class MetaOntology
 
 		OWLOntologyManager manager = OWL.manager();
 		OWLDataFactory factory = manager.getOWLDataFactory();
-		OWLIndividual newInd = factory.getOWLNamedIndividual(fullIri(PREFIX + newData.at("iri").asString())); 
-		OWLIndividual oldInd = factory.getOWLNamedIndividual(fullIri(PREFIX + oldData.at("iri").asString())); 
+		OWLIndividual newInd = factory.getOWLNamedIndividual(MetaOntology.fullIri(PREFIX + newData.at("iri").asString())); 
+		OWLIndividual oldInd = factory.getOWLNamedIndividual(MetaOntology.fullIri(PREFIX + oldData.at("iri").asString())); 
 		
 		List<OWLOntologyChange> result = getRemoveAllPropertiesIndividualChanges (oldInd);
 		
@@ -1028,8 +1039,7 @@ public class MetaOntology
 		Json S = Json.nil();
 		
 		try {
-			
-			S = q.doInternalQuery("{" + individualOntology + individualID + "}");			
+			S = q.serialize(q.doQuery("{" + individualOntology + individualID + "}"), getPrefixShortFormProvider());			
 			
 		} catch (Exception e) {
 			System.out.println("Error while querying the Ontology for "+ individualOntology + individualID);
@@ -1287,6 +1297,10 @@ public class MetaOntology
 			        
         return Json.read(strDonor);              
 	}
-
+		
 	
+	public static IRI fullIri (String prefixedForm){
+		BidirectionalShortFormProviderAdapter adapter = new BidirectionalShortFormProviderAdapter(getPrefixShortFormProvider());
+		return adapter.getEntity(prefixedForm).getIRI();
+	}
 }

@@ -234,7 +234,7 @@ public class OntoUserProvider implements UserProvider
 	{
 		Json result;
 		ThreadLocalStopwatch.getWatch().time("OntoUserProvider: retrieveUsers");
-		result = JsonUtil.ensureArray(new OWLIndividuals().doQuery("mdc:User"));
+		result = JsonUtil.ensureArray(new OWLIndividuals().doQueryService("mdc:User"));
 		ThreadLocalStopwatch.getWatch().time("OntoUserProvider: retrieveUsers completed: nrOfUsers: " + 
 		                                result.asJsonList().size());
 		return result;

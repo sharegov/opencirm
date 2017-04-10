@@ -4,7 +4,6 @@ import static org.sharegov.cirm.OWL.fullIri;
 import static org.sharegov.cirm.OWL.owlClass;
 import static org.sharegov.cirm.OWL.reasoner;
 
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import mjson.Json;
 
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -32,8 +33,6 @@ import org.sharegov.cirm.rest.OWLIndividuals;
 import org.sharegov.cirm.rest.OntoAdmin;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
-
-import mjson.Json;
 
 /**
  * Handles the User Cases for CIRM Admin Interface
@@ -187,13 +186,13 @@ public class ServiceCaseManager extends OntoAdmin {
 	 */
 	
 	private String getParentAgencyName (Json p){
-		if (p.has("hasParentAgency"))  {
+		if (p.has("mdc:hasParentAgency"))  {
 			String parentIri;
-			if (p.at("hasParentAgency").isObject()){
-				if (p.at("hasParentAgency").has("iri")){
-					parentIri = (p.at("hasParentAgency").at("iri").asString());
+			if (p.at("mdc:hasParentAgency").isObject()){
+				if (p.at("mdc:hasParentAgency").has("iri")){
+					parentIri = (p.at("mdc:hasParentAgency").at("iri").asString());
 				} else throw new IllegalArgumentException("Cannot find IRI property for Individual: " + p.asString());
-			} else parentIri = p.at("hasParentAgency").asString();
+			} else parentIri = p.at("mdc:hasParentAgency").asString();
 			
 			OWLNamedIndividual ind = OWL.individual(parentIri);
 			
@@ -202,7 +201,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			return getParentAgencyName (np);
 		}
 		
-		return p.has("Name")?p.at("Name").asString():p.at("label").asString();
+		return p.has("mdc:Name")?p.at("mdc:Name").asString():p.at("rdfs:label").asString();
 	}
 	
 	/** 
@@ -212,7 +211,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	 */
 	
 	private String findJusrisdiction (Json srType){
-		if (srType.has("providedBy")) return getParentAgencyName(srType.at("providedBy"));
+		if (srType.has("legacy:providedBy")) return getParentAgencyName(srType.at("legacy:providedBy"));
 		
 		return "";
 	}
@@ -225,10 +224,10 @@ public class ServiceCaseManager extends OntoAdmin {
 	 */
 	
 	private Json resolveDepartment (Json p){			
-		if (p.has("hasParentAgency")) p = p.at("hasParentAgency");
+		if (p.has("mdc:hasParentAgency")) p = p.at("mdc:hasParentAgency");
 		else 
-			if (p.has("Department")) p = p.at("Department");
-			else throw new IllegalArgumentException("Division: " + p.at("iri").asString() + " have no Parent Agency or Department assigned.");
+			if (p.has("mdc:Department")) p = p.at("mdc:Department");
+			else throw new IllegalArgumentException("mdc:Division: " + p.at("iri").asString() + " have no Parent Agency or Department assigned.");
 		
 		
 		String iri;
@@ -241,10 +240,10 @@ public class ServiceCaseManager extends OntoAdmin {
 
 		OWLNamedIndividual ind = OWL.individual(iri);
 		
-		Json np = (p.isObject() && p.has("type") && (p.has("Name") || p.has("label"))) ? p : getSerializedIndividual(ind.getIRI().getFragment(), ind.getIRI().getScheme());
+		Json np = (p.isObject() && p.has("type") && (p.has("mdc:Name") || p.has("rdfs:label"))) ? p : getSerializedIndividual(ind.getIRI().getFragment(), ind.getIRI().getScheme());
 		
-		if (np.has("type") && np.at("type").asString().toLowerCase().compareTo("division_county") != 0){
-			return Json.object().set("Name", np.has("Name")?np.at("Name").asString():np.at("label").asString()).set("Type", np.at("type").asString()).set("fragment", MetaOntology.getIdFromUri((np.at("iri").asString())));
+		if (np.has("type") && np.at("type").asString().toLowerCase().compareTo("mdc:division_county") != 0){
+			return Json.object().set("mdc:Name", np.has("mdc:Name")?np.at("mdc:Name").asString():np.at("rdfs:label").asString()).set("Type", np.at("type").asString()).set("fragment", MetaOntology.getIdFromUri((np.at("iri").asString())));
 		} else {
 			return resolveDepartment(np);
 		}
@@ -279,15 +278,15 @@ public class ServiceCaseManager extends OntoAdmin {
 	
 	private Json resolveDepartmentDivision (Json p){
 		Json result = Json.object();
-		Json np = (p.isObject() && p.has("type") && (p.has("Name")||p.has("label"))&&p.has("hasParentAgency")&&p.has("Department")) ? p: getDepartmentDivisionSerializedIndividual (p);
+		Json np = (p.isObject() && p.has("type") && (p.has("mdc:Name")||p.has("rdfs:label"))&&p.has("mdc:hasParentAgency")&&p.has("mdc:Department")) ? p: getDepartmentDivisionSerializedIndividual (p);
 		
 		if (np.has("type") && np.at("type").asString().toLowerCase().compareTo("division_county") == 0){
-			result.set("division",  Json.object().set("Name", np.has("Name")?np.at("Name").asString():np.at("label").asString()).set("Division_Code", np.at("Division_Code").asString()).set("fragment", MetaOntology.getIdFromUri(np.at("iri").asString())));
+			result.set("division",  Json.object().set("mdc:Name", np.has("mdc:Name")?np.at("mdc:Name").asString():np.at("rdfs:label").asString()).set("mdc:Division_Code", np.at("mdc:Division_Code").asString()).set("fragment", MetaOntology.getIdFromUri(np.at("iri").asString())));
 			
 			result.set("department", resolveDepartment (np));					
 		} else {
-			result.set("division", Json.object().set("Name", Json.nil()).set("Division_Code", Json.nil()).set("fragment", Json.nil()));
-			result.set("department", Json.object().set("Name", np.has("Name") ? np.at("Name").asString(): np.at("label").asString()).set("Type", np.has("type") ? np.at("type").asString(): Json.nil()).set("fragment", MetaOntology.getIdFromUri(np.at("iri").asString())));
+			result.set("division", Json.object().set("mdc:Name", Json.nil()).set("mdc:Division_Code", Json.nil()).set("fragment", Json.nil()));
+			result.set("department", Json.object().set("mdc:Name", np.has("mdc:Name") ? np.at("mdc:Name").asString(): np.at("rdfs:label").asString()).set("Type", np.has("type") ? np.at("type").asString(): Json.nil()).set("fragment", MetaOntology.getIdFromUri(np.at("iri").asString())));
 		}		
 		
 		return result;
@@ -301,7 +300,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	 */
 	
 	private Json findDepartmentDivision (Json srType){
-		if (srType.has("providedBy")) return resolveDepartmentDivision (srType.at("providedBy"));
+		if (srType.has("legacy:providedBy")) return resolveDepartmentDivision (srType.at("legacy:providedBy"));
 		else throw new IllegalArgumentException("Cannot find providedBy property for SR type: " +srType.at("iri").asString());
 	}
 	
@@ -333,7 +332,7 @@ public class ServiceCaseManager extends OntoAdmin {
 		
 		Json result = Json.object().set("iri", MetaOntology.getOntologyFromUri(iri) + ":" + individual.getIRI().getFragment())
 //								   .set("code", individual.getIRI().getFragment())
-								   .set("label", OWL.getEntityLabel(individual))
+								   .set("rdfs:label", OWL.getEntityLabel(individual))
 								   .set("disabled", isSrDisabledOrDisabledCreate(individual));
 		
 		try {
@@ -341,8 +340,8 @@ public class ServiceCaseManager extends OntoAdmin {
 			Json jIndividual = getSerializedMetaIndividual(individual.getIRI().getFragment());			
 			
 			String jurisdiction;		
-			if (jIndividual.has("hasJurisdictionDescription")){
-				jurisdiction = jIndividual.at("hasJurisdictionDescription").asString();
+			if (jIndividual.has("legacy:hasJurisdictionDescription")){
+				jurisdiction = jIndividual.at("legacy:hasJurisdictionDescription").asString();
 			} else {
 				jurisdiction = findJusrisdiction(jIndividual);
 				if (jurisdiction == null || jurisdiction.isEmpty()) throw new IllegalArgumentException("Individual legacy:" +  individual.getIRI().getFragment() + " have no jurisdiction associated.");
@@ -359,11 +358,11 @@ public class ServiceCaseManager extends OntoAdmin {
 			addActitivitesByDepartment(individual.getIRI().getFragment(), jIndividual, depdiv.at("department").at("fragment").asString());
 			
 			Json isInterfaceSR = Json.object().set("interface_sr", false);
-			if (jIndividual.has("hasLegacyInterface")){
+			if (jIndividual.has("legacy:hasLegacyInterface")){
 //				jIndividual.set("hasLegacyInterface", MetaOntology.resolveAllIris(jIndividual.at("hasLegacyInterface ")));
 				
-				if (jIndividual.at("hasLegacyInterface").isArray()){
-					List<Json> array = jIndividual.at("hasLegacyInterface").asJsonList();
+				if (jIndividual.at("legacy:hasLegacyInterface").isArray()){
+					List<Json> array = jIndividual.at("legacy:hasLegacyInterface").asJsonList();
 					for (Json elem : array) {
 						if (isInterfaceSR(elem)){
 							isInterfaceSR.set("interface_sr", true);
@@ -371,8 +370,8 @@ public class ServiceCaseManager extends OntoAdmin {
 						}
 					}
 					
-				} else if (jIndividual.at("hasLegacyInterface").isObject()){
-					if (isInterfaceSR(jIndividual.at("hasLegacyInterface"))){
+				} else if (jIndividual.at("legacy:hasLegacyInterface").isObject()){
+					if (isInterfaceSR(jIndividual.at("legacy:hasLegacyInterface"))){
 						isInterfaceSR.set("interface_sr", true);
 					}					
 				} else {
@@ -405,9 +404,9 @@ public class ServiceCaseManager extends OntoAdmin {
 	}
 	
 	private void addActitivitesByDepartment(String srType, Json serializedSrType, String departmentIriFragment){
-		if (serializedSrType.has("hasActivity")){
+		if (serializedSrType.has("legacy:hasActivity")){
 			
-			Json srTypeActivities = MetaOntology.resolveIRIs(serializedSrType.at("hasActivity"), "legacy");
+			Json srTypeActivities = MetaOntology.resolveIRIs(serializedSrType.at("legacy:hasActivity"), "legacy");
 			
 			Set <String> S = new HashSet<>();
 						
@@ -434,10 +433,10 @@ public class ServiceCaseManager extends OntoAdmin {
 	}
 	
 	private void addOutcomesByDepartment (String srType, Json serializedActivity, String departmentIriFragment){
-		if (serializedActivity.has("hasAllowableOutcome")){
+		if (serializedActivity.has("legacy:hasAllowableOutcome")){
 			Set <String> S = new HashSet<>();
 			
-			Json activityOutcomes = serializedActivity.at("hasAllowableOutcome");
+			Json activityOutcomes = serializedActivity.at("legacy:hasAllowableOutcome");
 			
 			if (activityOutcomes.isArray()){
 				for (Json outcx : activityOutcomes.asJsonList()){
@@ -470,7 +469,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	}
 	
 	private boolean isInterfaceSR(Json interfaceDescription){
-		return (interfaceDescription.isObject() && interfaceDescription.has("isExternal") && interfaceDescription.at("isExternal").asString().compareToIgnoreCase("true")==0);
+		return (interfaceDescription.isObject() && interfaceDescription.has("legacy:isExternal") && interfaceDescription.at("legacy:isExternal").asString().compareToIgnoreCase("true")==0);
 	}
 	
 	/**
@@ -704,10 +703,10 @@ public class ServiceCaseManager extends OntoAdmin {
 			repo.ensurePeerStarted();
 						
 			List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
-			changes.addAll(MetaOntology.getRemoveIndividualPropertyChanges(srType, "isDisabledCreate"));	
-			changes.addAll(MetaOntology.getRemoveIndividualPropertyChanges(srType, "isDisabled"));			
+			changes.addAll(MetaOntology.getRemoveIndividualPropertyChanges(srType, "legacy:isDisabledCreate"));	
+			changes.addAll(MetaOntology.getRemoveIndividualPropertyChanges(srType, "legacy:isDisabled"));			
 
-			AddAxiom isDisabledCreateAddAxiom = MetaOntology.getIndividualLiteralAddAxiom(srType, "isDisabledCreate", true);
+			AddAxiom isDisabledCreateAddAxiom = MetaOntology.getIndividualLiteralAddAxiom(srType, "legacy:isDisabledCreate", true);
 			
 			changes.add(isDisabledCreateAddAxiom);
 			
@@ -742,10 +741,10 @@ public class ServiceCaseManager extends OntoAdmin {
 			repo.ensurePeerStarted();
 			
 			List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
-			changes.addAll(MetaOntology.getRemoveIndividualPropertyChanges(srType, "isDisabledCreate"));	
-			changes.addAll(MetaOntology.getRemoveIndividualPropertyChanges(srType, "isDisabled"));			
+			changes.addAll(MetaOntology.getRemoveIndividualPropertyChanges(srType, "legacy:isDisabledCreate"));	
+			changes.addAll(MetaOntology.getRemoveIndividualPropertyChanges(srType, "legacy:isDisabled"));			
 
-			AddAxiom isDisabledCreateAddAxiom = MetaOntology.getIndividualLiteralAddAxiom(srType, "isDisabledCreate", false);
+			AddAxiom isDisabledCreateAddAxiom = MetaOntology.getIndividualLiteralAddAxiom(srType, "legacy:isDisabledCreate", false);
 			
 			changes.add(isDisabledCreateAddAxiom);
 			
@@ -779,12 +778,11 @@ public class ServiceCaseManager extends OntoAdmin {
 			Json el = cache.get(cacheKey);
 			
 			if (el != null && !el.isNull()) return el;
-					
-//			OWLNamedIndividual ind = individual(individualID);
-//			Json jInd = OWL.toJSON(ontology(), ind);
+
 			OWLIndividuals q = new OWLIndividuals();
 			
-			Json S = q.doInternalQuery("{" + cacheKey + "}");
+			Json S = q.serialize(q.doQuery("{" + cacheKey + "}"), MetaOntology.getPrefixShortFormProvider());
+
 			for (Json ind: S.asJsonList()){
 				cache.put(cacheKey, ind);
 				return ind;
@@ -823,11 +821,11 @@ public class ServiceCaseManager extends OntoAdmin {
 		
 		Json sr = getSerializedMetaIndividual(srType);		
 		
-		if (sr.has("hasServiceCaseAlert") && sr.at("hasServiceCaseAlert").isObject()){
-			String iri = sr.at("hasServiceCaseAlert").at("iri").asString();
+		if (sr.has("legacy:hasServiceCaseAlert") && sr.at("legacy:hasServiceCaseAlert").isObject()){
+			String iri = sr.at("legacy:hasServiceCaseAlert").at("iri").asString();
 			OWLNamedIndividual ind = OWL.individual(iri);
-			sr.at("hasServiceCaseAlert").set("iri", MetaOntology.getOntologyFromUri(ind.getIRI().toString()) + ":" + ind.getIRI().getFragment());
-			return sr.at("hasServiceCaseAlert");
+			sr.at("legacy:hasServiceCaseAlert").set("iri", MetaOntology.getOntologyFromUri(ind.getIRI().toString()) + ":" + ind.getIRI().getFragment());
+			return sr.at("legacy:hasServiceCaseAlert");
 		} else return Json.nil();
 	
 	}
@@ -968,8 +966,8 @@ public class ServiceCaseManager extends OntoAdmin {
 			String newIri = individualID + "_ALERT_" + Long.toString(now.getTime());
 			
 			Json data = Json.object().set("iri", newIri)
-									 .set("label", newLabelContent)
-									 .set("type", "ServiceCaseAlert");
+									 .set("rdfs:label", newLabelContent)
+									 .set("type", "legacy:ServiceCaseAlert");
 					
 			Json oldAlert = getServiceCaseAlert(individualID);
 			
@@ -1017,7 +1015,7 @@ public class ServiceCaseManager extends OntoAdmin {
 		synchronized (repo) {
 			repo.ensurePeerStarted();			
 			
-			String propertyID = "hasServiceCaseAlert";
+			String propertyID = "legacy:hasServiceCaseAlert";
 			
 			if(data.at("iri").isNull())
 			{
@@ -1108,9 +1106,9 @@ public class ServiceCaseManager extends OntoAdmin {
 		
 		Json sr = getSerializedMetaIndividual(srType);			
 				
-		if (sr.has("hasServiceField")){
+		if (sr.has("legacy:hasServiceField")){
 			
-			Json questions = MetaOntology.resolveIRIs(sr.at("hasServiceField"), "legacy");
+			Json questions = MetaOntology.resolveIRIs(sr.at("legacy:hasServiceField"), "legacy");
 			
 			if (!questions.isArray()){
 				return Json.array().add(questions);						
@@ -1132,9 +1130,9 @@ public class ServiceCaseManager extends OntoAdmin {
 		
 		Json sr = getSerializedMetaIndividual(srType);			
 				
-		if (sr.has("hasActivity")){
+		if (sr.has("legacy:hasActivity")){
 			
-			Json activities = MetaOntology.resolveIRIs(sr.at("hasActivity"), "legacy");
+			Json activities = MetaOntology.resolveIRIs(sr.at("legacy:hasActivity"), "legacy");
 			
 			if (!activities.isArray()){
 				return Json.array().add(activities);						
@@ -1144,24 +1142,6 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 		} else return Json.nil();
 	
-	}
-	
-	private Json getSerializedActivities (Json activities){
-		if (activities.isArray()){
-			Json result = Json.array();
-			for (Json actvx: activities.asJsonList()){
-				if (actvx.isObject()){
-					result.add(actvx);
-				} else {
-					result.add(getSerializedIndividual(actvx.asString(), "legacy"));
-				}
-			}			
-			return result;
-		} else if (activities.isObject()){
-			return Json.array().add(activities);
-		} else {
-			return Json.array().add(getSerializedIndividual(activities.asString(), "legacy"));
-		}
 	}
 	
 	public boolean doRollBack (List<Integer> revisionNumbers){		
@@ -1198,7 +1178,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			List<String> evictionList = new ArrayList<String>();
 			evictionList.add(individualID);
-			String propertyID = "hasServiceField";
+			String propertyID = "legacy:hasServiceField";
 			comment = (comment==null)?"Create/Replace Questions for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID):comment;	
 			
 			Json oldQuestions = getServiceCaseQuestions(individualID);		
@@ -1219,7 +1199,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			List<String> evictionList = new ArrayList<String>();
 			evictionList.add(individualID);
-			String propertyID = "hasActivity";
+			String propertyID = "legacy:hasActivity";
 			comment = (comment==null)?"Create/Replace Activities for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID):comment;	
 			
 			Json oldActivities = getServiceCaseActivities(individualID);			
@@ -1583,9 +1563,9 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			for(Json sr: getAll().asJsonList()){
 				Json serviceCase = getSerializedMetaIndividual(sr.at("iri").toString().replace("\"", "").split(":")[1]);
-				if(serviceCase.has("hasActivity") && serviceCase.at("hasActivity").isArray())
+				if(serviceCase.has("legacy:hasActivity") && serviceCase.at("legacy:hasActivity").isArray())
 				{
-					for(Json activity : serviceCase.at("hasActivity").asJsonList()){
+					for(Json activity : serviceCase.at("legacy:hasActivity").asJsonList()){
 						String iri = null;
 						if(activity.isObject()){
 							iri = activity.at("iri").asString();
@@ -1757,9 +1737,9 @@ public class ServiceCaseManager extends OntoAdmin {
 						
 			List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 	
-			changes.addAll(MetaOntology.getRemoveIndividualPropertyChanges(activity, "isDisabled"));			
+			changes.addAll(MetaOntology.getRemoveIndividualPropertyChanges(activity, "legacy:isDisabled"));			
 
-			AddAxiom isDisabledCreateAddAxiom = MetaOntology.getIndividualLiteralAddAxiom(activity, "isDisabled", true);
+			AddAxiom isDisabledCreateAddAxiom = MetaOntology.getIndividualLiteralAddAxiom(activity, "legacy:isDisabled", true);
 			
 			changes.add(isDisabledCreateAddAxiom);
 			
@@ -1795,9 +1775,9 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 				
-			changes.addAll(MetaOntology.getRemoveIndividualPropertyChanges(activity, "isDisabled"));			
+			changes.addAll(MetaOntology.getRemoveIndividualPropertyChanges(activity, "legacy:isDisabled"));			
 
-			AddAxiom isDisabledCreateAddAxiom = MetaOntology.getIndividualLiteralAddAxiom(activity, "isDisabled", false);
+			AddAxiom isDisabledCreateAddAxiom = MetaOntology.getIndividualLiteralAddAxiom(activity, "legacy:isDisabled", false);
 			
 			changes.add(isDisabledCreateAddAxiom);
 			

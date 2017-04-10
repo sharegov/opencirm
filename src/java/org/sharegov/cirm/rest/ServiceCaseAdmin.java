@@ -343,12 +343,12 @@ public class ServiceCaseAdmin extends RestService {
 		
 		try
 		{			
-			if (!(aData.has("userName") && aData.has("payload") && aData.at("payload").has("iri") && aData.at("payload").has("label"))) throw new IllegalArgumentException("User Name or Alert data null or empty"); 
+			if (!(aData.has("userName") && aData.has("payload") && aData.at("payload").has("iri") && aData.at("payload").has("rdfs:label"))) throw new IllegalArgumentException("User Name or Alert data null or empty"); 
 			
 			String userName = aData.at("userName").asString();
 			String comment = aData.has("comment")?aData.at("comment").asString():null;
 			String alertUri = aData.at("payload").at("iri").asString();
-			String newLabel = aData.at("payload").at("label").asString();						
+			String newLabel = aData.at("payload").at("rdfs:label").asString();						
 
 			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
 			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");
@@ -377,7 +377,7 @@ public class ServiceCaseAdmin extends RestService {
 		
 		try
 		{ 
-			if (!(aData.has("userName") && aData.has("payload") && aData.at("payload").has("iri") && aData.at("payload").has("label")&& aData.at("payload").has("type"))) throw new IllegalArgumentException("User Name or Alert data null/empty/Incomplete"); 
+			if (!(aData.has("userName") && aData.has("payload") && aData.at("payload").has("iri") && aData.at("payload").has("rdfs:label")&& aData.at("payload").has("type"))) throw new IllegalArgumentException("User Name or Alert data null/empty/Incomplete"); 
 			
 			String userName = aData.at("userName").asString();	
 			String comment = aData.has("comment")?aData.at("comment").asString():null;

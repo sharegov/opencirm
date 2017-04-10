@@ -2,22 +2,22 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "schema for an Service Case question list",
   "items": {
-    "$ref": "#/definitions/ServiceField"
+    "$ref": "#/definitions/legacy:ServiceField"
   },
   "minItems": 1,
   "uniqueItems": true,
   "type": "array",
   "definitions": {
     "reference": {
-	  "oneOf": [
-				{
-				  "$ref": "#/definitions/referenceObject"
-				},
-				{
-				  "$ref": "#/definitions/iri"
-				}
-			  ]
-	},
+      "oneOf": [
+        {
+          "$ref": "#/definitions/referenceObject"
+        },
+        {
+          "$ref": "#/definitions/iri"
+        }
+      ]
+    },
     "referenceObject": {
       "additionalProperties": true,
       "properties": {
@@ -40,155 +40,155 @@
       ],
       "type": "object"
     },
-    "ServiceField": {
+    "legacy:ServiceField": {
       "type": "object",
       "oneOf": [
         {
           "$ref": "#/definitions/reference"
         },
         {
-          "$ref": "#/definitions/ServiceNote"
+          "$ref": "#/definitions/legacy:ServiceNote"
         },
         {
-          "$ref": "#/definitions/ServiceQuestion"
+          "$ref": "#/definitions/legacy:ServiceQuestion"
         }
       ]
     },
-    "ServiceFieldList": {
+    "legacy:ServiceFieldList": {
       "items": {
-        "$ref": "#/definitions/ServiceField"
+        "$ref": "#/definitions/legacy:ServiceField"
       },
       "minItems": 1,
       "uniqueItems": true,
       "type": "array"
     },
-    "ServiceNote": {
+    "legacy:ServiceNote": {
       "additionalProperties": false,
       "properties": {
         "iri": {
           "$ref": "#/definitions/iri"
         },
-        "label": {
-          "$ref": "#/definitions/label"
+        "rdfs:label": {
+          "$ref": "#/definitions/rdfs:label"
         },
-        "hasAllowableModules": {
-          "$ref": "#/definitions/hasAllowableModules"
+        "legacy:hasAllowableModules": {
+          "$ref": "#/definitions/legacy:hasAllowableModules"
         },
-        "hasBusinessCodes": {
-          "$ref": "#/definitions/hasBusinessCodes"
+        "legacy:hasBusinessCodes": {
+          "$ref": "#/definitions/legacy:hasBusinessCodes"
         },
-        "hasDataType": {
-          "$ref": "#/definitions/hasDataType"
+        "legacy:hasDataType": {
+          "$ref": "#/definitions/legacy:hasDataType"
         },
         "hasLegacyCode": {
-          "$ref": "#/definitions/hasLegacyCode"
+          "$ref": "#/definitions/legacy:hasLegacyCode"
         },
-        "hasOrderBy": {
-          "$ref": "#/definitions/hasOrderBy"
+        "legacy:hasOrderBy": {
+          "$ref": "#/definitions/legacy:hasOrderBy"
         },
-        "hasChoiceValueList": {
-          "$ref": "#/definitions/hasChoiceValueList"
+        "legacy:hasChoiceValueList": {
+          "$ref": "#/definitions/legacy:hasChoiceValueList"
         },
-        "hasDataSource": {
-          "$ref": "#/definitions/hasDataSource"
+        "mdc:hasDataSource": {
+          "$ref": "#/definitions/mdc:hasDataSource"
         },
-        "isDisabled": {
-          "$ref": "#/definitions/isDisabled"
+        "legacy:isDisabled": {
+          "$ref": "#/definitions/legacy:isDisabled"
         },
         "type": {
           "enum": [
-            "ServiceNote"
+            "legacy:ServiceNote"
           ]
         },
-		"hasAnswerUpdateTimeout": {
-			"$ref": "#/definitions/hasAnswerUpdateTimeout"
-		}
+        "legacy:hasAnswerUpdateTimeout": {
+          "$ref": "#/definitions/legacy:hasAnswerUpdateTimeout"
+        }
       },
       "required": [
         "iri",
-        "label",
-        "hasDataType",
-        "hasOrderBy",
+        "rdfs:label",
+        "legacy:hasDataType",
+        "legacy:hasOrderBy",
         "type"
       ],
       "type": "object"
     },
-    "ServiceQuestion": {
+    "legacy:ServiceQuestion": {
       "additionalProperties": false,
       "properties": {
         "iri": {
           "$ref": "#/definitions/iri"
         },
-        "label": {
-          "$ref": "#/definitions/label"
+        "rdfs:label": {
+          "$ref": "#/definitions/rdfs:label"
         },
-        "hasAllowableModules": {
-          "$ref": "#/definitions/hasAllowableModules"
+        "legacy:hasAllowableModules": {
+          "$ref": "#/definitions/legacy:hasAllowableModules"
         },
-        "hasBusinessCodes": {
-          "$ref": "#/definitions/hasBusinessCodes"
+        "legacy:hasBusinessCodes": {
+          "$ref": "#/definitions/legacy:hasBusinessCodes"
         },
-        "hasDataType": {
-          "$ref": "#/definitions/hasDataType"
+        "legacy:hasDataType": {
+          "$ref": "#/definitions/legacy:hasDataType"
         },
-        "hasLegacyCode": {
-          "$ref": "#/definitions/hasLegacyCode"
+        "legacy:hasLegacyCode": {
+          "$ref": "#/definitions/legacy:hasLegacyCode"
         },
-        "hasOrderBy": {
-          "$ref": "#/definitions/hasOrderBy"
+        "legacy:hasOrderBy": {
+          "$ref": "#/definitions/legacy:hasOrderBy"
         },
-        "hasChoiceValueList": {
-          "$ref": "#/definitions/hasChoiceValueList"
+        "legacy:hasChoiceValueList": {
+          "$ref": "#/definitions/legacy:hasChoiceValueList"
         },
-        "hasServiceFieldAlert": {
-          "$ref": "#/definitions/hasServiceFieldAlert"
+        "legacy:hasServiceFieldAlert": {
+          "$ref": "#/definitions/legacy:hasServiceFieldAlert"
         },
-        "isDisabled": {
-          "$ref": "#/definitions/isDisabled"
+        "legacy:isDisabled": {
+          "$ref": "#/definitions/legacy:isDisabled"
         },
-        "hasDefaultIntakeMethod": {
-          "$ref": "#/definitions/hasDefaultIntakeMethod"
+        "legacy:hasDefaultIntakeMethod": {
+          "$ref": "#/definitions/legacy:hasDefaultIntakeMethod"
         },
-        "hasStandardizeStreetFormat": {
-          "$ref": "#/definitions/hasStandardizeStreetFormat"
+        "legacy:hasStandardizeStreetFormat": {
+          "$ref": "#/definitions/legacy:hasStandardizeStreetFormat"
         },
-        "hasLegacyEvent": {
-          "$ref": "#/definitions/hasLegacyEvent"
+        "legacy:hasLegacyEvent": {
+          "$ref": "#/definitions/legacy:hasLegacyEvent"
         },
-        "hasActivityAssignment": {
-          "$ref": "#/definitions/hasActivityAssignment"
+        "legacy:hasActivityAssignment": {
+          "$ref": "#/definitions/legacy:hasActivityAssignment"
         },
-        "hasAnswerUpdateTimeout": {
-          "$ref": "#/definitions/hasAnswerUpdateTimeout"
+        "legacy:hasAnswerUpdateTimeout": {
+          "$ref": "#/definitions/legacy:hasAnswerUpdateTimeout"
         },
-        "hasAnswerConstraint": {
-          "$ref": "#/definitions/hasAnswerConstraint"
+        "legacy:hasAnswerConstraint": {
+          "$ref": "#/definitions/legacy:hasAnswerConstraint"
         },
         "type": {
           "enum": [
-            "ServiceQuestion"
+            "legacy:ServiceQuestion"
           ]
         },
-		"hasAnswerUpdateTimeout": {
-			"$ref": "#/definitions/hasAnswerUpdateTimeout"
-		}
+        "legacy:hasAnswerUpdateTimeout": {
+          "$ref": "#/definitions/legacy:hasAnswerUpdateTimeout"
+        }
       },
       "required": [
         "iri",
-        "label",
-        "hasDataType",
-        "hasOrderBy",
+        "rdfs:label",
+        "legacy:hasDataType",
+        "legacy:hasOrderBy",
         "type"
       ],
       "type": "object"
     },
-    "hasStandardizeStreetFormat": {
+    "legacy:hasStandardizeStreetFormat": {
       "enum": [
         "true",
         "false"
       ]
     },
-    "isDisabled": {
+    "legacy:isDisabled": {
       "enum": [
         "true",
         "false"
@@ -200,11 +200,11 @@
         "false"
       ]
     },
-    "hasBusinessCodes": {
+    "legacy:hasBusinessCodes": {
       "pattern": "^,?(((NOUPDATE|REQINTAK|FQ_ALERT|SUCCESSR|WEBQREQD|5DAYWORK|INSSPEC|DUPSTAFF|REQRESAC|REQMASS|EMAIL|TIMENOUP|7DAYWORK),?)*)+$",
       "type": "string"
     },
-    "hasOrderBy": {
+    "legacy:hasOrderBy": {
       "pattern": "^[-+]?[0-9]*.?[0-9]+$",
       "type": "string"
     },
@@ -212,21 +212,21 @@
       "pattern": "^[-+]?[0-9]*.?[0-9]+$",
       "type": "string"
     },
-    "label": {
+    "rdfs:label": {
       "type": "string"
     },
-    "hasAllowableModules": {
+    "legacy:hasAllowableModules": {
       "pattern": "^,?(((SREINTAK|SRERESAC|SREMASS|SRSNGLWO|WEBINTAK|SRSUMMRY|MD-WCS|MD-WCSL),?)*)+$",
       "type": "string"
     },
     "iri": {
-	  "pattern": "^(ftp|http|https):\/\/[^ ]+$",
+      "pattern": "^(ftp|http|https)://[^ ]+$",
       "type": "string"
     },
-    "hasLegacyCode": {
+    "legacy:hasLegacyCode": {
       "type": "string"
     },
-    "hasServiceFieldAlert": {
+    "legacy:hasServiceFieldAlert": {
       "oneOf": [
         {
           "$ref": "#/definitions/reference"
@@ -255,14 +255,14 @@
     },
     "ServiceFieldAlertObject": {
       "properties": {
-        "hasLegacyEvent": {
-          "$ref": "#/definitions/hasLegacyEvent"
+        "legacy:hasLegacyEvent": {
+          "$ref": "#/definitions/legacy:hasLegacyEvent"
         },
-        "hasAnswerObject": {
-          "$ref": "#/definitions/hasAnswer"
+        "legacy:hasAnswerObject": {
+          "$ref": "#/definitions/legacy:hasAnswer"
         },
-        "label": {
-          "$ref": "#/definitions/label"
+        "rdfs:label": {
+          "$ref": "#/definitions/rdfs:label"
         },
         "type": {
           "enum": [
@@ -275,13 +275,13 @@
       },
       "required": [
         "iri",
-        "label",
-        "hasLegacyEvent",
+        "rdfs:label",
+        "legacy:hasLegacyEvent",
         "type"
       ],
       "type": "object"
     },
-    "hasDataType": {
+    "legacy:hasDataType": {
       "enum": [
         "TIME",
         "CHAR",
@@ -293,53 +293,53 @@
         "PHONENUM"
       ]
     },
-    "hasChoiceValueList": {
+    "legacy:hasChoiceValueList": {
       "type": "object",
       "oneOf": [
         {
           "$ref": "#/definitions/reference"
         },
         {
-          "$ref": "#/definitions/hasChoiceValueListObject"
+          "$ref": "#/definitions/legacy:hasChoiceValueListObject"
         }
       ]
     },
-    "hasChoiceValueListObject": {
+    "legacy:hasChoiceValueListObject": {
       "type": "object",
       "properties": {
-        "hasChoiceValue": {
+        "legacy:hasChoiceValue": {
           "oneOf": [
             {
               "$ref": "#/definitions/reference"
             },
             {
-              "$ref": "#/definitions/ChoiceValueObject"
+              "$ref": "#/definitions/legacy:ChoiceValueObject"
             },
             {
-              "$ref": "#/definitions/ListOfChoiceValues"
+              "$ref": "#/definitions/legacy:ListOfChoiceValues"
             }
           ]
         },
-        "label": {
-          "$ref": "#/definitions/label"
+        "rdfs:label": {
+          "$ref": "#/definitions/rdfs:label"
         },
         "iri": {
           "$ref": "#/definitions/iri"
         },
         "type": {
           "enum": [
-            "ChoiceValueList"
+            "legacy:ChoiceValueList"
           ]
         }
       },
       "required": [
         "iri",
-        "label",
-        "hasChoiceValue",
+        "rdfs:label",
+        "legacy:hasChoiceValue",
         "type"
       ]
     },
-    "ListOfChoiceValues": {
+    "legacy:ListOfChoiceValues": {
       "items": {
         "type": "object",
         "oneOf": [
@@ -347,46 +347,46 @@
             "$ref": "#/definitions/reference"
           },
           {
-            "$ref": "#/definitions/ChoiceValueObject"
+            "$ref": "#/definitions/legacy:ChoiceValueObject"
           }
         ]
       },
       "minItems": 1,
       "type": "array"
     },
-    "ChoiceValueObject": {
+    "legacy:ChoiceValueObject": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "label": {
-          "$ref": "#/definitions/label"
+        "rdfs:label": {
+          "$ref": "#/definitions/rdfs:label"
         },
         "iri": {
           "$ref": "#/definitions/iri"
         },
-        "hasLegacyCode": {
-          "$ref": "#/definitions/hasLegacyCode"
+        "legacy:hasLegacyCode": {
+          "$ref": "#/definitions/legacy:hasLegacyCode"
         },
-        "hasOrderBy": {
-          "$ref": "#/definitions/hasOrderBy"
+        "legacy:hasOrderBy": {
+          "$ref": "#/definitions/legacy:hasOrderBy"
         },
-        "isDisabled": {
-          "$ref": "#/definitions/isDisabled"
+        "legacy:isDisabled": {
+          "$ref": "#/definitions/legacy:isDisabled"
         },
-        "hasLegacyEvent": {
-          "$ref": "#/definitions/hasLegacyEvent"
+        "legacy:hasLegacyEvent": {
+          "$ref": "#/definitions/legacy:hasLegacyEvent"
         },
         "type": {
           "enum": [
-            "ChoiceValue",
-			"Department_County",
-			"Commission_County"
+            "legacy:ChoiceValue",
+            "mdc:Department_County",
+            "mdc:Commission_County"
           ]
         }
       },
       "required": [
         "iri",
-        "label",
+        "rdfs:label",
         "type"
       ]
     },
@@ -396,34 +396,34 @@
         "N"
       ]
     },
-    "hasDefaultIntakeMethod": {
+    "legacy:hasDefaultIntakeMethod": {
       "oneOf": [
         {
           "$ref": "#/definitions/reference"
         },
         {
-          "$ref": "#/definitions/hasDefaultIntakeMethodObject"
+          "$ref": "#/definitions/legacy:hasDefaultIntakeMethodObject"
         }
       ]
     },
-    "hasDefaultIntakeMethodObject": {
+    "legacy:hasDefaultIntakeMethodObject": {
       "type": "object",
       "properties": {
-        "hasOrderBy": {
-          "$ref": "#/definitions/hasOrderBy"
+        "legacy:hasOrderBy": {
+          "$ref": "#/definitions/legacy:hasOrderBy"
         },
-        "hasLegacyCode": {
-          "$ref": "#/definitions/hasLegacyCode"
+        "legacy:hasLegacyCode": {
+          "$ref": "#/definitions/legacy:hasLegacyCode"
         },
-        "label": {
-          "$ref": "#/definitions/label"
+        "rdfs:label": {
+          "$ref": "#/definitions/rdfs:label"
         },
         "isAlwaysPublic": {
           "$ref": "#/definitions/ynQuestion"
         },
         "type": {
           "enum": [
-            "IntakeMethod"
+            "legacy:IntakeMethod"
           ]
         },
         "iri": {
@@ -432,31 +432,31 @@
       },
       "required": [
         "iri",
-        "label",
+        "rdfs:label",
         "type"
       ]
     },
-    "hasLegacyInterface": {
+    "legacy:hasLegacyInterface": {
       "items": {
         "type": "object"
       },
       "minItems": 1,
       "type": "array"
     },
-    "hasLegacyEvent": {
+    "legacy:hasLegacyEvent": {
       "oneOf": [
         {
           "$ref": "#/definitions/reference"
         },
         {
-          "$ref": "#/definitions/LegacyEventObject"
+          "$ref": "#/definitions/legacy:LegacyEventObject"
         },
         {
-          "$ref": "#/definitions/ListOfLegacyEventObject"
+          "$ref": "#/definitions/legacy:ListOfLegacyEventObject"
         }
       ]
     },
-    "ListOfLegacyEventObject": {
+    "legacy:ListOfLegacyEventObject": {
       "items": {
         "type": "object",
         "oneOf": [
@@ -464,77 +464,77 @@
             "$ref": "#/definitions/reference"
           },
           {
-            "$ref": "#/definitions/LegacyEventObject"
+            "$ref": "#/definitions/legacy:LegacyEventObject"
           }
         ]
       },
       "minItems": 1,
       "type": "array"
     },
-    "LegacyEventObject": {
+    "legacy:LegacyEventObject": {
       "type": "object",
       "properties": {
-        "label": {
-          "$ref": "#/definitions/label"
+        "rdfs:label": {
+          "$ref": "#/definitions/rdfs:label"
         },
         "type": {
           "enum": [
-            "ServiceFieldAlert",
-            "ClearServiceField",
-            "MarkServiceFieldRequired",
-            "MarkServiceFieldDisabled",
-            "ActivityAssignment",
-            "StatusChange"
+            "legacy:ServiceFieldAlert",
+            "legacy:ClearServiceField",
+            "legacy:MarkServiceFieldRequired",
+            "legacy:MarkServiceFieldDisabled",
+            "legacy:ActivityAssignment",
+            "legacy:StatusChange"
           ]
         },
         "iri": {
           "$ref": "#/definitions/iri"
         },
-        "hasServiceField": {
-          "$ref": "#/definitions/ServiceFieldList"
+        "legacy:hasServiceField": {
+          "$ref": "#/definitions/legacy:ServiceFieldList"
         },
-        "hasActivity": {
-          "$ref": "#/definitions/Activity"
+        "legacy:hasActivity": {
+          "$ref": "#/definitions/legacy:Activity"
         },
-        "hasStatus": {
-          "$ref": "#/definitions/hasStatus"
+        "legacy:hasStatus": {
+          "$ref": "#/definitions/legacy:hasStatus"
         }
       }
     },
-    "hasStatus": {
+    "legacy:hasStatus": {
       "oneOf": [
         {
           "$ref": "#/definitions/reference"
         },
         {
-          "$ref": "#/definitions/hasStatusObject"
+          "$ref": "#/definitions/legacy:hasStatusObject"
         }
       ]
     },
-    "hasStatusObject": {
+    "legacy:hasStatusObject": {
       "type": "object",
       "properties": {
-        "label": {
-          "$ref": "#/definitions/label"
+        "rdfs:label": {
+          "$ref": "#/definitions/rdfs:label"
         },
         "type": {
           "enum": [
-            "Status"
+            "legacy:Status"
           ]
         },
         "iri": {
           "$ref": "#/definitions/iri"
         },
-        "hasLegacyCode": {
-          "$ref": "#/definitions/hasLegacyCode"
+        "legacy:hasLegacyCode": {
+          "$ref": "#/definitions/legacy:hasLegacyCode"
         },
-        "hasOrderBy": {
-          "$ref": "#/definitions/hasOrderBy"
+        "legacy:hasOrderBy": {
+          "$ref": "#/definitions/legacy:hasOrderBy"
         },
-        "hasAllowableStatuses": {
-          "$ref": "#/definitions/hasAllowableStatuses"
+        "legacy:hasAllowableStatuses": {
+          "$ref": "#/definitions/legacy:hasAllowableStatuses"
         },
-        "isAlwaysPublic": {
+        "legacy:isAlwaysPublic": {
           "$ref": "#/definitions/ynQuestion"
         },
         "extendedTypes": {
@@ -542,125 +542,125 @@
         }
       }
     },
-    "hasAllowableStatuses": {
+    "legacy:hasAllowableStatuses": {
       "pattern": "^,?(((C-CLOSED|O-OPEN|O-PENDING),?)*)+$",
       "type": "string"
     },
-    "Activity": {
+    "legacy:Activity": {
       "oneOf": [
         {
           "$ref": "#/definitions/reference"
         },
         {
-          "$ref": "#/definitions/ActivityObject"
+          "$ref": "#/definitions/legacy:ActivityObject"
         }
       ]
     },
-    "ActivityObject": {
+    "legacy:ActivityObject": {
       "type": "object",
       "properties": {
-        "label": {
-          "$ref": "#/definitions/label"
+        "rdfs:label": {
+          "$ref": "#/definitions/rdfs:label"
         },
         "type": {
           "enum": [
-            "Activity"
+            "legacy:Activity"
           ]
         },
         "iri": {
           "$ref": "#/definitions/iri"
         },
-		"hasOverdueActivity": {
-		  "$ref": "#/definitions/Activity"
-		},
-        "hasLegacyCode": {
-          "$ref": "#/definitions/hasLegacyCode"
+        "legacy:hasOverdueActivity": {
+          "$ref": "#/definitions/legacy:Activity"
         },
-        "hasOrderBy": {
-          "$ref": "#/definitions/hasOrderBy"
+        "legacy:hasLegacyCode": {
+          "$ref": "#/definitions/legacy:hasLegacyCode"
         },
-        "hasBusinessCodes": {
-          "$ref": "#/definitions/hasBusinessCodes"
+        "legacy:hasOrderBy": {
+          "$ref": "#/definitions/legacy:hasOrderBy"
         },
-        "hasOccurDays": {
+        "legacy:hasBusinessCodes": {
+          "$ref": "#/definitions/legacy:hasBusinessCodes"
+        },
+        "legacy:hasOccurDays": {
           "$ref": "#/definitions/floatNumber"
         },
-        "hasSuspenseDays": {
+        "legacy:hasSuspenseDays": {
           "$ref": "#/definitions/floatNumber"
         },
-        "isAutoCreate": {
+        "legacy:isAutoCreate": {
           "$ref": "#/definitions/ynQuestion"
         },
-        "isAutoAssign": {
+        "legacy:isAutoAssign": {
           "$ref": "#/definitions/booleanValue"
         },
-        "hasAllowableOutcome": {
-          "$ref": "#/definitions/Outcome"
+        "legacy:hasAllowableOutcome": {
+          "$ref": "#/definitions/legacy:Outcome"
         },
-        "hasDefaultOutcome": {
-          "$ref": "#/definitions/Outcome"
+        "legacy:hasDefaultOutcome": {
+          "$ref": "#/definitions/legacy:Outcome"
         },
-        "hasAssignmentRule": {
-          "$ref": "#/definitions/hasAssignmentRule"
+        "legacy:hasAssignmentRule": {
+          "$ref": "#/definitions/legacy:hasAssignmentRule"
         },
-        "hasActivityAssignment": {
-          "$ref": "#/definitions/hasActivityAssignment"
+        "legacy:hasActivityAssignment": {
+          "$ref": "#/definitions/legacy:hasActivityAssignment"
         },
-        "hasEmailTemplate": {
-          "$ref": "#/definitions/hasEmailTemplate"
+        "legacy:hasEmailTemplate": {
+          "$ref": "#/definitions/legacy:hasEmailTemplate"
         }
       },
       "required": [
         "iri",
-        "label",
+        "rdfs:label",
         "type"
       ]
     },
-    "hasAssignmentRule": {
+    "legacy:hasAssignmentRule": {
       "oneOf": [
         {
           "$ref": "#/definitions/reference"
         },
         {
-          "$ref": "#/definitions/hasAssignmentRuleObject"
+          "$ref": "#/definitions/legacy:hasAssignmentRuleObject"
         }
       ]
     },
-    "hasAssignmentRuleObject": {
+    "legacy:hasAssignmentRuleObject": {
       "type": "object",
       "properties": {
-        "label": {
-          "$ref": "#/definitions/label"
+        "rdfs:label": {
+          "$ref": "#/definitions/rdfs:label"
         },
         "type": {
           "enum": [
-            "AssignActivityToUserRule",
-            "CaseActivityAssignmentRule",
-			"AssignActivityFromGeoAttribute"
+            "legacy:AssignActivityToUserRule",
+            "legacy:CaseActivityAssignmentRule",
+            "legacy:AssignActivityFromGeoAttribute"
           ]
         },
         "iri": {
           "$ref": "#/definitions/iri"
         },
-        "hasUsername": {
-          "$ref": "#/definitions/username"
+        "mdc:hasUsername": {
+          "$ref": "#/definitions/mdc:username"
         }
       }
     },
-    "Outcome": {
+    "legacy:Outcome": {
       "oneOf": [
         {
           "$ref": "#/definitions/reference"
         },
         {
-          "$ref": "#/definitions/OutcomeObject"
+          "$ref": "#/definitions/legacy:OutcomeObject"
         },
         {
-          "$ref": "#/definitions/ListOfOutcomeObject"
+          "$ref": "#/definitions/legacy:ListOfOutcomeObject"
         }
       ]
     },
-    "ListOfOutcomeObject": {
+    "legacy:ListOfOutcomeObject": {
       "items": {
         "type": "object",
         "oneOf": [
@@ -668,28 +668,28 @@
             "$ref": "#/definitions/reference"
           },
           {
-            "$ref": "#/definitions/OutcomeObject"
+            "$ref": "#/definitions/legacy:OutcomeObject"
           }
         ]
       },
       "minItems": 1,
       "type": "array"
     },
-    "OutcomeObject": {
+    "legacy:OutcomeObject": {
       "type": "object",
       "properties": {
-        "label": {
-          "$ref": "#/definitions/label"
+        "rdfs:label": {
+          "$ref": "#/definitions/rdfs:label"
         },
-        "hasLegacyCode": {
-          "$ref": "#/definitions/hasLegacyCode"
+        "legacy:hasLegacyCode": {
+          "$ref": "#/definitions/legacy:hasLegacyCode"
         },
         "hasLegacyEvent": {
-          "$ref": "#/definitions/hasLegacyEvent"
+          "$ref": "#/definitions/legacy:hasLegacyEvent"
         },
         "type": {
           "enum": [
-            "Outcome"
+            "legacy:Outcome"
           ]
         },
         "iri": {
@@ -698,24 +698,24 @@
       },
       "required": [
         "iri",
-        "label",
+        "rdfs:label",
         "type"
       ]
     },
-    "hasActivityAssignment": {
+    "legacy:hasActivityAssignment": {
       "oneOf": [
         {
           "$ref": "#/definitions/reference"
         },
         {
-          "$ref": "#/definitions/ActivityAssignmentObject"
+          "$ref": "#/definitions/legacy:ActivityAssignmentObject"
         },
         {
-          "$ref": "#/definitions/ListOfActivityAssignmentObject"
+          "$ref": "#/definitions/legacy:ListOfActivityAssignmentObject"
         }
       ]
     },
-    "ListOfActivityAssignmentObject": {
+    "legacy:ListOfActivityAssignmentObject": {
       "items": {
         "type": "object",
         "oneOf": [
@@ -723,36 +723,36 @@
             "$ref": "#/definitions/reference"
           },
           {
-            "$ref": "#/definitions/ActivityAssignmentObject"
+            "$ref": "#/definitions/legacy:ActivityAssignmentObject"
           }
         ]
       },
       "minItems": 1,
       "type": "array"
     },
-    "ActivityAssignmentObject": {
+    "legacy:ActivityAssignmentObject": {
       "type": "object",
       "properties": {
-        "label": {
-          "$ref": "#/definitions/label"
+        "rdfs:label": {
+          "$ref": "#/definitions/rdfs:label"
         },
-        "hasActivity": {
-          "$ref": "#/definitions/Activity"
+        "legacy:hasActivity": {
+          "$ref": "#/definitions/legacy:Activity"
         },
-        "hasOutcome": {
-          "$ref": "#/definitions/Outcome"
+        "legacy:hasOutcome": {
+          "$ref": "#/definitions/legacy:Outcome"
         },
-        "hasLegacyEvent": {
-          "$ref": "#/definitions/hasLegacyEvent"
+        "legacy:hasLegacyEvent": {
+          "$ref": "#/definitions/legacy:hasLegacyEvent"
         },
-        "hasAnswerObject": {
-          "$ref": "#/definitions/hasAnswer"
+        "legacy:hasAnswerObject": {
+          "$ref": "#/definitions/legacy:hasAnswer"
         },
         "type": {
           "enum": [
-            "ActivityTrigger",
-            "Activity Trigger",
-            "QuestionTrigger"
+            "legacy:ActivityTrigger",
+            "legacy:Activity Trigger",
+            "legacy:QuestionTrigger"
           ]
         },
         "iri": {
@@ -760,104 +760,104 @@
         }
       }
     },
-    "username": {
+    "mdc:username": {
       "type": "string"
     },
-    "hasAnswer": {
+    "legacy:hasAnswer": {
       "oneOf": [
         {
           "$ref": "#/definitions/reference"
         },
         {
-          "$ref": "#/definitions/hasAnswerObject"
+          "$ref": "#/definitions/legacy:hasAnswerObject"
         }
       ]
     },
-    "hasAnswerObject": {
+    "legacy:hasAnswerObject": {
       "type": "object",
       "properties": {
         "hasLegacyCode": {
-          "$ref": "#/definitions/hasLegacyCode"
+          "$ref": "#/definitions/legacy:hasLegacyCode"
         },
-        "label": {
-          "$ref": "#/definitions/label"
+        "rdfs:label": {
+          "$ref": "#/definitions/rdfs:label"
         },
         "type": {
           "enum": [
-            "ChoiceValue"
+            "legacy:ChoiceValue"
           ]
         },
         "iri": {
           "$ref": "#/definitions/iri"
         },
-        "hasLegacyEvent": {
-          "$ref": "#/definitions/hasLegacyEvent"
+        "legacy:hasLegacyEvent": {
+          "$ref": "#/definitions/legacy:hasLegacyEvent"
         }
       },
       "required": [
         "iri",
-        "label",
+        "rdfs:label",
         "type"
       ]
     },
-    "hasDataSource": {
+    "mdc:hasDataSource": {
       "oneOf": [
         {
           "$ref": "#/definitions/reference"
         },
         {
-          "$ref": "#/definitions/hasDataSourceObject"
+          "$ref": "#/definitions/mdc:hasDataSourceObject"
         }
       ]
     },
-    "hasDataSourceObject": {
+    "mdc:hasDataSourceObject": {
       "type": "object",
       "properties": {
-        "providedBy": {
-          "$ref": "#/definitions/providedBy"
+        "mdc:providedBy": {
+          "$ref": "#/definitions/mdc:providedBy"
         },
-        "label": {
-          "$ref": "#/definitions/label"
+        "rdfs:label": {
+          "$ref": "#/definitions/rdfs:label"
         },
         "type": {
           "enum": [
-            "EventBasedDataSource"
+            "mdc:EventBasedDataSource"
           ]
         },
         "iri": {
           "$ref": "#/definitions/iri"
         },
-        "hasPropertyName": {
-          "$ref": "#/definitions/label"
+        "mdc:hasPropertyName": {
+          "$ref": "#/definitions/rdfs:label"
         }
       },
       "required": [
         "iri",
-        "label",
-        "providedBy",
-        "hasPropertyName",
+        "rdfs:label",
+        "mdc:providedBy",
+        "mdc:hasPropertyName",
         "type"
       ]
     },
-    "providedBy": {
+    "mdc:providedBy": {
       "oneOf": [
         {
           "$ref": "#/definitions/reference"
         },
         {
-          "$ref": "#/definitions/providedByObject"
+          "$ref": "#/definitions/mdc:providedByObject"
         }
       ]
     },
-    "providedByObject": {
+    "mdc:providedByObject": {
       "type": "object",
       "properties": {
-        "label": {
-          "$ref": "#/definitions/label"
+        "rdfs:label": {
+          "$ref": "#/definitions/rdfs:label"
         },
         "type": {
           "enum": [
-            "ClientSideEventType"
+            "mdc:ClientSideEventType"
           ]
         },
         "iri": {
@@ -866,32 +866,32 @@
       },
       "required": [
         "iri",
-        "label",
+        "rdfs:label",
         "type"
       ]
     },
-    "hasAnswerUpdateTimeout": {
+    "legacy:hasAnswerUpdateTimeout": {
       "oneOf": [
         {
           "$ref": "#/definitions/reference"
         },
         {
-          "$ref": "#/definitions/hasAnswerUpdateTimeoutObject"
+          "$ref": "#/definitions/legacy:hasAnswerUpdateTimeoutObject"
         }
       ]
     },
-    "hasAnswerUpdateTimeoutObject": {
+    "legacy:hasAnswerUpdateTimeoutObject": {
       "type": "object",
       "properties": {
-        "label": {
-          "$ref": "#/definitions/label"
+        "rdfs:label": {
+          "$ref": "#/definitions/rdfs:label"
         },
-        "hasValue": {
+        "mdc:hasValue": {
           "type": "string"
         },
         "type": {
           "enum": [
-            "ServiceAnswerUpdateTimeout"
+            "legacy:ServiceAnswerUpdateTimeout"
           ]
         },
         "iri": {
@@ -900,36 +900,36 @@
       },
       "required": [
         "iri",
-        "label",
+        "rdfs:label",
         "type",
-        "hasValue"
+        "mdc:hasValue"
       ]
     },
-    "hasAnswerConstraint": {
+    "legacy:hasAnswerConstraint": {
       "oneOf": [
         {
           "$ref": "#/definitions/reference"
         },
         {
-          "$ref": "#/definitions/hasAnswerConstraintObject"
+          "$ref": "#/definitions/legacy:hasAnswerConstraintObject"
         }
       ]
     },
-    "hasAnswerConstraintObject": {
+    "legacy:hasAnswerConstraintObject": {
       "type": "object",
       "properties": {
-        "label": {
-          "$ref": "#/definitions/label"
+        "rdfs:label": {
+          "$ref": "#/definitions/rdfs:label"
         },
-        "hasMax": {
+        "mdc:hasMax": {
           "type": "string"
         },
-        "hasMin": {
+        "mdc:hasMin": {
           "type": "string"
         },
         "type": {
           "enum": [
-            "ServiceAnswerConstraint"
+            "legacy:ServiceAnswerConstraint"
           ]
         },
         "iri": {
@@ -941,7 +941,7 @@
       },
       "required": [
         "iri",
-        "label",
+        "rdfs:label",
         "type"
       ]
     },
@@ -960,70 +960,70 @@
       "items": {
         "oneOf": [
           {
-            "$ref": "#/definitions/label"
+            "$ref": "#/definitions/rdfs:label"
           }
         ]
       },
       "minItems": 1,
       "type": "array"
     },
-    "hasEmailTemplate": {
+    "legacy:hasEmailTemplate": {
       "oneOf": [
         {
           "$ref": "#/definitions/reference"
         },
         {
-          "$ref": "#/definitions/hasEmailTemplateObject"
+          "$ref": "#/definitions/legacy:hasEmailTemplateObject"
         }
       ]
     },
-    "hasEmailTemplateObject": {
+    "legacy:hasEmailTemplateObject": {
       "additionalProperties": true,
       "properties": {
         "iri": {
           "$ref": "#/definitions/iri"
         },
-        "label": {
-          "$ref": "#/definitions/label"
+        "rdfs:label": {
+          "$ref": "#/definitions/rdfs:label"
         },
-        "hasTo": {
-          "$ref": "#/definitions/label"
+        "legacy:hasTo": {
+          "type": "string"
         },
-        "hasSubject": {
-          "$ref": "#/definitions/label"
+        "legacy:hasSubject": {
+          "type": "string"
         },
-        "hasCc": {
-          "$ref": "#/definitions/label"
+        "legacy:hasCc": {
+          "type": "string"
         },
-        "hasBody": {
-          "$ref": "#/definitions/label"
+        "legacy:hasBody": {
+          "type": "string"
         },
-        "hasAttachmentCodes": {
-          "$ref": "#/definitions/label"
+        "legacy:hasAttachmentCodes": {
+          "type": "string"
         },
-        "hasLegacyBody": {
-          "$ref": "#/definitions/label"
+        "legacy:hasLegacyBody": {
+          "type": "string"
         },
         "type": {
           "enum": [
-            "MessageTemplate"
+            "legacy:MessageTemplate"
           ]
         },
-		"hasHighPriority": {
-		   "$ref": "#/definitions/booleanValue"
-		}
+        "legacy:hasHighPriority": {
+          "$ref": "#/definitions/booleanValue"
+        }
       },
       "required": [
         "iri",
-        "label",
-        "hasTo",
-        "hasSubject",
-        "hasBody",
+        "rdfs:label",
+        "legacy:hasTo",
+        "legacy:hasSubject",
+        "legacy:hasBody",
         "type"
       ],
       "type": "object"
     },
-    "ActivityList": {
+    "legacy:ActivityList": {
       "items": {
         "type": "object",
         "oneOf": [
@@ -1031,7 +1031,7 @@
             "$ref": "#/definitions/reference"
           },
           {
-            "$ref": "#/definitions/ActivityObject"
+            "$ref": "#/definitions/legacy:ActivityObject"
           }
         ]
       },
@@ -1039,41 +1039,40 @@
       "uniqueItems": true,
       "type": "array"
     },
-	"hasAnswerUpdateTimeout": {
-		"oneOf": [
+    "legacy:hasAnswerUpdateTimeout": {
+      "oneOf": [
         {
           "$ref": "#/definitions/reference"
         },
         {
-          "$ref": "#/definitions/hasAnswerUpdateTimeoutObject"
+          "$ref": "#/definitions/legacy:hasAnswerUpdateTimeoutObject"
         }
       ]
-	},
-	"hasAnswerUpdateTimeoutObject": {
-	  "additionalProperties": false,
-	  "properties": {
-		"iri": {
-		  "$ref": "#/definitions/iri"
-		},
-		"label": {
-		  "$ref": "#/definitions/label"
-		},
-		"hasValue": {
-		  "$ref": "#/definitions/floatNumber"
-		},
-		"type": {
-		  "enum": [
-			"ServiceAnswerUpdateTimeout"
-		  ]
-		}
-	  },
-	  "required": [
-		"iri",
-		"label",
-		"hasValue",
-		"type"
-	  ],
-	  "type": "object"
-	}
+    },
+    "legacy:hasAnswerUpdateTimeoutObject": {
+      "additionalProperties": false,
+      "properties": {
+        "iri": {
+          "$ref": "#/definitions/iri"
+        },
+        "rdfs:label": {
+          "$ref": "#/definitions/rdfs:label"
+        },
+        "mdc:hasValue": {
+          "$ref": "#/definitions/floatNumber"
+        },
+        "type": {
+          "enum": [
+            "legacy:ServiceAnswerUpdateTimeout"
+          ]
+        }
+      },
+      "required": [
+        "iri",
+        "mdc:hasValue",
+        "type"
+      ],
+      "type": "object"
+    }
   }
 }

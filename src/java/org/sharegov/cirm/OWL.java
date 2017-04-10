@@ -737,7 +737,7 @@ public class OWL
 			String annValue = ((OWLLiteral)ann.getValue()).getLiteral();
 			x.set(annName, annValue);
 		}
-		if (!x.has("label"))
+		if (OWL.getEntityLabel(object) == null && !x.has("label") && !x.has("rdfs:label"))
 			x.set("label", sp.getShortForm(object));  // was object.getIRI().getFragment());
 		return x;
 	}

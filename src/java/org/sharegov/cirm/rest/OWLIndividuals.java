@@ -24,6 +24,7 @@ import static org.sharegov.cirm.OWL.reasoner;
 import static org.sharegov.cirm.utils.GenUtils.ko;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.GET;
@@ -36,15 +37,23 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.util.DefaultPrefixManager;
+import org.semanticweb.owlapi.util.ShortFormProvider;
+import org.sharegov.cirm.MetaOntology;
 import org.sharegov.cirm.OWL;
+import org.sharegov.cirm.OWLObjectToJson;
+import org.sharegov.cirm.OWLObjectToPrefixedJson;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.StartUp;
 import org.sharegov.cirm.legacy.Permissions;
 import org.sharegov.cirm.legacy.ServiceCaseManager;
 import org.sharegov.cirm.owl.OWLSerialEntityCache;
 import org.sharegov.cirm.utils.GenUtils;
+import org.sharegov.cirm.utils.JsonUtil;
+import org.sharegov.cirm.utils.Mapping;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 import org.sharegov.cirm.utils.TraceUtils;
 
@@ -216,51 +225,24 @@ public class OWLIndividuals extends RestService
 	 */
 	@GET
 	@Path("/")
-	public synchronized Json doQuery(@QueryParam("q") String queryAsString)
+	public synchronized Json doQueryService(@QueryParam("q") String queryAsString)
 	{
 		try
 		{
-			if (DBG) 
-			{
+			Json result = Json.array();
+
+			if (DBG) {
 				ThreadLocalStopwatch.start("START doQuery: " + queryAsString);
 			}
-			OWLOntology ontology = ontology();
-			OWLReasoner reasoner = reasoner(ontology);
-			OWLClassExpression expr = OWL.parseDL(queryAsString, ontology);
-			Set<OWLNamedIndividual> allAllowed = null;
-			if (!isClientExempt() && reasoner.getSuperClasses(expr, false).containsEntity(owlClass("Protected")))
-			{
-//				queryAsString = Permissions.constrainClause(individual("BO_View"), getUserActors())
-//						+ " and " + queryAsString;
-				allAllowed = new HashSet<OWLNamedIndividual>();
-				Set<OWLNamedIndividual> policies = Permissions.policiesForActors(getUserActors());
-				for (OWLNamedIndividual x : policies)
-				{
-					Set<OWLNamedIndividual> policyObjects = OWL.objectProperties(x, "hasObject");					
-					allAllowed.addAll(policyObjects);
-				}
-			}
-			// The following is not a 100% test for protection. To be 100%, we'd have
-			// to check that getInstances returns an empty set rather than getSubClasses, but
-			// this will work in practice and it's a hopefully faster test
-			else if (!isClientExempt() && !reasoner.getSubClasses(and(expr, owlClass("Protected")), false).isBottomSingleton())
-			{
+			try {
+
+				result = serializeAndCache(doQuery(queryAsString));
+			} catch (IllegalAccessError iae) {
 				return ko("Access denied - protected resources could be returned, please split the query.");
 			}
-			
-			OWLSerialEntityCache jsonEntities = Refs.owlJsonCache.resolve();
-			Json result = Json.array();
-			for (OWLNamedIndividual ind : OWL.queryIndividuals(queryAsString)) 
-			{
-				if (allAllowed == null || allAllowed.contains(ind)) 
-				{
-					result.add(jsonEntities.individual(ind.getIRI()).resolve());
-				}
-			}
-			
-			if (DBG) 
-			{
-				ThreadLocalStopwatch.stop("END doQuery");			
+
+			if (DBG) {
+				ThreadLocalStopwatch.stop("END doQuery");
 			}
 			return result;
 		}
@@ -272,11 +254,60 @@ public class OWLIndividuals extends RestService
 		}
 	}
 	
-	public synchronized Json doInternalQuery (String queryAsString)
+	/**
+	 * <p>
+	 * Perform a query for individuals in the ontology using a DL class expression. 
+	 * </p>
+	 * 
+	 * @param queryAsString A DL (description logic) class expression using the 
+	 * <a href="http://protegewiki.stanford.edu/wiki/DLQueryTab">Manchnester syntax</a>
+	 * @return All instance of the class described by the class expression parameter, serialized into
+	 * JSON an array of objects where each object represents a single individual. 
+	 */
+	@GET
+	@Path("/")
+	public synchronized Json doQueryService(@QueryParam("q") String queryAsString, @QueryParam("format") String format)
 	{
+		try
+		{
+			Json result = Json.array();
+
+			if (DBG) {
+				ThreadLocalStopwatch.start("START doQuery: " + queryAsString);
+			}
+			try {
+
+				if("prefix".equalsIgnoreCase(format))
+				{
+					result = serialize(doQuery(queryAsString), MetaOntology.getPrefixShortFormProvider());
+				}
+				else
+				{
+					result = serializeAndCache(doQuery(queryAsString));
+				}
+			} catch (IllegalAccessError iae) {
+				return ko("Access denied - protected resources could be returned, please split the query.");
+			}
+
+			if (DBG) {
+				ThreadLocalStopwatch.stop("END doQuery");
+			}
+			return result;
+		}
+		catch (Exception ex)
+		{
+			System.out.println("While get instances for " + queryAsString);
+			ex.printStackTrace();
+			return ko(ex);
+		}
+	}
+
+	
+	public synchronized Set<OWLNamedIndividual> doQuery(String queryAsString) {
 		OWLOntology ontology = ontology();
 		OWLReasoner reasoner = reasoner(ontology);
-			
+		Set<OWLNamedIndividual> result = new HashSet<OWLNamedIndividual>();
+		
 		OWLClassExpression expr = OWL.parseDL(queryAsString, ontology);
 		Set<OWLNamedIndividual> allAllowed = null;
 		if (!isClientExempt() && reasoner.getSuperClasses(expr, false).containsEntity(owlClass("Protected")))
@@ -286,9 +317,7 @@ public class OWLIndividuals extends RestService
 			Set<OWLNamedIndividual> policies = Permissions.policiesForActors(getUserActors());
 			for (OWLNamedIndividual x : policies)
 			{
-					
 				Set<OWLNamedIndividual> policyObjects = OWL.objectProperties(x, "hasObject");					
-					
 				allAllowed.addAll(policyObjects);
 			}
 		}
@@ -299,14 +328,34 @@ public class OWLIndividuals extends RestService
 		{
 			throw new IllegalAccessError ("Access denied - protected resources could be returned, please split the query.");
 		}
-		
-//			
+		for (OWLNamedIndividual ind : OWL.queryIndividuals(queryAsString))
+		{
+			if (allAllowed == null || allAllowed.contains(ind))
+			{
+				result.add(ind);
+			}
+		}
+		return result;
+	}
+
+	public synchronized Json serialize(Set<OWLNamedIndividual> individuals, ShortFormProvider shortFormProvider)
+	{
+		Json j = Json.array();
+		for (OWLNamedIndividual ind :individuals)
+		{
+			j.add(OWL.toJSON(ind, shortFormProvider));
+		}
+		return j;
+	}
+	
+	public synchronized Json serializeAndCache (Set<OWLNamedIndividual> individuals)
+	{
 		OWLSerialEntityCache jsonEntities = Refs.owlJsonCache.resolve();
 		Json j = Json.array();
-		for (OWLNamedIndividual ind : OWL.queryIndividuals(queryAsString))
-			if (allAllowed == null || allAllowed.contains(ind))
+		for (OWLNamedIndividual ind : individuals)
+		{
 				j.add(jsonEntities.individual(ind.getIRI()).resolve());
-		
+		}
 		return j;
 	}
 
