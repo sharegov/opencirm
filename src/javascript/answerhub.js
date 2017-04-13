@@ -103,6 +103,13 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
     	self.getStreetType = function( alias ) {
     		if(!alias)
     			alias = self.addressData().parsedAddress.SufType;
+    		if (alias) {
+    			//Use only last sufType word to resolve cirm street type  (e.g. "RD" for "Street RD")  
+  				var components = alias.trim().split(" ");
+   				if (components.length > 1) {
+   					alias = components[components.length - 1];
+   				}
+    		}
     		for (i=0; i < cirm.refs.streetTypes.length; i++) {
                 var x = cirm.refs.streetTypes[i];
                 if( U.isArray( x.Alias ) && $.inArray(alias, x.Alias) > -1)
