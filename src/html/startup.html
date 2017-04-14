@@ -253,8 +253,22 @@ function (rest, U, cirm, legacy, sreditor, answerhub, store) {
 		        	address.folio(data.folio());
 		        	var direction = data.getDirection();
 		            var streetType = data.getStreetType();
+		            var streetTypeGis = data.addressData().parsedAddress.SufType;
+		            var streetNameGis = data.addressData().parsedAddress.StreetName;
+	  				if (streetTypeGis) {
+			            var streetTypeGisComponents = streetTypeGis.trim().split(" ");
+		   				if (streetTypeGisComponents.length > 1) {
+		   					//Add all sufType words but the last one to street name  (e.g. "Street" for "Street RD")
+		   					//e.g. Street for "Street RD" or A B C for "A B C RD"
+		   					var streetTypeNameGisSuffix = "";
+		   					for (var i = 0; i < streetTypeGisComponents.length - 1; i++) {
+		   						streetTypeNameGisSuffix += " " + streetTypeGisComponents[i];
+		   					}
+	   					streetNameGis = streetNameGis? streetNameGis + streetTypeNameGisSuffix : streetNameGis;
+	   					}
+	  				}
 		            address.Street_Number(data.addressData().parsedAddress.House);
-		            address.Street_Name(data.addressData().parsedAddress.StreetName);
+		            address.Street_Name(streetNameGis);
 		            address.Zip_Code($.trim(data.zip())); 
 		            if(data.addressData().propertyInfo.parcelInfoCondoUnit != undefined && data.addressData().propertyInfo.parcelInfoCondoUnit.length > 0)
 			            address.Street_Unit_Number($.trim(data.addressData().propertyInfo.parcelInfoCondoUnit));

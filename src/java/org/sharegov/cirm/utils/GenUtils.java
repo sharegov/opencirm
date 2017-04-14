@@ -29,8 +29,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
 import java.sql.Timestamp;
@@ -59,6 +61,7 @@ import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.io.IOUtils;
 import org.hypergraphdb.type.BonesOfBeans;
 //import com.google.gson.*;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -353,6 +356,45 @@ public class GenUtils
 		{
 			method.releaseConnection();
 		}
+	}
+	
+	public static Json httpPostWithBasicAuth(String url, String username, String password, String postData, String...headers)
+	{
+		try {
+			URL uri = new URL (url);
+			String credentials = username + ":" + password;
+			String encoding = Base64.encode(credentials.getBytes(), false);
+			
+			HttpURLConnection connection = (HttpURLConnection) uri.openConnection();
+	        connection.setRequestMethod("POST");
+	        connection.setDoOutput(true);
+	        connection.setRequestProperty  ("Authorization", "Basic " + encoding);
+	        
+	        if (headers != null)
+			{
+				if (headers.length % 2 != 0)
+					throw new IllegalArgumentException("Odd number of headers argument, specify HTTP headers in pairs: name then value, etc.");
+				for (int i = 0; i < headers.length; i++)
+					connection.setRequestProperty (headers[i], headers[++i]);
+			}
+	        
+	        if (postData != null && !postData.isEmpty()){		        
+		        OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
+		        wr.write(postData);
+		        wr.flush();
+	        }
+
+	        int HttpResult = connection.getResponseCode(); 
+	        connection.disconnect();
+	        Json result = Json.object().set("response_code", HttpResult);
+	        if(HttpResult == HttpURLConnection.HTTP_OK){	        
+	        	return result.set("response", IOUtils.toString((InputStream)connection.getInputStream()));
+	        } else return result;
+	        
+		} catch(Exception e) {
+			return Json.object().set("error", e.getMessage());
+        }		
+		
 	}
 
 	public static Json httpPostJson(String url, Json json)
@@ -677,23 +719,26 @@ public class GenUtils
     		cirmTransactionUUID = CirmTransaction.getTopLevelTransactionUUID();
     		transactionBeginTime = CirmTransaction.get().getBeginTimeMs();
     		taskId = transactionBeginTime + "_" + url + minutesFromNow;
+    		NewTimeTaskOnTxSuccessListener s = new NewTimeTaskOnTxSuccessListener(cirmTransactionUUID, taskId, minutesFromNow, url, post);
+    		CirmTransaction.get().addTopLevelEventListener(s);
+        	return ok();
     	} else {
     		ThreadLocalStopwatch.getWatch().time("Genutils timetask with url/minsFromNow called outside of a transaction. Using now, a new RandomUUID for task a NOTRANS marker in taskid.");
     		cirmTransactionUUID = UUID.randomUUID();
     		transactionBeginTime = new Date().getTime();
     		taskId = transactionBeginTime + "_" + TIMETASK_NOTRANS_MARKER + "_" + url + minutesFromNow;
+        	return timeTaskDirect(cirmTransactionUUID, taskId, minutesFromNow, url, post);
     	}
-    	return timeTask(cirmTransactionUUID, taskId, minutesFromNow, url, post);
     }    
 
     /**
-     * Schedules a time machine callback task at a given time (calendar).
-     * Uniqueness for each transaction is established by a UUID. Repeated calls due to retries must submit the same taskId per task
-     * to ensure creation of exactly one callback per task per transaction independent on the number of retries.
-     * Creation time is established in the Time machine by prefixing the task name with the transaction begin time.
-     * (This allows for overwrites on retry and establishes some order)
+     * Schedules a time machine callback task at a given time (calendar) by posting a new task to the time machine.
+     * Repeated calls due to retries inside a transaction will only be inserted into the time machine once after
+     * the transaction succeeds (due to NewTimeTaskOnTxSuccessListener).
+     * Creation time is established by prefixing the task name with the transaction begin time.
+     * (This establishes some order in the time machine)
      * Used by activity manager (on each transaction retry).
-     * @param taskId a taskId that's the same for each transaction retry but unique during one.
+     * @param taskId a taskId that should be unique for the task.
      * @param cal
      * @param url
      * @param post
@@ -709,13 +754,18 @@ public class GenUtils
     		cirmTransactionUUID = CirmTransaction.getTopLevelTransactionUUID();
     		transactionBeginTime = CirmTransaction.get().getBeginTimeMs();
     		taskIdMod = transactionBeginTime + "_" + taskId;
+    		//Register Tx listener to be executed once only on success.
+    		NewTimeTaskOnTxSuccessListener s = new NewTimeTaskOnTxSuccessListener(cirmTransactionUUID, taskIdMod, cal, url, post);
+    		CirmTransaction.get().addTopLevelEventListener(s);
+    		return ok();
     	} else {
     		System.err.println("Genutils timetask with taskId called outside of a transaction. Using now, a new RandomUUID for task and a NOTRANS marker in taskid.");
     		cirmTransactionUUID = UUID.randomUUID();
     		transactionBeginTime = new Date().getTime();
     		taskIdMod = transactionBeginTime + "_" + TIMETASK_NOTRANS_MARKER + "_" + taskId;
+    		return timeTaskCalDirect(cirmTransactionUUID, taskIdMod, cal, url, post);
     	}
-    	return timeTask(cirmTransactionUUID, taskIdMod, cal, url, post);
+    	
    	}
 
     /**
@@ -734,7 +784,7 @@ public class GenUtils
      * @param taskId task identifier for the parameter combination - must be the same during all retries to avoid duplicates.
      * @return
      */
-    private static Json timeTask(UUID cirmTransactionUUID, String taskId, int minutesFromNow, String url, Json post)
+    protected static Json timeTaskDirect(UUID cirmTransactionUUID, String taskId, int minutesFromNow, String url, Json post)
     {
     	if (!url.startsWith("http"))
     	{
@@ -748,10 +798,10 @@ public class GenUtils
     	// This ensures that a retry will overwrite an existing and not add a new task.
     	Calendar cal = Calendar.getInstance();
     	cal.add(Calendar.MINUTE, minutesFromNow);
-		return timeTask(cirmTransactionUUID, taskId, cal, url, post);
+		return timeTaskCalDirect(cirmTransactionUUID, taskId, cal, url, post);
     }
 
-	private static Json timeTask(UUID cirmTransactionUUID, String taskId, Calendar cal, String url, Json post)
+	protected static Json timeTaskCalDirect(UUID cirmTransactionUUID, String taskId, Calendar cal, String url, Json post)
 	{
 		//DBG
 		String taskName = taskId + "-" + cirmTransactionUUID.toString();

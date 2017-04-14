@@ -1,10 +1,6 @@
-.classpath
 classes
 src/uploaded/
 /map
-src/java/org/sharegov/cirm/StartUp.java.orig
 .idea/
 *.iml
-.settings/org.eclipse.jdt.core.prefs
 javadoc/
-/bin/

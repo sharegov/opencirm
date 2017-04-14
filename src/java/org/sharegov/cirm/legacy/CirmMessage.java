@@ -147,7 +147,8 @@ public class CirmMessage extends MimeMessage
 				cStr = cStr + explanation;
 				//setContent(cStr, getContentType());
 				getContentType();
-				setContent(cStr, "text/html");
+				setContent(cStr, "text/html; charset=UTF-8");
+				this.saveChanges();
 			}
 		} catch(Exception e) 
 		{
