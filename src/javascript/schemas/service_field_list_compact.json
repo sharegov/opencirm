@@ -1015,7 +1015,6 @@
       },
       "required": [
         "iri",
-        "rdfs:label",
         "legacy:hasTo",
         "legacy:hasSubject",
         "legacy:hasBody",

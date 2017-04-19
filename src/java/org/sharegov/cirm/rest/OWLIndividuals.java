@@ -24,7 +24,6 @@ import static org.sharegov.cirm.OWL.reasoner;
 import static org.sharegov.cirm.utils.GenUtils.ko;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.GET;
@@ -37,23 +36,17 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
-import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.semanticweb.owlapi.util.ShortFormProvider;
 import org.sharegov.cirm.MetaOntology;
 import org.sharegov.cirm.OWL;
-import org.sharegov.cirm.OWLObjectToJson;
-import org.sharegov.cirm.OWLObjectToPrefixedJson;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.StartUp;
 import org.sharegov.cirm.legacy.Permissions;
 import org.sharegov.cirm.legacy.ServiceCaseManager;
 import org.sharegov.cirm.owl.OWLSerialEntityCache;
 import org.sharegov.cirm.utils.GenUtils;
-import org.sharegov.cirm.utils.JsonUtil;
-import org.sharegov.cirm.utils.Mapping;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 import org.sharegov.cirm.utils.TraceUtils;
 
