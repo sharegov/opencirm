@@ -626,11 +626,15 @@ public class MetaOntology
 	protected static String detectIndividualPrefix (String iriFragment){
 		Json prefixes = Json.array().add("mdc:").add(":").add("legacy:");
 		for (Json prefix : prefixes.asJsonList()) {
-			IRI propIri = getFullIri(prefix.asString() + iriFragment);
-			for (OWLOntology o : OWL.ontologies()) {
-				if (o.containsIndividualInSignature(propIri)) {
-					return prefix.asString();
+			try {
+				IRI propIri = getFullIri(prefix.asString() + iriFragment);
+				for (OWLOntology o : OWL.ontologies()) {
+					if (o.containsIndividualInSignature(propIri)) {
+						return prefix.asString();
+					}
 				}
+			} catch (Exception e){
+				//ignore for now
 			}
 		}
 		return null;
