@@ -280,7 +280,7 @@ public class ServiceCaseManager extends OntoAdmin {
 		Json result = Json.object();
 		Json np = (p.isObject() && p.has("type") && (p.has("mdc:Name")||p.has("rdfs:label"))&&p.has("mdc:hasParentAgency")&&p.has("mdc:Department")) ? p: getDepartmentDivisionSerializedIndividual (p);
 		
-		if (np.has("type") && np.at("type").asString().toLowerCase().compareTo("division_county") == 0){
+		if (np.has("type") && np.at("type").asString().toLowerCase().compareTo("mdc:division_county") == 0){
 			result.set("division",  Json.object().set("mdc:Name", np.has("mdc:Name")?np.at("mdc:Name").asString():np.at("rdfs:label").asString()).set("mdc:Division_Code", np.at("mdc:Division_Code").asString()).set("fragment", MetaOntology.getIdFromUri(np.at("iri").asString())));
 			
 			result.set("department", resolveDepartment (np));					
