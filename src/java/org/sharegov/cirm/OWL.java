@@ -712,6 +712,11 @@ public class OWL
 		{
 			x = annotate(o, object, x, sp);
 		}
+		
+
+		if (!x.has("rdfs:label"))
+			x.set("rdfs:label", sp.getShortForm(object));  // was object.getIRI().getFragment());
+		
 		return x;
 	}
 
@@ -738,7 +743,7 @@ public class OWL
 			x.set(annName, annValue);
 		}
 		if (OWL.getEntityLabel(object) == null && !x.has("label") && !x.has("rdfs:label"))
-			x.set("label", sp.getShortForm(object));  // was object.getIRI().getFragment());
+			x.set("rdfs:label", sp.getShortForm(object));  // was object.getIRI().getFragment());
 		return x;
 	}
 

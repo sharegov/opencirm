@@ -305,6 +305,10 @@ public class OWLObjectToJson implements OWLObjectMapper<Json>
 			{
 				System.out.println("Not expanding object properties' objects for individual: " + ind);
 			}
+			
+			if (!result.has("rdfs:label")){
+				System.out.println("no label for object: "+result.at("iri").asString());
+			}
 			return result;
 		}
 		else if (object instanceof OWLClass)
@@ -312,6 +316,9 @@ public class OWLObjectToJson implements OWLObjectMapper<Json>
 			OWLClass cl = (OWLClass)object;
 			Json result = Json.object().set("iri", cl.getIRI().toString());
 			annotate(cl, result, shortFormProvider);
+			if (!result.has("rdfs:label")){
+				System.out.println("no label for object: "+result.at("iri").asString());
+			}
 			return result;
 		}
 		else if (object instanceof OWLLiteral)

@@ -80,7 +80,7 @@
         "legacy:hasDataType": {
           "$ref": "#/definitions/legacy:hasDataType"
         },
-        "hasLegacyCode": {
+        "legacy:hasLegacyCode": {
           "$ref": "#/definitions/legacy:hasLegacyCode"
         },
         "legacy:hasOrderBy": {
@@ -266,7 +266,7 @@
         },
         "type": {
           "enum": [
-            "QuestionTrigger"
+            "legacy:QuestionTrigger"
           ]
         },
         "iri": {
@@ -751,7 +751,6 @@
         "type": {
           "enum": [
             "legacy:ActivityTrigger",
-            "legacy:Activity Trigger",
             "legacy:QuestionTrigger"
           ]
         },
@@ -776,7 +775,7 @@
     "legacy:hasAnswerObject": {
       "type": "object",
       "properties": {
-        "hasLegacyCode": {
+        "legacy:hasLegacyCode": {
           "$ref": "#/definitions/legacy:hasLegacyCode"
         },
         "rdfs:label": {

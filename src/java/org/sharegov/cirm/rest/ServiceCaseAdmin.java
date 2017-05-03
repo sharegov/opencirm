@@ -873,7 +873,7 @@ public class ServiceCaseAdmin extends RestService {
 			
 			String userName = aData.at("userName").asString();
 			String comment = aData.has("comment")?aData.at("comment").asString():null;
-			String newName = aData.has("label")?aData.at("label").asString():null;
+			String newName = aData.has("rdfs:label")?aData.at("rdfs:label").asString():null;
 			
 			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
 			if (srType == null || srType.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");

@@ -54,7 +54,6 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.reasoner.BufferingMode;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.util.BidirectionalShortFormProviderAdapter;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.semanticweb.owlapi.util.ShortFormProvider;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
@@ -1244,33 +1243,44 @@ public class MetaOntology
 		return false;
 	}
 	
-	protected static Json expandRealtedObjects (String id, Json obj, List<String> expanded){
+	protected static boolean expandRealtedObjects (String id, Json obj, List<String> expanded){
 		if (obj.isArray()) {
 			return expandArray(id, obj, expanded);
 		} else if (obj.isObject()){
 			return expandObject(id, obj, expanded);
 		}
 		
-		return obj;
+		return false;
 	}
 	
-	private static Json expandArray(String id, Json arr, List<String> expanded){
+	private static boolean expandArray(String id, Json arr, List<String> expanded){
+		boolean result = false;
 		ListIterator<Json> arrayIt = arr.asJsonList().listIterator();
 		while(arrayIt.hasNext()) {
 			Json elem = arrayIt.next();
 			if (isFullIriString(elem) && elem.asString().contains("#" + id)) {
 				elem = getSerializedOntologyObject(elem.asString());
+				result = true;
 			}
-			elem = expandRealtedObjects(id, elem, expanded); 
+			boolean wasExpanded = expandRealtedObjects(id, elem, expanded);
+			result = result || wasExpanded;
 			arrayIt.set(elem);
 		}
-		return arr;
+		
+		return result;
 	}
 	
-	private static Json expandObject(String id, Json obj, List<String> expanded){
+	private static boolean expandObject(String id, Json obj, List<String> expanded){	
+		boolean result = false; 
+		
 		if (obj.has("iri")){
+			if (obj.at("iri").asString().toLowerCase().contains("152873277".toLowerCase())){
+				System.out.println("found target!");
+			}
+			result = obj.at("iri").asString().contains("#" + id);
+			
 			if (expanded.contains(obj.at("iri").asString())){
-				return obj;
+				return result;
 			} else {
 				expanded.add(obj.at("iri").asString());
 			}
@@ -1278,17 +1288,33 @@ public class MetaOntology
 			throw new IllegalArgumentException("Object missing on the iri property: ");
 		}
 		
+		boolean wasExpanded = false;
+		
 		Map<String,Json> properties = obj.asJsonMap();
 		for (Map.Entry<String, Json> propKeyValue : properties.entrySet()) {
-			if (!propKeyValue.getKey().equals("iri") && isFullIriString(propKeyValue.getValue()) && propKeyValue.getValue().asString().contains("#" + id)) {
-				propKeyValue.setValue(getSerializedOntologyObject(propKeyValue.getValue().asString()));
+			Json value = propKeyValue.getValue();
+			if (!propKeyValue.getKey().equals("iri") && isFullIriString(value) && value.asString().contains("#" + id)) {
+				propKeyValue.setValue(getSerializedOntologyObject(value.asString()));
+				result = true;
 			} 
-			propKeyValue.setValue(expandRealtedObjects(id, propKeyValue.getValue(), expanded));				
+			
+			boolean indExpanded = expandRealtedObjects(id, value, expanded);
+			
+			wasExpanded = wasExpanded || indExpanded;			
+			
+			propKeyValue.setValue(value);				
 		}
+		
+		if (wasExpanded && !obj.at("iri").asString().contains("#" + id)){
+			obj.at("iri", obj.at("iri").asString().replace("#", "#" + id + "_"));
+			result = true;
+		}
+		
+		result = result || wasExpanded;
 		
 		expanded.remove(obj.at("iri").asString());
 		
-		return obj;
+		return result;
 	}
 	
 	public static Json cloneSerializedIndividual(String donor, String dolly){
@@ -1299,17 +1325,27 @@ public class MetaOntology
 
 		List<String> expanded = new CopyOnWriteArrayList<>();
 		String donorPrefix = correctedPrefix(donor);
-		Json serializedDonor = expandRealtedObjects (donor, getSerializedOntologyObject(donorPrefix + donor), expanded);
+		Json serializedDonor = getSerializedOntologyObject(donorPrefix + donor);
+		expandRealtedObjects (donor, serializedDonor, expanded);
 		String strDonor = serializedDonor.toString();
 		
-		strDonor = strDonor.replaceAll(donor, dolly);
+		strDonor = strDonor.replaceAll("#" + donor, "#" + dolly);
 			        
         return Json.read(strDonor);              
 	}
 		
 	
-	public static IRI getFullIri (String prefixedForm){
-		BidirectionalShortFormProviderAdapter adapter = new BidirectionalShortFormProviderAdapter(getPrefixShortFormProvider());
-		return adapter.getEntity(prefixedForm).getIRI();
+	public static boolean isPrefixedFormat (String identifier){
+		return identifier.contains(":");
+	}
+	
+	private static IRI getFullIri (String prefixedForm){
+		if (!isPrefixedFormat(prefixedForm)){
+			prefixedForm = PREFIX + prefixedForm;
+		}
+		//BidirectionalShortFormProviderAdapter adapter = new BidirectionalShortFormProviderAdapter(getPrefixShortFormProvider());
+		//return adapter.getEntity(prefixedForm).getIRI();
+		
+		return OWL.fullIri(prefixedForm);
 	}
 }
