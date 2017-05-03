@@ -1274,9 +1274,6 @@ public class MetaOntology
 		boolean result = false; 
 		
 		if (obj.has("iri")){
-			if (obj.at("iri").asString().toLowerCase().contains("152873277".toLowerCase())){
-				System.out.println("found target!");
-			}
 			result = obj.at("iri").asString().contains("#" + id);
 			
 			if (expanded.contains(obj.at("iri").asString())){
@@ -1294,7 +1291,7 @@ public class MetaOntology
 		for (Map.Entry<String, Json> propKeyValue : properties.entrySet()) {
 			Json value = propKeyValue.getValue();
 			if (!propKeyValue.getKey().equals("iri") && isFullIriString(value) && value.asString().contains("#" + id)) {
-				propKeyValue.setValue(getSerializedOntologyObject(value.asString()));
+				value = getSerializedOntologyObject(value.asString());
 				result = true;
 			} 
 			
@@ -1306,7 +1303,7 @@ public class MetaOntology
 		}
 		
 		if (wasExpanded && !obj.at("iri").asString().contains("#" + id)){
-			obj.at("iri", obj.at("iri").asString().replace("#", "#" + id + "_"));
+			obj.set("iri", obj.at("iri").asString().replace("#", "#" + id + "_"));
 			result = true;
 		}
 		
