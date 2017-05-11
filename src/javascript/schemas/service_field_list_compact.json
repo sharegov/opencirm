@@ -40,6 +40,14 @@
       ],
       "type": "object"
     },
+	"ListOfReferences": {
+      "items": {
+        "$ref": "#/definitions/reference"
+      },
+      "minItems": 1,
+      "uniqueItems": true,
+      "type": "array"
+    },
     "legacy:ServiceField": {
       "type": "object",
       "oneOf": [
@@ -147,7 +155,7 @@
           "$ref": "#/definitions/legacy:isDisabled"
         },
         "legacy:hasDefaultIntakeMethod": {
-          "$ref": "#/definitions/legacy:hasDefaultIntakeMethod"
+          "$ref": "#/definitions/legacy:IntakeMethod"
         },
         "legacy:hasStandardizeStreetFormat": {
           "$ref": "#/definitions/legacy:hasStandardizeStreetFormat"
@@ -168,9 +176,6 @@
           "enum": [
             "legacy:ServiceQuestion"
           ]
-        },
-        "legacy:hasAnswerUpdateTimeout": {
-          "$ref": "#/definitions/legacy:hasAnswerUpdateTimeout"
         }
       },
       "required": [
@@ -254,6 +259,7 @@
       "type": "array"
     },
     "ServiceFieldAlertObject": {
+      "additionalProperties": false,
       "properties": {
         "legacy:hasLegacyEvent": {
           "$ref": "#/definitions/legacy:hasLegacyEvent"
@@ -275,7 +281,6 @@
       },
       "required": [
         "iri",
-        "rdfs:label",
         "legacy:hasLegacyEvent",
         "type"
       ],
@@ -305,6 +310,7 @@
       ]
     },
     "legacy:hasChoiceValueListObject": {
+      "additionalProperties": false,
       "type": "object",
       "properties": {
         "legacy:hasChoiceValue": {
@@ -334,7 +340,6 @@
       },
       "required": [
         "iri",
-        "rdfs:label",
         "legacy:hasChoiceValue",
         "type"
       ]
@@ -348,6 +353,12 @@
           },
           {
             "$ref": "#/definitions/legacy:ChoiceValueObject"
+          },
+          {
+            "$ref": "#/definitions/mdc:Department_County"
+          },
+          {
+            "$ref": "#/definitions/mdc:Commission_County"
           }
         ]
       },
@@ -378,15 +389,12 @@
         },
         "type": {
           "enum": [
-            "legacy:ChoiceValue",
-            "mdc:Department_County",
-            "mdc:Commission_County"
+            "legacy:ChoiceValue"
           ]
         }
       },
       "required": [
         "iri",
-        "rdfs:label",
         "type"
       ]
     },
@@ -396,17 +404,36 @@
         "N"
       ]
     },
-    "legacy:hasDefaultIntakeMethod": {
+    "legacy:ListIntakeMethod": {
+      "items": {
+        "type": "object",
+        "oneOf": [
+			{
+			  "$ref": "#/definitions/reference"
+			},
+			{
+			  "$ref": "#/definitions/legacy:IntakeMethodObject"
+			}
+        ]
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "legacy:IntakeMethod": {
       "oneOf": [
         {
           "$ref": "#/definitions/reference"
         },
         {
-          "$ref": "#/definitions/legacy:hasDefaultIntakeMethodObject"
+          "$ref": "#/definitions/legacy:IntakeMethodObject"
+        },
+        {
+          "$ref": "#/definitions/legacy:ListIntakeMethod"
         }
       ]
     },
-    "legacy:hasDefaultIntakeMethodObject": {
+    "legacy:IntakeMethodObject": {
+      "additionalProperties": false,
       "type": "object",
       "properties": {
         "legacy:hasOrderBy": {
@@ -418,7 +445,7 @@
         "rdfs:label": {
           "$ref": "#/definitions/rdfs:label"
         },
-        "isAlwaysPublic": {
+        "legacy:isAlwaysPublic": {
           "$ref": "#/definitions/ynQuestion"
         },
         "type": {
@@ -432,7 +459,6 @@
       },
       "required": [
         "iri",
-        "rdfs:label",
         "type"
       ]
     },
@@ -472,6 +498,7 @@
       "type": "array"
     },
     "legacy:LegacyEventObject": {
+      "additionalProperties": false,
       "type": "object",
       "properties": {
         "rdfs:label": {
@@ -512,6 +539,7 @@
       ]
     },
     "legacy:hasStatusObject": {
+      "additionalProperties": false,
       "type": "object",
       "properties": {
         "rdfs:label": {
@@ -557,6 +585,7 @@
       ]
     },
     "legacy:ActivityObject": {
+      "additionalProperties": false,
       "type": "object",
       "properties": {
         "rdfs:label": {
@@ -608,11 +637,16 @@
         },
         "legacy:hasEmailTemplate": {
           "$ref": "#/definitions/legacy:hasEmailTemplate"
+        },
+        "legacy:isAutoOnPending": {
+          "$ref": "#/definitions/legacy:IntakeMethod"
+        },
+        "legacy:isAutoOnLocked": {
+          "$ref": "#/definitions/legacy:IntakeMethod"
         }
       },
       "required": [
         "iri",
-        "rdfs:label",
         "type"
       ]
     },
@@ -627,6 +661,7 @@
       ]
     },
     "legacy:hasAssignmentRuleObject": {
+      "additionalProperties": false,
       "type": "object",
       "properties": {
         "rdfs:label": {
@@ -676,6 +711,7 @@
       "type": "array"
     },
     "legacy:OutcomeObject": {
+      "additionalProperties": false,
       "type": "object",
       "properties": {
         "rdfs:label": {
@@ -684,7 +720,7 @@
         "legacy:hasLegacyCode": {
           "$ref": "#/definitions/legacy:hasLegacyCode"
         },
-        "hasLegacyEvent": {
+        "legacy:hasLegacyEvent": {
           "$ref": "#/definitions/legacy:hasLegacyEvent"
         },
         "type": {
@@ -698,7 +734,6 @@
       },
       "required": [
         "iri",
-        "rdfs:label",
         "type"
       ]
     },
@@ -731,6 +766,7 @@
       "type": "array"
     },
     "legacy:ActivityAssignmentObject": {
+      "additionalProperties": false,
       "type": "object",
       "properties": {
         "rdfs:label": {
@@ -773,6 +809,7 @@
       ]
     },
     "legacy:hasAnswerObject": {
+      "additionalProperties": false,
       "type": "object",
       "properties": {
         "legacy:hasLegacyCode": {
@@ -795,7 +832,6 @@
       },
       "required": [
         "iri",
-        "rdfs:label",
         "type"
       ]
     },
@@ -810,6 +846,7 @@
       ]
     },
     "mdc:hasDataSourceObject": {
+      "additionalProperties": false,
       "type": "object",
       "properties": {
         "mdc:providedBy": {
@@ -832,7 +869,6 @@
       },
       "required": [
         "iri",
-        "rdfs:label",
         "mdc:providedBy",
         "mdc:hasPropertyName",
         "type"
@@ -849,6 +885,7 @@
       ]
     },
     "mdc:providedByObject": {
+      "additionalProperties": false,
       "type": "object",
       "properties": {
         "rdfs:label": {
@@ -865,7 +902,6 @@
       },
       "required": [
         "iri",
-        "rdfs:label",
         "type"
       ]
     },
@@ -880,6 +916,7 @@
       ]
     },
     "legacy:hasAnswerUpdateTimeoutObject": {
+      "additionalProperties": false,
       "type": "object",
       "properties": {
         "rdfs:label": {
@@ -899,7 +936,6 @@
       },
       "required": [
         "iri",
-        "rdfs:label",
         "type",
         "mdc:hasValue"
       ]
@@ -915,6 +951,7 @@
       ]
     },
     "legacy:hasAnswerConstraintObject": {
+      "additionalProperties": false,
       "type": "object",
       "properties": {
         "rdfs:label": {
@@ -940,7 +977,6 @@
       },
       "required": [
         "iri",
-        "rdfs:label",
         "type"
       ]
     },
@@ -977,7 +1013,7 @@
       ]
     },
     "legacy:hasEmailTemplateObject": {
-      "additionalProperties": true,
+      "additionalProperties": false,
       "properties": {
         "iri": {
           "$ref": "#/definitions/iri"
@@ -1037,17 +1073,17 @@
       "uniqueItems": true,
       "type": "array"
     },
-    "legacy:hasAnswerUpdateTimeout": {
-      "oneOf": [
-        {
-          "$ref": "#/definitions/reference"
-        },
-        {
-          "$ref": "#/definitions/legacy:hasAnswerUpdateTimeoutObject"
-        }
-      ]
-    },
-    "legacy:hasAnswerUpdateTimeoutObject": {
+	"mdc:Department_County": {
+		"oneOf": [
+			{
+				"$ref": "#/definitions/reference"
+			},
+			{
+				"$ref": "#/definitions/mdc:Department_County_Object"
+			}
+		]
+	},
+	"mdc:Department_County_Object": {
       "additionalProperties": false,
       "properties": {
         "iri": {
@@ -1056,21 +1092,271 @@
         "rdfs:label": {
           "$ref": "#/definitions/rdfs:label"
         },
-        "mdc:hasValue": {
-          "$ref": "#/definitions/floatNumber"
+        "mdc:Alias": {
+          "type": "string"
+        },
+        "mdc:Name": {
+          "type": "string"
+        },
+        "mdc:Portal_Actor_Id": {
+          "type": "string"
+        },
+        "mdc:CSR_GroupCode": {
+          "type": "string"
+        },
+        "mdc:Dept_Code": {
+          "type": "string"
+        },
+        "mdc:Divisions": {
+          "$ref": "#/definitions/mdc:Divisions"
+        },		
+        "mdc:Teamsite_Webname": {
+          "$ref": "#/definitions/mdc:Teamsite_Webname"
+        },		
+        "mdc:hasParentAgency": {
+          "$ref": "#/definitions/mdc:hasParentAgency"
+        },	
+        "mdc:hasDeputyMayor": {
+          "$ref": "#/definitions/mdc:hasDeputyMayor"
+        },
+        "legacy:hasAccessPolicy": {
+          "$ref": "#/definitions/legacy:hasAccessPolicy"
         },
         "type": {
           "enum": [
-            "legacy:ServiceAnswerUpdateTimeout"
+            "mdc:Department_County"
           ]
         }
       },
       "required": [
         "iri",
-        "mdc:hasValue",
+        "type"
+      ],
+      "type": "object"	
+	},
+	"mdc:Teamsite_Webname": {		
+      "items": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true,
+      "type": "array"
+	},
+	"mdc:Divisions": {
+		"oneOf": [
+			{
+				"$ref": "#/definitions/reference"
+			},
+			{
+				"$ref": "#/definitions/mdc:DivisionObject"
+			},
+			{
+				"$ref": "#/definitions/mdc:DivisionObjectList"
+			}
+		]
+	},
+	"mdc:DivisionObjectList": {
+	"items": {
+        "type": "object",
+        "oneOf": [
+          {
+            "$ref": "#/definitions/reference"
+          },
+          {
+            "$ref": "#/definitions/mdc:DivisionObject"
+          }
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true,
+      "type": "array"
+	},
+	"mdc:DivisionObject": {
+	  "additionalProperties": false,
+      "properties": {
+        "iri": {
+          "$ref": "#/definitions/iri"
+        },
+        "rdfs:label": {
+          "$ref": "#/definitions/rdfs:label"
+        },
+        "mdc:Division_Code": {
+          "type": "string"
+        },
+        "mdc:Name": {
+          "type": "string"
+        },
+        "mdc:Department": {
+          "$ref": "#/definitions/mdc:Department_County"
+        },	
+        "mdc:isLegacy": {
+          "$ref": "#/definitions/ynQuestion"
+        },
+        "type": {
+          "enum": [
+            "mdc:Division_County"
+          ]
+        }
+      },
+      "required": [
+        "iri",
         "type"
       ],
       "type": "object"
-    }
+	},
+	"mdc:hasParentAgency": {
+		"oneOf": [
+			{
+				"$ref": "#/definitions/reference"
+			},
+			{
+				"$ref": "#/definitions/mdc:hasParentAgencyObject"
+			}
+		]
+	},
+	"mdc:hasParentAgencyObject": {
+	  "additionalProperties": false,
+      "properties": {
+        "iri": {
+          "$ref": "#/definitions/iri"
+        },
+        "rdfs:label": {
+          "$ref": "#/definitions/rdfs:label"
+        },
+        "mdc:Alias": {
+          "type": "string"
+        },
+        "mdc:Name": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "mdc:County_Organization"
+          ]
+        }
+      },
+      "required": [
+        "iri",
+        "type"
+      ],
+      "type": "object"
+	},
+	"mdc:hasDeputyMayor": {
+		"oneOf": [
+			{
+				"$ref": "#/definitions/reference"
+			},
+			{
+				"$ref": "#/definitions/mdc:hasDeputyMayorObject"
+			}
+		]
+	},
+	"mdc:hasDeputyMayorObject": {
+	  "additionalProperties": false,
+      "properties": {
+        "iri": {
+          "$ref": "#/definitions/iri"
+        },
+        "rdfs:label": {
+          "$ref": "#/definitions/rdfs:label"
+        },
+        "mdc:hasEmailAdress": {          
+          "$ref": "#/definitions/mdc:hasEmailAdress"
+        },
+        "type": {
+          "enum": [
+            "mdc:Deputy_Mayor"
+          ]
+        }
+      },
+      "required": [
+        "iri",
+        "type"
+      ],
+      "type": "object"
+	},
+	"legacy:hasAccessPolicy": {
+		"oneOf": [
+			{
+				"$ref": "#/definitions/reference"
+			},
+			{
+				"$ref": "#/definitions/ListOfReferences"
+			}
+		]
+	},
+	"mdc:hasEmailAdress": {
+		"oneOf": [
+			{
+				"$ref": "#/definitions/reference"
+			},
+			{
+				"$ref": "#/definitions/ListOfReferences"
+			}
+		]
+	},
+	"mdc:Commission_County":{
+		"oneOf": [
+			{
+				"$ref": "#/definitions/reference"
+			},
+			{
+				"$ref": "#/definitions/mdc:Department_County_Object"
+			}
+		]
+	},
+	"mdc:Commission_County_Object": {
+      "additionalProperties": false,
+      "properties": {
+	    "extendedTypes": {
+			"$ref": "#/definitions/extendedTypes"
+		},
+        "iri": {
+          "$ref": "#/definitions/iri"
+        },
+        "rdfs:label": {
+          "$ref": "#/definitions/rdfs:label"
+        },
+        "mdc:Alias": {
+          "type": "string"
+        },
+        "mdc:Name": {
+          "type": "string"
+        },
+        "mdc:CSR_GroupCode": {
+          "type": "string"
+        },
+        "mdc:Dept_Code": {
+          "type": "string"
+        },
+        "mdc:hasDivision": {
+          "$ref": "#/definitions/mdc:Divisions"
+        },		
+        "mdc:Divisions": {
+          "$ref": "#/definitions/mdc:Divisions"
+        },
+        "mdc:Teamsite_Webname": {
+          "$ref": "#/definitions/mdc:Teamsite_Webname"
+        },		
+        "mdc:hasParentAgency": {
+          "$ref": "#/definitions/mdc:hasParentAgency"
+        },
+        "type": {
+          "enum": [
+            "mdc:Commission_County"
+          ]
+        }
+      },
+      "required": [
+        "iri",
+        "type"
+      ],
+      "type": "object"	
+	}
   }
 }

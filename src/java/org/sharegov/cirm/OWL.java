@@ -712,11 +712,6 @@ public class OWL
 		{
 			x = annotate(o, object, x, sp);
 		}
-		
-
-		if (!x.has("rdfs:label"))
-			x.set("rdfs:label", sp.getShortForm(object));  // was object.getIRI().getFragment());
-		
 		return x;
 	}
 
@@ -742,8 +737,16 @@ public class OWL
 			String annValue = ((OWLLiteral)ann.getValue()).getLiteral();
 			x.set(annName, annValue);
 		}
-		if (OWL.getEntityLabel(object) == null && !x.has("label") && !x.has("rdfs:label"))
-			x.set("rdfs:label", sp.getShortForm(object));  // was object.getIRI().getFragment());
+		
+		if (!sp.equals(OWLObjectMapper.DEFAULT_SHORTFORM_PROVIDER)) {
+			if (!x.has("rdfs:label")){
+//				x.set("rdfs:label", sp.getShortForm(object));  // remove comment if you need to always generate labels
+			}
+		} else {
+			if (!x.has("label")){
+				x.set("label", sp.getShortForm(object));  // was object.getIRI().getFragment());
+			}
+		}
 		return x;
 	}
 

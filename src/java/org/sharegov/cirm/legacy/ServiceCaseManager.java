@@ -6,14 +6,14 @@ import static org.sharegov.cirm.OWL.reasoner;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import mjson.Json;
 
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -34,6 +34,8 @@ import org.sharegov.cirm.rest.OntoAdmin;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
+import mjson.Json;
+
 /**
  * Handles the User Cases for CIRM Admin Interface
  * 
@@ -52,6 +54,35 @@ public class ServiceCaseManager extends OntoAdmin {
 	private Map<String, Set <String>> dptOutcomes;
 	private Map<String, Json> activities;
 	private Map<String, Json> outcomes;
+	private static HashSet<String> knownTypes = new HashSet<String>(Arrays.asList("legacy:ServiceNote", 
+																				  "legacy:ServiceQuestion", 
+																				  "legacy:QuestionTrigger", 
+																				  "legacy:ChoiceValueList",
+																				  "legacy:ChoiceValue",
+//																				  "legacy:IntakeMethod",
+																				  "legacy:ServiceFieldAlert",
+																				  "legacy:ClearServiceField",
+																				  "legacy:MarkServiceFieldRequired",
+																				  "legacy:MarkServiceFieldRequired",
+																				  "legacy:MarkServiceFieldDisabled",
+																				  "legacy:ActivityAssignment",
+																				  "legacy:StatusChange",
+//																				  "legacy:Status",
+																				  "legacy:Activity",
+//																				  "legacy:AssignActivityToUserRule",
+//																				  "legacy:CaseActivityAssignmentRule",
+//																				  "legacy:AssignActivityFromGeoAttribute",
+																				  "legacy:Outcome",
+																				  "legacy:ActivityTrigger",
+																				  "legacy:QuestionTrigger",
+//																				  "mdc:EventBasedDataSource",
+//																				  "mdc:ClientSideEventType",
+//																				  "legacy:ServiceAnswerUpdateTimeout",
+																				  "legacy:ServiceAnswerConstraint",
+																				  "legacy:MessageTemplate",
+																				  "Department_County",
+																				  "Commission_County"
+																				  )) ;
 	
 	/**
 	 * private to defeat multiple instantiation
@@ -1108,7 +1139,7 @@ public class ServiceCaseManager extends OntoAdmin {
 				
 		if (sr.has("legacy:hasServiceField")){
 			
-			Json questions = MetaOntology.resolveIRIs(sr.at("legacy:hasServiceField"), "legacy");
+			Json questions = trimUnknownObjects(MetaOntology.resolveIRIs(sr.at("legacy:hasServiceField"), "legacy"));
 			
 			if (!questions.isArray()){
 				return Json.array().add(questions);						
@@ -1791,6 +1822,42 @@ public class ServiceCaseManager extends OntoAdmin {
 				return  getSerializedMetaIndividual(activity);
 			} else throw new IllegalArgumentException("Unable to enable Activity Type "+ PREFIX + activity);
 		}
+	}
+	
+	private Json trimUnknownObjects (Json obj){
+		if (obj.isArray()) return trimUnknownObjectsFromJsonArray (obj);
+		else if (obj.isObject()) return trimUnknownObjectsFromJsonObject (obj);
+		
+		return obj;
+	}
+	
+	private Json trimUnknownObjectsFromJsonArray (Json arr){
+		ListIterator<Json> arrayIt = arr.asJsonList().listIterator();
+		while(arrayIt.hasNext()) {
+			Json elem = arrayIt.next();
+			arrayIt.set(trimUnknownObjects(elem));
+		}
+		return arr;
+	}
+	
+	private Json trimUnknownObjectsFromJsonObject (Json obj){
+		
+		if (obj.has("iri") && obj.has("type")){			
+			if (!knownTypes.contains(obj.at("type").asString())){
+				return obj.at("iri");
+			} 
+		} else {
+			throw new IllegalArgumentException("Object missing iri/type property: ");
+		}
+		
+		Map<String,Json> properties = obj.asJsonMap();
+		for (Map.Entry<String, Json> propKeyValue : properties.entrySet()) {
+			Json value = propKeyValue.getValue();			
+			value = trimUnknownObjects(value);			
+			propKeyValue.setValue(value);				
+		}
+		
+		return obj;
 	}
 	
 }
