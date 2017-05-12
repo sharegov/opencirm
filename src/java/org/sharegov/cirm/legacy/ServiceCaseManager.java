@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -437,7 +436,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	private void addActitivitesByDepartment(String srType, Json serializedSrType, String departmentIriFragment){
 		if (serializedSrType.has("legacy:hasActivity")){
 			
-			Json srTypeActivities = MetaOntology.resolveIRIs(serializedSrType.at("legacy:hasActivity"), "legacy");
+			Json srTypeActivities = MetaOntology.resolveIRIs(serializedSrType.at("legacy:hasActivity"), knownTypes);
 			
 			Set <String> S = new HashSet<>();
 						
@@ -520,7 +519,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			for (OWLNamedIndividual indx: all){
 				String iri = indx.getIRI().toString();
 				if (!activities.containsKey(iri)){
-					Json atx = MetaOntology.resolveIRIs(getSerializedIndividual(MetaOntology.getIdFromUri(iri), MetaOntology.getOntologyFromUri(iri)), "legacy");
+					Json atx = MetaOntology.resolveIRIs(getSerializedIndividual(MetaOntology.getIdFromUri(iri), MetaOntology.getOntologyFromUri(iri)), knownTypes);
 					if (atx.has("iri")){
 						activities.put(iri, atx);
 					}
@@ -1139,7 +1138,8 @@ public class ServiceCaseManager extends OntoAdmin {
 				
 		if (sr.has("legacy:hasServiceField")){
 			
-			Json questions = trimUnknownObjects(MetaOntology.resolveIRIs(sr.at("legacy:hasServiceField"), "legacy"));
+//			Json questions = trimUnknownObjects(MetaOntology.resolveIRIs(sr.at("legacy:hasServiceField"), knownTypes));
+			Json questions = MetaOntology.resolveIRIs(sr.at("legacy:hasServiceField"), knownTypes);
 			
 			if (!questions.isArray()){
 				return Json.array().add(questions);						
@@ -1163,7 +1163,7 @@ public class ServiceCaseManager extends OntoAdmin {
 				
 		if (sr.has("legacy:hasActivity")){
 			
-			Json activities = MetaOntology.resolveIRIs(sr.at("legacy:hasActivity"), "legacy");
+			Json activities = MetaOntology.resolveIRIs(sr.at("legacy:hasActivity"), knownTypes);
 			
 			if (!activities.isArray()){
 				return Json.array().add(activities);						
@@ -1824,40 +1824,40 @@ public class ServiceCaseManager extends OntoAdmin {
 		}
 	}
 	
-	private Json trimUnknownObjects (Json obj){
-		if (obj.isArray()) return trimUnknownObjectsFromJsonArray (obj);
-		else if (obj.isObject()) return trimUnknownObjectsFromJsonObject (obj);
-		
-		return obj;
-	}
-	
-	private Json trimUnknownObjectsFromJsonArray (Json arr){
-		ListIterator<Json> arrayIt = arr.asJsonList().listIterator();
-		while(arrayIt.hasNext()) {
-			Json elem = arrayIt.next();
-			arrayIt.set(trimUnknownObjects(elem));
-		}
-		return arr;
-	}
-	
-	private Json trimUnknownObjectsFromJsonObject (Json obj){
-		
-		if (obj.has("iri") && obj.has("type")){			
-			if (!knownTypes.contains(obj.at("type").asString())){
-				return obj.at("iri");
-			} 
-		} else {
-			throw new IllegalArgumentException("Object missing iri/type property: ");
-		}
-		
-		Map<String,Json> properties = obj.asJsonMap();
-		for (Map.Entry<String, Json> propKeyValue : properties.entrySet()) {
-			Json value = propKeyValue.getValue();			
-			value = trimUnknownObjects(value);			
-			propKeyValue.setValue(value);				
-		}
-		
-		return obj;
-	}
+//	private Json trimUnknownObjects (Json obj){
+//		if (obj.isArray()) return trimUnknownObjectsFromJsonArray (obj);
+//		else if (obj.isObject()) return trimUnknownObjectsFromJsonObject (obj);
+//		
+//		return obj;
+//	}
+//	
+//	private Json trimUnknownObjectsFromJsonArray (Json arr){
+//		ListIterator<Json> arrayIt = arr.asJsonList().listIterator();
+//		while(arrayIt.hasNext()) {
+//			Json elem = arrayIt.next();
+//			arrayIt.set(trimUnknownObjects(elem));
+//		}
+//		return arr;
+//	}
+//	
+//	private Json trimUnknownObjectsFromJsonObject (Json obj){
+//		
+//		if (obj.has("iri") && obj.has("type")){			
+//			if (!knownTypes.contains(obj.at("type").asString())){
+//				return obj.at("iri");
+//			} 
+//		} else {
+//			throw new IllegalArgumentException("Object missing iri/type property: ");
+//		}
+//		
+//		Map<String,Json> properties = obj.asJsonMap();
+//		for (Map.Entry<String, Json> propKeyValue : properties.entrySet()) {
+//			Json value = propKeyValue.getValue();			
+//			value = trimUnknownObjects(value);			
+//			propKeyValue.setValue(value);				
+//		}
+//		
+//		return obj;
+//	}
 	
 }

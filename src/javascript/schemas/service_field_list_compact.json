@@ -1085,7 +1085,10 @@
 	},
 	"mdc:Department_County_Object": {
       "additionalProperties": false,
-      "properties": {
+      "properties": {		
+	    "extendedTypes": {
+			"$ref": "#/definitions/extendedTypes"
+		},
         "iri": {
           "$ref": "#/definitions/iri"
         },
@@ -1093,7 +1096,7 @@
           "$ref": "#/definitions/rdfs:label"
         },
         "mdc:Alias": {
-          "type": "string"
+          "$ref": "#/definitions/StringOrArrayOfString"
         },
         "mdc:Name": {
           "type": "string"
@@ -1109,9 +1112,12 @@
         },
         "mdc:Divisions": {
           "$ref": "#/definitions/mdc:Divisions"
+        },
+        "mdc:hasDivision": {
+          "$ref": "#/definitions/mdc:Divisions"
         },		
         "mdc:Teamsite_Webname": {
-          "$ref": "#/definitions/mdc:Teamsite_Webname"
+          "$ref": "#/definitions/StringOrArrayOfString"
         },		
         "mdc:hasParentAgency": {
           "$ref": "#/definitions/mdc:hasParentAgency"
@@ -1124,7 +1130,8 @@
         },
         "type": {
           "enum": [
-            "mdc:Department_County"
+            "mdc:Department_County",
+			"mdc:Commission_County"
           ]
         }
       },
@@ -1134,7 +1141,17 @@
       ],
       "type": "object"	
 	},
-	"mdc:Teamsite_Webname": {		
+	"StringOrArrayOfString": {		
+      "oneOf": [
+			{
+				"type": "string"
+			},
+			{
+				"$ref": "#/definitions/ArrayOfString"
+			}
+		]
+	},
+	"ArrayOfString": {		
       "items": {
         "type": "object",
         "oneOf": [
@@ -1146,7 +1163,7 @@
       "minItems": 1,
       "uniqueItems": true,
       "type": "array"
-	},
+	},	
 	"mdc:Divisions": {
 		"oneOf": [
 			{
@@ -1154,6 +1171,9 @@
 			},
 			{
 				"$ref": "#/definitions/mdc:DivisionObject"
+			},
+			{
+			"$ref": "#/definitions/mdc:DivisionObject"
 			},
 			{
 				"$ref": "#/definitions/mdc:DivisionObjectList"
@@ -1169,6 +1189,9 @@
           },
           {
             "$ref": "#/definitions/mdc:DivisionObject"
+          },
+		  {
+            "$ref": "#/definitions/mdc:Department_County_Object"
           }
         ]
       },
