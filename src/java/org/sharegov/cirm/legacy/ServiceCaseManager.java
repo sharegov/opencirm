@@ -436,7 +436,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	private void addActitivitesByDepartment(String srType, Json serializedSrType, String departmentIriFragment){
 		if (serializedSrType.has("legacy:hasActivity")){
 			
-			Json srTypeActivities = MetaOntology.resolveIRIs(serializedSrType.at("legacy:hasActivity"), knownTypes);
+			Json srTypeActivities = serializedSrType.at("legacy:hasActivity");
 			
 			Set <String> S = new HashSet<>();
 						
@@ -450,6 +450,10 @@ public class ServiceCaseManager extends OntoAdmin {
 					addOutcomesByDepartment (srType, atx, departmentIriFragment);
 				}				
 			} else {
+				if (!srTypeActivities.isObject()){
+					srTypeActivities = getSerializedIndividual(MetaOntology.getIdFromUri(srTypeActivities.asString()), MetaOntology.getOntologyFromUri(srTypeActivities.asString()));
+				}
+				
 				addToCache(srTypeActivities, S, activities);
 				addOutcomesByDepartment (srType, srTypeActivities, departmentIriFragment);
 			}
@@ -477,6 +481,10 @@ public class ServiceCaseManager extends OntoAdmin {
 					addToCache(outcx, S, outcomes);
 				}				
 			} else {
+				if (!activityOutcomes.isObject()){
+					activityOutcomes = getSerializedIndividual(MetaOntology.getIdFromUri(activityOutcomes.asString()), MetaOntology.getOntologyFromUri(activityOutcomes.asString()));
+				}
+				
 				addToCache(activityOutcomes, S, outcomes);
 			}
 			
@@ -1137,8 +1145,6 @@ public class ServiceCaseManager extends OntoAdmin {
 		Json sr = getSerializedMetaIndividual(srType);			
 				
 		if (sr.has("legacy:hasServiceField")){
-			
-//			Json questions = trimUnknownObjects(MetaOntology.resolveIRIs(sr.at("legacy:hasServiceField"), knownTypes));
 			Json questions = MetaOntology.resolveIRIs(sr.at("legacy:hasServiceField"), knownTypes);
 			
 			if (!questions.isArray()){
@@ -1149,6 +1155,17 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 		} else return Json.nil();
 	
+	}
+	
+	/**
+	 * 
+	 * 
+	 */
+	public Json getAdminSerializedIndividual (String individualID){	
+		String id = MetaOntology.getIndividualIdentifier(individualID);
+		String onto = MetaOntology.getOntologyFromIdentifier(individualID);
+		
+		return MetaOntology.resolveIRIs(MetaOntology.getSerializedOntologyObject(id, onto), knownTypes);	
 	}
 	
 	/**

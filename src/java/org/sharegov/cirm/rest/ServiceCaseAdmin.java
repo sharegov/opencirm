@@ -85,10 +85,26 @@ public class ServiceCaseAdmin extends RestService {
 	@GET
 	@Path("/types/activity/{activityIRI}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getServiceCaseByActivity(@PathParam("activityIRI") String activityIRI) {
+	public Response getAtivity(@PathParam("activityIRI") String activityIRI) {
 		try
 		{			
 			return Response.ok(ServiceCaseManager.getInstance().getServiceCasesByActivityFromCache(activityIRI), MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
+	@GET
+	@Path("/activity/{activityIRI}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getServiceCaseByActivity(@PathParam("activityIRI") String activityIRI) {
+		try
+		{			
+			return Response.ok(ServiceCaseManager.getInstance().getAdminSerializedIndividual(activityIRI), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			return Response
 					.status(Status.INTERNAL_SERVER_ERROR)
