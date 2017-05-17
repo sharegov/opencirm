@@ -620,6 +620,9 @@
         "legacy:isAutoCreate": {
           "$ref": "#/definitions/ynQuestion"
         },
+		"legacy:isAutoDefaultOutcome": {
+		  "$ref": "#/definitions/booleanValue"
+		},
         "legacy:isAutoAssign": {
           "$ref": "#/definitions/booleanValue"
         },
