@@ -480,17 +480,8 @@
 						<div>
 						<label>Legal Description:</label>
 						<br/>
-						<span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoLegal1"></span>
+						<span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoLegal"></span>
 						<br/>
-						<span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoLegal2"></span>
-						<br/>
-						<span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoLegal3"></span>
-						<br/>
-						<span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoLegal4"></span>
-						<br/>
-						<span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoLegal5"></span>
-						<br/>
-						<span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoLegal6"></span>
 						</div>
 					</fieldset>
 				</div>

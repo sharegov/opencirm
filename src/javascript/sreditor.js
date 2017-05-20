@@ -1053,7 +1053,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			}
 		});
 
-		self.loadFromServerByCaseNumber = function(lookup_boid) {
+
+        self.loadFromServerByCaseNumber = function(lookup_boid) {
 			var query = {"type":"legacy:ServiceCase", "legacy:hasCaseNumber":lookup_boid};
 			cirm.top.async().postObject("/legacy/caseNumberSearch", query, function(result) {
 				$("#sh_dialog_sr_lookup").dialog('close');
@@ -3031,41 +3032,147 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			self.removeDuplicates();
 			patchPlaceholdersforIE();
 		};
-		
+//-----------------------------
+// TTPE CHANGE FUNCTIONS START
+// ----------------------------
+        self.isTypeChangeSrAllowed = function(type) {
+            var ok = self.isPendingApproval;
+        	return ok;
+        }
+
+        self.typeChangeSR = function(type) {
+            if(self.data().type() == "") {
+                $('#srTypeIDForTypeChange').val("");
+                return;
+            }//sh_dialog_typeChange
+            //$("#sh_dialog_typeChange")[0].innerText = "Are you sure you want to change the type current SR ?"
+            $("#sh_dialog_typeChange").dialog({ height: 300, width: 500, modal: true, buttons: {
+                "Start SR Type Change" : function() {
+                    var typeLabel = $('#srTypeIDForTypeChange').val().trim();
+                    var targetTypeFragment = cirm.refs.serviceCaseList[typeLabel];
+                    if(!targetTypeFragment || U.isEmptyString(targetTypeFragment))
+                    {
+                        alertDialog("Please select a target SR type");
+                        return true;
+                    }
+                    $("#sh_dialog_typeChange").dialog('close');
+                    var caseNumber = $('[name="SR Lookup"]').val().trim();
+                    if(U.isEmptyString(caseNumber))
+                    {
+                        alertDialog("No case number was selected.");
+                        return true;
+                    }
+                    //Try change SR type with validation
+                    self.loadFromServerByCaseNumberWithTypeChange(caseNumber, targetTypeFragment);
+                    patchPlaceholdersforIE();
+                },
+                "Cancel": function() {
+                    $("#sh_dialog_typeChange").dialog('close');
+                    self.clearSR();
+                    return;
+                }
+            }
+            });
+        }
+        //Dialog Functions
+        self.clearSrTypeIDForTypeChange = function() {
+        	$("#srTypeIDForTypeChange").val("");
+		}
+
+		//Loads an SR from the server converted to a target type. Only use if case is in approval and was only pending.
+        self.loadFromServerByCaseNumberWithTypeChange = function(caseNumber, targetTypeFragment) {
+            cirm.top.async().get("/typeChange/loadAsTargetTypeForApproval/" + caseNumber, { "targetTypeFragment" : targetTypeFragment}, function(result) {
+                $("#sh_dialog_sr_lookup").dialog('close');
+                if(result.ok) {
+                	var msg = "Your type change was successfully completed!\n";
+                    msg += "Answers of the old SR are provided in the Description field, please copy paste them where appropriate.\n\n"
+                    msg += "The type change is only permanent, when you save the SR.\n"
+                    msg += "Before saving, you can undo the type change by reloading the SR.\n"
+                    msg += "311Hub will now start the approval process with the new type.\n"
+                    $("#sh_dialog_alert")[0].innerText = msg;
+                    $("#sh_dialog_alert").dialog({ height: 300, width: 500, modal: true, buttons: {
+                        "Continue" : function() {
+                            $("#sh_dialog_alert").dialog('close');
+                            //Now Apply type changed SR to UI
+                            self.removeDuplicates();
+                            fetchSR(result.bo, self, false);
+                        }
+                    }
+                    });
+                }
+                else
+                {
+                    switch(result.error)
+                    {
+                        case "Case not found.":
+                        {
+                            showErrorDialog("Service request : "+ caseNumber + " was not found. <br>" + result.error);
+                            break;
+                        }
+                        case "Permission denied.":
+                        {
+                            showErrorDialog("An error occurred while searching for the Service Request : <br>"+result.error);
+                            break;
+                        }
+                        default :
+                        {
+                            showErrorDialog("An error occurred during type change of the Service Request : <br>"+result.error);
+                            break;
+                        }
+                    }
+                }
+            });
+        };
+        self.typeChangeOrClearSR = function(type) {
+            if(self.data().type() == "") {
+                $('#srTypeID').val("");
+                return;
+            }
+            if (self.isPendingApproval) {
+                self.typeChangeSR(type);
+            } else {
+                self.clearSR()
+            }
+		}
+//-----------------------------
+// TTPE CHANGE FUNCTIONS END
+// ----------------------------
+
 		self.clearSR = function(type) {
 			if(self.data().type() == "") {
    				$('#srTypeID').val("");
 				return;
 			}
-			$("#sh_dialog_clear")[0].innerText = "Are you sure you want to clear the current SR ?"
-    		$("#sh_dialog_clear").dialog({ height: 150, width: 350, modal: true, buttons: {
-				"Yes" : function() {
-	   				$(document).trigger(legacy.InteractionEvents.SrTypeSelection, []);
-       				$('#srTypeID').val("");
-					$('[name="SR Lookup"]').val("");
-					var tempAddr = self.data().properties().atAddress();
-					var tempX = self.data().properties().hasXCoordinate();
-					var tempY = self.data().properties().hasYCoordinate();
-					self.removeDuplicates();
-					self.data(emptyModel.data);
-					self.srType(emptyModel.srType);
-					self.originalData(emptyModel.originalData);
-					self.data().properties().atAddress(tempAddr);
-					self.data().properties().hasXCoordinate(tempX);
-					self.data().properties().hasYCoordinate(tempY);
-					self.removeAddressExtenders(self.data());
-					self.clearEmail();
-					$("#sh_dialog_clear").dialog('close');
-					patchPlaceholdersforIE();
-					if(type != undefined)
-						self.startNewServiceRequest(type);
-				},
-				"No": function() {
-				  	$("#sh_dialog_clear").dialog('close');
-				  	return;
-				}
-			  } 
-			});
+            $("#sh_dialog_clear")[0].innerText = "Are you sure you want to clear the current SR ?"
+            $("#sh_dialog_clear").dialog({
+                height: 150, width: 350, modal: true, buttons: {
+                    "Yes": function () {
+                        $(document).trigger(legacy.InteractionEvents.SrTypeSelection, []);
+                        $('#srTypeID').val("");
+                        $('[name="SR Lookup"]').val("");
+                        var tempAddr = self.data().properties().atAddress();
+                        var tempX = self.data().properties().hasXCoordinate();
+                        var tempY = self.data().properties().hasYCoordinate();
+                        self.removeDuplicates();
+                        self.data(emptyModel.data);
+                        self.srType(emptyModel.srType);
+                        self.originalData(emptyModel.originalData);
+                        self.data().properties().atAddress(tempAddr);
+                        self.data().properties().hasXCoordinate(tempX);
+                        self.data().properties().hasYCoordinate(tempY);
+                        self.removeAddressExtenders(self.data());
+                        self.clearEmail();
+                        $("#sh_dialog_clear").dialog('close');
+                        patchPlaceholdersforIE();
+                        if (type != undefined)
+                            self.startNewServiceRequest(type);
+                    },
+                    "No": function () {
+                        $("#sh_dialog_clear").dialog('close');
+                        return;
+                    }
+                }
+            });
 		};
 
 		self.clearAllTabs = function() {

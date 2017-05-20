@@ -33,18 +33,36 @@
         <div class="grid_5 alpha" id="srTypeList">
 			<span class="input_clear">
 	        	<input id="srTypeID" data-bind="jqueryui: {widget: 'autocomplete', options:{source:getFilteredSCList()} }, event: {keydown: validateOnEnter}, css: {color_green: data().type().length > 0}" class="ic_field" style="width:312px" type="text" placeholder="Service Request Type">
-				<input class="ic_clear button_icon" type="button" value="Clear" data-bind="event: {click: function(data,event){$root.clearSR();}}" style="border-top-right-radius:0; -moz-border-radius-topright:0; border-bottom-right-radius:0; -moz-border-radius-bottomright:0;">
+                <input class="ic_clear button_icon" type="button" value="Clear" data-bind="event: {click: function(data,event){$root.typeChangeOrClearSR();}}" style="border-top-right-radius:0; -moz-border-radius-topright:0; border-bottom-right-radius:0; -moz-border-radius-bottomright:0;">
             	<input class="submit h23_submit" type="button" value="Search" data-bind="click: srTypeLookup">
             </span>
         </div>
-        
-        <div class="grid_2 omega">
+
+
+ 		<div class="grid_2 omega">
 			<input type="button" value="Clear All TABS" data-bind="click: clearAllTabs">
         </div>
 
 		<div id="sh_dialog_alert" class="display_none" title="Service Request Alert"> </div>
 		<div id="sh_dialog_clear" class="display_none" title="Service Request Clear Message"> </div>
+		<div id="sh_dialog_typeChange" class="display_none" title="Service Request Type Change for Pending SR">
+			<p>Please select a target SR type to change the type of the current service request.</p>
+            <div class="grid_5 alpha omega" id="srTypeListTypeChange">
+			    <span class="input_clear">
+	        	<input id="srTypeIDForTypeChange" data-bind="jqueryui: {widget: 'autocomplete', options:{source:getFilteredSCList()} }, css: {}" class="ic_field" style="width:312px" type="text" placeholder="Service Request Type">
+				<input class="ic_clear button_icon" type="button" value="Clear" data-bind="event: {click: function(data,event){$root.clearSrTypeIDForTypeChange();} }" style="border-top-right-radius:0; -moz-border-radius-topright:0; border-bottom-right-radius:0; -moz-border-radius-bottomright:0;">
+                </span>
+            </div>
+			<div class="grid_5 alpha omega">
+			<p>After a successful type change, please approve the SR and save it. <br>To revert a pending type change, please load the SR again before saving it.
+				<br>With your approval of the SR no further type change is allowed.<br><br>All answers will be copied into the description field for your review.
+				<br>Please also reapply any changes you made prior to the type change.</p>
+			</div>
+		</div>
+
 		<div id="all_clear_dialog" class="display_none" title="Master Clear"> </div>
+
+
 
 		<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
 
