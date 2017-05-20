@@ -32,6 +32,7 @@ public class ServiceCaseTypeChangeService extends RestService {
 	@Path("/loadAsTargetTypeForApproval/{caseNumber}")
 	@Produces("application/json")
 	public Json loadAsTargetTypeForApproval(@PathParam("caseNumber") String caseNumber, @QueryParam("targetTypeFragment") String targetTypeFragment) {
+		RestService.forceClientExempt.set(true);
 		Json q = Json.object("type", "legacy:ServiceCase", "legacy:hasCaseNumber", caseNumber);
 		LegacyEmulator emu = new LegacyEmulator();
 		ServiceCaseTypeChanger tc = new ServiceCaseTypeChanger();
