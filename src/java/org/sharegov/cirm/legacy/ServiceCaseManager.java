@@ -1841,40 +1841,12 @@ public class ServiceCaseManager extends OntoAdmin {
 		}
 	}
 	
-//	private Json trimUnknownObjects (Json obj){
-//		if (obj.isArray()) return trimUnknownObjectsFromJsonArray (obj);
-//		else if (obj.isObject()) return trimUnknownObjectsFromJsonObject (obj);
-//		
-//		return obj;
-//	}
-//	
-//	private Json trimUnknownObjectsFromJsonArray (Json arr){
-//		ListIterator<Json> arrayIt = arr.asJsonList().listIterator();
-//		while(arrayIt.hasNext()) {
-//			Json elem = arrayIt.next();
-//			arrayIt.set(trimUnknownObjects(elem));
-//		}
-//		return arr;
-//	}
-//	
-//	private Json trimUnknownObjectsFromJsonObject (Json obj){
-//		
-//		if (obj.has("iri") && obj.has("type")){			
-//			if (!knownTypes.contains(obj.at("type").asString())){
-//				return obj.at("iri");
-//			} 
-//		} else {
-//			throw new IllegalArgumentException("Object missing iri/type property: ");
-//		}
-//		
-//		Map<String,Json> properties = obj.asJsonMap();
-//		for (Map.Entry<String, Json> propKeyValue : properties.entrySet()) {
-//			Json value = propKeyValue.getValue();			
-//			value = trimUnknownObjects(value);			
-//			propKeyValue.setValue(value);				
-//		}
-//		
-//		return obj;
-//	}
+	public Json getActivityDBStatus (String activityID){
+		return Json.object().set("can_delete", true);
+	}
+	
+	public Json getOutcomeDBStatus (String outcomeID){
+		return Json.object().set("can_delete", false);
+	}
 	
 }

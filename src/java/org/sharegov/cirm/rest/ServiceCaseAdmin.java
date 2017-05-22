@@ -967,6 +967,62 @@ public class ServiceCaseAdmin extends RestService {
 		}
 	}
 	
+	@GET
+	@Path("activity/{activity}/used")
+	public Response getActivityDBStatus(@PathParam("activity") String activity)
+	{
+		
+		try
+		{ 
+			if (activity == null || activity.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");		     
+			
+			Json result = ServiceCaseManager.getInstance().getActivityDBStatus(activity);
+			
+			if (result == Json.nil()) {
+				return Response
+						.status(Status.NOT_FOUND)
+						.type(MediaType.APPLICATION_JSON).build();
+			} else {			
+				return Response.ok(result, MediaType.APPLICATION_JSON).build();
+			}
+		}
+		catch(Exception e){
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
+	@GET
+	@Path("outcome/{outcome}/used")
+	public Response getOutcomeDBStatus(@PathParam("outcome") String outcome)
+	{
+		
+		try
+		{ 
+			if (outcome == null || outcome.isEmpty()) throw new IllegalArgumentException("SR Type null or empty");		     
+			
+			Json result = ServiceCaseManager.getInstance().getOutcomeDBStatus(outcome);
+			
+			if (result == Json.nil()) {
+				return Response
+						.status(Status.NOT_FOUND)
+						.type(MediaType.APPLICATION_JSON).build();
+			} else {			
+				return Response.ok(result, MediaType.APPLICATION_JSON).build();
+			}
+		}
+		catch(Exception e){
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
 }
 
 
