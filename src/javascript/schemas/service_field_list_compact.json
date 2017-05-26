@@ -599,6 +599,9 @@
         "iri": {
           "$ref": "#/definitions/iri"
         },
+        "legacy:isDisabled": {
+          "$ref": "#/definitions/legacy:isDisabled"
+        },
         "legacy:hasOverdueActivity": {
           "$ref": "#/definitions/legacy:Activity"
         },
@@ -719,6 +722,9 @@
       "properties": {
         "rdfs:label": {
           "$ref": "#/definitions/rdfs:label"
+        },
+        "legacy:isDisabled": {
+          "$ref": "#/definitions/legacy:isDisabled"
         },
         "legacy:hasLegacyCode": {
           "$ref": "#/definitions/legacy:hasLegacyCode"

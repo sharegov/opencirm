@@ -621,10 +621,23 @@ public class ServiceCaseManager extends OntoAdmin {
 	public Json getAll() {
 		Set<OWLNamedIndividual> S = getAllIndividuals();
 		Json A = Json.array();
-		for (OWLNamedIndividual ind : S) {			
+		long percent = -1;
+		int count = 0;
+		int total = S.size();
+		
+		for (OWLNamedIndividual ind : S) {
 			A.add(getOne(ind));
+			
+			count++;
+			float newPercent = (float)count/total*100;
+			if (newPercent > percent + 1){
+				percent = (long) newPercent;
+				System.out.print("Creating Service Case Admin Cache "+ String.valueOf(percent) + "% \r");
+			}
 		}
-
+		
+		System.out.println("Creating Service Case Admin Cache 100%");
+		
 		return A;
 	}
 	
@@ -1176,17 +1189,27 @@ public class ServiceCaseManager extends OntoAdmin {
 
 		srType = MetaOntology.getIndividualIdentifier(srType);
 		
-		Json sr = getSerializedMetaIndividual(srType);			
+		Json sr = MetaOntology.getSerializedOntologyObject(srType, "legacy");			
 				
 		if (sr.has("legacy:hasActivity")){
 			
-			Json activities = MetaOntology.resolveIRIs(sr.at("legacy:hasActivity"), knownTypes);
+			Json activities = sr.at("legacy:hasActivity");
 			
 			if (!activities.isArray()){
-				return Json.array().add(activities);						
-			} else {
-				return activities;
+				activities = Json.array().add(activities);						
+			} 
+			
+			Json result = Json.array();
+			
+			for (Json elem: activities.asJsonList()){
+				if (elem.isObject()){
+					result.add(MetaOntology.resolveIRIs(elem, knownTypes));
+				} else if (MetaOntology.isFullIriString(elem)){
+					result.add(MetaOntology.resolveIRIs(MetaOntology.getSerializedOntologyObject(elem.asString()), knownTypes));
+				} else throw new IllegalArgumentException("Invalid Activity Json object: " + elem.asString());
 			}
+			
+			return result;
 			
 		} else return Json.nil();
 	

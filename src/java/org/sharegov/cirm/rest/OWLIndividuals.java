@@ -184,6 +184,20 @@ public class OWLIndividuals extends RestService
 		return el;				
 	}
 	
+	public Json getOWLIndividualByName(String individualName, ShortFormProvider sp) throws OWLException
+	{
+		
+		OWLNamedIndividual ind = individual(individualName);
+		Json el = OWL.toJSON(ontology(), ind, sp);
+		if (!isClientExempt() &&
+			reasoner().getTypes(ind, false).containsEntity(OWL.owlClass("Protected")) &&
+			!Permissions.check(individual("BO_View"), 
+								individual(individualName), 
+								getUserActors()))
+			return ko("Permission denied.");
+		return el;				
+	}
+	
 	/**
 	 * Determines if an OWL individual was modified after a specified time.
 	 * 

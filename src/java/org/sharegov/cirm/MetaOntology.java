@@ -805,6 +805,14 @@ public class MetaOntology
 			}
 		}
 		
+		for (OWLOntology O: OWL.ontologies()){	
+			if (O.containsDataPropertyInSignature(IRI.create(property.getIRI().toURI().toString()))){
+				for (OWLDataRange type: property.getRanges(O)){
+					return type.asOWLDatatype().getBuiltInDatatype();
+				}
+			}
+		}
+		
 		return null;
 	}
 	
@@ -1023,6 +1031,11 @@ public class MetaOntology
 			    && iriCandidate.asString().startsWith("http://");
 	}
 	
+	public static boolean isFullIriString(String iriCandidate) {
+		return  iriCandidate.contains("#")
+			    && iriCandidate.startsWith("http://");
+	}
+	
 	public static boolean isTargetObject (Json obj, HashSet<String> knownTypes){
 		Json candidate = obj.dup();
 		
@@ -1087,7 +1100,7 @@ public class MetaOntology
 			System.out.println("Querying individual's endpoint instead...");
 			try {
 				
-				S = q.getOWLIndividualByName(individualOntology + individualID);		
+				S = q.getOWLIndividualByName(individualOntology + individualID, getPrefixShortFormProvider());		
 				System.out.println("Resolved: "+ individualOntology + individualID);
 				
 			} catch (Exception ex){
