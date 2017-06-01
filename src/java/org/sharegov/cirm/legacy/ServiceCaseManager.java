@@ -1671,14 +1671,7 @@ public class ServiceCaseManager extends OntoAdmin {
 		try {			
 			
 			Json S = Json.array();
-			Set<OWLNamedIndividual> serviceCases = OWL
-					.reasoner()
-					.getInstances(
-							OWL.and(OWL.owlClass("legacy:ServiceCase"),
-									OWL.has(OWL
-											.objectProperty("legacy:hasActivity"),
-											OWL.individual(activityIRI))), true)
-					.getFlattened();
+			Set<OWLNamedIndividual> serviceCases = getServiceCaseIndividualsByActivity(activityIRI);
 			for(OWLNamedIndividual serviceCase : serviceCases) {
 				S.add(getOne(serviceCase));
 			}
@@ -1689,6 +1682,19 @@ public class ServiceCaseManager extends OntoAdmin {
 							+ activityIRI);
 			throw e;	
 		}
+	}
+
+	private Set<OWLNamedIndividual> getServiceCaseIndividualsByActivity(
+			String activityIRI) {
+		Set<OWLNamedIndividual> serviceCases = OWL
+				.reasoner()
+				.getInstances(
+						OWL.and(OWL.owlClass("legacy:ServiceCase"),
+								OWL.has(OWL
+										.objectProperty("legacy:hasActivity"),
+										OWL.individual(activityIRI))), true)
+				.getFlattened();
+		return serviceCases;
 	}
 	
 	/**
@@ -1871,5 +1877,39 @@ public class ServiceCaseManager extends OntoAdmin {
 	public Json getOutcomeDBStatus (String outcomeID){
 		return Json.object().set("can_delete", false);
 	}
+
+	public Json getRelatedActiviesByActivity(String activityIRI) {
+		Set<OWLNamedIndividual> relatedActivities = null;
+		Set<OWLNamedIndividual> serviceCases = getServiceCaseIndividualsByActivity(activityIRI);
+		for(OWLNamedIndividual serviceCase : serviceCases)
+		{
+			if(relatedActivities == null)
+				relatedActivities = OWL.objectProperties(serviceCase, "legacy:hasActivity");
+			else
+				relatedActivities.addAll(OWL.objectProperties(serviceCase, "legacy:hasActivity"));
+		}
+		//add original activity as well.
+		relatedActivities.add(OWL.individual(activityIRI));
+		
+		//to json
+
+		Json result = Json.array();
+		if(relatedActivities != null)
+		{
+			for (OWLNamedIndividual indx: relatedActivities){
+				String iri = indx.getIRI().toString();
+				if (!activities.containsKey(iri)){
+					Json atx = MetaOntology.resolveIRIs(getSerializedIndividual(MetaOntology.getIdFromUri(iri), MetaOntology.getOntologyFromUri(iri)), knownTypes);
+					if (atx.has("iri")){
+						activities.put(iri, atx);
+					}
+				}
+				result.add(activities.get(iri));
+			}
+		}
+		return result;
+	}
+	
+	
 	
 }
