@@ -190,10 +190,10 @@ public class ServiceCaseTypeChanger {
 	 */
 	private void validateTargetTypeEnabled(Json targetType) {
 		String type = targetType.at("label").asString();
-		if (targetType.has("isDisabled") && targetType.at("isDisabled").asBoolean() == true) {
+		if (targetType.has("isDisabled") && targetType.at("isDisabled").asString().equalsIgnoreCase("true")) {
 			throw new IllegalStateException("Target type " + type + " is disabled. Please select a different type.");
 		}
-		if (targetType.has("isDisabledCreate") && targetType.at("isDisabledCreate").asBoolean() == true) {
+		if (targetType.has("isDisabledCreate") && targetType.at("isDisabledCreate").asString().equalsIgnoreCase("true")) {
 			throw new IllegalStateException("Target type " + type + " is disabled to be created. Please select a different type.");
 		}
 	}
