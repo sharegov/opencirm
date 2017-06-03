@@ -493,6 +493,9 @@ public class ActivityManager
 				{
 					OWLNamedIndividual overdueActivityType = overdueActivity.iterator().next();
 					scheduleOverdueActivityCreationAtDueDate(bo, overdueActivityType, due, serviceActivity, activityType);
+					String msg = "Scheduled overdue  " + overdueActivityType.getIRI().getFragment() + " 5dayWW: " + useWorkWeek + " " 
+								+ occurOrSuspenseBaseDate + " + " + suspenseDaysConfiguredValue + " = " + calculatedDueDate;
+					ThreadLocalStopwatch.now(msg);
 				}
 			}	
     		manager.addAxiom(o, factory.getOWLObjectPropertyAssertionAxiom(
@@ -1257,8 +1260,12 @@ public class ActivityManager
 						Calendar delayedDateCal = Calendar.getInstance();
 						delayedDateCal.setTime(delayedCreationDate);
 						Json j = GenUtils.timeTask(taskId, delayedDateCal, fullUrl, post);
-						if (j.is("ok", false))
+						if (j.is("ok", false)) {
 							throw new RuntimeException("Time machine post returned false");
+						}
+						String msg = "Scheduled create  " + activityType.getIRI().getFragment() + " 5dayWW: " + useWorkWeek + " " 
+								+ occurBaseDate + " + " + occurDays + " = " + delayedCreationDate;
+						ThreadLocalStopwatch.now(msg);
 					}
 			} 
 			else
