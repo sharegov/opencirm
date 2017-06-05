@@ -1383,6 +1383,9 @@ public class MetaOntology
 		List<String> expanded = new CopyOnWriteArrayList<>();
 		String donorPrefix = correctedPrefix(donor);
 		Json serializedDonor = getSerializedOntologyObject(donorPrefix + donor);
+		if (serializedDonor.has("legacy:hasLegacyCode")){
+			serializedDonor.set("legacy:hasLegacyCode", dolly);
+		}
 		expandRealtedObjects (donor, serializedDonor, expanded);
 		String strDonor = serializedDonor.toString();
 		
