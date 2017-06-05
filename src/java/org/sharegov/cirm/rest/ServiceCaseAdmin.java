@@ -114,6 +114,29 @@ public class ServiceCaseAdmin extends RestService {
 		}
 	}
 	
+	/**
+	 * Get all the 'related' activities. Related are those adjacent activities that are assigned 
+	 * to SRs which also have this activity
+	 * 
+	 * @param activityIRI
+	 * @return
+	 */
+	@GET
+	@Path("/activity/{activityIRI}/related")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getRelatedActivitiesByActivity(@PathParam("activityIRI") String activityIRI) {
+		try
+		{			
+			return Response.ok(ServiceCaseManager.getInstance().getRelatedActiviesByActivity(activityIRI), MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
 	@GET
 	@Path("/activities/{department}")
 	@Produces(MediaType.APPLICATION_JSON)
