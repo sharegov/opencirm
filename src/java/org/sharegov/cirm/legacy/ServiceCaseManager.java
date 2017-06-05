@@ -1886,32 +1886,28 @@ public class ServiceCaseManager extends OntoAdmin {
 	}
 
 	public Json getRelatedActiviesByActivity(String activityIRI) {
-		Set<OWLNamedIndividual> relatedActivities = null;
-		Set<OWLNamedIndividual> serviceCases = getServiceCaseIndividualsByActivity(activityIRI);
-		for(OWLNamedIndividual serviceCase : serviceCases)
-		{
-			if(relatedActivities == null)
-				relatedActivities = OWL.objectProperties(serviceCase, "legacy:hasActivity");
-			else
-				relatedActivities.addAll(OWL.objectProperties(serviceCase, "legacy:hasActivity"));
+		Set <String> relatedActivities = new HashSet<>();
+		for (String srx: srActivities.keySet()){
+			if (srActivities.get(srx).contains(OWL.fullIri(activityIRI).toString())){
+				if (relatedActivities.isEmpty()){
+					relatedActivities.addAll(srActivities.get(srx));
+				} else {
+					relatedActivities.retainAll(srActivities.get(srx));
+				}
+			}
 		}
-		//add original activity as well.
-		relatedActivities.add(OWL.individual(activityIRI));
-		
-		//to json
 
 		Json result = Json.array();
 		if(relatedActivities != null)
 		{
-			for (OWLNamedIndividual indx: relatedActivities){
-				String iri = indx.getIRI().toString();
-				if (!activities.containsKey(iri)){
-					Json atx = MetaOntology.resolveIRIs(getSerializedIndividual(MetaOntology.getIdFromUri(iri), MetaOntology.getOntologyFromUri(iri)), knownTypes);
+			for (String indx: relatedActivities){
+				if (!activities.containsKey(indx)){
+					Json atx = MetaOntology.resolveIRIs(getSerializedIndividual(MetaOntology.getIdFromUri(indx), MetaOntology.getOntologyFromUri(indx)), knownTypes);
 					if (atx.has("iri")){
-						activities.put(iri, atx);
+						activities.put(indx, atx);
 					}
 				}
-				result.add(activities.get(iri));
+				result.add(activities.get(indx));
 			}
 		}
 		return result;
