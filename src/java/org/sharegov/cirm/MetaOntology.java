@@ -845,7 +845,7 @@ public class MetaOntology
 				//TODO: add asString() in BooleanJson function and remove this if condition
 				if(value.isBoolean())
 					valueStr = value.toString();
-				else if (xsdType.getShortName().compareToIgnoreCase("float") == 0) {
+				else if (xsdType != null && xsdType.getShortName().compareToIgnoreCase("float") == 0) {
 					valueStr = String.valueOf(value.asFloat());
 				} else {
 					valueStr = value.asString();

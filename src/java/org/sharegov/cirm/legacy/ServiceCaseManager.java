@@ -49,6 +49,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	private static ServiceCaseManager instance = null; 
 	private Map<String, Json> cache;
 	private Map<String, Long> changes;
+	private Map<String, Set <String>> srActivities;
 	private Map<String, Set <String>> dptActivities;
 	private Map<String, Set <String>> dptOutcomes;
 	private Map<String, Json> activities;
@@ -90,6 +91,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	private ServiceCaseManager() {
 		cache = new ConcurrentHashMap<String, Json>();
 		changes = new ConcurrentHashMap<String, Long>();
+		srActivities = new ConcurrentHashMap<String, Set <String>>();
 		dptActivities = new ConcurrentHashMap<String, Set <String>>();
 		dptOutcomes = new ConcurrentHashMap<String, Set <String>>();
 		activities = new ConcurrentHashMap<String, Json>();
@@ -432,7 +434,6 @@ public class ServiceCaseManager extends OntoAdmin {
 		return result;
 		
 	}
-	
 	private void addActitivitesByDepartment(String srType, Json serializedSrType, String departmentIriFragment){
 		if (serializedSrType.has("legacy:hasActivity")){
 			
@@ -456,6 +457,12 @@ public class ServiceCaseManager extends OntoAdmin {
 				
 				addToCache(srTypeActivities, S, activities);
 				addOutcomesByDepartment (srType, srTypeActivities, departmentIriFragment);
+			}
+			
+			if (srActivities.containsKey(srType)){
+				srActivities.get(srType).addAll(S);
+			} else {
+				srActivities.put(srType, S);
 			}
 			
 			if (dptActivities.containsKey(departmentIriFragment)){
