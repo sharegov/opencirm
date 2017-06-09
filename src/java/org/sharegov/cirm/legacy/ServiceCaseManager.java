@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.mail.Message;
-import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -45,8 +44,6 @@ import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.OntoChangesReference;
 import org.sharegov.cirm.utils.OntologyCommit;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
-
-import com.ibm.icu.util.Currency;
 
 import mjson.Json;
 
