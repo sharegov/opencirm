@@ -287,27 +287,7 @@ public class ServiceCaseAdmin extends RestService {
 							.set("message", e.getMessage())).build();
 		}
 	}
-	
-	@POST	
-	@Path("/push")
-	public Response pushToRepo(Json aData){
-		try
-		{		
-			if (!aData.has("userName")) throw new IllegalArgumentException("User Name or Alert data null or empty"); 
-			
-			String userName = aData.at("userName").asString();
-			
-			return Response.ok(ServiceCaseManager.getInstance().pushToRepo(userName), MediaType.APPLICATION_JSON).build();
-		}
-		catch(Exception e){
-			return Response
-					.status(Status.INTERNAL_SERVER_ERROR)
-					.type(MediaType.APPLICATION_JSON)
-					.entity(Json.object().set("error", e.getClass().getName())
-							.set("message", e.getMessage())).build();
-		}
-	}
-	
+		
 	@POST	
 	@Path("/deploy/{target}")
 	public Response deploy(@PathParam("target") String target, String aJsonString)
@@ -327,10 +307,11 @@ public class ServiceCaseAdmin extends RestService {
 			{
 				String key = aData.at("key").asString();
 				String date = aData.has("date") ? aData.at("date").asString(): "0";
+				int revision = aData.has("revision") ? Integer.valueOf(aData.at("revision").asString()): 0;
 				if (key == null || key.isEmpty()) throw new IllegalArgumentException("key needed for this operation");
 				if (key.compareTo(KEY) != 0) throw new IllegalArgumentException("key is invalid");
 				
-				result = ServiceCaseManager.getInstance().refreshOnto(target, date, key);
+				result = ServiceCaseManager.getInstance().refreshOnto(target, date, key, revision);
 				
 				cache.put(target + ":" + aJsonString, result);
 				
@@ -1036,6 +1017,90 @@ public class ServiceCaseAdmin extends RestService {
 			} else {			
 				return Response.ok(result, MediaType.APPLICATION_JSON).build();
 			}
+		}
+		catch(Exception e){
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
+	@GET
+	@Path("users/adminkeys")
+	public Response getAdminKeys()
+	{
+		
+		try
+		{ 
+				Json result = Json.array()
+					          .add("e160616")
+						      .add("e310547")
+						      .add("c203248")
+						      .add("c203036");
+			
+				return Response.ok(result, MediaType.APPLICATION_JSON).build();
+		}
+		catch(Exception e){
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
+	@GET
+	@Path("revisions/{top}")
+	public Response getChangeSets(@PathParam("top") String top)
+	{
+		
+		try
+		{ 
+			return Response.ok(ServiceCaseManager.getInstance().getChangeSets(top), MediaType.APPLICATION_JSON).build();			
+		}
+		catch(Exception e){
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
+	@PUT
+	@Path("/revisions/approve/{revision_number}")
+	public Response approveChangeSet(@PathParam("revision_number") String revisionNumber)
+	{
+		try
+		{ 				
+			int revision = Integer.valueOf(revisionNumber);
+			
+			ServiceCaseManager.getInstance().setChangeSetStatus(revision, true);
+			
+			return Response.ok(Json.object().set("success", true), MediaType.APPLICATION_JSON).build();
+		}
+		catch(Exception e){
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
+	@PUT
+	@Path("/revisions/discard/{revision_number}")
+	public Response discardChangeSet(@PathParam("revision_number") String revisionNumber)
+	{
+		try
+		{ 			
+			int revision = Integer.valueOf(revisionNumber);
+			
+			ServiceCaseManager.getInstance().setChangeSetStatus(revision, false);
+			
+			return Response.ok(Json.object().set("success", true), MediaType.APPLICATION_JSON).build();
 		}
 		catch(Exception e){
 			return Response

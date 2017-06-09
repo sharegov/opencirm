@@ -4,6 +4,7 @@ import static org.sharegov.cirm.OWL.fullIri;
 import static org.sharegov.cirm.OWL.owlClass;
 import static org.sharegov.cirm.OWL.reasoner;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,9 +12,18 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
+import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -25,13 +35,18 @@ import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.sharegov.cirm.MetaOntology;
 import org.sharegov.cirm.OWL;
+import org.sharegov.cirm.OntologyChangesRepo;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.StartUp;
 import org.sharegov.cirm.owl.OwlRepo;
 import org.sharegov.cirm.rest.OWLIndividuals;
 import org.sharegov.cirm.rest.OntoAdmin;
 import org.sharegov.cirm.utils.GenUtils;
+import org.sharegov.cirm.utils.OntoChangesReference;
+import org.sharegov.cirm.utils.OntologyCommit;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
+
+import com.ibm.icu.util.Currency;
 
 import mjson.Json;
 
@@ -46,6 +61,11 @@ public class ServiceCaseManager extends OntoAdmin {
 	private static String jenkingsEndpointRefreshOntosOnlyTest = "https://api.miamidade.gov/jenkins/job/CIRM-ADMIN-TEST-REFRESH-ONTOS/build?token=1a85a585ef7c424191c7c58ee3c4a97d556eec91";
 	private static String jenkingsEndpointRefreshOntosOnlyProduction = "https://api.miamidade.gov/jenkins/job/CIRM-ADMIN-PRODUCTION-REFRESH-ONTOS/build?token=1a85a585ef7c424191c7c58ee3c4a97d556ffc91";
 	private static String jenkingsEndpointRefreshOntosOnlySandbox = "https://api.miamidade.gov/jenkins/job/CRIM-ADMIN-TEST-RESTART-SANDBOX/build?token=x1a85a585ef7c424191c7c58ee3c4a97d556eec91x";
+	
+	public static final String FROM_EMAIL = "cirm@miamidade.gov";
+	public static final String FROM_DISPLAY = "CiRM ADMIN";
+	public static final String SMTP_HOST = "smtp.miamidade.gov";
+	
 	private static ServiceCaseManager instance = null; 
 	private Map<String, Json> cache;
 	private Map<String, Long> changes;
@@ -839,12 +859,35 @@ public class ServiceCaseManager extends OntoAdmin {
 
 			OWLIndividuals q = new OWLIndividuals();
 			
-			Json S = q.serialize(q.doQuery("{" + cacheKey + "}"), MetaOntology.getPrefixShortFormProvider());
-
-			for (Json ind: S.asJsonList()){
-				cache.put(cacheKey, ind);
-				return ind;
+			Json S = Json.nil();
+			
+			try {
+				S = q.serialize(q.doQuery("{" + cacheKey + "}"), MetaOntology.getPrefixShortFormProvider());
+			} catch (Exception e) {
+				System.out.println("Error while querying the Ontology for "+ cacheKey);
+				System.out.println("Querying individual's endpoint instead...");
+				try {
+					
+					S = q.getOWLIndividualByName(cacheKey, MetaOntology.getPrefixShortFormProvider());		
+					System.out.println("Resolved: "+ cacheKey);
+					
+				} catch (Exception ex){
+					System.out.println("Unable to resolve Object: " + cacheKey);
+					ex.printStackTrace();
+				}					
 			}
+			
+			if (!S.isNull()){
+				if (S.isArray()){
+					for (Json ind: S.asJsonList()){
+						cache.put(cacheKey, ind);
+						return ind;
+					}
+				} else{
+					cache.put(cacheKey, S);
+					return S;
+				}
+			} 
 			
 		} catch (Exception e) {
 			System.out.println("Error while querying the Ontology for " + ontologyID + ":" + individualID);
@@ -920,6 +963,117 @@ public class ServiceCaseManager extends OntoAdmin {
 		}
 	}
 	
+	private void notifyApproval (int lastRevision, Json date) {
+		try {
+		Properties properties = System.getProperties();
+        properties.setProperty("mail.smtp.host", SMTP_HOST);
+        properties.setProperty("mail.smtp.starttls.enable", "true");
+        Session session = Session.getDefaultInstance(properties);
+        MimeMessage message = new MimeMessage(session);
+        try {
+        	message.setFrom(new InternetAddress(FROM_EMAIL, ""));
+        } catch (UnsupportedEncodingException e) {
+        	throw new RuntimeException(e);
+        }
+        
+        String cirmAdminServer = getHostIpAddress();
+        String link = cirmAdminServer + "/app/index.html#!/approve/" + String.valueOf(lastRevision);
+        String dateStr = date.at("month").asString() + "/" + date.at("day_of_month").asString() + "/" + date.at("year").asString() + 
+        		         " at " + date.at("hour").asString() + ":" + date.at("minute").asString() + " EST";
+        String htmlMessage = "A new CIRM Production deployment has been scheduled for: " + dateStr + "</br>" +
+        		             "Follow the <a href='"+ link + "'>link</a> to review.</br>" + 
+        		             "Review and approval must occur previous to the deployment date otherwise deployment will not be executed.</br>" +
+        		             "Best of luck.</br>CIRM Admin Team.";
+        
+        message.addRecipients(Message.RecipientType.TO, "ITD-CIRMTT@miamidade.gov");
+//        message.addRecipients(Message.RecipientType.TO, "chirino@miamidade.gov");
+        message.setSubject("CIRM Deployment Scheduled");
+        message.setText(htmlMessage, "UTF-8", "html");
+        Transport.send(message);
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	private void notifySimulatedDeploy() {
+		try {
+		Properties properties = System.getProperties();
+        properties.setProperty("mail.smtp.host", SMTP_HOST);
+        properties.setProperty("mail.smtp.starttls.enable", "true");
+        Session session = Session.getDefaultInstance(properties);
+        MimeMessage message = new MimeMessage(session);
+        try {
+        	message.setFrom(new InternetAddress(FROM_EMAIL, ""));
+        } catch (UnsupportedEncodingException e) {
+        	throw new RuntimeException(e);
+        }
+        
+        String htmlMessage = "CIRM deployment simulation completed.</br>" +
+        		             "Best of luck.</br>CIRM Admin Team.";
+        
+        message.addRecipients(Message.RecipientType.TO, "ITD-CIRMTT@miamidade.gov");
+//        message.addRecipients(Message.RecipientType.TO, "chirino@miamidade.gov");
+        message.setSubject("CIRM Deployment Simulation Completed");
+        message.setText(htmlMessage, "UTF-8", "html");
+        Transport.send(message);
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	public boolean pushUpToRevision (int lastRevision){
+		Set <Integer> toRevert = new HashSet<>();
+		
+		for (OWLOntology o: OWL.ontologies()){
+			
+			Map<Integer, OntologyCommit> changes = OntologyChangesRepo.getInstance().getAllRevisionChangesForOnto(o.getOntologyID().toString());
+			
+			if (changes == null) continue;
+			
+			for (Map.Entry<Integer, OntologyCommit> e : changes.entrySet()){
+				int key = e.getKey();
+				if (key <= lastRevision){
+					if (!e.getValue().isApproved()){
+						toRevert.add(key);
+					}
+				} else {
+					toRevert.add(key);
+				}
+			}
+		}
+			
+		List<OntoChangesReference> deleted = new ArrayList<>();
+		
+		if (toRevert.size() > 0){			
+			deleted = rollBackRevisions(new ArrayList<>(toRevert));			
+		}		
+		
+		Json r = pushALL();
+		
+		if (deleted.size() > 0){
+			for (OntoChangesReference rx : deleted){
+				if (toRevert.contains(rx.getRevision())){
+					OntologyCommit cx = rx.getValue();					
+					commit( cx.getUserName(), cx.getComment(), cx.getChanges());
+				}
+			}
+		}
+		
+		return r.has("message") ? (r.at("message").asString().toLowerCase().contains("all changes were applied to target") ? true: false) : false;
+	}
+	
+	private int getCurrentRevision(){
+		return getCurrentRevision (OWL.ontology());
+	}
+	
+	private int getCurrentRevision(OWLOntology O){		
+		if (O == null){
+			throw new IllegalArgumentException("Cannot instanciate default ontology.");
+		}
+		VersionedOntology vo =  Refs.owlRepo.resolve().repo().getVersionControlledOntology(O);
+		return  vo.getHeadRevision().getRevision();
+	}
+	
 	/**
 	 * Sends Jenkins the signal to start the job that restart servers with fresh ontologies
 	 *  
@@ -927,14 +1081,40 @@ public class ServiceCaseManager extends OntoAdmin {
 	 */
 	
 	@SuppressWarnings("deprecation")
-	public Json refreshOnto(String target, String date, String key) {
+	public Json refreshOnto(String target, String date, String key, int revision) {
 		switch (target) {
 			case "production":
-				// add this post call to the time machine.
-				if (date == "0") return GenUtils.httpPostWithBasicAuth(jenkingsEndpointRefreshOntosOnlyProduction, "cirm", "admin", "");
-				else {
+				//figure out current revision
+				int currentRevision = getCurrentRevision();
+				// date = 0 means run this now
+				if (date == "0"){
+					if (revision > 0){
+						if (revision > currentRevision){
+							return Json.object().set("success", false);
+						}
+						
+						if (pushUpToRevision(revision)){							
+							if (StartUp.DEFAULT_CONFIG.at("network").at("ontoServer").asString().toLowerCase() == "ontology_server_production"){							
+								return GenUtils.httpPostWithBasicAuth(jenkingsEndpointRefreshOntosOnlyProduction, "cirm", "admin", "");
+							} else {
+								notifySimulatedDeploy();
+								return Json.object().set("success", true);
+							}
+						} else {
+							return Json.object().set("success", false);
+						}
+					} else {
+						return Json.object().set("success", false);
+					}
+				} else {					
+					// add this post call to the time machine.
 					String host = getHostIpAddress();
-					Json jsonContent = Json.object().set("key", key).set("timeStamp", System.currentTimeMillis());
+					
+					Json jsonContent = Json.object()
+							           .set("key", key)
+							           .set("timeStamp", System.currentTimeMillis())
+							           .set("revision", currentRevision);
+					
 					Json jsonRestCall = Json.object().set("url", host + "/sradmin/deploy/production")
 													 .set("method", "POST")
 													 .set("content", jsonContent);
@@ -946,7 +1126,10 @@ public class ServiceCaseManager extends OntoAdmin {
 							                     .set("hour", time.getHours())
 							                     .set("day_of_month", time.getDate())
 							                     .set("month", time.getMonth() + 1)
-							                     .set("year", 1900 + time.getYear());
+							                     .set("year", 1900 + time.getYear());					
+					
+					//notify for approval
+					notifyApproval(currentRevision, jsonDate);
 					
 					Json tmJson = Json.object().set("name", "CIRM Admin Deployment")
 											   .set("group", "cirm_admin_tasks")
@@ -1080,7 +1263,7 @@ public class ServiceCaseManager extends OntoAdmin {
 				
 				Date now = new Date(); 
 				
-				String newIri = individualID + "_ALERT_" + Long.toString(now.getTime());
+				String newIri = "http://www.miamidade.gov/cirm/legacy#" + individualID + "_ALERT_" + Long.toString(now.getTime());
 				data.set("iri", newIri); 
 			}
 			
@@ -1105,7 +1288,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			if (r){
 				registerChange(individualID);
 				clearCache(evictionList);
-				return getSerializedMetaIndividualFormatedIri(data.at("iri").asString());
+				return getSerializedMetaIndividualFormatedIri(MetaOntology.getIdFromUri(data.at("iri").asString()));
 			} throw new IllegalArgumentException("Cannot update label to Service Case Type "+ PREFIX +  individualID);
 							
 		}
@@ -1223,14 +1406,14 @@ public class ServiceCaseManager extends OntoAdmin {
 	}
 	
 	public boolean doRollBack (List<Integer> revisionNumbers){		
-		boolean result = rollBackRevisions(revisionNumbers);
+		List<OntoChangesReference> result = rollBackRevisions(revisionNumbers);
 		
-		if (result){
+		if (result.size() > 0){
 			clearAllCachedButServiceCase();
 			MetaOntology.clearCacheAndSynchronizeReasoner();
 		}
 		
-		return result;
+		return result.size() > 0;
 	}
 	
 	private String getHostIpAddress (){
@@ -1911,6 +2094,49 @@ public class ServiceCaseManager extends OntoAdmin {
 			}
 		}
 		return result;
+	}
+	
+	public Json getChangeSets(String top){
+		int limit = Integer.MAX_VALUE;
+		
+		try {
+			limit = Integer.valueOf(top);
+		} catch (Exception e){
+			
+		}
+		
+		Json result = Json.array();
+		Set <Integer> revisions = new HashSet<>();
+		
+		for (OWLOntology o: OWL.ontologies()){
+		
+			Map<Integer, OntologyCommit> changes = OntologyChangesRepo.getInstance().getAllRevisionChangesForOnto(o.getOntologyID().toString());
+			
+			if (changes == null) continue;
+			
+			int lastCommonRevision = lastMatch(o);
+			
+			for (Map.Entry<Integer, OntologyCommit> e : changes.entrySet()){
+				int key = e.getKey();
+				if (revisions.contains(key)) continue;
+				if (key <= limit && key > lastCommonRevision){
+					revisions.add(key);
+					Json commit = e.getValue().toJson();
+					commit.set("revision", key);
+					result.add(commit);
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	public void setChangeSetStatus(int revisionNumber, boolean approved){
+		for (OWLOntology o: OWL.ontologies()){
+			OntologyCommit cx = OntologyChangesRepo.getInstance().getOntoRevisionChanges(o.getOntologyID().toString(), revisionNumber);
+			
+			if (cx != null) cx.setApproved(approved);
+		}
 	}
 	
 	

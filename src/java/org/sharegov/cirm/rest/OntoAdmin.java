@@ -448,13 +448,13 @@ public class OntoAdmin extends RestService
 		return result;
 	}
 	
-	protected boolean rollBackRevisions (List<Integer> revisions){				
-		if (!isPossibleToRollBack (revisions)) return false;
+	
+	protected List<OntoChangesReference> rollBackRevisions (List<Integer> revisions){				
+		if (!isPossibleToRollBack (revisions)) return new ArrayList<>();
 		
 		System.out.println("Roll Back Started.");
 
-		HGPeerIdentity server = Refs.owlRepo.resolve().getDefaultPeer();
-		
+		HGPeerIdentity server = Refs.owlRepo.resolve().getDefaultPeer();		
 
 		List <Long> timeStamps = resolveCommitTimeStamps(revisions);
 		
@@ -485,9 +485,10 @@ public class OntoAdmin extends RestService
 			System.out.println("Updating changes repo...");
 			updateOntologyChangesRepo (toDelete, toAdd);
 			System.out.println("Done updating changes repo.");	
+			
 			System.out.println("Revisions roll back was successfull.");	
 
-			return true;
+			return toDelete;
 			
 		} catch (Throwable t){
 			System.out.println("Error found while performing ontology roll back.");
@@ -518,13 +519,15 @@ public class OntoAdmin extends RestService
 			
 			OWL.reasoner().flush();
 			
-			return false;			
+			return new ArrayList<>();			
 		}
 	}
 	
 	private void updateOntologyChangesRepo (List<OntoChangesReference> toDelete, List<OntoChangesReference> toAdd){
 		for (int i = 0; i < toDelete.size(); i++){
 			OntologyChangesRepo.getInstance().deleteOntoRevisionChanges(toDelete.get(i).getOnto(), toDelete.get(i).getRevision());
+		}
+		for (int i = 0; i < toAdd.size(); i++){
 			OntologyChangesRepo.getInstance().setOntoRevisionChanges(toAdd.get(i).getOnto(), toAdd.get(i).getRevision(), toAdd.get(i).getValue());
 		}
 	}
@@ -547,19 +550,42 @@ public class OntoAdmin extends RestService
 			}
 			
 			for (Map.Entry<Integer, OntologyCommit> rx: changes.entrySet()){
-				if (rx.getKey().intValue() > baseRevision && 
-				    excludedRevisions.indexOf(rx.getKey().intValue()) < 0 && 
-				    excludedTimeStamps.indexOf(rx.getValue().getTimeStamp()) < 0){
-					
-						OWL.manager().applyChanges(rx.getValue().getChanges());
-						vo.commit(rx.getValue().getUserName(), rx.getValue().getComment());
+				int key = rx.getKey();
+				OntologyCommit cx = rx.getValue();
+				if (key > baseRevision && 
+				    excludedRevisions.indexOf(key) < 0 && 
+				    excludedTimeStamps.indexOf(cx.getTimeStamp()) < 0){					
+						OWL.manager().applyChanges(cx.getChanges());
+						vo.commit(cx.getUserName(), cx.getComment());
 						int newRevision = vo.getHeadRevision().getRevision();
-						toDelete.add(new OntoChangesReference(o.getOntologyID().toString(), rx.getKey().intValue(), null));
-						toAdd.add(new OntoChangesReference(o.getOntologyID().toString(), newRevision, rx.getValue()));		
+						toDelete.add(new OntoChangesReference(o.getOntologyID().toString(), key, cx));
+						toAdd.add(new OntoChangesReference(o.getOntologyID().toString(), newRevision, cx));		
 						
+				} else {
+					toDelete.add(new OntoChangesReference(o.getOntologyID().toString(), key, cx));
 				}
 			}
 		} else System.out.println("No previous changes saved for: " + o.getOntologyID().toString());
+	}
+	
+	protected int lastMatch(OWLOntology o){
+		VersionedOntology vo = repo().getVersionControlledOntology(o);
+		
+		if (vo == null) {
+			throw new RuntimeException ("Ontology found, but not versioned: " + o.getOntologyID());
+		}
+		
+		HGPeerIdentity server = Refs.owlRepo.resolve().getDefaultPeer();
+		DistributedOntology dOnto = repo().getDistributedOntology(o); 
+		
+		VersionedOntologyComparisonResult compare = null;
+		try {
+			compare = repo().compareOntologyToRemote(dOnto, server, ACTIVITY_TIMEOUT_SECS);
+		} catch (Throwable t) {
+			throw new RuntimeException("System error while comparing to remote");
+		}
+		
+		return compare.getRevisionResults().get(compare.getLastMatchingRevisionIndex()).getTarget().getRevision();
 	}
 	
 	private int revertToLastMatch (VersionedOntology vo, DistributedOntology dOnto, HGPeerIdentity server){

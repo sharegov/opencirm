@@ -3,8 +3,20 @@ package org.sharegov.cirm.utils;
 import java.util.List;
 
 import org.semanticweb.owlapi.model.OWLOntologyChange;
+
+import mjson.Json;
 	
 	public class OntologyCommit {
+		private boolean approved;
+		
+		public boolean isApproved() {
+			return approved;
+		}
+
+		public void setApproved(boolean approved) {
+			this.approved = approved;
+		}
+
 		private long timeStamp;
 		
 		public long getTimeStamp() {
@@ -48,5 +60,35 @@ import org.semanticweb.owlapi.model.OWLOntologyChange;
 			this.comment = comment;
 			this.changes = changes;
 			this.timeStamp = timeStamp;
+			this.approved = false;
+		}
+		
+		public Json toJson (){
+			Json result = Json.object()
+					      .set("userName", userName)
+					      .set("comment", comment)
+					      .set("timeStamp", timeStamp)
+					      .set("approved", approved)
+					      .set("changes", Json.array());
+			
+			for (OWLOntologyChange chx: changes){
+				result.at("changes").add(serializeChange(chx));
+			}
+			
+			return result;
+		}
+		
+		private Json serializeChange(OWLOntologyChange change){
+			Json result = Json.object();
+			
+			if (change.getClass().toString().toLowerCase().contains("remove")){
+				result.set("type", "remove");
+			} else {
+				result.set("type", "add");
+			}
+			
+			result.set("axiom", change.getAxiom().toString());
+			
+			return result;
 		}
 	}
