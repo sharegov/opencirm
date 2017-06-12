@@ -1018,6 +1018,32 @@ public class ServiceCaseManager extends OntoAdmin {
 		}
 	}
 	
+	private void notifyDeployStarted() {
+		try {
+		Properties properties = System.getProperties();
+        properties.setProperty("mail.smtp.host", SMTP_HOST);
+        properties.setProperty("mail.smtp.starttls.enable", "true");
+        Session session = Session.getDefaultInstance(properties);
+        MimeMessage message = new MimeMessage(session);
+        try {
+        	message.setFrom(new InternetAddress(FROM_EMAIL, ""));
+        } catch (UnsupportedEncodingException e) {
+        	throw new RuntimeException(e);
+        }
+        
+        String htmlMessage = "Automated CRM deployment have started as scheduled.</br>" +
+        		             "Best of luck.</br>CIRM Admin Team.";
+        
+        message.addRecipients(Message.RecipientType.TO, "ITD-CIRMTT@miamidade.gov");
+//        message.addRecipients(Message.RecipientType.TO, "chirino@miamidade.gov");
+        message.setSubject("CIRM Deployment Simulation Completed");
+        message.setText(htmlMessage, "UTF-8", "html");
+        Transport.send(message);
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+	
 	public boolean pushUpToRevision (int lastRevision){
 		Set <Integer> toRevert = new HashSet<>();
 		
@@ -1081,29 +1107,38 @@ public class ServiceCaseManager extends OntoAdmin {
 	public Json refreshOnto(String target, String date, String key, int revision) {
 		switch (target) {
 			case "production":
+				System.out.println("Deployment endpoint executed:");
 				//figure out current revision
 				int currentRevision = getCurrentRevision();
 				// date = 0 means run this now
 				if (date == "0"){
+					System.out.println("This is a time-machine scheduled request.");
 					if (revision > 0){
 						if (revision > currentRevision){
+							System.out.println("Deployment not executed: Target revision greater than current.");
 							return Json.object().set("success", false);
 						}
 						
 						if (pushUpToRevision(revision)){							
-							if (StartUp.DEFAULT_CONFIG.at("network").at("ontoServer").asString().toLowerCase() == "ontology_server_production"){							
+							if (StartUp.DEFAULT_CONFIG.at("network").at("ontoServer").asString().toLowerCase() == "ontology_server_production"){	
+								notifyDeployStarted();
+								System.out.println("Deployment started!!!");
 								return GenUtils.httpPostWithBasicAuth(jenkingsEndpointRefreshOntosOnlyProduction, "cirm", "admin", "");
 							} else {
 								notifySimulatedDeploy();
+								System.out.println("Deployment is simulation, this is a success message.");
 								return Json.object().set("success", true);
 							}
 						} else {
+							System.out.println("Deployment not executed: an error was found while trying to configure approved revisions.");
 							return Json.object().set("success", false);
 						}
 					} else {
+						System.out.println("Deployment not executed: Invalid revision number.");
 						return Json.object().set("success", false);
 					}
 				} else {					
+					System.out.println("Schedule deployment using time-machine.");
 					// add this post call to the time machine.
 					String host = getHostIpAddress();
 					
@@ -1125,6 +1160,7 @@ public class ServiceCaseManager extends OntoAdmin {
 							                     .set("month", time.getMonth() + 1)
 							                     .set("year", 1900 + time.getYear());					
 					
+					System.out.println("Notify Admin team about this deployment.");
 					//notify for approval
 					notifyApproval(currentRevision, jsonDate);
 					
@@ -1138,7 +1174,10 @@ public class ServiceCaseManager extends OntoAdmin {
 											   .set("description", "Delayed CIRM production ontology only deployment")
 											   .set("restCall", jsonRestCall);
 					final Json timeMachine = OWL.toJSON((OWLIndividual)Refs.configSet.resolve().get("TimeMachineConfig"));	
-					return GenUtils.httpPostJson(timeMachine.at("hasUrl").asString() + "/task", tmJson);
+					System.out.println("Sending request to time-machine...");
+					Json r =  GenUtils.httpPostJson(timeMachine.at("hasUrl").asString() + "/task", tmJson);
+					System.out.println("Request sent... expect a call back from  time-machine.");
+					return r;
 				}
 				
 			case "test":
