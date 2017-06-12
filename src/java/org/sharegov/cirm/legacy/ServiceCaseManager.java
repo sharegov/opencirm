@@ -1018,7 +1018,7 @@ public class ServiceCaseManager extends OntoAdmin {
 		}
 	}
 	
-	private void notifyDeployStarted() {
+	private void notifyDeploymentStarted() {
 		try {
 		Properties properties = System.getProperties();
         properties.setProperty("mail.smtp.host", SMTP_HOST);
@@ -1031,7 +1031,33 @@ public class ServiceCaseManager extends OntoAdmin {
         	throw new RuntimeException(e);
         }
         
-        String htmlMessage = "Automated CRM deployment have started as scheduled.</br>" +
+        String htmlMessage = "Automated CIRM deployment have started as scheduled.</br>" +
+        		             "Best of luck.</br>CIRM Admin Team.";
+        
+        message.addRecipients(Message.RecipientType.TO, "ITD-CIRMTT@miamidade.gov");
+//        message.addRecipients(Message.RecipientType.TO, "chirino@miamidade.gov");
+        message.setSubject("CIRM Deployment Simulation Completed");
+        message.setText(htmlMessage, "UTF-8", "html");
+        Transport.send(message);
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	private void notifyErrorDeploy(String error) {
+		try {
+		Properties properties = System.getProperties();
+        properties.setProperty("mail.smtp.host", SMTP_HOST);
+        properties.setProperty("mail.smtp.starttls.enable", "true");
+        Session session = Session.getDefaultInstance(properties);
+        MimeMessage message = new MimeMessage(session);
+        try {
+        	message.setFrom(new InternetAddress(FROM_EMAIL, ""));
+        } catch (UnsupportedEncodingException e) {
+        	throw new RuntimeException(e);
+        }
+        
+        String htmlMessage = "Automated CIRM deployment failed with following error:</br>" + error + "</br>" +
         		             "Best of luck.</br>CIRM Admin Team.";
         
         message.addRecipients(Message.RecipientType.TO, "ITD-CIRMTT@miamidade.gov");
@@ -1121,7 +1147,7 @@ public class ServiceCaseManager extends OntoAdmin {
 						
 						if (pushUpToRevision(revision)){							
 							if (StartUp.DEFAULT_CONFIG.at("network").at("ontoServer").asString().toLowerCase() == "ontology_server_production"){	
-								notifyDeployStarted();
+								notifyDeploymentStarted();
 								System.out.println("Deployment started!!!");
 								return GenUtils.httpPostWithBasicAuth(jenkingsEndpointRefreshOntosOnlyProduction, "cirm", "admin", "");
 							} else {
@@ -1130,10 +1156,12 @@ public class ServiceCaseManager extends OntoAdmin {
 								return Json.object().set("success", true);
 							}
 						} else {
+							notifyErrorDeploy("An error was found while trying to configure approved revisions.");
 							System.out.println("Deployment not executed: an error was found while trying to configure approved revisions.");
 							return Json.object().set("success", false);
 						}
 					} else {
+						notifyErrorDeploy("Invalid revision number.");
 						System.out.println("Deployment not executed: Invalid revision number.");
 						return Json.object().set("success", false);
 					}
@@ -1174,8 +1202,11 @@ public class ServiceCaseManager extends OntoAdmin {
 											   .set("description", "Delayed CIRM production ontology only deployment")
 											   .set("restCall", jsonRestCall);
 					final Json timeMachine = OWL.toJSON((OWLIndividual)Refs.configSet.resolve().get("TimeMachineConfig"));	
+					System.out.println("Time Machine configuration:");
+					System.out.println(timeMachine.asString());
 					System.out.println("Sending request to time-machine...");
 					Json r =  GenUtils.httpPostJson(timeMachine.at("hasUrl").asString() + "/task", tmJson);
+					System.out.println(r.asString());
 					System.out.println("Request sent... expect a call back from  time-machine.");
 					return r;
 				}
