@@ -1202,11 +1202,10 @@ public class ServiceCaseManager extends OntoAdmin {
 											   .set("description", "Delayed CIRM production ontology only deployment")
 											   .set("restCall", jsonRestCall);
 					final Json timeMachine = OWL.toJSON((OWLIndividual)Refs.configSet.resolve().get("TimeMachineConfig"));	
-					System.out.println("Time Machine configuration:");
-					System.out.println(timeMachine.asString());
+					System.out.println("Time Machine url:");
+					System.out.println(timeMachine.at("hasUrl").asString());
 					System.out.println("Sending request to time-machine...");
 					Json r =  GenUtils.httpPostJson(timeMachine.at("hasUrl").asString() + "/task", tmJson);
-					System.out.println(r.asString());
 					System.out.println("Request sent... expect a call back from  time-machine.");
 					return r;
 				}
