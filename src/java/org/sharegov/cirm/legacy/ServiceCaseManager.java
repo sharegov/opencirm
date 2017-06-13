@@ -974,7 +974,7 @@ public class ServiceCaseManager extends OntoAdmin {
         }
         
         String cirmAdminServer = getHostIpAddress();
-        String link = cirmAdminServer + "/html/cirmadmin/app/index.html#!/approve/" + String.valueOf(lastRevision);
+        String link = cirmAdminServer + "/html/cirmadmin/app/index.html#!/approve?rev=" + String.valueOf(lastRevision);
         String dateStr = date.at("month").asString() + "/" + date.at("day_of_month").asString() + "/" + date.at("year").asString() + 
         		         " at " + date.at("hour").asString() + ":" + date.at("minute").asString() + " EST";
         String htmlMessage = "A new CIRM Production deployment has been scheduled for: " + dateStr + "</br>" +
@@ -1036,7 +1036,7 @@ public class ServiceCaseManager extends OntoAdmin {
         
         message.addRecipients(Message.RecipientType.TO, "ITD-CIRMTT@miamidade.gov");
 //        message.addRecipients(Message.RecipientType.TO, "chirino@miamidade.gov");
-        message.setSubject("CIRM Deployment Simulation Completed");
+        message.setSubject("CIRM Deployment Started");
         message.setText(htmlMessage, "UTF-8", "html");
         Transport.send(message);
 		} catch (Exception e){
@@ -1062,7 +1062,7 @@ public class ServiceCaseManager extends OntoAdmin {
         
         message.addRecipients(Message.RecipientType.TO, "ITD-CIRMTT@miamidade.gov");
 //        message.addRecipients(Message.RecipientType.TO, "chirino@miamidade.gov");
-        message.setSubject("CIRM Deployment Simulation Completed");
+        message.setSubject("CIRM Deployment Failed");
         message.setText(htmlMessage, "UTF-8", "html");
         Transport.send(message);
 		} catch (Exception e){
