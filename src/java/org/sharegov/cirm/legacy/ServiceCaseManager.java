@@ -974,7 +974,7 @@ public class ServiceCaseManager extends OntoAdmin {
         }
         
         String cirmAdminServer = getHostIpAddress();
-        String link = cirmAdminServer + "/app/index.html#!/approve/" + String.valueOf(lastRevision);
+        String link = cirmAdminServer + "/html/cirmadmin/app/index.html#!/approve/" + String.valueOf(lastRevision);
         String dateStr = date.at("month").asString() + "/" + date.at("day_of_month").asString() + "/" + date.at("year").asString() + 
         		         " at " + date.at("hour").asString() + ":" + date.at("minute").asString() + " EST";
         String htmlMessage = "A new CIRM Production deployment has been scheduled for: " + dateStr + "</br>" +
