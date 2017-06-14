@@ -1146,7 +1146,7 @@ public class ServiceCaseManager extends OntoAdmin {
 						}
 						
 						if (pushUpToRevision(revision)){							
-							if (StartUp.DEFAULT_CONFIG.at("network").at("ontoServer").asString().toLowerCase() == "ontology_server_production"){	
+							if (StartUp.getConfig().at("network").at("ontoServer").asString().toLowerCase() == "ontology_server_production"){	
 								notifyDeploymentStarted();
 								System.out.println("Deployment started!!!");
 								return GenUtils.httpPostWithBasicAuth(jenkingsEndpointRefreshOntosOnlyProduction, "cirm", "admin", "");
