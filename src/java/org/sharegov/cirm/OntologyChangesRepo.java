@@ -53,7 +53,7 @@ public class OntologyChangesRepo {
 		if (ontoChangesMap.get(onto) == null){
 			ontoChangesMap.put(onto, new ConcurrentHashMap<Integer, OntologyCommit>());
 		}
-		ontoChangesMap.get(onto).put(revision, new OntologyCommit(userName, comment, changes, timeStamp));		
+		ontoChangesMap.get(onto).put(revision, new OntologyCommit(userName, comment, changes, timeStamp, revision));		
 	}
 	
 	public void setOntoRevisionChanges(String onto, int revision, OntologyCommit commit) {

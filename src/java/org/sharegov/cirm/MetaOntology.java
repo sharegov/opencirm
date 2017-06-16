@@ -873,7 +873,7 @@ public class MetaOntology
 		return result;
 	}
 	
-	private static OWLLiteral toLiteral(OWLDataFactory factory, OWLDataProperty prop, String value, OWL2Datatype builtinDatatype)
+	public static OWLLiteral toLiteral(OWLDataFactory factory, OWLDataProperty prop, String value, OWL2Datatype builtinDatatype)
 	{		
 		// Parse out if the value is an ISO date and convert it to the format XML datafactory accepts.
 		if (builtinDatatype == null || builtinDatatype.equals(OWL2Datatype.XSD_DATE_TIME_STAMP))

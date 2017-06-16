@@ -2188,7 +2188,6 @@ public class ServiceCaseManager extends OntoAdmin {
 				if (key <= limit && key > lastCommonRevision){
 					revisions.add(key);
 					Json commit = e.getValue().toJson();
-					commit.set("revision", key);
 					result.add(commit);
 				}
 			}
