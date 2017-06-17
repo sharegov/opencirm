@@ -125,6 +125,7 @@ import org.sharegov.cirm.stats.CirmStatistics;
 import org.sharegov.cirm.stats.CirmStatisticsFactory;
 import org.sharegov.cirm.stats.SRCirmStatsDataReporter;
 import org.sharegov.cirm.utils.ConcurrentLockedToOpenException;
+import org.sharegov.cirm.utils.DueDateUtil;
 import org.sharegov.cirm.utils.ExcelExportUtil;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.JsonUtil;
@@ -150,6 +151,8 @@ public class LegacyEmulator extends RestService
 	private static Map<String, IRI> hasTypeMappingToXSD;
 
 	private final SRCirmStatsDataReporter srStatsReporter = CirmStatisticsFactory.createServiceRequestStatsReporter(Refs.stats.resolve(), "LegacyEmulator");
+	
+	private DueDateUtil dueDateUtil = new DueDateUtil();
 	
 	public LegacyEmulator()
 	{
@@ -1671,16 +1674,17 @@ public class LegacyEmulator extends RestService
 	public Json createNewKOSR(@FormParam("data") final String formData)
 	{
 		ThreadLocalStopwatch.startTop("START createNewKOSR");
-		final Json legacyForm = read(formData);		
-		final boolean hasCaseNumber = legacyForm.has("properties")
-				&& legacyForm.at("properties").has("legacy:hasCaseNumber") 
-				&& legacyForm.at("properties").at("legacy:hasCaseNumber").isString();
+		final Json newSrJson = read(formData);		
+		final boolean hasCaseNumber = newSrJson.has("properties")
+				&& newSrJson.at("properties").has("legacy:hasCaseNumber") 
+				&& newSrJson.at("properties").at("legacy:hasCaseNumber").isString();
 		try
 		{
+			dueDateUtil.setDueDateNewSr(newSrJson);
 			// System.out.println("new SR to save: " + legacyForm);
-			final Json actorEmails = legacyForm.at("properties").atDel("actorEmails");
-			final Json hasRemovedAttachment = legacyForm.at("properties").atDel("hasRemovedAttachment");
-			final String type = legacyForm.at("type").asString();
+			final Json actorEmails = newSrJson.at("properties").atDel("actorEmails");
+			final Json hasRemovedAttachment = newSrJson.at("properties").atDel("hasRemovedAttachment");
+			final String type = newSrJson.at("type").asString();
 			if (!isClientExempt()
 					&& !Permissions.check(individual("BO_New"),
 							individual(type), getUserActors()))
@@ -1693,9 +1697,9 @@ public class LegacyEmulator extends RestService
 				@Override
 				public Object call() throws Exception
 				{
-					legacyForm.set("boid", Refs.idFactory.resolve().newId(null));
+					newSrJson.set("boid", Refs.idFactory.resolve().newId(null));
 					if (!hasCaseNumber) {
-						createCaseNumber(legacyForm);
+						createCaseNumber(newSrJson);
 					}
 					return null;
 				}
@@ -1709,7 +1713,7 @@ public class LegacyEmulator extends RestService
 				public Json call() throws Exception
 				{
 					tryDeleteAttachments(hasRemovedAttachment);	
-					final BOntology bontology = BOntology.makeRuntimeBOntology(legacyForm);
+					final BOntology bontology = BOntology.makeRuntimeBOntology(newSrJson);
 									
 					
 					//Saving the current context as we are losing when 
@@ -1720,10 +1724,10 @@ public class LegacyEmulator extends RestService
 					//TODO hilpold move this to where emails are created
 					emailsToSend.clear();
 					CirmTransaction.get().addTopLevelEventListener(new SendEmailOnTxSuccessListener(emailsToSend));
-					am.createDefaultActivities(owlClass(type), bontology, GenUtils.parseDate(legacyForm.at("properties").at("hasDateCreated").asString()), emailsToSend);
+					am.createDefaultActivities(owlClass(type), bontology, GenUtils.parseDate(newSrJson.at("properties").at("hasDateCreated").asString()), emailsToSend);
 					Response.setCurrent(current);
 					ThreadLocalStopwatch.now("END createDefaultActivities");
-					Json locationInfoTmp = populateGisData(legacyForm, bontology);
+					Json locationInfoTmp = populateGisData(newSrJson, bontology);
 					if (!locationInfoTmp.isNull())
 						locationInfo.with(locationInfoTmp);
 					//validateResources(legacyForm, bontology);
@@ -1797,14 +1801,14 @@ public class LegacyEmulator extends RestService
 				ThreadLocalStopwatch.error("Error createNewKOSR - Gis problem " + result.at("bo").at("properties").at("hasCaseNumber").asString());
 			}
 			//MessageManager.get().sendEmails(emailsToSend);
-			srStatsReporter.succeeded("create", legacyForm);
+			srStatsReporter.succeeded("create", newSrJson);
 			ThreadLocalStopwatch.stop("END createNewKOSR");
 			return result;					
 		}
 		catch (Throwable e)
 		{
 			Throwable t = GenUtils.getRootCause(e);
-			srStatsReporter.failed("create", legacyForm, e.toString() + "Rootcause: " + t.toString(), e.getMessage() + "Root Msg: " + t.getMessage());
+			srStatsReporter.failed("create", newSrJson, e.toString() + "Rootcause: " + t.toString(), e.getMessage() + "Root Msg: " + t.getMessage());
 			ThreadLocalStopwatch.fail("FAIL createNewKOSR");
 			System.out.println("formData passed into createNewKOSR : "+formData);
 			e.printStackTrace();
@@ -1838,35 +1842,46 @@ public class LegacyEmulator extends RestService
 	 * @param legacyform
 	 * @return
 	 */
-	public Json saveNewCaseTransaction(Json legacyForm)
+	public Json saveNewCaseTransaction(Json newSRJson)
 	{
-		boolean hasCaseNumber = legacyForm.has("properties")
-				&& legacyForm.at("properties").has("legacy:hasCaseNumber") 
-				&& legacyForm.at("properties").at("legacy:hasCaseNumber").isString();
+		boolean hasCaseNumber = newSRJson.has("properties")
+				&& newSRJson.at("properties").has("legacy:hasCaseNumber") 
+				&& newSRJson.at("properties").at("legacy:hasCaseNumber").isString();
+		String type = newSRJson.at("type").asString();
+		// 1 Set due date if not provided by external system or in referral case, ignore errors.
+		try {
+			if (!dueDateUtil.hasDueDate(newSRJson)) {
+				dueDateUtil.setDueDateNewSr(newSRJson);
+			} else {
+				ThreadLocalStopwatch.now("saveNewCaseTransaction: Received Sr with due date, type: " + type);
+			}
+		} catch (Exception e) {
+			ThreadLocalStopwatch.error("saveNewCaseTransaction: Ignored Exception during Due Date checking or setting for a new SR, type: " + type + " Exception: ");
+			e.printStackTrace();
+		}
 		OperationService op = new OperationService();
-		// 1 Determine SR type and create a new case number
-		String type = legacyForm.at("type").asString();
+		// 2 Determine SR type and create a new case number
 		int i = type.indexOf("legacy:");
 		if (i == -1)
 			type = "legacy:" + type;
 		BOntology bontology = op.createBusinessObject(owlClass(type));
-		legacyForm.set("boid", bontology.getObjectId());
+		newSRJson.set("boid", bontology.getObjectId());
 		if (!hasCaseNumber) {
-			createCaseNumber(legacyForm);
+			createCaseNumber(newSRJson);
 		}
-		// 2 Parse all legacyForm data into a business ontology
-		bontology = BOntology.makeRuntimeBOntology(legacyForm);
-		populateGisData(legacyForm, bontology);	
-		//3 Check pending and create autoOnPending activities
+		// 3 Parse all legacyForm data into a business ontology
+		bontology = BOntology.makeRuntimeBOntology(newSRJson);
+		populateGisData(newSRJson, bontology);	
+		// 4 Check pending and create autoOnPending activities
 		if (OWL.individual("legacy:O-PENDNG").equals(bontology.getObjectProperty("legacy:hasStatus"))) {
 			List<CirmMessage> messages = new ArrayList<>();
 			ActivityManager amgr = new ActivityManager();
 			amgr.createAutoOnPendingActivities(bontology, new Date(), messages);
 			CirmTransaction.get().addTopLevelEventListener(new SendEmailOnTxSuccessListener(messages));
 		}
-		//4 Save BO		
+		// 5 Save BO		
 		getPersister().saveBusinessObjectOntology(bontology.getOntology());
-		// 5 Extend BO by adding meta data axioms		
+		// 6 Extend BO by adding meta data axioms		
 		final BOntology bontologyVerbose;
 		try
 		{
@@ -1878,7 +1893,7 @@ public class LegacyEmulator extends RestService
 		}
 		final Json bontologyVerboseJson = OWL.toJSON(bontologyVerbose.getOntology(), bontology.getBusinessObject()); 
 		bontologyVerboseJson.set("boid", bontology.getObjectId());
-		// 6 Fire a legacy:NewServiceCaseExternalEvent only if the overall transaction finishes successfully.
+		// 7 Fire a legacy:NewServiceCaseNonCirmEvent only if the overall transaction finishes successfully.
 		// This ignores retries (we're inside a repeatable transaction!), so the event is guaranteed to fire only once.
 		// Assumes access to final variables bontologyVerboseJson, bontologyVerbose during event processing,
 		// so we must not change the json bontologyVerboseJson points to after returning it.
@@ -1924,7 +1939,7 @@ public class LegacyEmulator extends RestService
 				Json result = saveNewCaseTransaction(Json.read(formData)); 
 				ThreadLocalStopwatch.stop("END saveNewServiceRequest (referral?)");
 				return result;
-			}});			
+			}});
 		}
 		catch (Exception e)
 		{
@@ -2927,7 +2942,8 @@ public class LegacyEmulator extends RestService
 	/**
 	 * Creates a new Service Request.
 	 * 
-	 * 04/07/2015 -Sabbas - Annotated as a REST endpoint to provide access to a clean SR save with no SideEffects.
+	 * 04/07/2015 -Sabbas - Annotated as a REST endpoint to provide access to a clean SR save with no SideEffects, 
+	 * except that due date will be set, if not provided.
 	 *  
 	 * @param sr : The Service Request data as json
 	 * @return : returns the SR
@@ -2939,8 +2955,12 @@ public class LegacyEmulator extends RestService
 	@Consumes("application/json")
 	public Json saveNewServiceRequestEndpoint(Json sr)
 	{ 
-		return saveNewServiceRequest(sr.toString());
+		ThreadLocalStopwatch.startTop("START saveNewServiceRequestEndpoint");
+		Json result = saveNewServiceRequest(sr.toString());
+		ThreadLocalStopwatch.stop("END saveNewServiceRequestEndpoint");
+		return result;
 	}
+	
 	/**
 	 * Get the current Approval State of the SR. 
 	 *
