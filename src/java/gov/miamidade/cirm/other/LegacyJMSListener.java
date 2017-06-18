@@ -55,6 +55,7 @@ import org.sharegov.cirm.rest.LegacyEmulator;
 import org.sharegov.cirm.rest.RestService;
 import org.sharegov.cirm.stats.CirmStatisticsFactory;
 import org.sharegov.cirm.stats.SRCirmStatsDataReporter;
+import org.sharegov.cirm.utils.DueDateUtil;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.SendEmailOnTxSuccessListener;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
@@ -83,6 +84,8 @@ public class LegacyJMSListener extends Thread
 {	
 
 	public static final String JMS_CLIENT_ID = "311HUB_JMS_LEGACYCLIENT";
+	
+	private final DueDateUtil dueDateUtil = new DueDateUtil();
 	
 	private SRCirmStatsDataReporter srStatsReporter = 
 			CirmStatisticsFactory.createServiceRequestStatsReporter(MDRefs.mdStats.resolve(), "LegacyJMSListener"); 
@@ -628,6 +631,8 @@ public class LegacyJMSListener extends Thread
 		}
 		if (newdata.has("type") && !newdata.is("type", existing.at("type")))
 		{
+			Json oldType = existing.at("type");
+			//1. Set new Type from interface message
 			existing.set("type", newdata.atDel("type"));
 			// We are expecting fresh new flex questions if the type changes
 			// it may be possible to do an intelligent merge of information
@@ -635,6 +640,9 @@ public class LegacyJMSListener extends Thread
 			// capable of changin the SR type, should be capable of sending
 			// the flex questions for that new type as well.
 			existing.at("properties").delAt("hasServiceAnswer");
+			//2. update due date for SR to reflect new type duration using DueDateUtil
+			ThreadLocalStopwatch.now("SRType change during interface update to: " + existing.at("type") + "(old: " + oldType);
+			dueDateUtil.setDueDateExistingSr(existing);
 		}
 		if (!newdata.has("isModifiedBy")) {
 			newdata.set("isModifiedBy", "department");
