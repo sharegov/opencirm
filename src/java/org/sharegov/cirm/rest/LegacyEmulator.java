@@ -1838,6 +1838,8 @@ public class LegacyEmulator extends RestService
 	 * Saves a new non Cirm originated (e.g. PW, CMS Interfaces, Open311) or referral service case into the cirm database.
 	 * If the SR is saved in pending state autoOnPending activities may be created and emails be sent.
 	 * 
+	 * Due date will be set based on srType (if not already provided in newSrJson).
+	 * 
 	 * Must be called from within a CirmTransaction.
 	 * @param legacyform
 	 * @return
@@ -1850,7 +1852,7 @@ public class LegacyEmulator extends RestService
 		String type = newSRJson.at("type").asString();
 		// 1 Set due date if not provided by external system or in referral case, ignore errors.
 		try {
-			if (!dueDateUtil.hasDueDate(newSRJson)) {
+			if (!dueDateUtil.hasDueDateNewSr(newSRJson)) {
 				dueDateUtil.setDueDateNewSr(newSRJson);
 			} else {
 				ThreadLocalStopwatch.now("saveNewCaseTransaction: Received Sr with due date, type: " + type);
