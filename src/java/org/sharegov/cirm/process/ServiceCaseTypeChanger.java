@@ -6,25 +6,33 @@ import static org.sharegov.cirm.OWL.ontology;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.sharegov.cirm.OWL;
+import org.sharegov.cirm.Refs;
+import org.sharegov.cirm.owl.OWLSerialEntityCache;
+import org.sharegov.cirm.utils.DueDateUtil;
 
 import mjson.Json;
 
 /**
  * Performs extensive validation and changes the type of an SR, if compatible with existing SR (use only during approval!).
  * The modified SR will not be persisted by this class.
+ * Due date will be recalculated to reflect duration setting of the target type.
  * 
  * @author Thomas Hilpold
  *
  */
 public class ServiceCaseTypeChanger {
 	
+	private final DueDateUtil dueDateUtil = new DueDateUtil();
 	
 	/**
-	 * Changes the type of an SR, if all validation passes. 
-	 * Answers will be removed but a textual version with a type change hint inserted into hasDetails (the description field).
+	 * Changes the type of an SR, if all validation passes. <br>
+	 * Answers will be removed but a textual version with a type change hint inserted into hasDetails (the description field).<br>
 	 * All other data is available after the type change, including all activities, all actors, attachments, status, etc.  <br>
+	 * Due date will be recalculated for target type.<br>
 	 * <br>
 	 * Any validation failure will lead to an exception with an appropriate message.
 	 * <br>
@@ -76,8 +84,10 @@ public class ServiceCaseTypeChanger {
 		//Clear OLD ANSWERS!!
 		target.at("properties").set("hasServiceAnswer", Json.array());
 		target.at("properties").set("hasDetails", newHasDetails);
+		// Calculate and set new Due date based on target type:
+		dueDateUtil.setDueDateExistingSr(target);
 		return target;
-	}		
+	}
 	
 	private void validateDifferentType(String oldType, String targetTypeFragment) {
 		if (oldType.equalsIgnoreCase(targetTypeFragment)) {
@@ -87,13 +97,15 @@ public class ServiceCaseTypeChanger {
 
 	/**
 	 * Tries to find the target type.
-	 * @param targetTypeFragment
+	 * @param targetTypeFragment not legacy: prefixed
 	 * @return
 	 * @throws IllegalArgumentException if found individual does not have type ServiceCase.
 	 */
 	private Json tryGetTargetType(String targetTypeFragment) {
-		OWLNamedIndividual ind = individual("legacy:" + targetTypeFragment);
-		Json type = OWL.toJSON(ontology(), ind);
+		//Cached type retrieval or cache on miss
+		IRI srTypeIri = OWL.fullIri("legacy:" + targetTypeFragment);
+		OWLSerialEntityCache jsonEntities = Refs.owlJsonCache.resolve();
+		Json type = jsonEntities.individual(srTypeIri).resolve();
 		if (type != null && type.has("type") && type.at("type").asString().equalsIgnoreCase("ServiceCase")) {
 			return type;
 		} else {
