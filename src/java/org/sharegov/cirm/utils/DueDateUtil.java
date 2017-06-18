@@ -25,7 +25,12 @@ import org.sharegov.cirm.owl.OWLSerialEntityCache;
 import mjson.Json;
 
 /**
- * SR Due date utilities for new SRs base on type. 
+ * SR Due date utilities for new and existing SRs base on type.<br>
+ * Due date recalculation should occur for existing SRs if a type change occurs (e.g. approval type change or interface type change request)<br>
+ * <br>
+ * Existing SR json legacy properties are expected non legacy prefixed, such as when loaded for Ui.<br>
+ * New SR json properties are expected legacy: prefixes, ready for storing.<br>
+ * County properties are always expected fragment only.<br>
  * 
  * @author Thomas Hilpold
  *
@@ -33,42 +38,92 @@ import mjson.Json;
 public class DueDateUtil {
 
 	/**
-	 * Sets the correct due date in the given newSr json based on sr hasDateCreated, srtype duration and srType workweek configuration.
-	 * If a due date already exists in newSr it will be overwritten.
-	 * 
-	 * Examples:
-	 * properties/legacy:hasDueDate: "2017-09-14T19:45:48.000-0000"
-	 * properties/hasDateCreated : "2017-06-16T19:48:43.000-0000"
+	 * Sets the correct due date in the given newSr json based on sr hasDateCreated, srtype duration and srType workweek configuration.<br>
+	 * If a due date already exists in newSr it will be overwritten.<br>
+	 * <br>
+	 * Examples:<br>
+	 * type : "legacy:PW6102"<br>
+	 * properties/legacy:hasDueDate: "2017-09-14T19:45:48.000-0000"<br>
+	 * properties/hasDateCreated : "2017-06-16T19:48:43.000-0000"<br>
 	 * @param newSr
 	 */
 	public void setDueDateNewSr(Json newSr) {
-		validateNewSr(newSr);
-		String dateCreatedStr = newSr.at("properties").at("hasDateCreated").asString();
-		String typeStr = newSr.at("type").asString();
+		setDueDateSrImpl(newSr, true);
+	}	
+	
+	/**
+	 * Sets the correct due date in the given existing Sr based on sr hasDateCreated, srtype duration and srType workweek configuration.<br>
+	 * Existing SRs are loaded mostly without namespace qualified iri fragments.<br>
+	 * <br>
+	 * If a due date already exists in newSr it will be overwritten.<br>
+	 * <br>
+	 * Examples:<br>
+	 * type: "PW6102" //no legacy prefix for existing.<br>
+	 * properties/hasDueDate: "2017-09-14T19:45:48.000-0000" //no legacy: prefix<br>
+	 * properties/hasDateCreated : "2017-06-16T19:48:43.000-0000"<br>
+	 * <br>
+	 * @param existingSr sr json without legacy: namespace prefixes.
+	 */
+	public void setDueDateExistingSr(Json existingSr) {
+		setDueDateSrImpl(existingSr, false);
+	}
+	
+	/**
+	 * Internal setDueDate.
+	 * @param srJson
+	 * @param newSrJson true if new with legacy: prefix, false if existing without prefixes.
+	 */
+	private void setDueDateSrImpl(Json srJson, boolean newSrJson) {
+		if (newSrJson) {
+			validateNewSr(srJson);
+		} else {
+			 validateExistingSr(srJson);
+		}
+		String dateCreatedStr = srJson.at("properties").at("hasDateCreated").asString();
+		String typeStr = newSrJson? srJson.at("type").asString() : "legacy:" + srJson.at("type").asString();
 		IRI typeIri = OWL.fullIri(typeStr);
 		Json type = getSRType(typeIri);
 		double durationDays = SrTypeJsonUtil.getDurationDays(type);
-		if (durationDays <= 0) {
-			//Does not need due date (but may have it TODO maybe remove)
+		if (durationDays <= 0) {			
+			if (!newSrJson && hasDueDateExistingSr(srJson)) {
+				//For exising SRs (type change), delete Due date if SRtype has 0 or no duration N/A.
+				ThreadLocalStopwatch.now("SR Due date deleted of existing SR type: " + typeStr);
+				srJson.at("properties").delAt("hasDueDate");
+			}
 			return;
 		} else {
 			boolean useWorkWeek = SrTypeJsonUtil.isDuration5DayBased(type);
 			Date created = GenUtils.parseDate(dateCreatedStr);
 			Date due = OWL.addDaysToDate(created, (float)durationDays, useWorkWeek);
 			String dueStr = GenUtils.formatDate(due);
-			newSr.at("properties").set("legacy:hasDueDate", dueStr);
-			ThreadLocalStopwatch.now("SR Due date set: " + due + " (=" + created + " + " + durationDays + " ww5:" + useWorkWeek + ")");
+			if (newSrJson) {
+				srJson.at("properties").set("legacy:hasDueDate", dueStr);
+			} else {
+				srJson.at("properties").set("hasDueDate", dueStr);
+			}
+			ThreadLocalStopwatch.now("SR Due date set: " + due + " (=" + created + " + " + durationDays + " ww5:" + useWorkWeek + " type: " + typeStr + ")");
 		}
 	}	
+
 	
 	/**
-	 * Determines if the newSr json has a Due date property.
+	 * Determines if the newSr json has a legacy prefixed Due date property.
 	 * @param newSr
 	 * @return
 	 */
-	public boolean hasDueDate(Json newSr) {
+	public boolean hasDueDateNewSr(Json newSr) {
 		validateNewSr(newSr);
 		return newSr.at("properties").has("legacy:hasDueDate");		
+	}
+	
+	/**
+	 * Determines if the existingSr json has a non prefixed Due date property.
+	 * @param newSr
+	 * @return
+	 */
+	public boolean hasDueDateExistingSr(Json exisingSr) {
+		validateExistingSr(exisingSr);
+		return exisingSr.at("properties").has("hasDueDate");		
 	}
 	
 	/**
@@ -109,5 +164,17 @@ public class DueDateUtil {
 		if (!newSr.at("properties").has("hasDateCreated") || !newSr.at("properties").at("hasDateCreated").isString()) {
 			throw new IllegalArgumentException("hasDateCreated not available or not a String.");
 		}
+	}
+
+	/**
+	 * Validates core properties including hasDateCreated with valid date of SR.
+	 * 
+	 * @param existingSr an SR without namespace qualified properties.
+	 * @throws IllegalArgumentException
+	 */	
+	private void validateExistingSr(Json existingSr) {
+		//Currently we can use newSR validation variant because all properties checked are county properties and
+		//therefore no legacy: prefix is required.
+		validateNewSr(existingSr);		
 	}
 }
