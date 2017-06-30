@@ -117,7 +117,7 @@ import mjson.Json;
 				OWLDataFactory factory = manager.getOWLDataFactory();
 								
 				for (Json chx: data.at("changes").asJsonList()){
-					changes.add(buildChange(chx, O, manager, factory));
+					changes.add(buildChange(chx, O, factory));
 				}
 				
 			} else {
@@ -232,22 +232,22 @@ import mjson.Json;
 			obj.set("individual", signatureComponents[1].substring(1, signatureComponents[1].length()-1));
 		}
 		
-		private OWLOntologyChange buildChange(Json chx, OWLOntology O, OWLOntologyManager manager, OWLDataFactory factory){
+		private OWLOntologyChange buildChange(Json chx, OWLOntology O, OWLDataFactory factory){
 			if (chx.has("type")&&chx.has("axiom")&&chx.at("axiom").isObject()){
-				OWLAxiom ax = buildAxiom(chx.at("axiom"), O, manager, factory);
+				OWLAxiom ax = buildAxiom(chx.at("axiom"), O, factory);
 				return chx.at("type").asString() == "add" ? new AddAxiom(O, ax): new RemoveAxiom(O, ax);
 			} else {
 				throw new RuntimeException("Invalid Ontology Change structure.");
 			}		
 		}
 		
-		private OWLAxiom buildAxiom(Json ax, OWLOntology O, OWLOntologyManager manager, OWLDataFactory factory){
+		private OWLAxiom buildAxiom(Json ax, OWLOntology O,  OWLDataFactory factory){
 			if (ax.has("type")){
 				switch (ax.at("type").asString()){
-					case "DataPropertyAssertion": return buildDataPropertyAssertionAxiom(ax, O, manager, factory);
-					case "ObjectPropertyAssertion": return buildObjectPropertyAssertionAxiom(ax, O, manager, factory);
-					case "AnnotationAssertion": return buildAnnotationAssertionAxiom(ax, O, manager, factory);
-					case "ClassAssertion": return buildClassAssertionAxiom(ax, O, manager, factory);
+					case "DataPropertyAssertion": return buildDataPropertyAssertionAxiom(ax, O, factory);
+					case "ObjectPropertyAssertion": return buildObjectPropertyAssertionAxiom(ax, O, factory);
+					case "AnnotationAssertion": return buildAnnotationAssertionAxiom(ax, O, factory);
+					case "ClassAssertion": return buildClassAssertionAxiom(ax, O, factory);
 					default: throw new RuntimeException("Unknown Axiom Type: " + ax.at("type").asString());
 				}
 			} else {
@@ -256,7 +256,7 @@ import mjson.Json;
 			
 		}
 		
-		private OWLAxiom buildDataPropertyAssertionAxiom(Json ax, OWLOntology O, OWLOntologyManager manager, OWLDataFactory factory){
+		private OWLAxiom buildDataPropertyAssertionAxiom(Json ax, OWLOntology O, OWLDataFactory factory){
 			if (ax.has("property") && ax.has("individual") && ax.has("value") && ax.has("xsdType")){
 				OWL2Datatype xsdType = OWL2Datatype.getDatatype(OWL.fullIri(ax.at("xsdType").asString()));
 				OWLDataProperty property = OWL.dataFactory().getOWLDataProperty(IRI.create(ax.at("property").asString()));
@@ -270,7 +270,7 @@ import mjson.Json;
 			}	
 		}
 		
-		private OWLAxiom buildObjectPropertyAssertionAxiom(Json ax, OWLOntology O, OWLOntologyManager manager, OWLDataFactory factory){
+		private OWLAxiom buildObjectPropertyAssertionAxiom(Json ax, OWLOntology O, OWLDataFactory factory){
 			if (ax.has("property") && ax.has("individual") && ax.has("value")){
 				OWLObjectProperty property = OWL.dataFactory().getOWLObjectProperty(IRI.create(ax.at("property").asString()));
 				OWLIndividual individual = OWL.individual(IRI.create(ax.at("individual").asString()));
@@ -284,7 +284,7 @@ import mjson.Json;
 			
 		}
 		
-		private OWLAxiom buildAnnotationAssertionAxiom(Json ax, OWLOntology O, OWLOntologyManager manager, OWLDataFactory factory){
+		private OWLAxiom buildAnnotationAssertionAxiom(Json ax, OWLOntology O, OWLDataFactory factory){
 			if (ax.has("property") && ax.has("individual") && ax.has("value") && ax.has("xsdType")){
 				if (ax.at("property").asString() == "rdfs:label"){
 					ax.set("property", "http://www.w3.org/2000/01/rdf-schema#label");
@@ -301,7 +301,7 @@ import mjson.Json;
 			}	
 		}
 		
-		private OWLAxiom buildClassAssertionAxiom(Json ax, OWLOntology O, OWLOntologyManager manager, OWLDataFactory factory){
+		private OWLAxiom buildClassAssertionAxiom(Json ax, OWLOntology O, OWLDataFactory factory){
 			if (ax.has("class") && ax.has("individual")){
 				OWLIndividual individual = OWL.individual(IRI.create(ax.at("individual").asString()));
 				

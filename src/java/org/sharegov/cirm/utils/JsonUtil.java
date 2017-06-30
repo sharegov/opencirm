@@ -15,6 +15,11 @@
  ******************************************************************************/
 package org.sharegov.cirm.utils;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -290,5 +295,37 @@ public class JsonUtil
 		if (!object.has(name) && value != null)
 			object.set(name, value);
 		return object;
+	}
+	
+	public static Json readFromFile(String path) throws IOException {
+	    BufferedReader reader = new BufferedReader(new FileReader(path));
+	    String         line = null;
+	    StringBuilder  stringBuilder = new StringBuilder();
+	    String         ls = System.getProperty("line.separator");
+
+	    try {
+	        while((line = reader.readLine()) != null) {
+	            stringBuilder.append(line);
+	            stringBuilder.append(ls);
+	        }
+
+	        String jsonStr = stringBuilder.toString();
+	        
+	       return Json.read(jsonStr);
+	       
+	    } finally {
+	        reader.close();
+	    }
+	}
+	
+	public static boolean writeToFile(Json obj, String path)  throws IOException {	
+		BufferedWriter writer = null;
+		
+		writer = new BufferedWriter(new FileWriter(path));
+		writer.write(obj.toString());
+		
+		writer.close( );
+		
+		return true;
 	}
 }

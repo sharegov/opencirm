@@ -148,6 +148,9 @@
         "legacy:hasChoiceValueList": {
           "$ref": "#/definitions/legacy:hasChoiceValueList"
         },
+		"legacy:isDuration5DayBased": {
+		  "$ref": "#/definitions/booleanValue"
+		},
         "legacy:hasServiceFieldAlert": {
           "$ref": "#/definitions/legacy:hasServiceFieldAlert"
         },

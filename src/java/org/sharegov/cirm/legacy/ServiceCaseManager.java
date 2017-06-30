@@ -32,6 +32,8 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.sharegov.cirm.Deployment;
+import org.sharegov.cirm.Deployments;
 import org.sharegov.cirm.MetaOntology;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.OntologyChangesRepo;
@@ -113,6 +115,11 @@ public class ServiceCaseManager extends OntoAdmin {
 		dptOutcomes = new ConcurrentHashMap<String, Set <String>>();
 		activities = new ConcurrentHashMap<String, Json>();
 		outcomes = new ConcurrentHashMap<String, Json>();
+		
+		//Initialize Changes Repository
+		OntologyChangesRepo.getInstance();
+		//Initialize Deployment List
+		Deployments.getInstance();
 		
 		ThreadLocalStopwatch.startTop("Started Service Case Admin Cache.");
 		getAll();
@@ -960,19 +967,30 @@ public class ServiceCaseManager extends OntoAdmin {
 		}
 	}
 	
-	private void notifyApproval (int lastRevision, Json date) {
+	private void sendMailToTeam (String subject, String htmlMessage){
 		try {
-		Properties properties = System.getProperties();
-        properties.setProperty("mail.smtp.host", SMTP_HOST);
-        properties.setProperty("mail.smtp.starttls.enable", "true");
-        Session session = Session.getDefaultInstance(properties);
-        MimeMessage message = new MimeMessage(session);
-        try {
-        	message.setFrom(new InternetAddress(FROM_EMAIL, ""));
-        } catch (UnsupportedEncodingException e) {
-        	throw new RuntimeException(e);
-        }
-        
+			Properties properties = System.getProperties();
+	        properties.setProperty("mail.smtp.host", SMTP_HOST);
+	        properties.setProperty("mail.smtp.starttls.enable", "true");
+	        Session session = Session.getDefaultInstance(properties);
+	        MimeMessage message = new MimeMessage(session);
+	        try {
+	        	message.setFrom(new InternetAddress(FROM_EMAIL, ""));
+	        } catch (UnsupportedEncodingException e) {
+	        	throw new RuntimeException(e);
+	        }
+	        
+	        message.addRecipients(Message.RecipientType.TO, "ITD-CIRMTT@miamidade.gov");
+//	        message.addRecipients(Message.RecipientType.TO, "chirino@miamidade.gov");
+	        message.setSubject(subject);
+	        message.setText(htmlMessage, "UTF-8", "html");
+	        Transport.send(message);
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	private void notifyApproval (int lastRevision, Json date) {		        
         String cirmAdminServer = getHostIpAddress();
         String link = cirmAdminServer + "/html/cirmadmin/app/index.html#!/approve?rev=" + String.valueOf(lastRevision);
         String dateStr = date.at("month").asString() + "/" + date.at("day_of_month").asString() + "/" + date.at("year").asString() + 
@@ -982,92 +1000,44 @@ public class ServiceCaseManager extends OntoAdmin {
         		             "Review and approval must occur previous to the deployment date otherwise deployment will not be executed.</br>" +
         		             "Best of luck.</br>CIRM Admin Team.";
         
-        message.addRecipients(Message.RecipientType.TO, "ITD-CIRMTT@miamidade.gov");
-//        message.addRecipients(Message.RecipientType.TO, "chirino@miamidade.gov");
-        message.setSubject("CIRM Deployment Scheduled");
-        message.setText(htmlMessage, "UTF-8", "html");
-        Transport.send(message);
-		} catch (Exception e){
-			e.printStackTrace();
-		}
+
+        sendMailToTeam("CIRM Deployment Scheduled", htmlMessage);
 	}
 	
-	private void notifySimulatedDeploy() {
-		try {
-		Properties properties = System.getProperties();
-        properties.setProperty("mail.smtp.host", SMTP_HOST);
-        properties.setProperty("mail.smtp.starttls.enable", "true");
-        Session session = Session.getDefaultInstance(properties);
-        MimeMessage message = new MimeMessage(session);
-        try {
-        	message.setFrom(new InternetAddress(FROM_EMAIL, ""));
-        } catch (UnsupportedEncodingException e) {
-        	throw new RuntimeException(e);
-        }
-        
+	private void notifySimulatedDeploy() {        
         String htmlMessage = "CIRM deployment simulation completed.</br>" +
         		             "Best of luck.</br>CIRM Admin Team.";
         
-        message.addRecipients(Message.RecipientType.TO, "ITD-CIRMTT@miamidade.gov");
-//        message.addRecipients(Message.RecipientType.TO, "chirino@miamidade.gov");
-        message.setSubject("CIRM Deployment Simulation Completed");
-        message.setText(htmlMessage, "UTF-8", "html");
-        Transport.send(message);
-		} catch (Exception e){
-			e.printStackTrace();
-		}
+        sendMailToTeam("CIRM Deployment Simulation Completed", htmlMessage);
 	}
 	
 	private void notifyDeploymentStarted() {
-		try {
-		Properties properties = System.getProperties();
-        properties.setProperty("mail.smtp.host", SMTP_HOST);
-        properties.setProperty("mail.smtp.starttls.enable", "true");
-        Session session = Session.getDefaultInstance(properties);
-        MimeMessage message = new MimeMessage(session);
-        try {
-        	message.setFrom(new InternetAddress(FROM_EMAIL, ""));
-        } catch (UnsupportedEncodingException e) {
-        	throw new RuntimeException(e);
-        }
-        
         String htmlMessage = "Automated CIRM deployment have started as scheduled.</br>" +
         		             "Best of luck.</br>CIRM Admin Team.";
         
-        message.addRecipients(Message.RecipientType.TO, "ITD-CIRMTT@miamidade.gov");
-//        message.addRecipients(Message.RecipientType.TO, "chirino@miamidade.gov");
-        message.setSubject("CIRM Deployment Started");
-        message.setText(htmlMessage, "UTF-8", "html");
-        Transport.send(message);
-		} catch (Exception e){
-			e.printStackTrace();
-		}
+        sendMailToTeam("CIRM Deployment Started", htmlMessage);
+	}
+	
+	private void notifyClusterRestartStarted() {		
+        String htmlMessage = "Automated CIRM Cluster restart have started as scheduled.</br>" +
+        		             "Best of luck.</br>CIRM Admin Team.";
+        
+        sendMailToTeam("CIRM Cluster Restart Started", htmlMessage);
+	}
+	
+	private void notifyPushCompleted(int revision) {
+        String htmlMessage = "Deployment Completed.</br>" +
+        					 "All changes up to revision " + revision + " were pushed to the main repository.</br>" +
+        		             "Best of luck.</br>CIRM Admin Team.";
+        
+        sendMailToTeam("CIRM Cluster Restart Started", htmlMessage);
 	}
 	
 	private void notifyErrorDeploy(String error) {
-		try {
-		Properties properties = System.getProperties();
-        properties.setProperty("mail.smtp.host", SMTP_HOST);
-        properties.setProperty("mail.smtp.starttls.enable", "true");
-        Session session = Session.getDefaultInstance(properties);
-        MimeMessage message = new MimeMessage(session);
-        try {
-        	message.setFrom(new InternetAddress(FROM_EMAIL, ""));
-        } catch (UnsupportedEncodingException e) {
-        	throw new RuntimeException(e);
-        }
-        
-        String htmlMessage = "Automated CIRM deployment failed with following error:</br>" + error + "</br>" +
+		String htmlMessage = "Automated CIRM deployment failed with following error:</br>" + error + "</br>" +
         		             "Best of luck.</br>CIRM Admin Team.";
         
-        message.addRecipients(Message.RecipientType.TO, "ITD-CIRMTT@miamidade.gov");
-//        message.addRecipients(Message.RecipientType.TO, "chirino@miamidade.gov");
-        message.setSubject("CIRM Deployment Failed");
-        message.setText(htmlMessage, "UTF-8", "html");
-        Transport.send(message);
-		} catch (Exception e){
-			e.printStackTrace();
-		}
+		sendMailToTeam("CIRM Deployment Failed", htmlMessage);
 	}
 	
 	public boolean pushUpToRevision (int lastRevision){
@@ -1111,7 +1081,7 @@ public class ServiceCaseManager extends OntoAdmin {
 		return r.has("message") ? (r.at("message").asString().toLowerCase().contains("all changes were applied to target") ? true: false) : false;
 	}
 	
-	private int getCurrentRevision(){
+	public int getCurrentRevision(){
 		return getCurrentRevision (OWL.ontology());
 	}
 	
@@ -1127,87 +1097,19 @@ public class ServiceCaseManager extends OntoAdmin {
 	 * Sends Jenkins the signal to start the job that restart servers with fresh ontologies
 	 *  
 	 * @return whether Jenkins or Time Machines acknowledge the signal or not
-	 */
-	
-	@SuppressWarnings("deprecation")
-	public Json refreshOnto(String target, String date, String key, int revision) {
+	 */	
+	public synchronized Json deploy(String target, long date, String key, long deploymentID) {
 		switch (target) {
 			case "production":
 				System.out.println("Deployment endpoint executed:");
 				//figure out current revision
 				int currentRevision = getCurrentRevision();
 				// date = 0 means run this now
-				if (date == "0"){
-					System.out.println("This is a time-machine scheduled request.");
-					if (revision > 0){
-						if (revision > currentRevision){
-							System.out.println("Deployment not executed: Target revision greater than current.");
-							return Json.object().set("success", false);
-						}
-						
-						if (pushUpToRevision(revision)){							
-							if (StartUp.getConfig().at("network").at("ontoServer").asString().toLowerCase() == "ontology_server_production"){	
-								notifyDeploymentStarted();
-								System.out.println("Deployment started!!!");
-								return GenUtils.httpPostWithBasicAuth(jenkingsEndpointRefreshOntosOnlyProduction, "cirm", "admin", "");
-							} else {
-								notifySimulatedDeploy();
-								System.out.println("Deployment is simulation, this is a success message.");
-								return Json.object().set("success", true);
-							}
-						} else {
-							notifyErrorDeploy("An error was found while trying to configure approved revisions.");
-							System.out.println("Deployment not executed: an error was found while trying to configure approved revisions.");
-							return Json.object().set("success", false);
-						}
-					} else {
-						notifyErrorDeploy("Invalid revision number.");
-						System.out.println("Deployment not executed: Invalid revision number.");
-						return Json.object().set("success", false);
-					}
-				} else {					
-					System.out.println("Schedule deployment using time-machine.");
-					// add this post call to the time machine.
-					String host = getHostIpAddress();
-					
-					Json jsonContent = Json.object()
-							           .set("key", key)
-							           .set("timeStamp", System.currentTimeMillis())
-							           .set("revision", currentRevision);
-					
-					Json jsonRestCall = Json.object().set("url", host + "/sradmin/deploy/production")
-													 .set("method", "POST")
-													 .set("content", jsonContent);
-					
-					Date time = new java.util.Date(Long.parseLong(date));
-					
-					Json jsonDate = Json.object().set("second", "0")
-							                     .set("minute", time.getMinutes())
-							                     .set("hour", time.getHours())
-							                     .set("day_of_month", time.getDate())
-							                     .set("month", time.getMonth() + 1)
-							                     .set("year", 1900 + time.getYear());					
-					
-					System.out.println("Notify Admin team about this deployment.");
-					//notify for approval
-					notifyApproval(currentRevision, jsonDate);
-					
-					Json tmJson = Json.object().set("name", "CIRM Admin Deployment")
-											   .set("group", "cirm_admin_tasks")
-											   .set("scheduleType", "SIMPLE")
-											   .set("scheduleData", Json.object())
-											   .set("startTime", jsonDate)
-											   .set("endTime", "")
-											   .set("state", "NORMAL")
-											   .set("description", "Delayed CIRM production ontology only deployment")
-											   .set("restCall", jsonRestCall);
-					final Json timeMachine = OWL.toJSON((OWLIndividual)Refs.configSet.resolve().get("TimeMachineConfig"));	
-					System.out.println("Time Machine url:");
-					System.out.println(timeMachine.at("hasUrl").asString());
-					System.out.println("Sending request to time-machine...");
-					Json r =  GenUtils.httpPostJson(timeMachine.at("hasUrl").asString() + "/task", tmJson);
-					System.out.println("Request sent... expect a call back from  time-machine.");
-					return r;
+				if (date == 0){
+					return deployToProduction (deploymentID, currentRevision);
+				} else {
+					Deployment dx = Deployments.getInstance().newDeployment(date, currentRevision, true, true);
+					return createTimeMachineCallBack (date, currentRevision, dx.getId(), key);
 				}
 				
 			case "test":
@@ -1217,6 +1119,122 @@ public class ServiceCaseManager extends OntoAdmin {
 		}
 		
 		throw new IllegalArgumentException("Not a valid target value was passed to the refresh ontologies method.");		
+	}
+	
+	private Json deployToProduction (long deploymentID, int currentRevision){
+		System.out.println("This is a time-machine scheduled request.");
+		if (deploymentID > 0){
+			long currentTime = System.currentTimeMillis();
+			long threshold = 3*60*1000; //three minutes
+			Deployment deploymentx = Deployments.getInstance().deleteDeployment(deploymentID);
+									
+			if (deploymentx == null){
+				System.out.println("Cannot find Deployment with ID: " + deploymentID);
+				return Json.object().set("success", false);
+			}
+			
+			if (!deploymentx.isEnabled()){
+				System.out.println("Deployment with ID: " + deploymentID + " was disabled by Admin.");
+				System.out.println("Deployment with ID: " + deploymentID + " was deleted from the queue.");
+				return Json.object().set("success", false);
+			}
+			
+			long deploymentDate = deploymentx.getDate();
+			
+			if (deploymentDate > currentTime +  threshold || deploymentDate < currentTime -  threshold){
+				System.out.println("Depoyment Execption! Deployment call back happened outside of the scheduled time.");
+				Deployments.getInstance().newDeployment(deploymentx);
+				System.out.println("Deployment with ID: " + deploymentID + " was re-inserted to the queue.");
+				return Json.object().set("success", false);
+			}
+			
+			int revision = deploymentx.getRevision();
+			
+			if (revision <= lastMatch(OWL.ontology())){
+				System.out.println("Depoyment Failed! Target Revision is Older than top revision on the server.");
+				System.out.println("Deployment with ID: " + deploymentID + " was deleted from the queue.");
+				return Json.object().set("success", false);
+			}
+			
+			if (revision > currentRevision){
+				System.out.println("Depoyment Failed! Target Revision is Greater than Current Revision Number.");
+				System.out.println("Deployment with ID: " + deploymentID + " was deleted from the queue.");
+				return Json.object().set("success", false);
+			}
+			
+			notifyDeploymentStarted();
+			if (pushUpToRevision(revision)){	
+				if (deploymentx.isRestart()){												
+					if (StartUp.getConfig().at("network").at("ontoServer").asString().toLowerCase() == "ontology_server_production"){	
+						notifyClusterRestartStarted();
+						System.out.println("Deployment started!!!");
+						return GenUtils.httpPostWithBasicAuth(jenkingsEndpointRefreshOntosOnlyProduction, "cirm", "admin", "");
+					} else {
+						notifySimulatedDeploy();
+						System.out.println("Deployment is simulation, this is a success message.");
+						return Json.object().set("success", true);
+					}
+				} else {
+					notifyPushCompleted(revision);
+					System.out.println("Deployment is push only, this is a success message.");
+					return Json.object().set("success", true);
+				}
+			} else {
+				notifyErrorDeploy("An error was found while trying to configure approved revisions.");
+				System.out.println("Deployment not executed: an error was found while trying to configure approved revisions.");
+				return Json.object().set("success", false);
+			}
+		} else {
+			notifyErrorDeploy("Invalid revision number.");
+			System.out.println("Deployment not executed: Invalid revision number.");
+			return Json.object().set("success", false);
+		}
+	}
+	
+	@SuppressWarnings("deprecation")
+	private Json createTimeMachineCallBack (long date, int revision, long deploymentID, String key){
+		System.out.println("Schedule deployment using time-machine.");
+		// add this post call to the time machine.
+		String host = getHostIpAddress();
+		
+		Json jsonContent = Json.object()
+				           .set("key", key)
+				           .set("timeStamp", System.currentTimeMillis())
+				           .set("deployment_id", deploymentID);
+		
+		Json jsonRestCall = Json.object().set("url", host + "/sradmin/deploy/production")
+										 .set("method", "POST")
+										 .set("content", jsonContent);
+
+		Date time = new java.util.Date(date);
+		
+		Json jsonDate = Json.object().set("second", "0")
+				                     .set("minute", time.getMinutes())
+				                     .set("hour", time.getHours())
+				                     .set("day_of_month", time.getDate())
+				                     .set("month", time.getMonth() + 1)
+				                     .set("year", 1900 + time.getYear());					
+		
+		System.out.println("Notify Admin team about this deployment.");
+		//notify for approval
+		notifyApproval(revision, jsonDate);
+		
+		Json tmJson = Json.object().set("name", "CIRM Admin Deployment")
+								   .set("group", "cirm_admin_tasks")
+								   .set("scheduleType", "SIMPLE")
+								   .set("scheduleData", Json.object())
+								   .set("startTime", jsonDate)
+								   .set("endTime", "")
+								   .set("state", "NORMAL")
+								   .set("description", "Delayed CIRM production ontology only deployment")
+								   .set("restCall", jsonRestCall);
+		final Json timeMachine = OWL.toJSON((OWLIndividual)Refs.configSet.resolve().get("TimeMachineConfig"));	
+		System.out.println("Time Machine url:");
+		System.out.println(timeMachine.at("hasUrl").asString());
+		System.out.println("Sending request to time-machine...");
+		Json r =  GenUtils.httpPostJson(timeMachine.at("hasUrl").asString() + "/task", tmJson);
+		System.out.println("Request sent... expect a call back from  time-machine.");
+		return r;
 	}
 	
 	/**
@@ -2162,11 +2180,19 @@ public class ServiceCaseManager extends OntoAdmin {
 		return result;
 	}
 	
-	public Json getChangeSets(String top){
+	public Json getChangeSets(String revisionNumber){
+		if (revisionNumber.compareToIgnoreCase("top") == 0){
+			return Json.object().set("revision", getCurrentRevision());
+		}
+		
+		if (revisionNumber.compareToIgnoreCase("min") == 0){
+			return Json.object().set("revision", lastMatch(OWL.ontology()));
+		}
+		
 		int limit = Integer.MAX_VALUE;
 		
 		try {
-			limit = Integer.valueOf(top);
+			limit = Integer.valueOf(revisionNumber);
 		} catch (Exception e){
 			
 		}
@@ -2200,10 +2226,44 @@ public class ServiceCaseManager extends OntoAdmin {
 		for (OWLOntology o: OWL.ontologies()){
 			OntologyCommit cx = OntologyChangesRepo.getInstance().getOntoRevisionChanges(o.getOntologyID().toString(), revisionNumber);
 			
-			if (cx != null) cx.setApproved(approved);
+			if (cx != null){
+				cx.setApproved(approved);
+				
+				OntologyChangesRepo.getInstance().persist();
+			}
 		}
 	}
 	
+	public Json getScheduledDeployments(){
+		return Deployments.getInstance().toJson();
+	}
 	
+	public Json updateDeployment (Json obj, String key){
+		if (obj.has("id") && obj.has("date") && obj.has("revision") ){
+			Deployment dx = Deployments.getInstance().getDeployment(obj.at("id").asLong());
+			
+			if (dx == null){
+				return Json.nil();
+			}		
+			
+			long oldDate = dx.getDate();
+			
+			Json result = Deployments.getInstance().updateDeployment(obj);
+			
+			if (!result.isNull()){			
+				if (oldDate != obj.at("date").asLong()){
+					createTimeMachineCallBack(obj.at("date").asLong(), obj.at("revision").asInteger(), obj.at("id").asLong(),  key);
+				}
+			}
+			
+			return result;
+		} else {
+			throw new IllegalArgumentException("Missing property ID on Deployment Object");
+		}
+	}
+	
+	public Json deleteDeployment(long deploymentID){
+		return Deployments.getInstance().deleteDeployment(deploymentID).toJson();
+	}
 	
 }

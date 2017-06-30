@@ -306,12 +306,12 @@ public class ServiceCaseAdmin extends RestService {
 			try
 			{
 				String key = aData.at("key").asString();
-				String date = aData.has("date") ? aData.at("date").asString(): "0";
-				int revision = aData.has("revision") ? Integer.valueOf(aData.at("revision").asString()): 0;
+				long date = aData.has("date") ? Long.valueOf(aData.at("date").asString()): 0;
+				long deploymentID = aData.has("deployment_id") ? Long.valueOf(aData.at("deployment_id").asString()): 0;
 				if (key == null || key.isEmpty()) throw new IllegalArgumentException("key needed for this operation");
 				if (key.compareTo(KEY) != 0) throw new IllegalArgumentException("key is invalid");
 				
-				result = ServiceCaseManager.getInstance().refreshOnto(target, date, key, revision);
+				result = ServiceCaseManager.getInstance().deploy(target, date, key, deploymentID);
 				
 				cache.put(target + ":" + aJsonString, result);
 				
@@ -1055,8 +1055,7 @@ public class ServiceCaseAdmin extends RestService {
 	@GET
 	@Path("revisions/{top}")
 	public Response getChangeSets(@PathParam("top") String top)
-	{
-		
+	{		
 		try
 		{ 
 			return Response.ok(ServiceCaseManager.getInstance().getChangeSets(top), MediaType.APPLICATION_JSON).build();			
@@ -1069,7 +1068,7 @@ public class ServiceCaseAdmin extends RestService {
 							.set("message", e.getMessage())).build();
 		}
 	}
-	
+		
 	@PUT
 	@Path("/revisions/approve/{revision_number}")
 	public Response approveChangeSet(@PathParam("revision_number") String revisionNumber)
@@ -1110,6 +1109,61 @@ public class ServiceCaseAdmin extends RestService {
 					.entity(Json.object().set("error", e.getClass().getName())
 							.set("message", e.getMessage())).build();
 		}
+	}
+
+	@GET
+	@Path("/deployments/list")
+	public Response getDeployments()
+	{		
+		try
+		{ 
+			return Response.ok(ServiceCaseManager.getInstance().getScheduledDeployments(), MediaType.APPLICATION_JSON).build();			
+		}
+		catch(Exception e){
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
+	@PUT
+	@Path("/deployments/update")
+	public Response updateDeployment(Json aData)
+	{
+		try
+		{ 						
+			return Response.ok(ServiceCaseManager.getInstance().updateDeployment(aData, KEY), MediaType.APPLICATION_JSON).build();
+		}
+		catch(Exception e){
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
+	@DELETE
+	@Path("deployments/delete/{deploymentID}")
+	public Response removeDeployment(@PathParam("deploymentID") long deploymentID)
+	{			
+		try
+		{ 			
+			return Response.ok(ServiceCaseManager.getInstance().deleteDeployment(deploymentID), MediaType.APPLICATION_JSON).build();
+		}
+		catch(Exception e){
+			ThreadLocalStopwatch.now("Error found Removing Activity.");
+			
+			e.printStackTrace();
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+		
 	}
 	
 }
