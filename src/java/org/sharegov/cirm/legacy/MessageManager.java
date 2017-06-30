@@ -430,7 +430,11 @@ public class MessageManager
 		List<InternetAddress> recipients = new ArrayList<InternetAddress>();
 		for (int i = 0; i < tos.length; i++)
 			try {
-				recipients.add(new InternetAddress(tos[i]));
+				if (tos[i].contains("@")) {
+					recipients.add(new InternetAddress(tos[i]));
+				} else {
+					ThreadLocalStopwatch.now("toRecipients: Not adding invalid recipient " + tos[i] + " to message");
+				}				
 			} catch (AddressException e)
 			{
 				System.err.println(ThreadLocalStopwatch.getThreadName() 
@@ -924,11 +928,19 @@ public class MessageManager
 	{
 		try
 		{
-			if(!DISABLE_SEND)
-				Transport.send(msg);			
+			Address[] recipients = msg.getAllRecipients();
+			if (recipients == null || recipients.length < 1) {
+				ThreadLocalStopwatch.now("sendEmail: Not sending message that had zero recipients");
+			} else {
+				if(!DISABLE_SEND) {
+					Transport.send(msg);
+					ThreadLocalStopwatch.now("sendEmail: One Email sent to " + recipients.length + " recipients");
+				}
+			}
 		}
 		catch (Exception ex)
 		{
+			ThreadLocalStopwatch.error("Transport error: " + ex);
 			throw new RuntimeException(ex);
 		}
 	}
