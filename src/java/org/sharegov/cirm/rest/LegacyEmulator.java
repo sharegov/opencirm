@@ -128,6 +128,7 @@ import org.sharegov.cirm.utils.ConcurrentLockedToOpenException;
 import org.sharegov.cirm.utils.DueDateUtil;
 import org.sharegov.cirm.utils.ExcelExportUtil;
 import org.sharegov.cirm.utils.GenUtils;
+import org.sharegov.cirm.utils.GisInfoUtil;
 import org.sharegov.cirm.utils.JsonUtil;
 import org.sharegov.cirm.utils.PDFExportUtil;
 import org.sharegov.cirm.utils.PDFViewReport;
@@ -153,6 +154,7 @@ public class LegacyEmulator extends RestService
 	private final SRCirmStatsDataReporter srStatsReporter = CirmStatisticsFactory.createServiceRequestStatsReporter(Refs.stats.resolve(), "LegacyEmulator");
 	
 	private DueDateUtil dueDateUtil = new DueDateUtil();
+	private GisInfoUtil gisInfoUtil = new GisInfoUtil();
 	
 	public LegacyEmulator()
 	{
@@ -1316,8 +1318,9 @@ public class LegacyEmulator extends RestService
 			    }
 			});
 		}		
-		if (hasAddressUpdated(existing, newValue))
+		if (hasAddressUpdated(existing, newValue)) {
 			populateGisData(serviceCase, bontology);
+		}
 		Json updateResult = updateServiceCase(bontology);
 		if (updateResult.is("ok", true))
 		{
@@ -1575,6 +1578,14 @@ public class LegacyEmulator extends RestService
 		}
 	}
 	
+	/**
+	 * Updates bOntology by replacing or adding legacy:hasGisDataId long and hasFolio long, stores in GIS_INFO table,
+	 * returns full locationInfo.
+	 * 
+	 * @param legacyForm
+	 * @param bontology
+	 * @return
+	 */
 	public Json populateGisData(Json legacyForm, BOntology bontology)
 	{
 		// Checking for x and y properties before adding as Address it not
@@ -1606,6 +1617,7 @@ public class LegacyEmulator extends RestService
 			else
 				locationInfo.delAt("extendedInfo");
 			Json gisLiteral = Json.make(GisDAO.getGisDBId(locationInfo, false));
+			//SET/UPDATE legacy:hasGisDataId
 			OWLLiteral owlLiteral = bontology.getDataProperty(
 					bontology.getBusinessObject(), "legacy:hasGisDataId");
 			if(owlLiteral != null)
@@ -1621,6 +1633,27 @@ public class LegacyEmulator extends RestService
 									.set("literal", gisLiteral.asLong())
 									.set("type",
 											"http://www.w3.org/2001/XMLSchema#integer"));
+			
+			//SET/UPDATE FOLIO as prop in Bontology from locationinfo as integer
+			OWLLiteral folioLiteral = bontology.getDataProperty(
+					bontology.getBusinessObject(), "hasFolio");
+			if(folioLiteral != null)
+			{    
+				bontology.deleteDataProperty(
+						bontology.getBusinessObject(), 
+						dataProperty("hasFolio"));
+			}
+			Long folioVal = gisInfoUtil.getFolioFromLocationInfo(locationInfo);
+			if (folioVal != null) {
+				bontology.addDataProperty(
+						bontology.getBusinessObject(),
+						dataProperty("hasFolio"),
+						Json.object()
+								.set("literal", folioVal.longValue())
+								.set("type",
+										"http://www.w3.org/2001/XMLSchema#long"));
+				ThreadLocalStopwatch.now("Folio set: " + folioVal);
+			}
 			if (DBG)
 				ThreadLocalStopwatch.getWatch().time("END populateGisData");
 			return locationInfo;
