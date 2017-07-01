@@ -2426,20 +2426,35 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
     				 return false; //ignore the element
     			}
     			if(self.data().boid().length > 0 && self.data().properties().hasStatus().label().toLowerCase().indexOf('open') == -1) {
+    				//SR SAVED AND NOT OPEN
 	    			//If status locked then should be able to add only Personal Contact Activity.
 	    			if(self.isLockedStatus()) {
 	    				//If SR is LOCKED then always show 'Personal Contact' Activity
-		    			if(v.hasLegacyCode && v.hasLegacyCode == "PERSCNTC")
+		    			if(v.hasLegacyCode && v.hasLegacyCode == "PERSCNTC") {
 	    					return true;
+		    			}
+		    			else if(v.hasLegacyCode && v.hasLegacyCode == "FEEDBACK") {
+	    					return true;
+		    			}
+		    			else if(v.hasLegacyCode && v.hasLegacyCode == "FEEDBACKWEB") {
+	    					return true;
+		    			}
 		    			//if PW/WM SR then show 'SWM Urgent Notification' Activity
-		    			if(self.isPWWMCase() && v.hasLegacyCode && v.hasLegacyCode == "SWMURGN")
+		    			else if(self.isPWWMCase() && v.hasLegacyCode && v.hasLegacyCode == "SWMURGN") {
 	    					return true;
+		    			} else {
+		    				//Do not show activity
+		    			}
 		    		}
-	    			else if(v.hasBusinessCodes && v.hasBusinessCodes.indexOf("INSSPEC") != -1) 
+	    			else if(v.hasBusinessCodes && v.hasBusinessCodes.indexOf("INSSPEC") != -1) {
+	    				//SR NOT LOCKED OR OPEN, SHOW ALL INSSPEC ACTIVITIES
 			    			return true; 
+	    			}
     			}
-    			else
+    			else {
+    				//SR OPEN SHOW ALL ACTIVITIES
     				return true;
+    			}
     		});
 
 			return tempActs.sort(function(a,b) {
