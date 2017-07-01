@@ -2439,6 +2439,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 		    			else if(v.hasLegacyCode && v.hasLegacyCode == "FEEDBACKWEB") {
 	    					return true;
 		    			}
+		    			else if(v.hasLegacyCode && v.hasLegacyCode == "COMFEEDBACK") {
+	    					return true;
+		    			}
 		    			//if PW/WM SR then show 'SWM Urgent Notification' Activity
 		    			else if(self.isPWWMCase() && v.hasLegacyCode && v.hasLegacyCode == "SWMURGN") {
 	    					return true;
