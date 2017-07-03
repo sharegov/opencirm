@@ -1043,6 +1043,10 @@ public class ServiceCaseManager extends OntoAdmin {
 	public boolean pushUpToRevision (int lastRevision){
 		Set <Integer> toRevert = new HashSet<>();
 		
+		System.out.println("Push process started!");
+		System.out.print("Detecting approved revisions...");
+		
+		int approved = 0;
 		for (OWLOntology o: OWL.ontologies()){
 			
 			Map<Integer, OntologyCommit> changes = OntologyChangesRepo.getInstance().getAllRevisionChangesForOnto(o.getOntologyID().toString());
@@ -1054,31 +1058,75 @@ public class ServiceCaseManager extends OntoAdmin {
 				if (key <= lastRevision){
 					if (!e.getValue().isApproved()){
 						toRevert.add(key);
+					} else {
+						approved++;
 					}
 				} else {
 					toRevert.add(key);
 				}
 			}
 		}
+		
+		System.out.println("Ok");
+		System.out.println(approved + " Revisions approved!");
+		
+		if (approved < 1){
+			System.out.println("Push will abort!");
+			
+			return false;
+		}		
+
 			
 		List<OntoChangesReference> deleted = new ArrayList<>();
 		
-		if (toRevert.size() > 0){			
-			deleted = rollBackRevisions(new ArrayList<>(toRevert));			
-		}		
-		
-		Json r = pushALL();
-		
-		if (deleted.size() > 0){
-			for (OntoChangesReference rx : deleted){
-				if (toRevert.contains(rx.getRevision())){
-					OntologyCommit cx = rx.getValue();					
-					commit( cx.getUserName(), cx.getComment(), cx.getChanges());
-				}
-			}
+		if (toRevert.size() > 0){	
+			System.out.print("Reverting revisions not approved...");
+			
+			deleted = rollBackRevisions(new ArrayList<>(toRevert));				
+
+			System.out.println("Ok");
+		} else {
+			System.out.println("No need to revert. All revisions were approved.");
 		}
 		
-		return r.has("message") ? (r.at("message").asString().toLowerCase().contains("all changes were applied to target") ? true: false) : false;
+		System.out.print("Push Started...");
+		
+		Json r = pushALL(false);
+		
+		boolean result = r.has("message") ? (r.at("message").asString().toLowerCase().contains("all changes were applied to target") ? true: false) : false;
+		
+		if (result){
+			System.out.println("Push Completed!");
+			System.out.println(r.toString());
+			System.out.print("Clearing changes repository...");
+			
+			OntologyChangesRepo.getInstance().clearAll();
+			
+			System.out.println("Ok");
+			System.out.print(" Re-appliying pending changes...");
+			
+			if (deleted.size() > 0){
+				for (OntoChangesReference rx : deleted){
+					if (toRevert.contains(rx.getRevision())){
+						OntologyCommit cx = rx.getValue();					
+						commit( cx.getUserName(), cx.getComment(), cx.getChanges());
+					}
+				}
+			}
+			
+			System.out.println("Ok");
+			System.out.println("Push process completed successfuly!");
+		} else {
+			System.out.println(" Failed!");
+			System.out.println(r.toString());
+		
+			Json obj = revertReApply();
+			
+			System.out.println(obj.toString());
+			System.out.println("Push process Failed!");
+		}		
+		
+		return result;
 	}
 	
 	public int getCurrentRevision(){

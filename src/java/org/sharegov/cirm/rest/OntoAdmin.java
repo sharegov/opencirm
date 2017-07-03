@@ -271,7 +271,44 @@ public class OntoAdmin extends RestService
 		}				
 	}
 	
+	public Json revertReApply(){
+		VDHGDBOntologyRepository repo = repo();
+		try
+		{ 
+			Refs.owlRepo.resolve().ensurePeerStarted();
+			
+			for (OWLOntology o : OWL.ontologies()) {
+				VersionedOntology vo = repo.getVersionControlledOntology(o);
+				DistributedOntology dOnto = repo.getDistributedOntology(o);
+				HGPeerIdentity server = Refs.owlRepo.resolve().getDefaultPeer();
+				
+				System.out.println("We must revert...");
+				int lastMatchingRevision = revertToLastMatch (vo, dOnto, server);
+				System.out.println("Done reverting.");
+				System.out.println("Pulling last revision...");
+				pullFromServer(dOnto, server);
+				System.out.println("Done pulling.");
+				System.out.println("Re-Applying previuos changes...");
+				applyChangesSinceRevision (o, lastMatchingRevision);
+				System.out.println("Done re-applying changes.");
+			}
+			
+			return ok().set("message", "success!"); 
+			
+		} 
+		catch (Throwable t)
+		{
+			t.printStackTrace(System.err);
+			return ko(t.toString());
+		}
+	}
+	
 	public Json pushALL()
+	{
+		return pushALL(true);
+	}
+	
+	public Json pushALL(boolean clearRepo)
 	{
 		VDHGDBOntologyRepository repo = repo();
 		try
@@ -316,7 +353,9 @@ public class OntoAdmin extends RestService
 				push.getFuture().get();
 				messages += push.getCompletedMessage() + ", ";				
 			}
-			OntologyChangesRepo.getInstance().clearAll();
+			if (clearRepo){
+				OntologyChangesRepo.getInstance().clearAll();
+			}
 			return ok().set("message", messages); 
 		}
 		catch (Throwable t)
