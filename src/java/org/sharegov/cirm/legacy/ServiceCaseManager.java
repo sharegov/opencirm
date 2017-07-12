@@ -22,6 +22,7 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -73,6 +74,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	private Map<String, Set <String>> dptOutcomes;
 	private Map<String, Json> activities;
 	private Map<String, Json> outcomes;
+	private Set<String> correctedIRIs;
 	private static HashSet<String> knownTypes = new HashSet<String>(Arrays.asList("legacy:ServiceNote", 
 																				  "legacy:ServiceQuestion", 
 																				  "legacy:QuestionTrigger", 
@@ -115,6 +117,7 @@ public class ServiceCaseManager extends OntoAdmin {
 		dptOutcomes = new ConcurrentHashMap<String, Set <String>>();
 		activities = new ConcurrentHashMap<String, Json>();
 		outcomes = new ConcurrentHashMap<String, Json>();
+		correctedIRIs = new ConcurrentHashSet();
 		
 		//Initialize Changes Repository
 		OntologyChangesRepo.getInstance();
@@ -2312,6 +2315,27 @@ public class ServiceCaseManager extends OntoAdmin {
 	
 	public Json deleteDeployment(long deploymentID){
 		return Deployments.getInstance().deleteDeployment(deploymentID).toJson();
+	}
+	
+	public synchronized String validateIRI(String iri){
+		String fragment = MetaOntology.getIdFromUri(iri);
+		
+		int c = 0;
+		while (MetaOntology.individualExists(fragment + (c > 0 ? c: "")) || correctedIRIs.contains(iri + (c > 0 ? c: ""))){
+			c++;
+		}
+		
+		if (c > 0){
+			iri += c;
+		}
+		
+		correctedIRIs.add(iri);
+		
+		return iri;
+	}
+	
+	public synchronized void clearCorrectedIRIs(){
+		correctedIRIs.clear();
 	}
 	
 }

@@ -1167,6 +1167,49 @@ public class ServiceCaseAdmin extends RestService {
 		
 	}
 	
+	@POST
+	@Path("/iri/validate")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response validateIRI(Json aData) {
+		try
+		{						
+			if (!(aData.has("iri"))) throw new IllegalArgumentException("IRI not found"); 
+			
+			String iri = aData.at("iri").asString();
+			if (iri == null || iri.isEmpty()) throw new IllegalArgumentException("IRI null or empty");
+			
+			iri = ServiceCaseManager.getInstance().validateIRI(iri);
+						
+			return Response.ok(Json.object().set("iri", iri), MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+		    e.printStackTrace();
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
+	@DELETE
+	@Path("/iri/clear_repository")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response clearIRIRepo() {
+		try
+		{						
+			ServiceCaseManager.getInstance().clearCorrectedIRIs();
+						
+			return Response.ok(Json.object().set("success", true), MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+		    e.printStackTrace();
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+	}
+	
 }
 
 

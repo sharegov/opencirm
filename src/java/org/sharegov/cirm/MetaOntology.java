@@ -1290,7 +1290,7 @@ public class MetaOntology
 		return map.containsKey(objectIRI);
 	}
 	
-	protected static boolean individualExists (String individualID){
+	public static boolean individualExists (String individualID){
 		Json prefixes = Json.array().add("mdc:").add(":").add("legacy:");
 		for (Json prefix : prefixes.asJsonList()) {
 			IRI propIri = getFullIri(prefix.asString() + individualID);
