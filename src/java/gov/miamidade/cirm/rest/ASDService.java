@@ -157,6 +157,7 @@ public class ASDService extends RestService
 	@Consumes("application/json")
 	public Json asdDispatchUpdateActivity(Json data)
 	{
+		ThreadLocalStopwatch.startTop("START asdDispatchUpdateActivity");
 		try
 		{
 			LegacyEmulator le = new LegacyEmulator();
@@ -210,10 +211,12 @@ public class ASDService extends RestService
 			Response.setCurrent(current);
 			Json result = le.updateServiceCase(bo);
 			MessageManager.get().sendEmails(emailsToSend);
+			ThreadLocalStopwatch.stop("END asdDispatchUpdateActivity");
 			return result;
 		}
 		catch (Exception e)
 		{
+			ThreadLocalStopwatch.fail("FAIL asdDispatchUpdateActivity with " + e);
 			e.printStackTrace();
 			return ko(e.getMessage());
 		}
@@ -226,7 +229,7 @@ public class ASDService extends RestService
 	public Json asdDispatchLookup(Json data)
 	{
 		if (DBG)
-			ThreadLocalStopwatch.getWatch().time("START asdDispatchLookup");
+			ThreadLocalStopwatch.startTop("START asdDispatchLookup");
 		try
 		{
 			RelationalStore store = getPersister().getStore();
@@ -324,8 +327,7 @@ public class ASDService extends RestService
 		finally
 		{
 			if (DBG)
-				ThreadLocalStopwatch.getWatch().time("END asdDispatchLookup");
-			ThreadLocalStopwatch.dispose();
+				ThreadLocalStopwatch.stop("END asdDispatchLookup");
 		}
 	}
 

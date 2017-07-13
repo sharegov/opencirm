@@ -234,12 +234,12 @@ public class DepartmentIntegration extends RestService
     @Consumes("application/json")
     public Json caseToDepartment(Json data)
     {
-		ThreadLocalStopwatch.getWatch().time("START DepartmentIntegration /sendnew ");
+		ThreadLocalStopwatch.startTop("START DepartmentIntegration /sendnew ");
 		forceClientExempt.set(true);
         long initiatedAt = data.at("initiatedAt", 0).asLong();
         if (!data.has("caseNumber")) 
         {
-        	ThreadLocalStopwatch.getWatch().time("FAIL DepartmentIntegration /sendnew case number missing ");
+        	ThreadLocalStopwatch.now("FAIL DepartmentIntegration /sendnew case number missing ");
     		return ko("Case number property missing from JSON object.");
         }
         String casenumber = data.at("caseNumber").asString();
@@ -250,29 +250,34 @@ public class DepartmentIntegration extends RestService
             if (bo == null)
                 bo = emulator.findServiceCaseOntology(boid);
             sendToDepartment(bo, null, null);
-        	ThreadLocalStopwatch.getWatch().time("SUCCEEDED DepartmentIntegration /sendnew  " + casenumber);
+        	ThreadLocalStopwatch.now("SUCCEEDED DepartmentIntegration /sendnew  " + casenumber);
             return ok();
         }
         catch (GisException gisex)
         {
             if (initiatedAt + 24*60*60*1000 < System.currentTimeMillis())
             {
-                GenUtils.reportFatal("While sending (after 24 hour long attempts: " + initiatedAt + " - " + System.currentTimeMillis() +  
-                            ") " + casenumber, gisex.toString(), gisex);
+            	String msg = "While sending (after 24 hour long attempts: " + initiatedAt + " - " + System.currentTimeMillis() +
+            			") " + casenumber; 
+                GenUtils.reportFatal(msg, "FAILED DepartmentIntegration /sendnew " + gisex.toString(), gisex);
+            	ThreadLocalStopwatch.fail("FAILED DepartmentIntegration /sendnew " + msg);
                 return ko(gisex);
             }
             else
             {
-            	ThreadLocalStopwatch.getWatch().time("RETRY DepartmentIntegration /sendnew  by time machine in 30 mins " + casenumber);
+            	ThreadLocalStopwatch.error("RETRY DepartmentIntegration /sendnew  by time machine in 30 mins " + casenumber);
                 Json j = GenUtils.timeTask(30, "/legacy/departments/sendnew", data);
-                if (j.is("ok", false))
+                if (j.is("ok", false)) {
                     GenUtils.reportFatal("While retrying new case task " + casenumber, j.toString(), gisex);
+                    ThreadLocalStopwatch.fail("FAIL DepartmentIntegration /sendnew - Time machine not ok while retrying new case task " + casenumber);
+                }
                 return ko("Failed with " + gisex.toString() + ", resubmission success=" + j.is("ok", true));
             }                   
         }
         catch (Throwable t)
         {
-            GenUtils.reportFatal("While sending " + casenumber, t.toString(), t);           
+        	ThreadLocalStopwatch.fail("FAIL DepartmentIntegration /sendnew - Unhandled Exception thrown " + t);    
+        	GenUtils.reportFatal("While sending " + casenumber, t.toString(), t);           
             return ko(t);
         }       
     }
@@ -861,10 +866,10 @@ public class DepartmentIntegration extends RestService
 			if (minutes > -1 && minutes < 60)
 				minutes = 60;
 			else if (minutes >= 60 && minutes < 180)
-				minutes = 3*60;
-			else if (minutes >= 180 && minutes <4320)
-				minutes = 72*60;
-			else if (minutes>4320)
+				minutes = 3 * 60;
+			else if (minutes >= 180 && minutes < 4320)
+				minutes = 72 * 60;
+			else if (minutes > 4320)
 			{
 				//eventually the retry is stopped after 3 unsuccessful attempts.
 				srStatsReporter.failed("tryActivitySend-case", serviceCase, "Giving up retry after ", "sendNewActivity failed");

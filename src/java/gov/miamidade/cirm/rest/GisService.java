@@ -11,6 +11,7 @@ import mjson.Json;
 
 import org.sharegov.cirm.rest.RestService;
 import org.sharegov.cirm.utils.GenUtils;
+import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
 /**
  * A GisService.
@@ -37,6 +38,7 @@ public class GisService extends RestService
 	@Produces("application/json")
 	public Json getReverseGeocode(@QueryParam("x") double x, @QueryParam("y") double y)
 	{
+		ThreadLocalStopwatch.startTop("START getReverseGeocode " + x + ", " + y);
 		Json result;
 		try {
 			//This can block up to 2 minutes, retries are configured:
@@ -58,9 +60,10 @@ public class GisService extends RestService
 				result.set("type" , "Street_Address");
 				result = GenUtils.ok().set("atAddress", result);
 			}
+			ThreadLocalStopwatch.now("END getReverseGeocode ");
 		} catch (Exception e) {
 			String msg = e.toString() + " during getReverseGeocode with params: x " + x + " y " + y + " : ";
-			System.err.println(msg);
+			ThreadLocalStopwatch.fail("FAIL getReverseGeocode with " + e);
 			e.printStackTrace();
 			result = GenUtils.ko(msg);
 		}
@@ -106,6 +109,7 @@ public class GisService extends RestService
 	@Produces("application/json")
 	public Json getCirmAddressByFolio(@QueryParam("folio") long folio)
 	{
+		ThreadLocalStopwatch.startTop("START getCirmAddressByFolio " + folio);
 		Json result;
 		try {
 			//This can block up to 2 minutes, retries are configured:
@@ -127,9 +131,10 @@ public class GisService extends RestService
 				result.set("type" , "Street_Address");
 				result = GenUtils.ok().set("atAddress", result);
 			}
+			ThreadLocalStopwatch.now("END getCirmAddressByFolio");
 		} catch (Exception e) {
 			String msg = e.toString() + " during getCirmAddressByFolio with param: folio " + folio + " : ";
-			System.err.println(msg);
+			ThreadLocalStopwatch.fail("FAIL getCirmAddressByFolio " + msg);
 			e.printStackTrace();
 			result = GenUtils.ko(msg);
 		}
