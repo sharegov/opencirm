@@ -690,7 +690,7 @@ public class LegacyEmulator extends RestService
 		boids.add(Long.parseLong(boid));
 		try
 		{
-			ThreadLocalStopwatch.start("START LE.printServiceRequest " + boid);
+			ThreadLocalStopwatch.startTop("START LE.printServiceRequest " + boid);
 			Representation report = makePDFCaseReports(boids);
 			ThreadLocalStopwatch.stop("END LE.printServiceRequest");
 			srStatsReporter.succeeded("printServiceRequest", CirmStatistics.UNKNOWN, boid);
@@ -903,7 +903,7 @@ public class LegacyEmulator extends RestService
 	{
 		try
 		{
-			if (DBG) ThreadLocalStopwatch.getWatch().time("START lookupAdvancedSearch");
+			if (DBG) ThreadLocalStopwatch.startTop("START lookupAdvancedSearch");
 			QueryTranslator qt = new QueryTranslator();
 			RelationalStore store = getPersister().getStore();
 			Json resultsArray = Json.array();
@@ -1038,11 +1038,11 @@ public class LegacyEmulator extends RestService
 		}
 		catch (Exception e)
 		{
+			ThreadLocalStopwatch.fail("FAILED lookupAdvancedSearch with " + e);
 			e.printStackTrace();
 			return ko(e.getMessage());
 		} finally {
-			if (DBG) ThreadLocalStopwatch.getWatch().time("END lookupAdvancedSearch");
-			ThreadLocalStopwatch.dispose();
+			if (DBG) ThreadLocalStopwatch.stop("END lookupAdvancedSearch");
 		}
 	}
 
