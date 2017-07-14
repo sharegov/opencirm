@@ -229,6 +229,34 @@ public class GisClient implements GisInterface
         }			
 	}
 	
+	public Json getLocationInfo(double x, double y, String [] layers, int maxAttempts, long sleepTime) {
+		
+		RuntimeException lastEx = new RuntimeException("Not tried at all.");
+		while (maxAttempts > 0)
+		{
+			maxAttempts = maxAttempts - 1;
+			try
+			{
+				return getLocationInfo(x, y, layers);
+			}
+			catch (RuntimeException ex)
+			{
+				lastEx = ex;
+				if (ex.toString().contains("java.net.SocketTimeoutException") 
+						|| ex.toString().contains("java.net.SocketException")) 
+				{
+					// Try again
+				}
+				else if (ex instanceof GisException)
+					throw ex;
+				else
+					throw new GisException(ex);
+			}
+			try { Thread.sleep(sleepTime); } catch (InterruptedException t) { break; }
+		}
+		throw lastEx;
+	}
+	
 	public Json getLocationInfo(double x, double y, String [] layers)
 	{
 		if (!USE_GIS_SERVICE) 
@@ -238,7 +266,7 @@ public class GisClient implements GisInterface
         		x + "&y=" + y);
         if(layers != null && layers.length > 0)
         {
-        	for(String layer: layers)
+        	for(String layer : layers)
         	{
         		url.append( "&layer=").append(layer);
         	}
@@ -247,9 +275,9 @@ public class GisClient implements GisInterface
         GetMethod method = new GetMethod(url.toString());
         try
         {
-        	ThreadLocalStopwatch.getWatch().time("Start GisService Call");
+        	ThreadLocalStopwatch.now("Start GisService getLocationInfo Call");
             int statusCode = client.executeMethod(method);
-        	ThreadLocalStopwatch.getWatch().time("End GisService Call");
+        	ThreadLocalStopwatch.now("End GisService getLocationInfo Call");
             if (statusCode != HttpStatus.SC_OK)
                 throw new GisException("HTTP Error " + statusCode + " while calling " + url.toString());
             Json result = Json.read(method.getResponseBodyAsString());            
@@ -308,7 +336,9 @@ public class GisClient implements GisInterface
 				servicename = "publicworksintersectiondata";
 				params.append("street1=").append(URLEncoder.encode(street1))
 				      .append("&street2=").append(URLEncoder.encode(street2));				
-			} 
+			} else {
+				servicename = null;
+			}
 		}
 		
 		HttpClient client = new HttpClient();
@@ -316,16 +346,20 @@ public class GisClient implements GisInterface
         GetMethod method = new GetMethod(url);
         try
         {
-        	ThreadLocalStopwatch.getWatch().time("Start GisAreaData Call");
+        	ThreadLocalStopwatch.now("Start GisAreaData Call");
             int statusCode = client.executeMethod(method);
-        	ThreadLocalStopwatch.getWatch().time("End GisAreaData Call");
-            if (statusCode != HttpStatus.SC_OK)
+            if (statusCode != HttpStatus.SC_OK) {
+            	ThreadLocalStopwatch.error("ERROR GisAreaData Call: Http status " + statusCode + " for " + url);
                 throw new GisException("HTTP Error " + statusCode + " while calling " + url.toString());
+            }
             result = Json.read(method.getResponseBodyAsString());            
-            if (!result.is("ok", true)) 
+        	ThreadLocalStopwatch.now("End GisAreaData Call");
+            if (!result.is("ok", true)) { 
+            	ThreadLocalStopwatch.error("ERROR GisAreaData Call: " + result.at("message") + " for " + url);
             	throw new GisException("GisService returned error:" + result.at("message") + " as response to " + url.toString());
-            else
+            } else {
             	result = result.at("data");
+            }
         }
         catch (GisException ex)
         {
@@ -333,6 +367,7 @@ public class GisClient implements GisInterface
         }
         catch (Exception ex)
         {
+        	ThreadLocalStopwatch.error("ERROR GisAreaData Call: " + ex + " for " + url);
         	throw new GisException(ex);
         }
         finally
