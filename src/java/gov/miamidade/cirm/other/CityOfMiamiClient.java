@@ -175,7 +175,7 @@ public class CityOfMiamiClient extends RestService
 		{
 			locationInfo = Refs.gisClient.resolve().getLocationInfo(serviceCase.at("properties").at("hasXCoordinate").asDouble(), 
 														  serviceCase.at("properties").at("hasYCoordinate").asDouble(), 
-														  null);
+														  null, 3, 500);
 			if (locationInfo != null) 
 			{
 				serviceCase.at("properties").set("hasGeoAreaLayer", locationInfo);

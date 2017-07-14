@@ -141,7 +141,7 @@ public class GisInfoTableCSVUpdate
 		Json newLocationInfo = null;
 		if (p != null) {
 			GisClient gisClient = new GisClient();
-			Json locationInfo = gisClient.getLocationInfo(p.getX(), p.getY(), null);
+			Json locationInfo = gisClient.getLocationInfo(p.getX(), p.getY(), null, 3, 500);
 			if (locationInfo != null & locationInfo.has("address")) {
 				newLocationInfo = locationInfo;
 			}
