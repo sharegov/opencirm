@@ -134,6 +134,7 @@ import org.sharegov.cirm.utils.PDFExportUtil;
 import org.sharegov.cirm.utils.PDFViewReport;
 import org.sharegov.cirm.utils.RemoveAttachmentsOnTxSuccessListener;
 import org.sharegov.cirm.utils.SendEmailOnTxSuccessListener;
+import org.sharegov.cirm.utils.SrJsonUtil;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 import org.sharegov.cirm.workflows.WebServiceCallTask;
 
@@ -155,6 +156,7 @@ public class LegacyEmulator extends RestService
 	
 	private DueDateUtil dueDateUtil = new DueDateUtil();
 	private GisInfoUtil gisInfoUtil = new GisInfoUtil();
+	private SrJsonUtil srJsonUtil = new SrJsonUtil();
 	
 	public LegacyEmulator()
 	{
@@ -1153,14 +1155,52 @@ public class LegacyEmulator extends RestService
 			return left.isObject() && right.isObject() && left.is("hasAnswerValue", right.at("hasAnswerValue"));
 	}
 	
+	/**
+	 * Have x or y coordinates changed by more than 0.01, did a coord value change to null or a null coord change to a value.
+	 * 
+	 * @param existingSr
+	 * @param newSr
+	 * @return
+	 */
+	public boolean hasCoordinatesUpdated(Json existingSr, Json newSr) {
+		Double existingX = srJsonUtil.gethasXCoordinate(existingSr);
+		Double existingY = srJsonUtil.gethasYCoordinate(existingSr);
+		Double newX = srJsonUtil.gethasXCoordinate(newSr);
+		Double newY = srJsonUtil.gethasYCoordinate(newSr);
+		//X updated?
+		boolean updatedX = false;
+		if (existingX != null) {
+			if (newX != null) {
+				updatedX = Math.abs(newX - existingX) > 0.01;
+			} else {
+				//old not null, new null -> bad case
+				updatedX = true;
+			}
+		} else {
+			//old null, new not null
+			updatedX = newX == null;
+		}
+		//Y updated?
+		boolean updatedY = false;
+		if (existingY != null) {
+			if (newY != null) {
+				updatedY = Math.abs(newY - existingY) > 0.01;
+			} else {
+				//old not null, new null -> bad case
+				updatedY = true;
+			}
+		} else {
+			//old null, new not null
+			updatedY = newY == null;
+		}
+		return (updatedX || updatedY);
+	}
+	
 	public boolean hasAddressUpdated(Json existing, Json newdata)
-	{		
-		if (existing.at("properties").has("hasXCoordinate") || newdata.at("properties").has("hasXCoordinate"))
-			if (!existing.at("properties").is("hasXCoordinate", newdata.at("properties").at("hasXCoordinate")))
-				return true;
-		if (existing.at("properties").has("hasYCoordinate") || newdata.at("properties").has("hasYCoordinate"))
-			if (!existing.at("properties").is("hasYCoordinate", newdata.at("properties").at("hasYCoordinate")))
-				return true;
+	{	
+		if (hasCoordinatesUpdated(existing, newdata)) {
+			return true;
+		}
 		// FIXME: this address field by field comparison is not accurate because
 		// sometimes the state will include the label, sometimes not so non-essential
 		// differences are picked up.
@@ -1176,8 +1216,9 @@ public class LegacyEmulator extends RestService
 					return true;
 			}
 		}
-		else if (newdata.at("properties").has("atAddress"))
+		else if (newdata.at("properties").has("atAddress")) {
 			return true;
+		}
 		Json lans = existing.at("properties").at("hasServiceAnswer");
 		Json rans = newdata.at("properties").at("hasServiceAnswer");
 		if (lans != null && rans != null)
@@ -1332,7 +1373,7 @@ public class LegacyEmulator extends RestService
 			Json result = bontology.toJSON();
 			ThreadLocalStopwatch.now("START Adding address data");			
 			addAddressData(result);
-			ThreadLocalStopwatch.now("COMPLETE Adding address data");			
+			ThreadLocalStopwatch.now("END Adding address data");			
 			//Register Top Level Tx fire Update event
 			CirmTransaction.get().addTopLevelEventListener(new CirmTransactionListener() {
 			    public void transactionStateChanged(final CirmTransactionEvent e)
@@ -1602,6 +1643,7 @@ public class LegacyEmulator extends RestService
 				&& legacyForm.at("properties").has("hasYCoordinate")) {
 			double x = legacyForm.at("properties").at("hasXCoordinate").asDouble();
 			double y = legacyForm.at("properties").at("hasYCoordinate").asDouble();
+			//Retry up to 2x 500 ms pause:
 			Json locationInfo = Refs.gisClient.resolve().getLocationInfo(x, y, null, 3, 500);
 			result = populateGisDataInternal(legacyForm, bontology, locationInfo);
 		} else {
