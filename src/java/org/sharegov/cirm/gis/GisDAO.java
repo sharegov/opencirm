@@ -69,7 +69,7 @@ public class GisDAO
      */
     public long getGisDBId(double x, double y)
     {
-        return getGisDBId(Refs.gisClient.resolve().getLocationInfo(x, y, null), false);
+        return getGisDBId(Refs.gisClient.resolve().getLocationInfo(x, y, null, 3, 500), false);
     }
     
     public static Json getGisData(String gisDBID)
