@@ -1241,7 +1241,7 @@ public class MetaOntology
 				if (resolutionMap.get(j.at("iri").asString())){
 					return objectMap.get(j.at("iri").asString()).dup();
 				} else {
-					return j.at("iri").dup();
+					return Json.object().set("iri", j.at("iri").asString()).set("reference", "true").set("type", "ObjectReference");
 				}
 			} else {
 				resolutionMap.put(j.at("iri").asString(), false);
