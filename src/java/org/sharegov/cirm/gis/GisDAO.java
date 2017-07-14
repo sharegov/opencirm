@@ -60,6 +60,13 @@ public class GisDAO
             return coltype.asString().split("#")[1];
     }
     
+    /**
+     * Retrieves locationInfo from MDCGIS, and ensures it is saved in db, then returnes id.
+     * (Not used)
+     * @param x
+     * @param y
+     * @return
+     */
     public long getGisDBId(double x, double y)
     {
         return getGisDBId(Refs.gisClient.resolve().getLocationInfo(x, y, null), false);
