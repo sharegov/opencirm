@@ -74,7 +74,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	private Map<String, Set <String>> dptOutcomes;
 	private Map<String, Json> activities;
 	private Map<String, Json> outcomes;
-	private Set<String> correctedIRIs;
+	private Map<String, String> correctedIRIs;
 	private static HashSet<String> knownTypes = new HashSet<String>(Arrays.asList("legacy:ServiceNote", 
 																				  "legacy:ServiceQuestion", 
 																				  "legacy:QuestionTrigger", 
@@ -117,7 +117,7 @@ public class ServiceCaseManager extends OntoAdmin {
 		dptOutcomes = new ConcurrentHashMap<String, Set <String>>();
 		activities = new ConcurrentHashMap<String, Json>();
 		outcomes = new ConcurrentHashMap<String, Json>();
-		correctedIRIs = new ConcurrentHashSet();
+		correctedIRIs = new ConcurrentHashMap<String, String>();
 		
 		//Initialize Changes Repository
 		OntologyChangesRepo.getInstance();
@@ -2317,11 +2317,15 @@ public class ServiceCaseManager extends OntoAdmin {
 		return Deployments.getInstance().deleteDeployment(deploymentID).toJson();
 	}
 	
-	public synchronized String validateIRI(String iri){
+	public synchronized String validateIRI(String iri, String tmp){
 		String fragment = MetaOntology.getIdFromUri(iri);
 		
+		if (correctedIRIs.containsKey(tmp)){
+			return correctedIRIs.get(tmp);
+		}
+		
 		int c = 0;
-		while (MetaOntology.individualExists(fragment + (c > 0 ? c: "")) || correctedIRIs.contains(iri + (c > 0 ? c: ""))){
+		while (MetaOntology.individualExists(fragment + (c > 0 ? c: "")) || correctedIRIs.containsValue(iri + (c > 0 ? c: ""))){
 			c++;
 		}
 		
@@ -2329,7 +2333,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			iri += c;
 		}
 		
-		correctedIRIs.add(iri);
+		correctedIRIs.put(tmp, iri);
 		
 		return iri;
 	}

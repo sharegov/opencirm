@@ -1174,13 +1174,16 @@ public class ServiceCaseAdmin extends RestService {
 		try
 		{						
 			if (!(aData.has("iri"))) throw new IllegalArgumentException("IRI not found"); 
+			if (!(aData.has("tmp"))) throw new IllegalArgumentException("Temporary IRI not found"); 
 			
 			String iri = aData.at("iri").asString();
+			String tmp = aData.at("tmp").asString();
 			if (iri == null || iri.isEmpty()) throw new IllegalArgumentException("IRI null or empty");
+			if (tmp == null || tmp.isEmpty()) throw new IllegalArgumentException("Temporary IRI null or empty");
 			
-			iri = ServiceCaseManager.getInstance().validateIRI(iri);
+			iri = ServiceCaseManager.getInstance().validateIRI(iri, tmp);
 						
-			return Response.ok(Json.object().set("iri", iri), MediaType.APPLICATION_JSON).build();
+			return Response.ok(Json.object().set("iri", iri).set("tmp", tmp), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 		    e.printStackTrace();
 			return Response
