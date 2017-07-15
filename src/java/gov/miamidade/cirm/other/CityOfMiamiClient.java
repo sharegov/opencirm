@@ -136,10 +136,16 @@ public class CityOfMiamiClient extends RestService
 		String cityCaseNumber = cityResponse.getCityCaseNumber();
 		String cityProcessMessage = cityResponse.getCityProcessMessage();
 		// Update SR with passed back information
-		if (cityCaseNumber != null)
+		if (cityCaseNumber != null) {
+			if (!serviceCase.at("properties").at("hasServiceAnswer").isArray()) {
+				Json answer = serviceCase.at("properties").at("hasServiceAnswer");
+				Json answerArr = Json.array(answer);
+				serviceCase.at("properties").set("hasServiceAnswer", answerArr);
+			}
 			serviceCase.at("properties").at("hasServiceAnswer").add(
 				Json.object("hasAnswerValue", Json.object("type", "http://www.w3.org/2001/XMLSchema#string", "literal", cityCaseNumber), 
 						    "hasServiceField", Json.object("iri", "http://www.miamidade.gov/cirm/legacy#" + serviceCase.at("type").asString() + "_CASENUM")));
+		}
 		if (cityProcessMessage != null)
 		{
 			serviceCase.at("properties").set("hasDepartmentError", cityProcessMessage);
