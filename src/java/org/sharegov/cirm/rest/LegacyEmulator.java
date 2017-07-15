@@ -1139,9 +1139,23 @@ public class LegacyEmulator extends RestService
 	
 	private Json findField(Json fields, String code)
 	{
-		for (Json f : fields.asJsonList())
-			if (f.at("hasServiceField").is("hasLegacyCode", code))
-				return f;
+		if (fields.isArray()) {
+			for (Json f : fields.asJsonList()) {
+				if (f.at("hasServiceField").is("hasLegacyCode", code)) {
+					return f;
+				}
+			}
+			//not found return nil
+		} else if (fields.isObject()) {
+			if (fields.at("hasServiceField").is("hasLegacyCode", code)) {
+				return fields;
+			} else {
+				//not found return nil
+			}
+		} else {
+			//primitive return nil
+		}
+		//
 		return Json.nil();
 	}
 	
