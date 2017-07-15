@@ -1177,8 +1177,8 @@ public class LegacyEmulator extends RestService
 				updatedX = true;
 			}
 		} else {
-			//old null, new not null
-			updatedX = newX == null;
+			//old null, new not null or null
+			updatedX = newX != null;
 		}
 		//Y updated?
 		boolean updatedY = false;
@@ -1190,8 +1190,8 @@ public class LegacyEmulator extends RestService
 				updatedY = true;
 			}
 		} else {
-			//old null, new not null
-			updatedY = newY == null;
+			//old null, new not null or null
+			updatedY = newY != null;
 		}
 		return (updatedX || updatedY);
 	}
