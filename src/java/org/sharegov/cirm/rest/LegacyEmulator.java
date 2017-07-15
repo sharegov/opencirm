@@ -134,6 +134,7 @@ import org.sharegov.cirm.utils.PDFExportUtil;
 import org.sharegov.cirm.utils.PDFViewReport;
 import org.sharegov.cirm.utils.RemoveAttachmentsOnTxSuccessListener;
 import org.sharegov.cirm.utils.SendEmailOnTxSuccessListener;
+import org.sharegov.cirm.utils.SrJsonUtil;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 import org.sharegov.cirm.workflows.WebServiceCallTask;
 
@@ -155,6 +156,7 @@ public class LegacyEmulator extends RestService
 	
 	private DueDateUtil dueDateUtil = new DueDateUtil();
 	private GisInfoUtil gisInfoUtil = new GisInfoUtil();
+	private SrJsonUtil srJsonUtil = new SrJsonUtil();
 	
 	public LegacyEmulator()
 	{
@@ -403,16 +405,21 @@ public class LegacyEmulator extends RestService
 	// properties should really be only data that is part of the objects (the hasGisDataId is, but not
 	// the full gisAddressData thingy). 
 	// -- Boris
-	public void addAddressData(Json data)
+	public void addAddressData(Json srJson)
 	{
-		if(data.at("properties").has("legacy:hasGisDataId") &&
-				!data.at("properties").has("gisAddressData"))
+		Json props = srJson.at("properties");
+		//2017.07.14 Tom: 
+		// new case will have hasGisDataId here, so condition never met for newSr.
+		// However, performance wise this is better and UI seems ok without it. 
+		// If gisAddressData is needed by client,
+		// it should be used from in memory locationInfo
+		if(props.has("legacy:hasGisDataId") && 
+				!props.has("gisAddressData"))
 		{
 			Json serviceLayersInfo = GisDAO.getGisData(
-			        data.at("properties").at("legacy:hasGisDataId").asString());
+					props.at("legacy:hasGisDataId").asString());
 			if(serviceLayersInfo.has("address"))
-				data.at("properties").
-					set("gisAddressData", serviceLayersInfo.at("address"));
+				props.set("gisAddressData", serviceLayersInfo.at("address"));
 		}
 	}
 
@@ -690,7 +697,7 @@ public class LegacyEmulator extends RestService
 		boids.add(Long.parseLong(boid));
 		try
 		{
-			ThreadLocalStopwatch.start("START LE.printServiceRequest " + boid);
+			ThreadLocalStopwatch.startTop("START LE.printServiceRequest " + boid);
 			Representation report = makePDFCaseReports(boids);
 			ThreadLocalStopwatch.stop("END LE.printServiceRequest");
 			srStatsReporter.succeeded("printServiceRequest", CirmStatistics.UNKNOWN, boid);
@@ -903,7 +910,7 @@ public class LegacyEmulator extends RestService
 	{
 		try
 		{
-			if (DBG) ThreadLocalStopwatch.getWatch().time("START lookupAdvancedSearch");
+			if (DBG) ThreadLocalStopwatch.startTop("START lookupAdvancedSearch");
 			QueryTranslator qt = new QueryTranslator();
 			RelationalStore store = getPersister().getStore();
 			Json resultsArray = Json.array();
@@ -1038,11 +1045,11 @@ public class LegacyEmulator extends RestService
 		}
 		catch (Exception e)
 		{
+			ThreadLocalStopwatch.fail("FAILED lookupAdvancedSearch with " + e);
 			e.printStackTrace();
 			return ko(e.getMessage());
 		} finally {
-			if (DBG) ThreadLocalStopwatch.getWatch().time("END lookupAdvancedSearch");
-			ThreadLocalStopwatch.dispose();
+			if (DBG) ThreadLocalStopwatch.stop("END lookupAdvancedSearch");
 		}
 	}
 
@@ -1132,9 +1139,23 @@ public class LegacyEmulator extends RestService
 	
 	private Json findField(Json fields, String code)
 	{
-		for (Json f : fields.asJsonList())
-			if (f.at("hasServiceField").is("hasLegacyCode", code))
-				return f;
+		if (fields.isArray()) {
+			for (Json f : fields.asJsonList()) {
+				if (f.at("hasServiceField").is("hasLegacyCode", code)) {
+					return f;
+				}
+			}
+			//not found return nil
+		} else if (fields.isObject()) {
+			if (fields.at("hasServiceField").is("hasLegacyCode", code)) {
+				return fields;
+			} else {
+				//not found return nil
+			}
+		} else {
+			//primitive return nil
+		}
+		//
 		return Json.nil();
 	}
 	
@@ -1148,14 +1169,52 @@ public class LegacyEmulator extends RestService
 			return left.isObject() && right.isObject() && left.is("hasAnswerValue", right.at("hasAnswerValue"));
 	}
 	
+	/**
+	 * Have x or y coordinates changed by more than 0.01, did a coord value change to null or a null coord change to a value.
+	 * 
+	 * @param existingSr
+	 * @param newSr
+	 * @return
+	 */
+	public boolean hasCoordinatesUpdated(Json existingSr, Json newSr) {
+		Double existingX = srJsonUtil.gethasXCoordinate(existingSr);
+		Double existingY = srJsonUtil.gethasYCoordinate(existingSr);
+		Double newX = srJsonUtil.gethasXCoordinate(newSr);
+		Double newY = srJsonUtil.gethasYCoordinate(newSr);
+		//X updated?
+		boolean updatedX = false;
+		if (existingX != null) {
+			if (newX != null) {
+				updatedX = Math.abs(newX - existingX) > 0.01;
+			} else {
+				//old not null, new null -> bad case
+				updatedX = true;
+			}
+		} else {
+			//old null, new not null or null
+			updatedX = newX != null;
+		}
+		//Y updated?
+		boolean updatedY = false;
+		if (existingY != null) {
+			if (newY != null) {
+				updatedY = Math.abs(newY - existingY) > 0.01;
+			} else {
+				//old not null, new null -> bad case
+				updatedY = true;
+			}
+		} else {
+			//old null, new not null or null
+			updatedY = newY != null;
+		}
+		return (updatedX || updatedY);
+	}
+	
 	public boolean hasAddressUpdated(Json existing, Json newdata)
-	{		
-		if (existing.at("properties").has("hasXCoordinate") || newdata.at("properties").has("hasXCoordinate"))
-			if (!existing.at("properties").is("hasXCoordinate", newdata.at("properties").at("hasXCoordinate")))
-				return true;
-		if (existing.at("properties").has("hasYCoordinate") || newdata.at("properties").has("hasYCoordinate"))
-			if (!existing.at("properties").is("hasYCoordinate", newdata.at("properties").at("hasYCoordinate")))
-				return true;
+	{	
+		if (hasCoordinatesUpdated(existing, newdata)) {
+			return true;
+		}
 		// FIXME: this address field by field comparison is not accurate because
 		// sometimes the state will include the label, sometimes not so non-essential
 		// differences are picked up.
@@ -1171,8 +1230,9 @@ public class LegacyEmulator extends RestService
 					return true;
 			}
 		}
-		else if (newdata.at("properties").has("atAddress"))
+		else if (newdata.at("properties").has("atAddress")) {
 			return true;
+		}
 		Json lans = existing.at("properties").at("hasServiceAnswer");
 		Json rans = newdata.at("properties").at("hasServiceAnswer");
 		if (lans != null && rans != null)
@@ -1325,7 +1385,9 @@ public class LegacyEmulator extends RestService
 		if (updateResult.is("ok", true))
 		{
 			Json result = bontology.toJSON();
+			ThreadLocalStopwatch.now("START Adding address data");			
 			addAddressData(result);
+			ThreadLocalStopwatch.now("END Adding address data");			
 			//Register Top Level Tx fire Update event
 			CirmTransaction.get().addTopLevelEventListener(new CirmTransactionListener() {
 			    public void transactionStateChanged(final CirmTransactionEvent e)
@@ -1580,7 +1642,8 @@ public class LegacyEmulator extends RestService
 	
 	/**
 	 * Updates bOntology by replacing or adding legacy:hasGisDataId long and hasFolio long, stores in GIS_INFO table,
-	 * returns full locationInfo.
+	 * returns full locationInfo. 
+	 * Prefer to use outside transaction, because a http get is issued to MDCGIS.
 	 * 
 	 * @param legacyForm
 	 * @param bontology
@@ -1588,36 +1651,62 @@ public class LegacyEmulator extends RestService
 	 */
 	public Json populateGisData(Json legacyForm, BOntology bontology)
 	{
+		ThreadLocalStopwatch.getWatch().time("START populateGisData");
+		Json result;
+		if (legacyForm.at("properties").has("hasXCoordinate")
+				&& legacyForm.at("properties").has("hasYCoordinate")) {
+			double x = legacyForm.at("properties").at("hasXCoordinate").asDouble();
+			double y = legacyForm.at("properties").at("hasYCoordinate").asDouble();
+			//Retry up to 2x 500 ms pause:
+			Json locationInfo = Refs.gisClient.resolve().getLocationInfo(x, y, null, 3, 500);
+			result = populateGisDataInternal(legacyForm, bontology, locationInfo);
+		} else {
+			result = Json.nil();
+		}
+		return result;
+	}
+	
+	/**
+	 * Updates bOntology by replacing or adding legacy:hasGisDataId long and hasFolio long, stores in GIS_INFO table,
+	 * returns modified locationInfo for MD-PWS cases if Intersection, Corridor or Area location type.
+	 * Prefer to use inside transaction, but requires locationInfo, best acquired before tx start to avoid repeated http calls on retry.
+	 * 
+	 * @param legacyForm
+	 * @param bontology
+	 * @param locationInfo
+	 * @return
+	 */
+	private Json populateGisDataInternal(Json legacyForm, BOntology bontology, Json locationInfo)
+	{
 		// Checking for x and y properties before adding as Address it not
 		// mandatory anymore
-		if (legacyForm.at("properties").has("hasXCoordinate")
-				&& legacyForm.at("properties").has("hasYCoordinate"))
+		if (locationInfo != null && locationInfo != Json.nil())
 		{
-			if (DBG)
-				ThreadLocalStopwatch.getWatch().time("START populateGisData");
-			Json locationInfo = Refs.gisClient.resolve().getLocationInfo(
-							legacyForm.at("properties").at("hasXCoordinate")
-									.asDouble(), legacyForm.at("properties")
-									.at("hasYCoordinate").asDouble(), null);
-			Json scase = ontoToJson(bontology);
-			if (legacyForm.at("properties").has("hasLegacyInterface"))
-				scase.at("properties").set("hasLegacyInterface", 
-										   legacyForm.at("properties").at("hasLegacyInterface"));
-			Json extendedInfo = Json.nil();
-			try
-			{
-				extendedInfo = Refs.gisClient.resolve().getInformationForCase(scase);
-			}
-			catch (Throwable t)
-			{
-				extendedInfo = Json.object().set("error", t.toString());
-			}
-			if (!extendedInfo.isNull())
-				locationInfo.set("extendedInfo", extendedInfo);
-			else
+			ThreadLocalStopwatch.getWatch().time("START populateGisDataInternal");
+			//1. MD-PWS only: Extended info for Intersection/Corridor/Area location types
+			if (isMdPwsInterfaceCase(legacyForm)) {
+					Json scase = ontoToJson(bontology);
+					if (legacyForm.at("properties").has("hasLegacyInterface"))
+    				scase.at("properties").set("hasLegacyInterface", 
+    										   legacyForm.at("properties").at("hasLegacyInterface"));
+    			Json extendedInfo = Json.nil();
+    			try
+    			{
+    				extendedInfo = Refs.gisClient.resolve().getInformationForCase(scase);
+    			}
+    			catch (Throwable t)
+    			{
+    				extendedInfo = Json.object().set("error", t.toString());
+    			}
+    			if (!extendedInfo.isNull())
+    				locationInfo.set("extendedInfo", extendedInfo);
+    			else
+    				locationInfo.delAt("extendedInfo");
+			} else {
 				locationInfo.delAt("extendedInfo");
+			}
+			//2. DBCreate and set/update legacy:hasGisDataId to business ontology
 			Json gisLiteral = Json.make(GisDAO.getGisDBId(locationInfo, false));
-			//SET/UPDATE legacy:hasGisDataId
 			OWLLiteral owlLiteral = bontology.getDataProperty(
 					bontology.getBusinessObject(), "legacy:hasGisDataId");
 			if(owlLiteral != null)
@@ -1634,7 +1723,7 @@ public class LegacyEmulator extends RestService
 									.set("type",
 											"http://www.w3.org/2001/XMLSchema#integer"));
 			
-			//SET/UPDATE FOLIO as prop in Bontology from locationinfo as integer
+			//3. get folio from locationInfo and set/update legacy:hasGisDataId to business ontology as long value
 			OWLLiteral folioLiteral = bontology.getDataProperty(
 					bontology.getBusinessObject(), "hasFolio");
 			if(folioLiteral != null)
@@ -1655,10 +1744,19 @@ public class LegacyEmulator extends RestService
 				ThreadLocalStopwatch.now("Folio set: " + folioVal);
 			}
 			if (DBG)
-				ThreadLocalStopwatch.getWatch().time("END populateGisData");
+				ThreadLocalStopwatch.getWatch().time("END populateGisDataInternal");
+			//4. Completed
 			return locationInfo;
 		}
 		return Json.nil();
+	}
+	
+	private boolean isMdPwsInterfaceCase(Json srJson) {
+		Json props = srJson.at("properties");
+		boolean isPwsInterfaceCase = props.isObject() && props.has("hasLegacyInterface") 
+				&& (props.is("hasLegacyInterface", "MD-PWS") || props.at("hasLegacyInterface").is("hasLegacyCode", "MD-PWS")
+					);
+		return isPwsInterfaceCase;
 	}
 
 	/**
@@ -1707,25 +1805,51 @@ public class LegacyEmulator extends RestService
 	public Json createNewKOSR(@FormParam("data") final String formData)
 	{
 		ThreadLocalStopwatch.startTop("START createNewKOSR");
+		//
+		// Pre transaction processing
+		//
+		//
 		final Json newSrJson = read(formData);		
+		//1. Determine SR basics
 		final boolean hasCaseNumber = newSrJson.has("properties")
 				&& newSrJson.at("properties").has("legacy:hasCaseNumber") 
 				&& newSrJson.at("properties").at("legacy:hasCaseNumber").isString();
+		final boolean hasCoordinates = newSrJson.has("properties") 
+				&& newSrJson.at("properties").has("hasXCoordinate")
+				&& newSrJson.at("properties").has("hasYCoordinate");
+		
+		final Json locationInfo;
 		try
 		{
+			//2. Set/Overwrite Due date for SR.
 			dueDateUtil.setDueDateNewSr(newSrJson);
-			// System.out.println("new SR to save: " + legacyForm);
+			//3. Get actor emails, removed attachments, and type.
 			final Json actorEmails = newSrJson.at("properties").atDel("actorEmails");
 			final Json hasRemovedAttachment = newSrJson.at("properties").atDel("hasRemovedAttachment");
 			final String type = newSrJson.at("type").asString();
+			//4. Permission enforcement
 			if (!isClientExempt()
 					&& !Permissions.check(individual("BO_New"),
-							individual(type), getUserActors()))
+							individual(type), getUserActors())) {
 				return ko("Permission denied.");
+			}
 			
-			//TODO PUT GIS INFO CALL OUTSIDE TRANSACTION!!!
+			//5. Slow GIS http call for LocationInfo, if sr has coordinates 
+			if (hasCoordinates) {
+				double xCoordinate = newSrJson.at("properties").at("hasXCoordinate").asDouble();
+				double yCoordinate = newSrJson.at("properties").at("hasYCoordinate").asDouble();
+				String[] layers = null;				
+				locationInfo = Refs.gisClient.resolve().getLocationInfo(xCoordinate, yCoordinate, layers, 3, 500);
+				//locationinfo will be used inside tx call. see below.
+			} else {
+				locationInfo = Json.object();
+			}
 			
-			//DB, but sequence only, rollback no effect on sequences.
+			//
+			// DB Transaction A - Create boid and caseNumber 
+			// (Open311 cases will have case number already)  
+			//
+			// Sequence only, rollback no effect on sequences.
 			getPersister().getStore().txn(new CirmTransaction<Object> () {
 				@Override
 				public Object call() throws Exception
@@ -1739,15 +1863,16 @@ public class LegacyEmulator extends RestService
 			}
 			);
 			final List<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();
-			final Json locationInfo = Json.object();
-			// BO, def activities, email, saveBo, IFaces, 
+
+			//
+			// DB Transaction B - Main processing
+			//
 			Json result = getPersister().getStore().txn(new CirmTransaction<Json> () {
 				@Override
 				public Json call() throws Exception
 				{
 					tryDeleteAttachments(hasRemovedAttachment);	
 					final BOntology bontology = BOntology.makeRuntimeBOntology(newSrJson);
-									
 					
 					//Saving the current context as we are losing when 
 					//using another get/post internally. 
@@ -1760,10 +1885,10 @@ public class LegacyEmulator extends RestService
 					am.createDefaultActivities(owlClass(type), bontology, GenUtils.parseDate(newSrJson.at("properties").at("hasDateCreated").asString()), emailsToSend);
 					Response.setCurrent(current);
 					ThreadLocalStopwatch.now("END createDefaultActivities");
-					Json locationInfoTmp = populateGisData(newSrJson, bontology);
-					if (!locationInfoTmp.isNull())
+					Json locationInfoTmp = populateGisDataInternal(newSrJson, bontology, locationInfo);
+					if (!locationInfoTmp.isNull()) {
 						locationInfo.with(locationInfoTmp);
-					//validateResources(legacyForm, bontology);
+					}
 					//DB
 					getPersister().saveBusinessObjectOntology(bontology.getOntology());			
 					// delete any removed Images, if save succeeds only																	
@@ -1790,6 +1915,7 @@ public class LegacyEmulator extends RestService
 					}
                     final Json result = bontology.toJSON();
                     addAddressData(result);
+                    //Fire legacy:NewServiceCaseEvent on later tx success
 					CirmTransaction.get().addTopLevelEventListener(new CirmTransactionListener() {
 					    public void transactionStateChanged(final CirmTransactionEvent e)
 					    {
@@ -1827,6 +1953,10 @@ public class LegacyEmulator extends RestService
 					return ok().set("bo", result);
 				}
 			});
+
+			//
+			// Post Transaction processing
+			//
 			if (locationInfo.has("extendedInfo") && locationInfo.at("extendedInfo").has("error"))
 			{
 				GenUtils.reportPWGisProblem(result.at("bo").at("properties").at("hasCaseNumber").asString(),

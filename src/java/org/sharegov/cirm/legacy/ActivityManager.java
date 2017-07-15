@@ -129,7 +129,7 @@ public class ActivityManager
 			Json locationInfo = Refs.gisClient.resolve().getLocationInfo(
 					Double.parseDouble(bo.getDataProperty("hasXCoordinate").getLiteral()), 
 					Double.parseDouble(bo.getDataProperty("hasYCoordinate").getLiteral()), 
-					null);
+					null, 3, 500);
 			for (OWLNamedIndividual assignment : OWL.objectProperties(rule, "legacy:hasAssignmentRule"))
 			{
 				OWLLiteral attributeName = dataProperty(assignment, "hasName");

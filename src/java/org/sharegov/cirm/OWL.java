@@ -998,47 +998,50 @@ public class OWL
 			return new Date(start.getTime());
 		}
 		Date result = null;
-		int seconds = (int) (86400 * days);
+		int fullDays = (int) days;
+		int partialDaySeconds = (int) (86400 * (days - (int)days));
 		Calendar c = Calendar.getInstance();
-		Set<OWLLiteral> holidays = new HashSet<OWLLiteral>();
-		
-		for(OWLNamedIndividual holiday: reasoner()
-				.getInstances(owlClass("Observed_County_Holiday"), false).getFlattened())
-		{
-				for(OWLLiteral date: reasoner().getDataPropertyValues(holiday, dataProperty("hasDate")))
-				{
-					if (date != null)
-						holidays.add(date);
-				}
-		}
 		c.setTime(start);
 		if (!useWorkWeek)
 		{
-			c.add(Calendar.SECOND, seconds);
+			//Fulldays needed for Daylight saving time accuracy.
+			c.add(Calendar.DATE, fullDays);
+			c.add(Calendar.SECOND, partialDaySeconds);
 		}
 		else
 		{
-			//5 day workweek calculation
-			//Remove time
-			int diff = seconds % 86400; 
+			Set<OWLLiteral> holidays = new HashSet<OWLLiteral>();
+			//Get all holidays
+			for(OWLNamedIndividual holiday: reasoner()
+					.getInstances(owlClass("Observed_County_Holiday"), false).getFlattened())
+			{
+					for(OWLLiteral date: reasoner().getDataPropertyValues(holiday, dataProperty("hasDate")))
+					{
+						if (date != null)
+							holidays.add(date);
+					}
+			}
+
+			//5 day workweek calculation			
 			//Find start workday
 			while (!isWorkDay(c, holidays)) {
-				c.add(Calendar.SECOND, 86400);
+				c.add(Calendar.DATE, 1);
 			}
 			//Add day by day, not counting non workdays
-			int workSeconds = 0;
-			while (workSeconds < seconds-diff) {
-				c.add(Calendar.SECOND, 86400);
+			int workDays = 0;
+			while (workDays < fullDays) {
+				c.add(Calendar.DATE, 1);
 				if (isWorkDay(c, holidays)) {
-					workSeconds = workSeconds + 86400;
+					workDays = workDays + 1;
 				}
 			}
 			//Add time
-			c.add(Calendar.SECOND, diff);
+			c.add(Calendar.SECOND, partialDaySeconds);
 		}
 		result = c.getTime();
 		return result;
 	}
+	
 	/**
 	 * Determines if a date falls on a workday, considering Sat, Sun and given holidays as non-workdays.
 	 * @param c a date
