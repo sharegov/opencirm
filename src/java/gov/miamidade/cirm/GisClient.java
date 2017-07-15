@@ -243,7 +243,8 @@ public class GisClient implements GisInterface
 			{
 				lastEx = ex;
 				if (ex.toString().contains("java.net.SocketTimeoutException") 
-						|| ex.toString().contains("java.net.SocketException")) 
+						|| ex.toString().contains("java.net.SocketException")
+						|| ex.toString().contains("code:400, message:Failed to execute query"))
 				{
 					// Try again
 				}
