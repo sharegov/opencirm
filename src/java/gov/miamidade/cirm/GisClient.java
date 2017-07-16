@@ -17,6 +17,7 @@ package gov.miamidade.cirm;
 
 import static org.sharegov.cirm.OWL.dataProperty;
 
+import gov.miamidade.cirm.cache.LocationInfoCache;
 import gov.miamidade.cirm.search.GisResultFilter;
 import gov.miamidade.cirm.search.GisServiceMapping;
 import gov.miamidade.cirm.search.GisServiceRule;
@@ -47,17 +48,30 @@ import org.sharegov.cirm.utils.ThreadLocalStopwatch;
  * error which it's never supposed to do). 
  * </p>
  * 
- * @author boris
+ * @author boris, Thomas Hilpold
  *
  */
 public class GisClient implements GisInterface
 {
+	/**
+	 * Duration in millisecond before an entry is considered invalid and will be purged.
+	 */
+	public static final long LOCATION_INFO_CACHE_EXPIRATION_MS = 4 * 60 * 60 * 1000L; //4 hours
+	
+	/**
+	 * Maximum number of cached entries. Cache will purge all expired and at least 30% of entries if size exceeded.
+	 * null is never cached.
+	 */
+	public static final int LOCATION_INFO_CACHE_MAX_SIZE = 10000; //entry
+	
 	public static boolean DBG = true;
 	public static boolean DBGX = false;
 	public static boolean DBGSQL = false;
 	
 	public static boolean USE_GIS_SERVICE = true;
 	
+	private final LocationInfoCache locationInfoCache = new LocationInfoCache(LOCATION_INFO_CACHE_EXPIRATION_MS, LOCATION_INFO_CACHE_MAX_SIZE);
+
 	
 	public static String getGisServerUrl()
 	{
@@ -257,8 +271,20 @@ public class GisClient implements GisInterface
 		}
 		throw lastEx;
 	}
-	
-	public Json getLocationInfo(double x, double y, String [] layers)
+
+	public Json getLocationInfo(double x, double y, String [] layers) {
+		Json result;
+		result = locationInfoCache.get(x, y, layers);
+		if (result == null) {
+			result = getLocationInfoInt(x, y, layers);
+			if (result != null) {
+				locationInfoCache.put(x, y, layers, result);
+			}
+		}
+		return result;
+	}
+
+	private Json getLocationInfoInt(double x, double y, String [] layers)
 	{
 		if (!USE_GIS_SERVICE) 
 		    return GenUtils.ok().set("USE_GIS_SERVICE", "DISABLED");
