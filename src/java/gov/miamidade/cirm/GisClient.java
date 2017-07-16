@@ -56,13 +56,13 @@ public class GisClient implements GisInterface
 	/**
 	 * Duration in millisecond before an entry is considered invalid and will be purged.
 	 */
-	public static final long LOCATION_INFO_CACHE_EXPIRATION_MS = 4 * 60 * 60 * 1000L; //4 hours
+	public static final long LOCATION_INFO_CACHE_EXPIRATION_MS =  12 * 60 * 60 * 1000L; //12 hours
 	
 	/**
 	 * Maximum number of cached entries. Cache will purge all expired and at least 30% of entries if size exceeded.
 	 * null is never cached.
 	 */
-	public static final int LOCATION_INFO_CACHE_MAX_SIZE = 10000; //entry
+	public static final int LOCATION_INFO_CACHE_MAX_SIZE = 50000; //entry avg estimated at 20KBytes for ~980 MB heap
 	
 	public static boolean DBG = true;
 	public static boolean DBGX = false;
