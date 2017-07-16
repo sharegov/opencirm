@@ -50,8 +50,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -148,8 +146,6 @@ public class LegacyEmulator extends RestService
 
 	public static final int MAX_CALLWS_ATTEMPTS = 3;
 	
-	private static Logger logger = Logger.getLogger("org.sharegov.cirm");
-
 	private static Map<String, IRI> hasTypeMappingToXSD;
 
 	private final SRCirmStatsDataReporter srStatsReporter = CirmStatisticsFactory.createServiceRequestStatsReporter(Refs.stats.resolve(), "LegacyEmulator");
@@ -2621,9 +2617,8 @@ public class LegacyEmulator extends RestService
 	public Json validateServiceOnXY(@QueryParam("type") String typeCode,
 			@QueryParam("x") String x, @QueryParam("y") String y)
 	{
-		// if (1==1)
-		// return Json.object().set("isAvailable", true);
-		Json result = Json.object().set("isAvailable", false);
+		ThreadLocalStopwatch.startTop("START validate " + typeCode + " at " + x + ", " + y);
+		Json result; 
 		try
 		{
 			Json propertyInfo = Json.object();
@@ -2631,13 +2626,17 @@ public class LegacyEmulator extends RestService
 					"coordinates",
 					Json.object().set("x", new BigDecimal(x))
 							.set("y", new BigDecimal(y)));
-			result.set("isAvailable", Refs.gisClient.resolve().isAvailable(propertyInfo,
-				     OWL.fullIri("legacy:" + typeCode)));
+			
+			boolean isValidXyForType = Refs.gisClient.resolve().isAvailable(propertyInfo, OWL.fullIri("legacy:" + typeCode));
+			result = Json.object().set("isAvailable", isValidXyForType);
 		}
 		catch (Exception e)
 		{
-			logger.log(Level.WARNING, "Could not validate service on x,y", e);
+			result = Json.object().set("isAvailable", false);
+			ThreadLocalStopwatch.error("ERROR validate " + e);
+			e.printStackTrace();
 		}
+		ThreadLocalStopwatch.stop("END validate " + result);
 		return result;
 	}
 
