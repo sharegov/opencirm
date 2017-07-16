@@ -86,7 +86,7 @@ public class LocationInfoCache {
 		this.maxCacheSize = maxSize;
 		this.evictionTargetRatio = evictionTargetRatio;
 		cache = new ConcurrentHashMap<>(maxSize * 2);
-		ThreadLocalStopwatch.now("LocationInfoCache initialized maxTime: " + entryExpireDuration + " maxCacheSize " + maxSize);
+		ThreadLocalStopwatch.now("LocationInfoCache initialized entryExpireDuration: " + (entryExpireDuration / 1000) + " secs, maxCacheSize " + maxSize);
 	}
 	
 	/**
@@ -311,6 +311,7 @@ public class LocationInfoCache {
 			if (value == null) throw new IllegalArgumentException("Entry null");  
 			if (expirationTime <= 0) throw new IllegalArgumentException("Expiration time <=0");  
 			this.valueStr = value.toString();
+			//System.out.println("Value size: " + valueStr.length() / 512.0 + " kBytes");
 			this.expirationTime = expirationTime;
 		}
 		
