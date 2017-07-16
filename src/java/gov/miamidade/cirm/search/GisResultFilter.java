@@ -15,26 +15,22 @@
  ******************************************************************************/
 package gov.miamidade.cirm.search;
 
-import gov.miamidade.cirm.GisClient;
-
 import java.util.HashSet;
-
-
 import mjson.*;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.sharegov.cirm.OWL;
+import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.utils.Mapping;
 
 /**
  * Even though this is "just" a filter, it can be configured to remove associated
  * SR types from 'ontology' attributes of a result if they are not available for
  * the address. Otherwise, it will return true if at least on SR type is available.
+ * 
+ * @author unknown, Thomas Hilpold
  */
 public class GisResultFilter implements Mapping<Json, Boolean>
 {
@@ -46,39 +42,26 @@ public class GisResultFilter implements Mapping<Json, Boolean>
 	public Json getGisInfo()
 	{
 		if (gisInfo != null)
-			return gisInfo.at("data");
+			return gisInfo;
 		
-        HttpClient client = new HttpClient();
-        StringBuffer url = new StringBuffer(GisClient.getGisServerUrl() + "/servicelayers?x=" + 
-        		propertyInfo.at("coordinates").at("x") + "&y=" + propertyInfo.at("coordinates").at("y"));
-        if(layers != null && layers.length > 0)
-        {
-        	for(String layer: layers)
-        	{
-        		url.append( "&layer=").append(layer);
-        	}
-        }
-        System.out.println(url.toString());
-        GetMethod method = new GetMethod(url.toString());
-        try
-        {
-            int statusCode = client.executeMethod(method);
-            if (statusCode != HttpStatus.SC_OK)
-                throw new RuntimeException("HTTP Error " + statusCode + " while calling " + url.toString());
-            gisInfo = Json.read(method.getResponseBodyAsString());
-            if (gisInfo.is("ok", true))
-            	return gisInfo.at("data");
-            else
-            	throw new RuntimeException("While getting " + url + ":" + gisInfo.at("message"));
-        }
-        catch (Exception ex)
-        {
-        	throw new RuntimeException(ex);
-        }
-        finally
-        {
-            method.releaseConnection();
-        }		
+		final Json xxJ =  propertyInfo.at("coordinates").at("x");
+		final Json yyJ = propertyInfo.at("coordinates").at("y");
+		final double xCoordinate;
+		final double yCoordinate;
+		if (xxJ.isString()) {
+			xCoordinate = Double.parseDouble(xxJ.asString());
+		} else {
+			xCoordinate = xxJ.asDouble();
+		}
+		if (yyJ.isString()) {
+			yCoordinate = Double.parseDouble(yyJ.asString());
+		} else {
+			yCoordinate = yyJ.asDouble();
+		}
+		Json result = Refs.gisClient.resolve().getLocationInfo(xCoordinate, yCoordinate, layers, 3, 500);
+		//Save in instance variable
+		gisInfo = result;
+		return result;
 	}
 	
 	public GisResultFilter(Json propertyInfo, boolean removeUnavailable)
