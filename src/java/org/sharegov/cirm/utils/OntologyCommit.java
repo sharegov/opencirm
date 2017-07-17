@@ -196,18 +196,30 @@ import mjson.Json;
 		}
 		
 		private void decomposeDataPropertyAssertionAxiom (Json obj, String signature){
-			signature = signature.replaceAll("> ", ">%");
-			String[] signatureComponents = signature.split("%");
+			String placeholder = "str_value_" + String.valueOf(System.currentTimeMillis());
+			String strValue = "";
+			int svStarts = signature.indexOf('"') + 1;
+			if (svStarts > 0){
+				int svEnds  = signature.lastIndexOf('"');
+				strValue = signature.substring(svStarts, svEnds);
+				signature = signature.replace('"' + strValue + '"', '"' + placeholder + '"');
+			}
+			signature = signature.replaceAll("> ", ">%%");
+			String[] signatureComponents = signature.split("%%");
 			obj.set("property", signatureComponents[0].substring(1, signatureComponents[0].length()-1));
 			obj.set("individual", signatureComponents[1].substring(1, signatureComponents[1].length()-1));
 			String[] valueComponents = signatureComponents[2].split("\\^\\^");
-			obj.set("value", valueComponents[0].substring(1, valueComponents[0].length()-1));
+			String value =  valueComponents[0].substring(1, valueComponents[0].length()-1);
+			if (value.contains(placeholder)){
+				value = strValue;
+			}
+			obj.set("value", value);
 			obj.set("xsdType", valueComponents[1]);
 		}
 		
 		private void decomposeObjectPropertyAssertionAxiom (Json obj, String signature){
-			signature = signature.replaceAll("> ", ">%");
-			String[] signatureComponents = signature.split("%");
+			signature = signature.replaceAll("> ", ">%%");
+			String[] signatureComponents = signature.split("%%");
 			obj.set("property", signatureComponents[0].substring(1, signatureComponents[0].length()-1));
 			obj.set("individual", signatureComponents[1].substring(1, signatureComponents[1].length()-1));
 			obj.set("value", signatureComponents[2].substring(1, signatureComponents[2].length()-1));
@@ -216,8 +228,8 @@ import mjson.Json;
 		private void decomposeAnnotationAssertionAxiom (Json obj, String signature){
 			signature = signature.replace("rdfs:label", "<rdfs:label>");
 			signature = signature.replace("rdfs:comment", "<rdfs:comment>");
-			signature = signature.replaceAll("> ", ">%");
-			String[] signatureComponents = signature.split("%");
+			signature = signature.replaceAll("> ", ">%%");
+			String[] signatureComponents = signature.split("%%");
 			obj.set("property", signatureComponents[0].substring(1, signatureComponents[0].length()-1));
 			obj.set("individual", signatureComponents[1].substring(1, signatureComponents[1].length()-1));
 			String[] valueComponents = signatureComponents[2].split("\\^\\^");
@@ -226,8 +238,8 @@ import mjson.Json;
 		}
 		
 		private void decomposeClassAssertionAxiom (Json obj, String signature){
-			signature = signature.replaceAll("> ", ">%");
-			String[] signatureComponents = signature.split("%");
+			signature = signature.replaceAll("> ", ">%%");
+			String[] signatureComponents = signature.split("%%");
 			obj.set("class", signatureComponents[0].substring(1, signatureComponents[0].length()-1));
 			obj.set("individual", signatureComponents[1].substring(1, signatureComponents[1].length()-1));
 		}

@@ -365,7 +365,7 @@ public class OntoAdmin extends RestService
 		}		
 	}
 	
-	protected boolean commit(String userName, String comment, List <OWLOntologyChange> changes) throws RuntimeException
+	protected synchronized boolean commit(String userName, String comment, List <OWLOntologyChange> changes) throws RuntimeException
 	{		
 		long commitTimeStamp = new Date().getTime();
 		
