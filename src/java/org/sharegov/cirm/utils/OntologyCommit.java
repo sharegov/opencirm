@@ -263,7 +263,7 @@ import mjson.Json;
 					default: throw new RuntimeException("Unknown Axiom Type: " + ax.at("type").asString());
 				}
 			} else {
-				throw new RuntimeException("Invalid Ontology Change structure.");
+				throw new RuntimeException("Invalid Axiom structure.");
 			}	
 			
 		}
