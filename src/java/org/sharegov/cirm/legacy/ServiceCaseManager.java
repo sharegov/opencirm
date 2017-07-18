@@ -2261,11 +2261,12 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			for (Map.Entry<Integer, OntologyCommit> e : changes.entrySet()){
 				int key = e.getKey();
-				if (revisions.contains(key)) continue;
-				if (key <= limit && key > lastCommonRevision){
-					revisions.add(key);
-					Json commit = e.getValue().toJson();
-					result.add(commit);
+				if (!revisions.contains(key)){
+					if (key <= limit && key > lastCommonRevision){
+						revisions.add(key);
+						Json commit = e.getValue().toJson();
+						result.add(commit);
+					}
 				}
 			}
 		}
