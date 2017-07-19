@@ -1288,6 +1288,8 @@ public class ServiceCaseManager extends OntoAdmin {
 		System.out.println(timeMachine.at("hasUrl").asString());
 		System.out.println("Sending request to time-machine...");
 		Json r =  GenUtils.httpPostJson(timeMachine.at("hasUrl").asString() + "/task", tmJson);
+		System.out.println("Time Machine response:");
+		System.out.println(r.toString());
 		System.out.println("Request sent... expect a call back from  time-machine.");
 		return r;
 	}
