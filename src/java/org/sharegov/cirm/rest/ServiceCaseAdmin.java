@@ -292,6 +292,8 @@ public class ServiceCaseAdmin extends RestService {
 	@Path("/deploy/{target}")
 	public Response deploy(@PathParam("target") String target, String aJsonString)
 	{
+		System.out.println("Deployment endpoint executed:");
+		
 		synchronized (cache){		
 			Json result = cache.get(target + ":" + aJsonString);
 			

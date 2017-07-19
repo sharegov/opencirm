@@ -1156,7 +1156,7 @@ public class ServiceCaseManager extends OntoAdmin {
 	public synchronized Json deploy(String target, long date, String key, long deploymentID) {
 		switch (target) {
 			case "production":
-				System.out.println("Deployment endpoint executed:");
+				System.out.println("Is a production deployment.");
 				//figure out current revision
 				int currentRevision = getCurrentRevision();
 				// date = 0 means run this now
@@ -1287,6 +1287,7 @@ public class ServiceCaseManager extends OntoAdmin {
 		System.out.println("Time Machine url:");
 		System.out.println(timeMachine.at("hasUrl").asString());
 		System.out.println("Sending request to time-machine...");
+		System.out.println(tmJson.toString());
 		Json r =  GenUtils.httpPostJson(timeMachine.at("hasUrl").asString() + "/task", tmJson);
 		System.out.println("Time Machine response:");
 		System.out.println(r.toString());
