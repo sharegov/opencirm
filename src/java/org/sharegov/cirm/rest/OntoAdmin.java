@@ -563,9 +563,8 @@ public class OntoAdmin extends RestService
 	}
 	
 	private void updateOntologyChangesRepo (List<OntoChangesReference> toDelete, List<OntoChangesReference> toAdd){
-		for (int i = 0; i < toDelete.size(); i++){
-			OntologyChangesRepo.getInstance().deleteOntoRevisionChanges(toDelete.get(i).getOnto(), toDelete.get(i).getRevision());
-		}
+		OntologyChangesRepo.getInstance().clearAll();
+
 		for (int i = 0; i < toAdd.size(); i++){
 			OntologyChangesRepo.getInstance().setOntoRevisionChanges(toAdd.get(i).getOnto(), toAdd.get(i).getRevision(), toAdd.get(i).getValue());
 		}
@@ -598,6 +597,7 @@ public class OntoAdmin extends RestService
 						vo.commit(cx.getUserName(), cx.getComment());
 						int newRevision = vo.getHeadRevision().getRevision();
 						toDelete.add(new OntoChangesReference(o.getOntologyID().toString(), key, cx));
+						cx.setRevision(newRevision);
 						toAdd.add(new OntoChangesReference(o.getOntologyID().toString(), newRevision, cx));		
 						
 				} else {

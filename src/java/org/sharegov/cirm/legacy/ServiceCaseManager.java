@@ -1049,6 +1049,8 @@ public class ServiceCaseManager extends OntoAdmin {
 		System.out.println("Push process started!");
 		System.out.print("Detecting approved revisions...");
 		
+		OntologyChangesRepo originalRepo =  OntologyChangesRepo.getInstance().getCopy();
+		
 		int approved = 0;
 		for (OWLOntology o: OWL.ontologies()){
 			
@@ -1123,6 +1125,8 @@ public class ServiceCaseManager extends OntoAdmin {
 			System.out.println(" Failed!");
 			System.out.println(r.toString());
 		
+			OntologyChangesRepo.getInstance().copy(originalRepo);
+			
 			Json obj = revertReApply();
 			
 			System.out.println(obj.toString());

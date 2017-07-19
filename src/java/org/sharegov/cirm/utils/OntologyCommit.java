@@ -247,7 +247,7 @@ import mjson.Json;
 		private OWLOntologyChange buildChange(Json chx, OWLOntology O, OWLDataFactory factory){
 			if (chx.has("type")&&chx.has("axiom")&&chx.at("axiom").isObject()){
 				OWLAxiom ax = buildAxiom(chx.at("axiom"), O, factory);
-				return chx.at("type").asString() == "add" ? new AddAxiom(O, ax): new RemoveAxiom(O, ax);
+				return chx.at("type").asString().toLowerCase().contains("add") ? new AddAxiom(O, ax): new RemoveAxiom(O, ax);
 			} else {
 				throw new RuntimeException("Invalid Ontology Change structure.");
 			}		

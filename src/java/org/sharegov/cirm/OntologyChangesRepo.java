@@ -176,4 +176,16 @@ public class OntologyChangesRepo {
 			throw new RuntimeException("Input is not a list Nodes.");
 		}
 	}
+	
+	public OntologyChangesRepo getCopy(){
+		OntologyChangesRepo dolly = new OntologyChangesRepo();
+		
+		dolly.fromJson(this.toJson());
+		
+		return dolly;
+	}
+	
+	public void copy(OntologyChangesRepo dolly){
+		this.fromJson(dolly.toJson());		
+	}
 }
