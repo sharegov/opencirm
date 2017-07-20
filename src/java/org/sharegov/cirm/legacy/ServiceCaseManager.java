@@ -1252,9 +1252,11 @@ public class ServiceCaseManager extends OntoAdmin {
 		// add this post call to the time machine.
 		String host = getHostIpAddress();
 		
+		long timeStamp = System.currentTimeMillis();
+		
 		Json jsonContent = Json.object()
 				           .set("key", key)
-				           .set("timeStamp", System.currentTimeMillis())
+				           .set("timeStamp", timeStamp)
 				           .set("deployment_id", deploymentID);
 		
 		Json jsonRestCall = Json.object().set("url", host + "/sradmin/deploy/production")
@@ -1274,7 +1276,7 @@ public class ServiceCaseManager extends OntoAdmin {
 		//notify for approval
 		notifyApproval(revision, jsonDate);
 		
-		Json tmJson = Json.object().set("name", "CIRM Admin Deployment")
+		Json tmJson = Json.object().set("name", "CIRM Admin Deployment " + timeStamp)
 								   .set("group", "cirm_admin_tasks")
 								   .set("scheduleType", "SIMPLE")
 								   .set("scheduleData", Json.object())
