@@ -41,8 +41,9 @@ public class LocationInfoCache {
 	
 	
 	public final static double DEFAULT_EVICTION_TARGET_RATIO = 0.3;
+	
 	/**
-	 * The duration after which a newly put valueStr will not be returned but removed on get.
+	 * The duration after which a newly put locationInfo value will not be returned but removed on get.
 	 */
 	private final long entryExpireDurationMs;
 	
@@ -52,7 +53,7 @@ public class LocationInfoCache {
 	private final int maxCacheSize;
 	
 	/**
-	 * If cache entries need to be removed the target ratio for how much space should be available after evition.
+	 * If cache entries need to be removed the target ratio for how much space should be available after eviction.
 	 * E.g. 0.3 means reduce from 100% to 70%.
 	 */
 	private final double evictionTargetRatio; //70 left after cleanup
@@ -63,7 +64,9 @@ public class LocationInfoCache {
 	private final ConcurrentHashMap<LocInfoKey, ExpiringJsonValue> cache;
 	
 	/**
-	 * Creates cache with DEFAULT_EVICTION_TARGET_RATIO 0.3.
+	 * Creates a cache with maxCacheSize, where each locationInfo entry expires in entryExpireDurationMs milliseconds 
+	 * and on cache full the cache will be reduced by 30% default eviction target ratio.<br>
+
 	 * @param entryExpireDurationMs
 	 * @param maxCacheSize
 	 */
@@ -72,7 +75,8 @@ public class LocationInfoCache {
 	}
 	
 	/**
-	 * Created a cache with maxCacheSize, where each valueStr expires in entryExpireDurationMs milliseconds and if full cache will be reduced by evictionTargetRatio.
+	 * Creates a cache with maxCacheSize, where each locationInfo entry expires in entryExpireDurationMs milliseconds 
+	 * and on cache full the cache will be reduced by evictionTargetRatio.<br>
 	 * @param entryExpireDurationMs >= 0
 	 * @param maxCacheSize >0
 	 * @param evictionTargetRatio between 0 and 0.99
@@ -90,10 +94,10 @@ public class LocationInfoCache {
 	}
 	
 	/**
-	 * Gets modifiable valueStr if exists and not expired. Evicts expired valueStr. 
+	 * Gets modifiable locationInfo entry if exists and not expired. Evicts expired locationInfo entry. 
 	 * @param x
 	 * @param y
-	 * @param layers
+	 * @param layers may be null.
 	 * @return
 	 */
 	public Json get(double x, double y, String[] layers) {
@@ -122,7 +126,7 @@ public class LocationInfoCache {
 	 * Puts into cache, overwrites existing. May block to run eviction if cache full after put.
 	 * @param x
 	 * @param y
-	 * @param layers
+	 * @param layers may be null.
 	 * @param result
 	 * @return
 	 */
@@ -171,7 +175,7 @@ public class LocationInfoCache {
 	}
 	
 	/**
-	 * Evicts all expired entries
+	 * Evicts all expired entries.
 	 * @return nr of removed entries
 	 */
 	private int evictAllExpired() {
@@ -222,7 +226,7 @@ public class LocationInfoCache {
 	}
 	
 	/**
-	 * The ration by which cache must be reduced on eviction.
+	 * The target ratio by which cache must be reduced on eviction.
 	 * @return
 	 */
 	public double getEvictionTargetRatio() {
@@ -242,6 +246,12 @@ public class LocationInfoCache {
 		private final String[] layers;
 		private final int hash;
 
+		/**
+		 * Creates a LocationInfoKey usable for hashing.
+		 * @param x
+		 * @param y
+		 * @param layers may be null, but will be cloned if object to allow immutability. 
+		 */
 		private LocInfoKey(double x, double y, String[] layers) {
 			this.x = x;
 			this.y = y;
@@ -254,6 +264,13 @@ public class LocationInfoCache {
 			this.hash = calcHashCode();
 		}
 		
+		/**
+		 * Does NOT have to return a totally unique value for each object, but should be rather well distributed 
+		 * to increase hashing efficiency by avoiding hash collisions.<br> 
+		 * Called once on creation for efficiency.
+		 * 
+		 * @return
+		 */
 		private int calcHashCode() {
 			return (int) x * (int) y * (layers != null? layers.length : 1); 
 		}
@@ -263,7 +280,9 @@ public class LocationInfoCache {
 			return hash;
 		}
 		
-		
+		/**
+		 * Correctness of this method is essential for the cache to work as intended.
+		 */
 		@Override
 		public boolean equals(Object obj) {
 			if (obj != null && obj instanceof LocInfoKey) {
@@ -291,19 +310,20 @@ public class LocationInfoCache {
 		@Override
 		public String toString() {
 			return "" + x + ", " + y + " Layers: " + (layers == null? layers : layers.length);
-		}				
+		}
 	}
 	
 		
 	/**
-	 * ExpiringJsonValue stores Json as immutable string and parses on access.
-	 *
+	 * ExpiringJsonValue stores Json as immutable string and parses on access.<br>
+	 * An immutable expirationTime is set on creation and used when eviction is running.
+	 * 
 	 * @author Thomas Hilpold
 	 *
 	 */
 	private class ExpiringJsonValue {
 		
-		private final String valueStr; //Immutable String reprentation of the Json
+		private final String valueStr; //Immutable String representation of the Json
 
 		private final long expirationTime;
 		
@@ -321,7 +341,7 @@ public class LocationInfoCache {
 
 		/**
 		 * Gets the Entry as Json object which is allowed to be modified by client (parses immutable string).
-		 * @return
+		 * @return the json value freshly parsed from the backing string, never null.
 		 */
 		private Json getValueAsJson() {
 			return Json.read(valueStr);
