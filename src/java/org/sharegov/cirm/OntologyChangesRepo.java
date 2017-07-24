@@ -106,16 +106,14 @@ public class OntologyChangesRepo {
 		persist ();
 	}
 	
-	public void persist(){
-		synchronized (instance) {
-			try {
-				JsonUtil.writeToFile(toJson(), repositoryFile);
-			} catch (Exception e){
-				System.out.println("Cannot save repository to file!");
-				System.out.println(e.getMessage());
-				e.printStackTrace();
-			}
-		}		
+	public synchronized void persist(){
+		try {
+			JsonUtil.writeToFile(toJson(), repositoryFile);
+		} catch (Exception e){
+			System.out.println("Cannot save repository to file!");
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}	
 	}
 	
 	public Json toJson(){

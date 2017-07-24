@@ -22,7 +22,6 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -1033,7 +1032,7 @@ public class ServiceCaseManager extends OntoAdmin {
         					 "All changes up to revision " + revision + " were pushed to the main repository.</br>" +
         		             "Best of luck.</br>CIRM Admin Team.";
         
-        sendMailToTeam("CIRM Cluster Restart Started", htmlMessage);
+        sendMailToTeam("Deployment (Push Only) Completed", htmlMessage);
 	}
 	
 	private void notifyErrorDeploy(String error) {
@@ -1188,6 +1187,9 @@ public class ServiceCaseManager extends OntoAdmin {
 				return Json.object().set("success", false);
 			}
 			
+			System.out.println("Deployment data:");
+			System.out.println(deploymentx.toJson().toString());
+			
 			if (!deploymentx.isEnabled()){
 				System.out.println("Deployment with ID: " + deploymentID + " was disabled by Admin.");
 				System.out.println("Deployment with ID: " + deploymentID + " was deleted from the queue.");
@@ -1203,26 +1205,24 @@ public class ServiceCaseManager extends OntoAdmin {
 				return Json.object().set("success", false);
 			}
 			
-			int revision = deploymentx.getRevision();
-			
-			if (revision <= lastMatch(OWL.ontology())){
-				System.out.println("Depoyment Failed! Target Revision is Older than top revision on the server.");
-				System.out.println("Deployment with ID: " + deploymentID + " was deleted from the queue.");
-				return Json.object().set("success", false);
-			}
-			
-			if (revision > currentRevision){
+			int targetRevision = deploymentx.getRevision();
+						
+			if (targetRevision > currentRevision){
 				System.out.println("Depoyment Failed! Target Revision is Greater than Current Revision Number.");
 				System.out.println("Deployment with ID: " + deploymentID + " was deleted from the queue.");
 				return Json.object().set("success", false);
 			}
 			
 			notifyDeploymentStarted();
-			if (pushUpToRevision(revision)){	
+
+			System.out.println("Pushing up to revision #" + targetRevision);
+			boolean pushedSomething = pushUpToRevision(targetRevision);
+						
+			if (pushedSomething || (!pushedSomething && targetRevision <= lastMatch(OWL.ontology()))){	
 				if (deploymentx.isRestart()){												
 					if (StartUp.getConfig().at("network").at("ontoServer").asString().toLowerCase() == "ontology_server_production"){	
 						notifyClusterRestartStarted();
-						System.out.println("Deployment started!!!");
+						System.out.println("Cluster Restart Started!!!");
 						return GenUtils.httpPostWithBasicAuth(jenkingsEndpointRefreshOntosOnlyProduction, "cirm", "admin", "");
 					} else {
 						notifySimulatedDeploy();
@@ -1230,7 +1230,7 @@ public class ServiceCaseManager extends OntoAdmin {
 						return Json.object().set("success", true);
 					}
 				} else {
-					notifyPushCompleted(revision);
+					notifyPushCompleted(targetRevision);
 					System.out.println("Deployment is push only, this is a success message.");
 					return Json.object().set("success", true);
 				}
@@ -1240,8 +1240,8 @@ public class ServiceCaseManager extends OntoAdmin {
 				return Json.object().set("success", false);
 			}
 		} else {
-			notifyErrorDeploy("Invalid revision number.");
-			System.out.println("Deployment not executed: Invalid revision number.");
+			notifyErrorDeploy("Invalid deployment ID.");
+			System.out.println("Deployment not executed: Invalid deployment ID.");
 			return Json.object().set("success", false);
 		}
 	}

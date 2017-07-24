@@ -131,15 +131,13 @@ public class Deployments {
 		
 	}
 	
-	public void persist(){
-		synchronized (instance) {
-			try {
-				JsonUtil.writeToFile(toJson(), deploymentsFile);
-			} catch (Exception e){
-				System.out.println("Cannot save deployment list to file!");
-				System.out.println(e.getMessage());
-				e.printStackTrace();
-			}
+	public synchronized void persist(){
+		try {
+			JsonUtil.writeToFile(toJson(), deploymentsFile);
+		} catch (Exception e){
+			System.out.println("Cannot save deployment list to file!");
+			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}		
 	}
 	
