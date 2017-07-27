@@ -586,22 +586,23 @@ public class OntoAdmin extends RestService
 			if (vo == null) {
 				throw new RuntimeException ("Ontology found, but not versioned: " + o.getOntologyID());
 			}
-			
-			for (Map.Entry<Integer, OntologyCommit> rx: changes.entrySet()){
-				int key = rx.getKey();
-				OntologyCommit cx = rx.getValue();
-				if (key > baseRevision && 
-				    excludedRevisions.indexOf(key) < 0 && 
-				    excludedTimeStamps.indexOf(cx.getTimeStamp()) < 0){					
-						OWL.manager().applyChanges(cx.getChanges());
-						vo.commit(cx.getUserName(), cx.getComment());
-						int newRevision = vo.getHeadRevision().getRevision();
+					
+			for (int key = baseRevision + 1, lim = changes.keySet().size() + baseRevision; key <= lim; key++){
+				if (changes.containsKey(key)){
+					OntologyCommit cx = changes.get(key);
+					if (excludedRevisions.indexOf(key) < 0 && 
+					    excludedTimeStamps.indexOf(cx.getTimeStamp()) < 0){					
+							OWL.manager().applyChanges(cx.getChanges());
+							vo.commit(cx.getUserName(), cx.getComment());
+							int newRevision = vo.getHeadRevision().getRevision();
+							toDelete.add(new OntoChangesReference(o.getOntologyID().toString(), key, cx));
+							cx.setRevision(newRevision);
+							toAdd.add(new OntoChangesReference(o.getOntologyID().toString(), newRevision, cx));								
+					} else {
 						toDelete.add(new OntoChangesReference(o.getOntologyID().toString(), key, cx));
-						cx.setRevision(newRevision);
-						toAdd.add(new OntoChangesReference(o.getOntologyID().toString(), newRevision, cx));		
-						
+					}
 				} else {
-					toDelete.add(new OntoChangesReference(o.getOntologyID().toString(), key, cx));
+					lim++;
 				}
 			}
 		} else System.out.println("No previous changes saved for: " + o.getOntologyID().toString());
@@ -644,7 +645,7 @@ public class OntoAdmin extends RestService
 		return result;
 	}
 	
-	private void applyChangesSinceRevision (OWLOntology o, int revision){
+	private void applyChangesSinceRevision (OWLOntology o, int baseRevision){
 		Map<Integer, OntologyCommit> changes = OntologyChangesRepo.getInstance().getAllRevisionChangesForOnto(o.getOntologyID().toString());
 		
 		if (changes != null && !changes.isEmpty()) {
@@ -655,13 +656,16 @@ public class OntoAdmin extends RestService
 				throw new RuntimeException ("Ontology found, but not versioned: " + o.getOntologyID());
 			}
 			
-			for (Map.Entry<Integer, OntologyCommit> rx: changes.entrySet()){
-				if (rx.getKey().intValue() > revision){
-					OWL.manager().applyChanges(rx.getValue().getChanges());
-					vo.commit(rx.getValue().getUserName(), rx.getValue().getComment());
+			for (int key = baseRevision + 1, lim = changes.keySet().size() + baseRevision; key <= lim; key++){
+				if (changes.containsKey(key)){
+					OntologyCommit cx = changes.get(key);
+					OWL.manager().applyChanges(cx.getChanges());
+					vo.commit(cx.getUserName(), cx.getComment());
 					int newRevision = vo.getHeadRevision().getRevision();
-					OntologyChangesRepo.getInstance().deleteOntoRevisionChanges(o.getOntologyID().toString(), rx.getKey().intValue());
-					OntologyChangesRepo.getInstance().setOntoRevisionChanges(o.getOntologyID().toString(), newRevision, rx.getValue());
+					OntologyChangesRepo.getInstance().deleteOntoRevisionChanges(o.getOntologyID().toString(), key);
+					OntologyChangesRepo.getInstance().setOntoRevisionChanges(o.getOntologyID().toString(), newRevision, cx);
+				} else {
+					lim++;
 				}
 			}
 		} else System.out.println("No previous changes saved for: " + o.getOntologyID().toString());
