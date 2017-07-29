@@ -51,6 +51,7 @@ import org.sharegov.cirm.rest.RestService;
 import org.sharegov.cirm.stats.CirmStatisticsFactory;
 import org.sharegov.cirm.stats.SRCirmStatsDataReporter;
 import org.sharegov.cirm.utils.GenUtils;
+import org.sharegov.cirm.utils.PhoneNumberUtil;
 import org.sharegov.cirm.utils.Ref;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
@@ -456,11 +457,19 @@ public class CMSClient extends RestService
 				actor.set("Name", event.at("PART_FIRST_NAME"));
 			if (!event.at("PART_LAST_NAME").isNull())			
 				actor.set("LastName", event.at("PART_LAST_NAME"));
-			if (!event.at("PART_PHONE").isNull())			
-				actor.set("HomePhoneNumber", event.at("PART_PHONE").asString() + 
-						(event.at("PART_EXT").isNull() ? "" : "#" + event.at("PART_EXT").asString()));
-			if (!event.at("PART_FAX").isNull())			
-				actor.set("FaxNumber", event.at("PART_FAX"));
+			if (!event.at("PART_PHONE").isNull()) {
+				String phoneNumExt =  event.at("PART_PHONE").asString() + 
+						(event.at("PART_EXT").isNull() ? "" : "#" + event.at("PART_EXT").asString());
+				String phoneNumNormalized = PhoneNumberUtil.normalizeOnePhoneNumber(phoneNumExt);
+				System.out.println("CMS PHONE: orig: " + phoneNumExt + " > " + phoneNumNormalized);
+				actor.set("HomePhoneNumber", phoneNumNormalized);
+			}
+			if (!event.at("PART_FAX").isNull())	{
+				String faxNumExt = "" + event.at("PART_FAX");
+				String faxNumNormalized = PhoneNumberUtil.normalizeOnePhoneNumber(faxNumExt);
+				System.out.println("CMS FAX: orig: " + faxNumExt + " > " + faxNumNormalized);
+				actor.set("FaxNumber", faxNumNormalized);
+			}
 			if (!event.at("PART_EMAIL").isNull())			
 				actor.set("hasEmailAddress", 
 					Json.object("iri", "mailto:" + event.at("PART_EMAIL").asString(),
@@ -542,7 +551,7 @@ public class CMSClient extends RestService
 				GenUtils.formatDate(new java.util.Date(Long.parseLong(event.at("STATUS_DATE").asString()))));
 		populateCaseFromEvent(sr, event);
 		ServiceCaseJsonHelper.assignIris(sr);
-		System.out.println("insert new case " + sr);		
+		System.out.println("insert new CMS case " + sr);		
 		if (dryrun)
 		{
 			return ok();
