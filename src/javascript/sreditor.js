@@ -1415,7 +1415,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			if(citizen == null)
 				return false;
 			if(citizen.isAnonymous() === true) {
-				citizen.CellPhoneNumber()[0].number('000-000-0000');
+				citizen.CellPhoneNumber()[0].number('0000000000');
 				citizen.Name("Anonymous");
 			}
 			else if(citizen.Name() === "Anonymous") {
