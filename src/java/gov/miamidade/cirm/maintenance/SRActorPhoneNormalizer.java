@@ -38,7 +38,7 @@ class SRActorPhoneNormalizer {
 	 * Disable only after you are satisfied with results. 
 	 * Repeated test mode runs will show the exact same results for a given configuration.
 	 */
-	static final boolean ANALYSIS_ONLY_MODE = false; 
+	static final boolean ANALYSIS_ONLY_MODE = true; 
 	
 	void start() {
 		System.out.println("*****************************************************************************************");
