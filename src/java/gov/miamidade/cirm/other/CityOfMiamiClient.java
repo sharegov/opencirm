@@ -313,30 +313,32 @@ public class CityOfMiamiClient extends RestService
     			String typeCode = existingSR.at("type").asString();
     			existingSR.at("properties").delAt("ServiceField21643565");
     			Json newActivities = Json.array();
+    			java.util.Date updateDate = new  java.util.Date();
+    			String updateDateStr = GenUtils.formatDate(updateDate);
     			try {
         			if (update.at("code1", "").asString().length() > 0 && update.at("value1").asString().length() > 0)
         			{
         				newActivities.add(Json.object("hasActivity", Json.object("type", "Activity", "iri", "legacy:" + typeCode + "_" + update.at("code1").asString()),
         								 "hasOutcome", Json.object("type", "Outcome", "iri", "legacy:OUTCOME_" + update.at("value1", "").asString()),
-        								 "hasDateCreated", GenUtils.formatDate(new java.util.Date()),
-        								 "hasCompletedTimestamp", GenUtils.formatDate(new java.util.Date())));
+        								 "hasDateCreated", updateDateStr,
+        								 "hasCompletedTimestamp", updateDateStr));
         			}
         			if (update.at("code2", "").asString().length() > 0 && update.at("value2", "").asString().length() > 0)
         			{
         				newActivities.add(Json.object("hasActivity", Json.object("type", "Activity", "iri", "legacy:" + typeCode + "_" + update.at("code2").asString()),
         								 "hasOutcome", Json.object("type", "Outcome", "iri", "legacy:OUTCOME_" + update.at("value2", "").asString()),
-        								 "hasDateCreated", GenUtils.formatDate(new java.util.Date()),
-        								 "hasCompletedTimestamp", GenUtils.formatDate(new java.util.Date())));
+        								 "hasDateCreated", updateDateStr,
+        								 "hasCompletedTimestamp", updateDateStr));
         			}
         			if (update.at("code3", "").asString().length() > 0 && update.at("value3", "").asString().length() > 0)
         			{
         				newActivities.add(Json.object("hasActivity", Json.object("type", "Activity", "iri", "legacy:" + typeCode + "_" + update.at("code3").asString()),
         								 "hasOutcome", Json.object("type", "Outcome", "iri", "legacy:OUTCOME_" + update.at("value3", "").asString()),
-        								 "hasDateCreated", GenUtils.formatDate(new java.util.Date()),
-        								 "hasCompletedTimestamp", GenUtils.formatDate(new java.util.Date())));
+        								 "hasDateCreated", updateDateStr,
+        								 "hasCompletedTimestamp", updateDateStr));
         			}
         			existingSR.at("properties").at("hasServiceActivity", Json.array()).with(newActivities);
-        			Json updateResultInt = emulator.updateServiceCase(OWL.resolveIris(OWL.prefix(existingSR), null), "department");
+        			Json updateResultInt = emulator.updateServiceCase(OWL.resolveIris(OWL.prefix(existingSR), null), updateDate, "department");
        				srStatsReporter.succeeded("CirmUpdateAfterComRXUpdate", existingSR);
         			return updateResultInt;
     			} catch (Throwable t) {
