@@ -42,6 +42,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -2644,7 +2645,7 @@ public class LegacyEmulator extends RestService
 	@Produces("application/json")
 	public Json duplicateCheckService(@FormParam("data") String formData)
 	{
-		if (DBG) ThreadLocalStopwatch.startTop("START DuplicateCheck");
+		if (DBG) ThreadLocalStopwatch.startTop("START DuplicateCheck " + formData);
 		List<Map<String, Object>> duplicates;
 		Json result = ok();
 		Json json = Json.read(formData);
@@ -2692,7 +2693,7 @@ public class LegacyEmulator extends RestService
 						null, null, unit, locationName, city, state, zip,
 						fullAddr, createdDate, true);
 			}
-
+			if (DBG) ThreadLocalStopwatch.now("DUPLICATE Query completed");
 			if (duplicates == null)
 			{
 				result.set("count", 0).set("message",
@@ -2709,10 +2710,11 @@ public class LegacyEmulator extends RestService
 					boids.add(dup.at("boid").asString());
 					details.add(dup);
 				}
-				if(!boids.isEmpty())
-				for (Map<String, Object> rc : getAllRelatedCases(boids, boid, hasCaseNumber))
-				{
-					details.add(rc);
+				if(!boids.isEmpty()) {
+    				for (Map<String, Object> rc : getAllRelatedCases(boids, boid, hasCaseNumber))
+    				{
+    					details.add(rc);
+    				}
 				}
 				result.set("count", details.asJsonList().size());
 				result.set("details", details).set("message", "Success");
@@ -2721,14 +2723,14 @@ public class LegacyEmulator extends RestService
 		}
 		catch (Exception e)
 		{
+			if (DBG) ThreadLocalStopwatch.fail("FAIL DuplicateCheck ");
 			System.out.println("formData passed into duplicateCheckService : "+formData);
 			e.printStackTrace();
 			return ko(e);
 		}
 		finally
 		{
-			if (DBG) ThreadLocalStopwatch.getWatch().time("END DuplicateCheck");
-			ThreadLocalStopwatch.dispose();
+			if (DBG) ThreadLocalStopwatch.stop("END DuplicateCheck");
 		}
 
 	}
@@ -2952,9 +2954,13 @@ public class LegacyEmulator extends RestService
 		statement.setParameters(parameters);
 		statement.setTypes(parameterTypes);
 		RelationalStore store = getPersister().getStore();
-		if (DBGSQL)
-			System.out.println("DUPLICATE \r\n" + select.SQL());
-		return store.query(statement, Refs.tempOntoManager.resolve().getOWLDataFactory());
+		ThreadLocalStopwatch.now("DUPLICATE Query start");
+		if (DBGSQL) {			
+			ThreadLocalStopwatch.now("Query: \r\n" + select.SQL());
+			System.out.println(Arrays.toString(parameters.toArray()));
+			System.out.println(Arrays.toString(parameterTypes.toArray()));
+		}
+		return store.query(statement, Refs.tempOntoManager.resolve().getOWLDataFactory());		
 	}
 
 	@POST
@@ -2962,7 +2968,7 @@ public class LegacyEmulator extends RestService
 	@Produces("application/json")
 	public Json relatedCasesCheckService(@FormParam("data") String formData)
 	{
-		if(DBG) ThreadLocalStopwatch.startTop("START relatedCases");
+		if(DBG) ThreadLocalStopwatch.startTop("START relatedCases " + formData);
 		Json json = Json.read(formData);
 		String boid = json.has("boid") ? json.at("boid").asString() : null;
 		String hasCaseNumber = json.has("hasCaseNumber") ? 
@@ -2995,8 +3001,6 @@ public class LegacyEmulator extends RestService
 		}
 		catch (Exception e)
 		{
-			System.out.println(
-				"formData passed into relatedCasesCheckService : "+formData);
 			e.printStackTrace();
 			return ko(e);
 		}
@@ -3138,16 +3142,20 @@ public class LegacyEmulator extends RestService
 	@Path("sr/{caseNumber}/approvalState")
 	@Produces("application/json")
 	public Json getApprovalState(@PathParam("caseNumber") String caseNumber)
-	{
+	{	Json result;
+		ThreadLocalStopwatch.startTop("START approvalState " + caseNumber);
 		try {
 			Json sr = OWL.prefix(lookupByCaseNumber(caseNumber));
 			ApprovalProcess approvalProcess = new ApprovalProcess();
 			approvalProcess.setSr(sr);
-			return Json.object().set("caseNumber", caseNumber)
+			result = Json.object().set("caseNumber", caseNumber)
 					.set("approvalState", approvalProcess.getApprovalState().toString());
+			ThreadLocalStopwatch.stop("END approvalState");
 		} catch (Exception e) {
-			return ko(e);
+			result = ko(e);
+			ThreadLocalStopwatch.stop("FAIL approvalState");
 		}
+		return result;
 	}
 	
 	/**
