@@ -23,6 +23,7 @@ import java.util.Properties;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.sharegov.cirm.OWL;
+import org.sharegov.cirm.utils.PhoneNumberUtil;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
 import mjson.Json;
@@ -130,31 +131,31 @@ public class ParticipantResolver implements VariableResolver
 		if (actorJsonObj.has("HomePhoneNumber"))
 		{
 			found++;
-			result += "Home: " + actorJsonObj.at("HomePhoneNumber").asString();
+			result += "Home: " + PhoneNumberUtil.formatPhoneDataForDisplay(actorJsonObj.at("HomePhoneNumber").asString());
 		}
 		if (actorJsonObj.has("CellPhoneNumber"))
 		{
 			if (found > 0) result = result + "\r\n";
 			found++;
-			result += "Cell: " + actorJsonObj.at("CellPhoneNumber").asString();
+			result += "Cell: " + PhoneNumberUtil.formatPhoneDataForDisplay(actorJsonObj.at("CellPhoneNumber").asString());
 		}
 		if (actorJsonObj.has("BusinessPhoneNumber"))
 		{
 			if (found > 0) result = result + "\r\n";
 			found++;
-			result += "Biz:  " + actorJsonObj.at("BusinessPhoneNumber").asString();
+			result += "Biz:  " + PhoneNumberUtil.formatPhoneDataForDisplay(actorJsonObj.at("BusinessPhoneNumber").asString());
 		}
 		if (actorJsonObj.has("OtherPhoneNumber")) 
 		{
 			if (found > 0) result = result + "\r\n";
 			found++;
-			result += "Other:" + actorJsonObj.at("OtherPhoneNumber").asString();
+			result += "Other:" + PhoneNumberUtil.formatPhoneDataForDisplay(actorJsonObj.at("OtherPhoneNumber").asString());
 		}
 		if (actorJsonObj.has("FaxNumber")) 
 		{
 			if (found > 0) result = result + "\r\n";
 			found++;
-			result += "Fax:  " + actorJsonObj.at("FaxNumber").asString();
+			result += "Fax:  " + PhoneNumberUtil.formatPhoneDataForDisplay(actorJsonObj.at("FaxNumber").asString());
 		}
 		if (found > 1) 
 			return result + "\r\n";
