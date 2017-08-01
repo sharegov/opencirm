@@ -525,15 +525,15 @@ public class PDFViewReport
 
 				boolean isFirstContactNo = true;
 				String actorHmPh = actor.has("HomePhoneNumber") ? 
-						actor.at("HomePhoneNumber").asString() : null;
+						PhoneNumberUtil.formatPhoneDataForDisplay(actor.at("HomePhoneNumber").asString()) : null;
 				String actorCellNo = actor.has("CellPhoneNumber") ?
-						actor.at("CellPhoneNumber").asString() : null;
+						PhoneNumberUtil.formatPhoneDataForDisplay(actor.at("CellPhoneNumber").asString()) : null;
 				String actorBizNo = actor.has("BusinessPhoneNumber") ?
-						actor.at("BusinessPhoneNumber").asString() : null;
+						PhoneNumberUtil.formatPhoneDataForDisplay(actor.at("BusinessPhoneNumber").asString()) : null;
 				String actorFaxNo = actor.has("FaxNumber") ?
-						actor.at("FaxNumber").asString() : null;
+						PhoneNumberUtil.formatPhoneDataForDisplay(actor.at("FaxNumber").asString()) : null;
 				String actorOtherNo = actor.has("OtherPhoneNumber") ?
-						actor.at("OtherPhoneNumber").asString() : null;
+						PhoneNumberUtil.formatPhoneDataForDisplay(actor.at("OtherPhoneNumber").asString()) : null;
 				
 				if(actorHmPh != null)
 					isFirstContactNo = addActorsContactNumbers(

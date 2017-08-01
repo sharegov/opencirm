@@ -89,6 +89,7 @@ create table CIRM_SR_ACTIVITY ( ACTIVITY_ID number(19,0) not null,
 								CREATED_DATE timestamp(3),
 								UPDATED_BY varchar2(255),
 								UPDATED_DATE timestamp(3),
+								SYS_CREATED_DATE timestamp(3),
 								constraint CIRMPK_SR_ACTIVITY_PK primary key (ACTIVITY_ID)
 							   	  USING INDEX PCTFREE 30 INITRANS 100 MAXTRANS 255
 								) PCTFREE 30 PCTUSED 40 INITRANS 100 ROWDEPENDENCIES;

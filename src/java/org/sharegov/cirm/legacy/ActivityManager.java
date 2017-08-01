@@ -392,12 +392,24 @@ public class ActivityManager
 				scheduleActivityCreationOccurDays(bo, activityType, occurOrSuspenseBaseDate, occurDaysConfiguredValue, useWorkWeek, details, isAssignedTo);
 				return;//activity creation will be delayed.
 			}
+			//Activity type
 			OWLNamedIndividual serviceActivity = factory.getOWLNamedIndividual(
 					fullIri(activityTypeClass.getIRI().getFragment() + Refs.idFactory.resolve().newId(null)));
 			manager.addAxiom(o, factory.getOWLClassAssertionAxiom(activityTypeClass, serviceActivity));
 			manager.addAxiom(o,factory.getOWLObjectPropertyAssertionAxiom(
 								objectProperty("legacy:hasActivity")
 								, serviceActivity, activityType));
+			//System created date hasSysDateCreated always now
+			OWLLiteral sysCreatedDateLiteral = factory.getOWLLiteral(DatatypeFactory.newInstance()
+					.newXMLGregorianCalendar((GregorianCalendar)now)
+					.toXMLFormat()
+					,OWL2Datatype.XSD_DATE_TIME_STAMP);
+			manager.addAxiom(o,
+					factory.getOWLDataPropertyAssertionAxiom(
+						dataProperty("hasDateSysCreated"), serviceActivity, 
+						sysCreatedDateLiteral
+					));
+			//Business created date hasDateCreated
 			OWLLiteral createdDateLiteral = factory.getOWLLiteral(DatatypeFactory.newInstance()
 										.newXMLGregorianCalendar((GregorianCalendar)calcreated)
 										.toXMLFormat()
