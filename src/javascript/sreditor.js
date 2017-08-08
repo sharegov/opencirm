@@ -2927,12 +2927,12 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 		};
 		
 		self.returnRegularTemplate = {
-			"CHAR":"charTemplate", "NUMBER":"charTemplate", "PHONENUM":"charTemplate", "DATE":"dateTemplate", 
+			"CHAR":"charTemplate", "NUMBER":"charTemplate", "PHONENUM":"phoneNumTemplate", "DATE":"dateTemplate", 
 			"TIME":"timeTemplate", "CHARLIST":"charListTemplate", "CHARMULT":"charMultTemplate", 
 			"CHAROPT":"charOptTemplate", "CHARLISTOPT":"charOptTemplate", "undefined":"charTemplate"
 		};
 		self.returnDisabledTemplate = {
-			"CHAR":"charDisabledTemplate", "NUMBER":"charDisabledTemplate", "PHONENUM":"charDisabledTemplate", 
+			"CHAR":"charDisabledTemplate", "NUMBER":"charDisabledTemplate", "PHONENUM":"phoneNumDisabledTemplate", 
 			"DATE":"dateDisabledTemplate", "TIME":"timeDisabledTemplate", "CHARLIST":"charListDisabledTemplate", 
 			"CHARMULT":"charMultDisabledTemplate", "CHAROPT":"charOptDisabledTemplate", 
 			"CHARLISTOPT":"charOptDisabledTemplate", "undefined":"charDisabledTemplate"
