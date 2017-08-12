@@ -41,14 +41,28 @@ import java.util.regex.Pattern;
  */
 class UxLogAnalyzer {
 	
-	static final int ANALYSIS_DAYS_HISTORY_CUTOFF_DEFAULT = 14;	
+	static final int ANALYSIS_DAYS_HISTORY_CUTOFF_DEFAULT = 7;	
 	
 	static final boolean DBG_MATCHES = false;
 	
 	static final double BAD_UX_THRESHOLD_SECS = 10;	
 	
-	static String logMatch = "END createNewKOSR"; //"END updateServiceCase data"; //"END createNewKOSR";
-			
+	//static String logMatch = "END updateServiceCase data"; 
+	//static String logMatch = "sendEmail: One Email sent to";
+	//static String logMatch = "END createNewKOSR";
+	//static String logMatch = "END saveBusinessObjectOntology";
+	static String logMatch = "END DuplicateCheck"; 
+	//static String logMatch = "END asdDispatchLookup"; 
+	//static String logMatch = "End GisService getLocationInfo Call"; 
+	//static String logMatch = "END populateGisDataInternal"; 
+	//static String logMatch = "Start GisService getLocationInfo Call";
+	//static String logMatch = "End GisService getLocationInfo Call";
+	//static String logMatch = "Start GisService getLocationInfo Call";
+	//static String logMatch = "LocationInfoCache cache put";
+	//static String logMatch = "LocationInfoCache cache hit ";
+	//static String logMatch = "LocationInfoCache cache hit, but expired ";
+	//static String logMatch = "sqlsrvelecprd1";
+	
 	static String[] rotatingLogSeriesBaseFiles = new String[] {
 			"\\\\s2030050\\cirmservices\\logs\\wrapper.log",
 			"\\\\s2030051\\cirmservices\\logs\\wrapper.log",
@@ -186,12 +200,15 @@ class UxLogAnalyzer {
 	 * @return lineDateTime or null if not determined
 	 */
 	Date analyzeLine(String line, String lineMatch, Date cutoff) {
-		Pattern p = Pattern.compile("(^.+\\|.+\\|([\\d\\/\\s:]+)\\|.+" + lineMatch + "([\\s\\d.]+)sec.*)");
+		//Pattern p = Pattern.compile("(^.+\\|.+\\|([\\d\\/\\s:]+)\\|.+" + lineMatch + "([\\s\\d.]+)sec.*)");
+		Pattern p = Pattern.compile("(^.+\\|.+\\|([\\d\\/\\s:]+)\\|.+" + lineMatch + ".* ([\\s\\d.]+) sec)");
 		Matcher m = p.matcher(line);
 		Date lineDateTime = null;
 		if (m.find()) {
+			//System.out.println(line);
 			String dateTimeStr = m.group(2).trim();
 			String durationStr = m.group(3).trim();
+			//System.out.println(dateTimeStr + " " + durationStr);
 			try {
 				lineDateTime = logDf.parse(dateTimeStr);
 				Double durationSecs = Double.parseDouble(durationStr);
@@ -273,7 +290,7 @@ class UxLogAnalyzer {
 		 */
 		void printDayPercentiles() {
 			System.out.println("311Hub percentiles in seconds for log lines matching: " + logMatch);
-			System.out.println("Date            \t10th\t20th\t30th\t40th\t50th\t60th\t70th\t80th\t90th\t100th\tNrOfSamples");
+			System.out.println("Date            \t10th\t20th\t30th\t40th\t50th\t60th\t70th\t80th\t90th\t95th\t99th\t100th\tNrOfSamples");
 			for (Map.Entry<Date, List<Double>> e : durationsByDay.entrySet()) {
 				List<Double> sortedList = e.getValue();
 				Collections.sort(sortedList);
@@ -288,6 +305,19 @@ class UxLogAnalyzer {
 						index = sortedList.size() - 1;
 					}
 					System.out.print("\t" + avgDf.format(sortedList.get(index)));
+					//Print 95th%, 99th%:
+					if (i == 8) {
+						int index95 = (int)Math.round(i * valuesPer10Percent + valuesPer10Percent/2 + start);
+						if (index95 >= sortedList.size()) {
+							index95 = sortedList.size() - 1;
+						}
+						System.out.print("\t" + avgDf.format(sortedList.get(index95)));	
+						int index99 = (int)Math.round(i * valuesPer10Percent + (valuesPer10Percent * 9.0 / 10) + start);
+						if (index99 >= sortedList.size()) {
+							index99 = sortedList.size() - 1;
+						}
+						System.out.print("\t" + avgDf.format(sortedList.get(index99)));	
+					}
 				}
 				System.out.print("\t" + sortedList.size());
 				System.out.println();
