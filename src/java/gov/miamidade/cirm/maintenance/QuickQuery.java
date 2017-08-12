@@ -142,7 +142,7 @@ public class QuickQuery {
 //	public static String[] PROPS = new String[] { "iri", "label", "hasActivity.hasEmailTemplate.iri", "hasActivity.hasEmailTemplate.hasTo",  "hasActivity.hasEmailTemplate.hasSubject"};
 	
 	public static boolean PRINT_JSON = false;
-	
+//	
 	public static boolean LIST_MESSAGEVARIABLES = true; //for templates ending with  Body, Subject
 	public static boolean COLLECT_MESSAGEVARIABLES = true; //for templates ending with  Body, Subject
 	
@@ -156,8 +156,24 @@ public class QuickQuery {
 	//public static String[] PROPS = new String[] { "iri", "label" };
 	
 	//18 legacy:hasDuplicateCheckRule with AnyStatus
-	public static String DLQUERY = "legacy:ServiceCase and legacy:hasDuplicateCheckRule some (owl:Thing and legacy:hasStatusLimit value legacy:AnyStatus) ";
-	public static String[] PROPS = new String[] { "iri", "label", "isDisabled", "isDisabledCreate", "hasDuplicateCheckRule.hasStatusLimit.iri", "hasDuplicateCheckRule.hasThresholdDays" };
+	//public static String DLQUERY = "legacy:ServiceCase and legacy:hasDuplicateCheckRule some (owl:Thing and legacy:hasStatusLimit value legacy:AnyStatus) ";
+	//public static String[] PROPS = new String[] { "iri", "label", "isDisabled", "isDisabledCreate", "hasDuplicateCheckRule.hasStatusLimit.iri", "hasDuplicateCheckRule.hasThresholdDays" };
+
+	
+	
+	//19 legacy:hasDuplicateCheckRule with AnyStatus
+//	public static String DLQUERY = "(City or County)";
+//	public static String[] PROPS = new String[] { "iri", "Name" };
+
+	//19 PHONENUM
+//	public static String DLQUERY = "legacy:hasDataType value \"PHONENUM\"";
+//	public static String[] PROPS = new String[] { "iri", "label" };
+	
+	//20 NUMBER
+	public static String DLQUERY = "legacy:hasDataType value \"NUMBER\"";
+	public static String[] PROPS = new String[] { "iri", "label" };
+//	//
+
 	public static String[] VAR3 = new String[]
 	{
 		"BULKYTRA",
