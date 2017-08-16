@@ -1703,12 +1703,13 @@ public class ServiceCaseManager extends OntoAdmin {
 			
 			ThreadLocalStopwatch.now("---- Started Removing Old Objects from individual: " + individualID + " property: " + propertyID);
 			
+
 			if (toRemove.isArray()){
 				for (Json ox: toRemove.asJsonList()){
 					String iri = removeObjectOnto (ox, evictionList);
 					changes.addAll(MetaOntology.getRemoveIndividualObjectPropertyReferenceChanges(individualID, propertyID, iri));
 				}
-			} else {
+			} else if (!toRemove.isNull()) {
 				String iri = removeObjectOnto (toRemove, evictionList);
 				changes.addAll(MetaOntology.getRemoveIndividualObjectPropertyReferenceChanges(individualID, propertyID, iri));
 				

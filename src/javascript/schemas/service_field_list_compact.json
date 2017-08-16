@@ -4,7 +4,6 @@
   "items": {
     "$ref": "#/definitions/legacy:ServiceField"
   },
-  "minItems": 1,
   "uniqueItems": true,
   "type": "array",
   "definitions": {
@@ -587,6 +586,22 @@
         }
       ]
     },
+    "legacy:ActivityList": {
+      "items": {
+        "type": "object",
+        "oneOf": [
+          {
+            "$ref": "#/definitions/reference"
+          },
+          {
+            "$ref": "#/definitions/legacy:ActivityObject"
+          }
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true,
+      "type": "array"
+    },
     "legacy:ActivityObject": {
       "additionalProperties": false,
       "type": "object",
@@ -1068,22 +1083,6 @@
         "type"
       ],
       "type": "object"
-    },
-    "legacy:ActivityList": {
-      "items": {
-        "type": "object",
-        "oneOf": [
-          {
-            "$ref": "#/definitions/reference"
-          },
-          {
-            "$ref": "#/definitions/legacy:ActivityObject"
-          }
-        ]
-      },
-      "minItems": 1,
-      "uniqueItems": true,
-      "type": "array"
     },
 	"mdc:Department_County": {
 		"oneOf": [

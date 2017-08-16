@@ -490,12 +490,10 @@ public class ServiceCaseAdmin extends RestService {
 			Json result = ServiceCaseManager.getInstance().getServiceCaseQuestions(srType);
 			
 			if (result == Json.nil()) {
-				return Response
-						.status(Status.NOT_FOUND)
-						.type(MediaType.APPLICATION_JSON).build();
-			} else {			
-				return Response.ok(result, MediaType.APPLICATION_JSON).build();
-			}
+				result = Json.array();
+			} 
+			
+			return Response.ok(result, MediaType.APPLICATION_JSON).build();			
 		}
 		catch(Exception e){
 			return Response
@@ -567,12 +565,10 @@ public class ServiceCaseAdmin extends RestService {
 			Json result = ServiceCaseManager.getInstance().getServiceCaseActivities(srType);
 			
 			if (result == Json.nil()) {
-				return Response
-						.status(Status.NOT_FOUND)
-						.type(MediaType.APPLICATION_JSON).build();
-			} else {			
-				return Response.ok(result, MediaType.APPLICATION_JSON).build();
+				result = Json.array();				
 			}
+				
+			return Response.ok(result, MediaType.APPLICATION_JSON).build();			
 		}
 		catch(Exception e){
 			return Response
