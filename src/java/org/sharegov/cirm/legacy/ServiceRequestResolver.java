@@ -16,6 +16,7 @@
 package org.sharegov.cirm.legacy;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Properties;
@@ -45,6 +46,9 @@ public class ServiceRequestResolver implements VariableResolver
 	public static final String VAR6_SR_CREATED_BY_PHONE = "$$SR_CREATED_BY_PHONE$$"; // Phone nr of Created By user
 	public static final String VAR7_SR_LOCATION_DETAILS = "$$SR_LOCATION_DETAILS$$"; //FULLADDDRESS + Unit + CITY + STATE_CODE + ZIP
 	public static final String VAR8_SR_LOCATION_STRING = "$$SR_LOCATION_STRING$$"; //FULL_ADDRESS + UNIT + FLOOR + BUILDING NAME + CITY + STATE_CODE + ZIP
+	public static final String VAR9_SR_DUE_DATE = "$$SR_DUE_DATE$$"; //'Mon DD, YYYY' null if no duration days configured
+	public static final String VAR10_SR_REMAINING_DAYS = "$$SR_REMAINING_DAYS$$"; //rounded integer now - created, null if no duration days configured
+	public static final String VAR11_SR_DURATION_CALENDAR_DAYS = "$$SR_DURATION_CALENDAR_DAYS$$"; //rounded integer due - created, null if no duration days configured
 	
 	public static final String[] DATE_FORMAT_PATTERNS = new String[]
 			{ 	"MMM d, yyyy", //'Mon DD, YYYY'
@@ -56,9 +60,9 @@ public class ServiceRequestResolver implements VariableResolver
 	{
 		String result;
 		if(variableName.equals(VAR1_SR_CREATED_DATE))
-			result = getSRCreatedDate(sr, 0);
+			result = getSRCreatedDateStr(sr, 0);
 		else if (variableName.equals(VAR2_SR_CREATED_DATE1))
-			result = getSRCreatedDate(sr, 1);
+			result = getSRCreatedDateStr(sr, 1);
 		else if (variableName.equals(VAR3_SR_CREATED_BY_EMAIL) || variableName.equals(VAR4_SR_CREATED_BY_ELECTR_ADDR))
 			result = getSRCreatedByEmail(sr);
 		else if (variableName.equals(VAR5_SR_CREATED_BY_NAME))
@@ -69,23 +73,106 @@ public class ServiceRequestResolver implements VariableResolver
 			result = getSRLocationDetails(sr);
 		else if (variableName.equals(VAR8_SR_LOCATION_STRING))
 			result = getSRLocationString(sr);
+		else if (variableName.equals(VAR9_SR_DUE_DATE))
+			result = getSRDueDateStr(sr, 0);
+		else if (variableName.equals(VAR10_SR_REMAINING_DAYS))
+			result = getSRRemainingDaysStr(sr);
+		else if (variableName.equals(VAR11_SR_DURATION_CALENDAR_DAYS))
+			result = getSrDurationCalendarDaysStr(sr);
 		else
 			result = null;
 		ThreadLocalStopwatch.getWatch().time("ServiceRequestResolver: Var: " + variableName + " result: " + result);
 		return result;
 	}
 
-	private String getSRCreatedDate(Json sr, int dateFormatIndex)
+	/**
+	 * DurationCalendarDays rounded by back calculating due - created as String.
+	 * @param sr
+	 * @return
+	 */
+	private String getSrDurationCalendarDaysStr(Json sr) {
+		Integer duration = getSrDurationCalendarDays(sr);
+		if (duration == null) return null;
+		return "" + duration;
+	}
+	
+	/**
+	 * DurationCalendarDays rounded by back calculating due - created.
+	 * @param sr
+	 * @return
+	 */
+	private Integer getSrDurationCalendarDays(Json sr) {
+		Date due = getSRDueDate(sr);
+		if (due == null) return null;
+		Date created = getSRCreatedDate(sr);
+		if (created == null) return null;
+		long durationMs = due.getTime() - created.getTime();
+		double durationDays = durationMs / 24.0 * 60 * 60 * 1000; 
+		return (int)Math.round(durationDays);
+	}
+
+	/**
+	 * Returns the rounded remaining days until the SR is due from this morning as String.
+	 * @param sr
+	 * @return
+	 */
+	private String getSRRemainingDaysStr(Json sr) {
+		Integer remaining = getSRRemainingDays(sr);
+		if (remaining == null) return null;
+		return "" + remaining;
+	}
+
+	/**
+	 * Returns the rounded remaining days until the SR is due from this morning as integer value.
+	 * @param sr
+	 * @return
+	 */
+	private Integer getSRRemainingDays(Json sr) {
+		Date due = getSRDueDate(sr);
+		if (due == null) return null;
+		//Today 0:00:000
+		Calendar c = Calendar.getInstance();
+		c.set(Calendar.HOUR_OF_DAY, 0);
+		c.set(Calendar.MINUTE, 0);
+		c.set(Calendar.SECOND, 0);
+		c.set(Calendar.MILLISECOND, 0);
+		Date today = c.getTime();
+		long remainingMs = due.getTime() - today.getTime();
+		double remainingDays = remainingMs / 24.0 * 60 * 60 * 1000;
+		return (int)Math.round(remainingDays);
+	}
+
+	private String getSRDueDateStr(Json sr, int dateFormatIndex) {
+		Date hasDueDate = getSRDueDate(sr); 		
+		return hasDueDate != null? new SimpleDateFormat(DATE_FORMAT_PATTERNS[dateFormatIndex]).format(hasDueDate) : null;
+	}
+	
+	private Date getSRDueDate(Json sr) {
+		Json hasDueDateJ = sr.at("hasDueDate", Json.object());
+		Date hasDueDate = null; 
+		try {
+			hasDueDate = GenUtils.parseDate(hasDueDateJ.asString());
+		} catch(Exception e) { ThreadLocalStopwatch.getWatch().time("ServiceRequestResolver: getSRDueDate failed to parse date: " + hasDueDateJ.toString());
+		}
+		return hasDueDate;
+	}
+
+	private String getSRCreatedDateStr(Json sr, int dateFormatIndex)
 	{
+		Date hasDateCreated = getSRCreatedDate(sr); 		
+		return hasDateCreated != null? new SimpleDateFormat(DATE_FORMAT_PATTERNS[dateFormatIndex]).format(hasDateCreated) : null;
+	}
+
+	private Date getSRCreatedDate(Json sr) {
 		Json hasDateCreatedJ = sr.at("hasDateCreated", Json.object());
 		Date hasDateCreated = null; 
 		try {
 			hasDateCreated = GenUtils.parseDate(hasDateCreatedJ.asString());
 		} catch(Exception e) { ThreadLocalStopwatch.getWatch().time("ServiceRequestResolver: getSRCreatedDate failed to parse date: " + hasDateCreatedJ.toString());
 		}
-		return hasDateCreated != null? new SimpleDateFormat(DATE_FORMAT_PATTERNS[dateFormatIndex]).format(hasDateCreated) : null;
+		return hasDateCreated;
 	}
-
+	
 	private String getSRCreatedByEmail(Json sr)
 	{
 		String result = null;
