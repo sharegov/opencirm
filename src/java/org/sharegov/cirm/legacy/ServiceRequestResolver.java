@@ -107,7 +107,7 @@ public class ServiceRequestResolver implements VariableResolver
 		Date created = getSRCreatedDate(sr);
 		if (created == null) return null;
 		long durationMs = due.getTime() - created.getTime();
-		double durationDays = durationMs / 24.0 * 60 * 60 * 1000; 
+		double durationDays = durationMs / (24.0 * 60 * 60 * 1000); 
 		return (int)Math.round(durationDays);
 	}
 
@@ -138,7 +138,7 @@ public class ServiceRequestResolver implements VariableResolver
 		c.set(Calendar.MILLISECOND, 0);
 		Date today = c.getTime();
 		long remainingMs = due.getTime() - today.getTime();
-		double remainingDays = remainingMs / 24.0 * 60 * 60 * 1000;
+		double remainingDays = remainingMs / (24.0 * 60 * 60 * 1000);
 		return (int)Math.round(remainingDays);
 	}
 
