@@ -663,4 +663,44 @@ public class ServiceCaseJsonHelper
     	}
     	return counter;
     }
+    /**
+     * PWOLD_PERSCNTC > PWNEW_PERSCNTC
+     * @param existing
+     * @param newTypeFragment
+     */
+    public static void typeChangeExistingPersContactActivities(Json existing, String newTypeFragment) {
+    	if (newTypeFragment == null || newTypeFragment.isEmpty()) return;
+    	try {
+    		if (existing.has("properties") && existing.at("properties").has("hasServiceActivity")) {
+    			Json hasServiceActivity = existing.at("properties").at("hasServiceActivity");
+    			if (hasServiceActivity.isArray()) {
+    				for (Json sa : hasServiceActivity.asJsonList()) {
+    					typeChangeExistingPersContactActivity(sa, newTypeFragment);
+    				}
+    			} else if (hasServiceActivity.isObject()) {
+    				typeChangeExistingPersContactActivity(hasServiceActivity, newTypeFragment);
+    			} else {
+    				//ignore
+    			}    			
+    		}    		
+    	} catch(Exception e) {
+    		System.err.println("Error during persContactTypeChange, but continuing: " + e);
+    		e.printStackTrace();
+    	}
+    }
+    
+    private static void typeChangeExistingPersContactActivity(Json oneSA, String newTypeFragment) {
+    	if (oneSA.has("hasActivity") && (oneSA.at("hasActivity").has("iri"))) {
+    		String iri = oneSA.at("hasActivity").at("iri").asString();// eg http://www.miamidade.gov/cirm/legacy#PW16_PERSCNTC
+    		if (iri.endsWith("_PERSCNTC")) {
+    			String newFragment = newTypeFragment.trim() + "_PERSCNTC"; //eg PW394_PERSCNTC
+    			String newIri = iri.replaceFirst("#.*", "#" + newFragment);
+    			oneSA.at("hasActivity").set("iri", newIri);
+    			System.out.println("typeChangeExistingPersContactActivity to " + newIri);
+    		}
+    	} else {
+    		//no iri, no hasActivity, ignore
+    	}
+    }
+
 }

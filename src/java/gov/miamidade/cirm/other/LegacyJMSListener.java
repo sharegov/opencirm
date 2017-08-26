@@ -643,6 +643,8 @@ public class LegacyJMSListener extends Thread
 			//2. update due date for SR to reflect new type duration using DueDateUtil
 			ThreadLocalStopwatch.now("SRType change during interface update to: " + existing.at("type") + "(old: " + oldType);
 			dueDateUtil.setDueDateExistingSr(existing);
+			//Type change existing Pers Contact Activities from old to new type, if any
+			ServiceCaseJsonHelper.typeChangeExistingPersContactActivities(existing, existing.at("type").asString());
 		}
 		if (!newdata.has("isModifiedBy")) {
 			newdata.set("isModifiedBy", "department");
