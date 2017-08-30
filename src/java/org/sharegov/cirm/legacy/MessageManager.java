@@ -1185,6 +1185,12 @@ public class MessageManager
 	
 	public void sendSMS(CirmSmsMessage smsMessage)
 	{
+		try{
+			smsService.sendSMS(smsMessage);
+		} catch (Exception e)
+		{
+			//TODO: handle the exception.
+		}
 		
 	}
 
