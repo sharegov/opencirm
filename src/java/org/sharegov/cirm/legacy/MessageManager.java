@@ -156,6 +156,8 @@ public class MessageManager
 	 */
 	private volatile InternetAddress messageSenderAddress;
 	
+	private volatile SmsService smsService;
+	
 	private static class MessageManagerHolder {
 		private static MessageManager instance = new MessageManager();
 	}
@@ -1158,6 +1160,32 @@ public class MessageManager
 			result = "Unknown";
 		}
 		return result;
+	}
+	
+	/**
+	 * Sends all sms messages in a list.
+	 * @param smsMessages
+	 * 
+	 */
+	public void sendSMSs(List<CirmSmsMessage> smsMessages) 
+	{
+		for (CirmSmsMessage message : smsMessages)
+		{
+			try 
+			{
+				sendSMS(message);
+			} catch (Exception e)
+			{
+				//TODO: What to do on failure of message send.
+				
+			}
+		}
+	}
+	
+	
+	public void sendSMS(CirmSmsMessage smsMessage)
+	{
+		
 	}
 
 }
