@@ -2154,13 +2154,19 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
                     self.removeDuplicates();
                     setModel(result.bo, model, model.srType(), type, true, false);
                
-                    var meta = []; 
-                    meta.push(new metadata("sr",srid));
-                    meta.push(new metadata("type",type));
+                    
                    
                     //2149 Optional Image upload - disabled meta until next week
                     //Enabled again
-                    updateMetadata(meta, self.data().properties().hasAttachment()); 
+                    try {
+                    	var meta = []; 
+                        meta.push(new metadata("sr",srid));
+                        meta.push(new metadata("type",type));
+                        
+                    	updateMetadata(meta, self.data().properties().hasAttachment());
+                    } catch(err) {
+                    	console.log("Error during meta: " + err);
+                    }
                 }
                 else if(result.ok == false) {
                     $("#sh_save_progress").dialog('close');
@@ -2927,12 +2933,12 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 		};
 		
 		self.returnRegularTemplate = {
-			"CHAR":"charTemplate", "NUMBER":"charTemplate", "PHONENUM":"charTemplate", "DATE":"dateTemplate", 
+			"CHAR":"charTemplate", "NUMBER":"charTemplate", "PHONENUM":"phoneNumTemplate", "DATE":"dateTemplate", 
 			"TIME":"timeTemplate", "CHARLIST":"charListTemplate", "CHARMULT":"charMultTemplate", 
 			"CHAROPT":"charOptTemplate", "CHARLISTOPT":"charOptTemplate", "undefined":"charTemplate"
 		};
 		self.returnDisabledTemplate = {
-			"CHAR":"charDisabledTemplate", "NUMBER":"charDisabledTemplate", "PHONENUM":"charDisabledTemplate", 
+			"CHAR":"charDisabledTemplate", "NUMBER":"charDisabledTemplate", "PHONENUM":"phoneNumDisabledTemplate", 
 			"DATE":"dateDisabledTemplate", "TIME":"timeDisabledTemplate", "CHARLIST":"charListDisabledTemplate", 
 			"CHARMULT":"charMultDisabledTemplate", "CHAROPT":"charOptDisabledTemplate", 
 			"CHARLISTOPT":"charOptDisabledTemplate", "undefined":"charDisabledTemplate"

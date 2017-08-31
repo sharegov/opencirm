@@ -838,6 +838,19 @@ HTML templates
 	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
 </script>
 
+<script type="text/html" id="phoneNumTemplate">
+	<div class="grid_7 alpha omega">
+		<label data-bind="text: hasServiceField().label(), css: {highlight_text : $root.isHighlighted($data)} "></label>
+	</div>
+	<div class="grid_5 alpha">
+		<input placeholder="" class="tooltip" data-bind="inputmask: { value: hasAnswerValue().literal , mask:'999-999-9999', autoUnmask: true}, valueUpdate: 'afterkeydown', hasfocus: hasAnswerValue().literal.hasInputFocus, css: { error: hasAnswerValue().literal.hasError }, attr :{title: hasAnswerValue().literal.toolTipTitle }" ></input>
+	</div>
+	<div class="grid_1 omega">
+		<label data-bind='visible: hasAnswerValue().literal.hasError, text: hasAnswerValue().literal.validationMessage, css: { red_text: hasAnswerValue().literal.hasError }' />
+	</div>
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+</script>
+
 <script type="text/html" id="charStreetTemplate">
 	<div class="grid_7 alpha omega">
 		<label data-bind="text: hasServiceField().label(), css: {highlight_text : $root.isHighlighted($data)} "></label>
@@ -873,6 +886,17 @@ HTML templates
 	</div>
 	<div class="grid_6 alpha omega">
 		<input placeholder="" disabled="disabled" class="tooltip" data-bind="value: hasAnswerValue().literal,  attr: { title: hasAnswerValue().literal }"></input>
+	</div>
+	
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+</script>
+
+<script type="text/html" id="phoneNumDisabledTemplate">
+	<div class="grid_7 alpha omega">
+		<label data-bind="text: hasServiceField().label(), css: {highlight_text : $root.isHighlighted($data)} "></label>
+	</div>
+	<div class="grid_6 alpha omega">
+		<input placeholder="" disabled="disabled" class="tooltip" data-bind="inputmask: { value: hasAnswerValue().literal , mask:'999-999-9999', autoUnmask: true},  attr: { title: hasAnswerValue().literal }"></input>
 	</div>
 	
 	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
