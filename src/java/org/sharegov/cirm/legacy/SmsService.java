@@ -21,9 +21,5 @@ public class SmsService {
 
 	public void sendSMS(CirmSmsMessage message) {
 		//TODO: to know what the http call looks like.
-		
 	}
-	
-	
-	
 }

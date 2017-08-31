@@ -23,7 +23,7 @@ public class CreateDefaultActivities implements ApprovalSideEffect
 		am.createDefaultActivities(owlClass(approvalProcess.getSr().at("type").asString())
 				, approvalProcess.getBOntology(), 
 				GenUtils.parseDate(approvalProcess.getSr().at("properties").at("hasDateCreated").asString()),
-				approvalProcess.getEmailsToSend());
+				approvalProcess.getMsgsToSend());
 		Response.setCurrent(current);
 		ThreadLocalStopwatch.now("END createDefaultActivities  (approval process)");
 	}
