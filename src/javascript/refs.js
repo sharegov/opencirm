@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-define(['rest', 'U', 'store!'], function(rest, U, store) {
+define(['rest', 'U', 'srtype', 'store!'], function(rest, U, srtype, store) {
         
     var top = new rest.Client(U.baseurl);
     
@@ -79,6 +79,8 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
                     var m = {};
                     $.each(A, function(i,v) {
                     	var serviceCase = prepareServiceCaseTypeForUI(v);
+                        addServiceCaseTransientProperties(serviceCase);
+                        //TODO check reason why we do this twice
                         m[v.iri] = prepareServiceCaseTypeForUI(serviceCase);
                     });
                     // May we could a 'get' method here the accept IRI fragments and prepends
@@ -210,6 +212,7 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
         	var serviceCasePrefixedIri = "legacy:" + U.IRI.name(serviceCaseTypeIri);
         	var serviceCase = top.get("/individuals/" + serviceCasePrefixedIri);
         	var preparedSR = prepareServiceCaseTypeForUI(serviceCase);
+        	addServiceCaseTransientProperties(serviceCase);
         	self.cached["serviceCases"][serviceCaseTypeIri] = preparedSR;
         	//Clear dependent caches
         	self.cached["serviceCaseList"] = null;
@@ -260,8 +263,24 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
             return serviceCase;
         } 
         
-        
-        
+        /**
+         * Adds zero, one, or two transient/derived properties transientHasCitizenEmailTemplate / transientHasCitizenSmsTemplate 
+         * only if the determined value that is derived from parsing the srtype is true.
+         */
+        function addServiceCaseTransientProperties(serviceCaseUi) {
+        	try {
+        		var hasCitizenEmailTemplate = srtype.hasCitizenEmailTemplate(serviceCaseUi);
+        		var hasCitizenSmsTemplate = srtype.hasCitizenSmsTemplate(serviceCaseUi);
+        		if (hasCitizenEmailTemplate === true) {
+        			serviceCaseUi.transientHasCitizenEmailTemplate = hasCitizenEmailTemplate;
+        		}
+        		if (hasCitizenSmsTemplate === true) {
+        			serviceCaseUi.transientHasCitizenSmsTemplate = hasCitizenSmsTemplate;
+        		}
+        	} catch(err) {
+        		console.log("Error during addServiceCaseTransientProperties ignored " + err);
+        	}
+        }
         
     }
 
