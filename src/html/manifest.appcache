@@ -33,6 +33,7 @@ CACHE MANIFEST
 /javascript/answerhub.js
 /javascript/store.js
 /javascript/uiEngine.js
+/javascript/srtype.js
 /javascript/refs.js
 /javascript/text.js
 
