@@ -57,7 +57,7 @@ import org.sharegov.cirm.stats.CirmStatisticsFactory;
 import org.sharegov.cirm.stats.SRCirmStatsDataReporter;
 import org.sharegov.cirm.utils.DueDateUtil;
 import org.sharegov.cirm.utils.GenUtils;
-import org.sharegov.cirm.utils.SendEmailOnTxSuccessListener;
+import org.sharegov.cirm.utils.SendMessagesOnTxSuccessListener;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
 import gov.miamidade.cirm.other.JMSClient;
@@ -484,7 +484,7 @@ public class LegacyJMSListener extends Thread
 	 * @return
 	 * @throws JMSException
 	 */
-	private Json newActivityTxn(LegacyEmulator emulator, Json sr, Json activity, ArrayList<CirmMessage> emailsToSend) throws JMSException
+	private Json newActivityTxn(LegacyEmulator emulator, Json sr, Json activity, ArrayList<CirmMessage> msgsToSend) throws JMSException
 	{
 		Json result;
 		Json original = sr.dup();
@@ -541,7 +541,7 @@ public class LegacyJMSListener extends Thread
 		ServiceCaseJsonHelper.cleanUpProperties(sr);
 		ServiceCaseJsonHelper.assignIris(sr);
 		OWL.resolveIris(sr.at("properties"), null);
-		result = emulator.updateServiceCaseTransaction(sr, original, updateDate, emailsToSend, "department");
+		result = emulator.updateServiceCaseTransaction(sr, original, updateDate, msgsToSend, "department");
 		if (result.has("ok") && result.is("ok", true)) 
 		{
 			srStatsReporter.succeeded("newActivityTxn", result);
@@ -560,7 +560,7 @@ public class LegacyJMSListener extends Thread
 	 * @return
 	 * @throws JMSException
 	 */
-	private Json updateTxn(LegacyEmulator emulator, Json existing, Json newdata, ArrayList<CirmMessage> emailsToSend) throws JMSException
+	private Json updateTxn(LegacyEmulator emulator, Json existing, Json newdata, ArrayList<CirmMessage> msgsToSend) throws JMSException
 	{
 		Json result;
 		Json preUpdateSr = existing.dup();				
@@ -576,7 +576,7 @@ public class LegacyJMSListener extends Thread
 		result = emulator.updateServiceCaseTransaction(postUpdateSr, 
 													 preUpdateSr,
 													 updateDate,
-													 emailsToSend,
+													 msgsToSend,
 													 "department");
 		if (result.has("ok") && result.is("ok", true)) 
 		{
@@ -679,11 +679,11 @@ public class LegacyJMSListener extends Thread
 	 * 
 	 * @param emulator
 	 * @param jmsg
-	 * @param emailsToSend
+	 * @param msgsToSend
 	 * @return
 	 * @throws JMSException
 	 */
-	private Json responseTxn(LegacyEmulator emulator, Json jmsg, ArrayList<CirmMessage> emailsToSend) throws JMSException
+	private Json responseTxn(LegacyEmulator emulator, Json jmsg, ArrayList<CirmMessage> msgsToSend) throws JMSException
 	{
 		Json orig = jmsg.at("originalMessage");
 		// Since cases are not modifiable in CiRM, the only response for an 
@@ -750,7 +750,7 @@ public class LegacyJMSListener extends Thread
 		Json result = emulator.updateServiceCaseTransaction(scase, 
 														    preUpdateSr, 
 														    null, 
-														    emailsToSend,
+														    msgsToSend,
 														    "department");
 		if (!result.is("ok", true))
 		{
@@ -817,8 +817,8 @@ public class LegacyJMSListener extends Thread
 				Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
 				public Json call() throws JMSException
 				{							
-					ArrayList<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();
-					CirmTransaction.get().addTopLevelEventListener(new SendEmailOnTxSuccessListener(emailsToSend));					
+					ArrayList<CirmMessage> msgsToSend = new ArrayList<CirmMessage>();
+					CirmTransaction.get().addTopLevelEventListener(new SendMessagesOnTxSuccessListener(msgsToSend));					
 					ThreadLocalStopwatch.now("LegacyJMSListener.process lookup case for update or new activity");
 					Json jmsgForTx = jmsg.dup();
 					MessageValidationResult validationResult;
@@ -838,12 +838,12 @@ public class LegacyJMSListener extends Thread
 						if (messageType == LegacyMessageType.NewActivity) 
 						{
 							ThreadLocalStopwatch.now("LegacyJMSListener.process newActivityTxn ");					
-							R = newActivityTxn(emulator, origSrForTxn, jmsgForTx.at("data").at("hasServiceActivity").at(0), emailsToSend);
+							R = newActivityTxn(emulator, origSrForTxn, jmsgForTx.at("data").at("hasServiceActivity").at(0), msgsToSend);
 						}
 						else
 						{ //update service case
 							ThreadLocalStopwatch.now("LegacyJMSListener.process updateTxn ");					
-							R = updateTxn(emulator, origSrForTxn, jmsgForTx.at("data").dup().delAt("boid"), emailsToSend);
+							R = updateTxn(emulator, origSrForTxn, jmsgForTx.at("data").dup().delAt("boid"), msgsToSend);
 						}
 						if (R.is("ok", false)) 
 						{
@@ -880,9 +880,9 @@ public class LegacyJMSListener extends Thread
 				Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
 				public Json call() throws JMSException
 				{												
-					ArrayList<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();
-					CirmTransaction.get().addTopLevelEventListener(new SendEmailOnTxSuccessListener(emailsToSend));					
-					Json R = responseTxn(emulator, jmsg, emailsToSend);				
+					ArrayList<CirmMessage> msgsToSend = new ArrayList<CirmMessage>();
+					CirmTransaction.get().addTopLevelEventListener(new SendMessagesOnTxSuccessListener(msgsToSend));					
+					Json R = responseTxn(emulator, jmsg, msgsToSend);				
 					if (R.is("ok", false))
 					{
 						ThreadLocalStopwatch.error("LegacyJMSListener.process responseTxn failed with ");					

@@ -178,7 +178,7 @@ public class ASDService extends RestService
 			sr = bo.toJSON();
 			ActivityManager mngr = new ActivityManager();
 			//TODO hilpold whole method should be inside a Tx and SendEmailOnTxSuccess used.
-			List<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();			
+			List<CirmMessage> msgsToSend = new ArrayList<CirmMessage>();			
 			Json dbActs = array();
 			if(sr.at("properties").at("hasServiceActivity").isArray())
 				dbActs = sr.at("properties").at("hasServiceActivity");
@@ -202,15 +202,15 @@ public class ASDService extends RestService
 					//If outcome already set, then dont set it again.
 					if(dbAct.has("hasOutcome"))
 						mngr.updateActivity(activityType, activity, null, details, 
-								assignedTo, modifiedBy, false, bo, emailsToSend);
+								assignedTo, modifiedBy, false, bo, msgsToSend);
 					else
 						mngr.updateActivity(activityType, activity, outcome, details, 
-								assignedTo, modifiedBy, isAccepted, bo, emailsToSend);
+								assignedTo, modifiedBy, isAccepted, bo, msgsToSend);
 				}
 			}
 			Response.setCurrent(current);
 			Json result = le.updateServiceCase(bo);
-			MessageManager.get().sendEmails(emailsToSend);
+			MessageManager.get().sendMessages(msgsToSend);
 			ThreadLocalStopwatch.stop("END asdDispatchUpdateActivity");
 			return result;
 		}
