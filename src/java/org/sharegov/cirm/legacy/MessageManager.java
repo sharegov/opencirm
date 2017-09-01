@@ -409,7 +409,7 @@ public class MessageManager
 			{
 				//TODO String bodyTemplateStr = useLegacyBody? legacyBodyToHTML(bodyTemplate) : bodyTemplate.getLiteral();  
 				String bodyTemplateStr = bodyTemplate.getLiteral();
-				bodyTemplateStr = legacyBodyToHTML(bodyTemplateStr);
+				//bodyTemplateStr = legacyBodyToHTML(bodyTemplateStr);
 				body = applyTemplate(bodyTemplateStr, parameters);
 			}
 			if (to != null)
@@ -1319,6 +1319,7 @@ public class MessageManager
 	private void sendSMS(CirmSmsMessage smsMessage)
 	{
 		try{
+			if (smsService == null) smsService = new SmsService();
 			smsService.sendSMS(smsMessage);
 		} catch (Exception e)
 		{
