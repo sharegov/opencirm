@@ -141,6 +141,7 @@ public class MessageManager
 	 * Used when to-field has no addresses to avoid exception.
 	 */
 	public static final String DEFAULT_TO_ADDRESS = "hilpold@miamidade.gov;sanchoo@miamidade.gov;chirino@miamidade.gov";
+	public static final String DEFAULT_TO_CELLPHONE = "7869732464;9543001632";
 	public static final String SR_DOM_ROOT_NODE = "sr";
 	public static final Pattern VAR_NAME_PATTERN = Pattern.compile("\\$\\$(.*?)\\$\\$");
 	public static Logger logger = Refs.logger.resolve();
@@ -155,6 +156,8 @@ public class MessageManager
 	 * This is the sender address the Messagemanager uses to send emails.
 	 */
 	private volatile InternetAddress messageSenderAddress;
+	
+	private volatile SmsService smsService;
 	
 	private static class MessageManagerHolder {
 		private static MessageManager instance = new MessageManager();
@@ -196,12 +199,12 @@ public class MessageManager
 	 * @param bcc : The BCC recipients of the email
 	 * @return
 	 */
-	private CirmMessage createMessage(Json sr, OWLNamedIndividual messageTemplate, 
+	private CirmMimeMessage createMimeMessage(Json sr, OWLNamedIndividual messageTemplate, 
 			String subject, String to, String cc, String bcc, String comments)
 	{
 		if (DBG) System.out.println("MessageManager: createMessage for: \r\n "+ (sr.has("iri")? sr.at("iri"): sr));
 		ensureInit();
-		CirmMessage msg = null;
+		CirmMimeMessage msg = null;
 		try {
 			OWLLiteral bodyTemplate = dataProperty(messageTemplate, "legacy:hasBody");
 			//OWLLiteral bodyTemplate = dataProperty(messageTemplate, "legacy:hasLegacyBody"); //TODO FOR COM TEST ONLY
@@ -212,7 +215,7 @@ public class MessageManager
 			String body = null;
 			if (bodyTemplate != null)
 				body = applyTemplate(bodyTemplate.getLiteral(), parameters);
-			msg = new CirmMessage(session);
+			msg = new CirmMimeMessage(session);
 			if (to != null) 
 				msg.setRecipients(Message.RecipientType.TO, toRecipients(to));
 			if (cc != null)
@@ -252,12 +255,12 @@ public class MessageManager
 	 *            - The email message template defined in the ontology.
 	 * @return
 	 */
-	private CirmMessage createMessage(Json sr, String legacyCode, OWLNamedIndividual messageTemplate)
+	private CirmMimeMessage createMimeMessage(Json sr, String legacyCode, OWLNamedIndividual messageTemplate)
 	{
 		if (DBG) System.out.println("MessageManager: createMessage for: \r\n "+ (sr.has("iri")? sr.at("iri"): sr));
 		ensureInit();
 		boolean useLegacyBody = useLegacyBody(sr);
-		CirmMessage msg = null;
+		CirmMimeMessage msg = null;
 		try
 		{
 			OWLNamedIndividual messageTemplateClass = OWL.individual("legacy:MessageTemplate");			
@@ -313,7 +316,7 @@ public class MessageManager
 			//if (true || to != null || cc != null)
 			if (to != null || cc != null || bcc != null)
 			{
-				msg = new CirmMessage(session);
+				msg = new CirmMimeMessage(session);
 				//InternetAddress sender = new InternetAddress("cirmtest@miamidade.gov");
 				// TODO: Test mode: For now send to some default recipients.
 				if (highPriority) 
@@ -365,6 +368,87 @@ public class MessageManager
 				boid = sr.at("boid").asString();
 			}
 			throw new IllegalStateException("Could not create message for sr" + boid + " with template "
+					+ messageTemplate, e);
+		}
+		return msg;
+	}
+	
+	/**
+	 * 
+	 * @param sr
+	 *            - The sr to be transformed.
+	 * @param legacyCode
+	 *            - the legacy code for this message variable, essentially the
+	 *            owner code.
+	 * @param messageTemplate
+	 *            - The email message template defined in the ontology.
+	 * @return
+	 */
+	private CirmSmsMessage createSmsMessage(Json sr, String legacyCode, OWLNamedIndividual messageTemplate)
+	{
+		if (DBG) System.out.println("MessageManager: createSmsMessage for: \r\n "+ (sr.has("iri")? sr.at("iri"): sr));
+		ensureInit();
+		boolean useLegacyBody = useLegacyBody(sr);
+		CirmSmsMessage msg = null;
+		try
+		{
+			//OWLNamedIndividual messageTemplateClass = OWL.individual("legacy:MessageTemplate");			
+			OWLLiteral toTemplate = dataProperty(messageTemplate, "legacy:hasTo");
+			OWLLiteral bodyTemplate; 
+			if (useLegacyBody)
+				bodyTemplate = dataProperty(messageTemplate, "legacy:hasLegacyBody");
+			else
+				bodyTemplate = dataProperty(messageTemplate, "legacy:hasBody");
+			Map<String, String> parameters = fillParameters(sr, legacyCode, toTemplate != null ? toTemplate
+					.getLiteral() : null, bodyTemplate != null ? bodyTemplate.getLiteral() : null);
+			String to = null;
+			String body = null;
+			if (toTemplate != null)
+				to = applyTemplate(toTemplate.getLiteral(), parameters);
+			if (bodyTemplate != null)
+			{
+				//TODO String bodyTemplateStr = useLegacyBody? legacyBodyToHTML(bodyTemplate) : bodyTemplate.getLiteral();  
+				String bodyTemplateStr = bodyTemplate.getLiteral();
+				bodyTemplateStr = legacyBodyToHTML(bodyTemplateStr);
+				body = applyTemplate(bodyTemplateStr, parameters);
+			}
+			if (to != null)
+			{
+				msg = new CirmSmsMessage();
+				//
+				// We only send to real recipients in production mode, 
+				// but include resolved to 
+				//
+				if (isTestMode())
+				{
+					//testmode do not send to real recipients, but bcc as to only
+					body = "" + messageTemplate + "\r\n" + body;
+					if (TEST_MODE_USE_DEFAULT_TO)
+						to = DEFAULT_TO_CELLPHONE;
+					else
+						to = "7869732464";
+				}
+				if (to != null) { 
+					msg.setPhone(to);
+				} else {
+					msg.setPhone(DEFAULT_TO_CELLPHONE);
+				}
+					
+				if (body == null)
+					body = "No body defined (in template)!";
+				msg.setTxt(body);				
+				//creation explanation
+				//msg.addExplanation("createMessage" + messageTemplate.getIRI().getFragment());
+			}
+		}
+		catch (Exception e)
+		{
+			String boid = "";
+			if (sr.at("boid") != null)
+			{
+				boid = sr.at("boid").asString();
+			}
+			throw new IllegalStateException("Could not create sms message for sr" + boid + " with template "
 					+ messageTemplate, e);
 		}
 		return msg;
@@ -474,9 +558,9 @@ public class MessageManager
 		return bo.getBusinessObject().getIRI().toString().contains("/verbose");
 	}
 	
-	public CirmMessage createMessageFromTemplate(BOntology o, OWLLiteral legacyCode, OWLNamedIndividual emailTemplate)
+	public CirmMimeMessage createMimeMessageFromTemplate(BOntology o, OWLLiteral legacyCode, OWLNamedIndividual emailTemplate)
 	{
-			CirmMessage msg = null;
+			CirmMimeMessage msg = null;
 			try
 			{
 				logger.log(Level.INFO, "Creating email for sr:" + o.getObjectId() + " legacyCode: " + legacyCode + " tmpl: " + emailTemplate.getIRI().getFragment() );
@@ -495,7 +579,7 @@ public class MessageManager
 					
 				Json sr = OWL.toJSON(o.getOntology(), boInd);
 				sr.set("boid", boIndID);
-				msg = createMessage(sr, legacyCode.getLiteral(), emailTemplate);
+				msg = createMimeMessage(sr, legacyCode.getLiteral(), emailTemplate);
 				if (FORCE_TEST_RECOVERY)
 					msg.addRecipient(RecipientType.CC, new InternetAddress("$$variable$$"));
 				
@@ -509,11 +593,48 @@ public class MessageManager
 			return msg;
 	}
 
-	public CirmMessage createMessageFromTemplate(BOntology o, 
+	/**
+	 * Creates a CirmSmsMessage using an ontology configured template.
+	 * @param o
+	 * @param legacyCode
+	 * @param smsTemplate
+	 * @return
+	 */
+	public CirmSmsMessage createSmsMessageFromTemplate(BOntology o, OWLLiteral legacyCode, OWLNamedIndividual smsTemplate)
+	{
+			CirmSmsMessage msg = null;
+			try
+			{
+				logger.log(Level.INFO, "Creating sms for sr:" + o.getObjectId() + " legacyCode: " + legacyCode + " tmpl: " + smsTemplate.getIRI().getFragment() );
+				OWLNamedIndividual boInd;
+				String boIndID;
+				if (isVerboseBO(o))
+				{
+					boInd = getNonVerboseBO(o);
+					boIndID = getNonVerboseBOObjectId(boInd);
+				}
+				else
+				{
+					boInd = o.getBusinessObject();
+					boIndID = o.getObjectId();
+				}
+					
+				Json sr = OWL.toJSON(o.getOntology(), boInd);
+				sr.set("boid", boIndID);
+				msg = createSmsMessage(sr, legacyCode.getLiteral(), smsTemplate);
+			} catch(Exception e)
+			{
+				String errmsg = "Could not create email for sr:" + o.getObjectId() + " legacyCode: " + legacyCode + " template:" + smsTemplate.getIRI().getFragment();
+				logger.log(Level.WARNING, errmsg, e);
+			}		
+			return msg;
+	}
+
+	public CirmMimeMessage createMimeMessageFromTemplate(BOntology o, 
 			OWLNamedIndividual emailTemplate, 
 			String subject, String to, String cc, String bcc,String comments)
 	{
-		CirmMessage msg = null;
+		CirmMimeMessage msg = null;
 		try
 		{
 			logger.log(Level.INFO, 
@@ -523,7 +644,7 @@ public class MessageManager
 			String boIndID = o.getObjectId();
 			Json sr = OWL.toJSON(o.getOntology(), boInd);
 			sr.set("boid", boIndID);
-			msg = createMessage(sr, emailTemplate, subject, to, cc, bcc, comments);
+			msg = createMimeMessage(sr, emailTemplate, subject, to, cc, bcc, comments);
 		}
 		catch(Exception e)
 		{
@@ -539,24 +660,58 @@ public class MessageManager
 	 * A recovery email will contain a detailed creation explanation of the message.
 	 * @param messages
 	 */
-	public void sendEmails(List<CirmMessage> messages) 
+	public void sendMessages(List<CirmMessage> messages) 
 	{
 		for (CirmMessage message : messages)
 		{
-			try 
-			{
-				if (INCLUDE_EXPLANATION_IN_EMAIL) 
-				{
-					message.addExplanation("<br>Msg generated on server: " + getServerShortName());
-					message.includeExplanationInBody();
-				}
-				sendEmail(message);
-			} catch (Exception e)
-			{
-				tryRecoverSendException(message, e);
+			if (message instanceof CirmSmsMessage) {
+				message.addExplanation("<br>Msg generated on server: " + getServerShortName());
+				sendSMS((CirmSmsMessage) message);
+			} else if (message instanceof CirmMimeMessage) {
+				CirmMimeMessage mimeMessage = (CirmMimeMessage) message;
+    			try 
+    			{
+    				if (INCLUDE_EXPLANATION_IN_EMAIL) 
+    				{
+    					mimeMessage.addExplanation("<br>Msg generated on server: " + getServerShortName());
+    					mimeMessage.includeExplanationInBody();
+    				}
+    				sendEmail(mimeMessage);
+    			} catch (Exception e)
+    			{
+    				tryRecoverSendException(mimeMessage, e);
+    			}
+			} else {
+				//TODO error mesage type not implemented
+				ThreadLocalStopwatch.error("error message type not implemented " + message);
 			}
 		}
 	}
+	
+//	/**
+//	 * Sends all messages in List, tries a recovery message on exception with template information.
+//	 * A recovery email will contain a detailed creation explanation of the message.
+//	 * @param messages
+//	 */
+//	public void sendEmails(List<CirmMimeMessage> messages) 
+//	{
+//		for (CirmMimeMessage message : messages)
+//		{
+//			try 
+//			{
+//				if (INCLUDE_EXPLANATION_IN_EMAIL) 
+//				{
+//					message.addExplanation("<br>Msg generated on server: " + getServerShortName());
+//					message.includeExplanationInBody();
+//				}
+//				sendEmail(message);
+//			} catch (Exception e)
+//			{
+//				tryRecoverSendException(message, e);
+//			}
+//		}
+//	}
+	
 	/**
 	 * Tries to recover from a send message failure if caused by a SendFailedException.
 	 * A recovery email will carry information on failed email addresses and it's subject is suffixed by "[R]".
@@ -566,7 +721,7 @@ public class MessageManager
 	 * @param emailTemplate
 	 * @param errmsg
 	 */
-	private void tryRecoverSendException(CirmMessage msg, Exception e)
+	private void tryRecoverSendException(CirmMimeMessage msg, Exception e)
 	{
 		SendFailedException sfx = findSendFailedException(e);
 		if (sfx != null)
@@ -897,7 +1052,7 @@ public class MessageManager
 		}
 	}
 
-	public void sendEmail(String from, String to, String subject, Multipart body)
+	private void sendEmail(String from, String to, String subject, Multipart body)
 	{
 		ensureInit();
 		try
@@ -924,7 +1079,7 @@ public class MessageManager
 		}
 	}
 
-	public void sendEmail(MimeMessage msg)
+	private void sendEmail(MimeMessage msg)
 	{
 		try
 		{
@@ -1158,6 +1313,18 @@ public class MessageManager
 			result = "Unknown";
 		}
 		return result;
+	}
+	
+	
+	private void sendSMS(CirmSmsMessage smsMessage)
+	{
+		try{
+			smsService.sendSMS(smsMessage);
+		} catch (Exception e)
+		{
+			//TODO: handle the exception.
+		}
+		
 	}
 
 }

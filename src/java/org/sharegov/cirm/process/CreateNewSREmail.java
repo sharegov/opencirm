@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.sharegov.cirm.BOUtils;
 import org.sharegov.cirm.BOntology;
-import org.sharegov.cirm.legacy.CirmMessage;
+import org.sharegov.cirm.legacy.CirmMimeMessage;
 import org.sharegov.cirm.legacy.MessageManager;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
@@ -31,12 +31,12 @@ public class CreateNewSREmail implements ApprovalSideEffect
 				BOntology withMeta = BOUtils.addMetaDataAxioms(bontology);
 				withMetadata.add(withMeta);
 				approvalProcess.setWithMetadata(withMetadata);
-				CirmMessage msg = MessageManager.get().createMessageFromTemplate(
+				CirmMimeMessage msg = MessageManager.get().createMimeMessageFromTemplate(
 						withMeta,
 						dataProperty(individual(type),
 								"legacy:hasLegacyCode"), emailTemplate);
 				msg.addExplanation("createNewKOSR SR template " + emailTemplate.getIRI().getFragment());
-				approvalProcess.getEmailsToSend().add(msg);
+				approvalProcess.getMsgsToSend().add(msg);
 			}
 			catch (Throwable t)
 			{

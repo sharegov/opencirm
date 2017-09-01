@@ -102,6 +102,7 @@ import org.sharegov.cirm.event.EventDispatcher;
 import org.sharegov.cirm.gis.GisDAO;
 import org.sharegov.cirm.legacy.ActivityManager;
 import org.sharegov.cirm.legacy.CirmMessage;
+import org.sharegov.cirm.legacy.CirmMimeMessage;
 import org.sharegov.cirm.legacy.MessageManager;
 import org.sharegov.cirm.legacy.Permissions;
 import org.sharegov.cirm.owl.Model;
@@ -132,7 +133,7 @@ import org.sharegov.cirm.utils.JsonUtil;
 import org.sharegov.cirm.utils.PDFExportUtil;
 import org.sharegov.cirm.utils.PDFViewReport;
 import org.sharegov.cirm.utils.RemoveAttachmentsOnTxSuccessListener;
-import org.sharegov.cirm.utils.SendEmailOnTxSuccessListener;
+import org.sharegov.cirm.utils.SendMessagesOnTxSuccessListener;
 import org.sharegov.cirm.utils.SrJsonUtil;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 import org.sharegov.cirm.workflows.WebServiceCallTask;
@@ -1246,7 +1247,7 @@ public class LegacyEmulator extends RestService
 	public Json updateServiceCaseTransaction(final Json newValue, 
 											 final Json existing,
 											 Date updatedDate,
-											 final List<CirmMessage> emailsToSend,
+											 final List<CirmMessage> msgsToSend,
 											 final String originator)
 	{
 		final Json serviceCase = newValue.dup();
@@ -1300,16 +1301,16 @@ public class LegacyEmulator extends RestService
 				// an overwrite of interface changes.
 				throw new ConcurrentLockedToOpenException();
 			} else {
-				mngr.changeStatus(currentStatus, newStatus, updatedDate, (srModifiedBy != null)?srModifiedBy.getLiteral():null, bontology, emailsToSend);
+				mngr.changeStatus(currentStatus, newStatus, updatedDate, (srModifiedBy != null)?srModifiedBy.getLiteral():null, bontology, msgsToSend);
 				if (individual("legacy:O-LOCKED").equals(newStatus)) {
-					mngr.createAutoOnLockedActivities(bontology, new Date(), emailsToSend);
+					mngr.createAutoOnLockedActivities(bontology, new Date(), msgsToSend);
 				}
 			}
 		}
 
 		//Update those existing Activities for which Outcome is set in current request
 		if(uiActs.asJsonList().size() > 0)
-			updateExistingActivities(uiActs, dbActs, mngr, bontology, boid, emailsToSend);
+			updateExistingActivities(uiActs, dbActs, mngr, bontology, boid, msgsToSend);
 
 		
 		String srModifiedByStr = srModifiedBy == null? null : srModifiedBy.getLiteral();
@@ -1337,7 +1338,7 @@ public class LegacyEmulator extends RestService
 								    bontology,
 								    createdDate, 
 								    actCreatedBy,
-								    emailsToSend);
+								    msgsToSend);
 			else
 			{
 				OWLNamedIndividual outcome = hasOutcome != null ? individual(hasOutcome.at("iri").asString()) : null;
@@ -1349,7 +1350,7 @@ public class LegacyEmulator extends RestService
 									createdDate,
 									completedDate,
 									actCreatedBy,
-									emailsToSend);
+									msgsToSend);
 			}
 			if (!eachActivity.has("legacy:hasOutcome") && eachActivity.is("legacy:isAccepted", true))
 			{
@@ -1412,7 +1413,7 @@ public class LegacyEmulator extends RestService
 			if(actorEmails != null)
 			{
 				sendEmailToCustomers(bontology, 
-						actorEmails.asJsonList(), emailsToSend, 
+						actorEmails.asJsonList(), msgsToSend, 
 						result.at("properties").at("hasCaseNumber").asString(),
 						OWL.getEntityLabel(individual("legacy:"+result.at("type").asString()))
 				);
@@ -1435,18 +1436,18 @@ public class LegacyEmulator extends RestService
 		try
 		{
 			ThreadLocalStopwatch.start("START updateServiceCase (str)");
-			final List<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();
+			final List<CirmMessage> msgsToSend = new ArrayList<CirmMessage>();
 			Json result =  Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
 			public Json call()
 			{
-				emailsToSend.clear();
-				CirmTransaction.get().addTopLevelEventListener(new SendEmailOnTxSuccessListener(emailsToSend));
+				msgsToSend.clear();
+				CirmTransaction.get().addTopLevelEventListener(new SendMessagesOnTxSuccessListener(msgsToSend));
 				//Saving the current context as we are losing when 
 				//using another get/post internally 
 				Response current = Response.getCurrent();
 				Long boid = serviceCaseParam.at("boid").asLong();
 				Json bo = findServiceCaseOntology(boid).toJSON();
-				Json result = updateServiceCaseTransaction(serviceCaseParam, bo, updateDate, emailsToSend, originator);
+				Json result = updateServiceCaseTransaction(serviceCaseParam, bo, updateDate, msgsToSend, originator);
 				Response.setCurrent(current);
 				return result;
 			}});			
@@ -1859,7 +1860,7 @@ public class LegacyEmulator extends RestService
 				}
 			}
 			);
-			final List<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();
+			final List<CirmMessage> msgsToSend = new ArrayList<CirmMessage>();
 
 			//
 			// DB Transaction B - Main processing
@@ -1877,9 +1878,9 @@ public class LegacyEmulator extends RestService
 					ThreadLocalStopwatch.now("START createDefaultActivities");
 					ActivityManager am = new ActivityManager();
 					//TODO hilpold move this to where emails are created
-					emailsToSend.clear();
-					CirmTransaction.get().addTopLevelEventListener(new SendEmailOnTxSuccessListener(emailsToSend));
-					am.createDefaultActivities(owlClass(type), bontology, GenUtils.parseDate(newSrJson.at("properties").at("hasDateCreated").asString()), emailsToSend);
+					msgsToSend.clear();
+					CirmTransaction.get().addTopLevelEventListener(new SendMessagesOnTxSuccessListener(msgsToSend));
+					am.createDefaultActivities(owlClass(type), bontology, GenUtils.parseDate(newSrJson.at("properties").at("hasDateCreated").asString()), msgsToSend);
 					Response.setCurrent(current);
 					ThreadLocalStopwatch.now("END createDefaultActivities");
 					Json locationInfoTmp = populateGisDataInternal(newSrJson, bontology, locationInfo);
@@ -1898,12 +1899,12 @@ public class LegacyEmulator extends RestService
 						{
 							BOntology withMeta = addMetaDataAxioms(bontology);
 							withMetadata.add(withMeta);
-							CirmMessage msg = MessageManager.get().createMessageFromTemplate(
+							CirmMimeMessage msg = MessageManager.get().createMimeMessageFromTemplate(
 									withMeta,
 									dataProperty(individual(type),
 											"legacy:hasLegacyCode"), emailTemplate);
 							msg.addExplanation("createNewKOSR SR template " + emailTemplate.getIRI().getFragment());
-							emailsToSend.add(msg);
+							msgsToSend.add(msg);
 						}
 						catch (Throwable t)
 						{
@@ -1941,7 +1942,7 @@ public class LegacyEmulator extends RestService
 					if(actorEmails != null)
 					{
 						sendEmailToCustomers(bontology, 
-								actorEmails.asJsonList(), emailsToSend, 
+								actorEmails.asJsonList(), msgsToSend, 
 								result.at("properties").at("hasCaseNumber").asString(),
 								OWL.getEntityLabel(individual("legacy:"+result.at("type").asString()))
 						);
@@ -1960,7 +1961,7 @@ public class LegacyEmulator extends RestService
 						locationInfo.at("extendedInfo").at("error"));
 				ThreadLocalStopwatch.error("Error createNewKOSR - Gis problem " + result.at("bo").at("properties").at("hasCaseNumber").asString());
 			}
-			//MessageManager.get().sendEmails(emailsToSend);
+			//MessageManager.get().sendEmails(msgsToSend);
 			srStatsReporter.succeeded("create", newSrJson);
 			ThreadLocalStopwatch.stop("END createNewKOSR");
 			return result;					
@@ -1978,19 +1979,19 @@ public class LegacyEmulator extends RestService
 
 	private void sendEmailToCustomers(BOntology bo, 
 				List<Json> customers, 
-				List<CirmMessage> emailsToSend, 
+				List<CirmMessage> msgsToSend, 
 				String caseNumber, String srType)
 		{
 			for(Json customer : customers)
 			{
-				CirmMessage msg = MessageManager.get().createMessageFromTemplate(
+				CirmMimeMessage msg = MessageManager.get().createMimeMessageFromTemplate(
 						bo, individual("legacy:SERVICEHUB_EMAIL_CUSTOMERS"), 
 						srType + " " + caseNumber, 
 						customer.at("email").asString(), 
 						null, null, null);
 	//					"Dear "+customer.at("name").asString()
 	//					+", \n We successfully processed the Service Request.");
-				emailsToSend.add(msg);
+				msgsToSend.add(msg);
 			}
 		}
 
@@ -2039,7 +2040,7 @@ public class LegacyEmulator extends RestService
 			List<CirmMessage> messages = new ArrayList<>();
 			ActivityManager amgr = new ActivityManager();
 			amgr.createAutoOnPendingActivities(bontology, new Date(), messages);
-			CirmTransaction.get().addTopLevelEventListener(new SendEmailOnTxSuccessListener(messages));
+			CirmTransaction.get().addTopLevelEventListener(new SendMessagesOnTxSuccessListener(messages));
 		}
 		// 5 Save BO		
 		getPersister().saveBusinessObjectOntology(bontology.getOntology());
@@ -2154,12 +2155,12 @@ public class LegacyEmulator extends RestService
 			String comments = data.has("comments")? data.at("comments").asString() : null;
 
 			BOntology bo = findServiceCaseOntology(boid);
-			final List<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();
+			final List<CirmMessage> msgsToSend = new ArrayList<CirmMessage>();
 			OWLNamedIndividual emailTemplate = individual("legacy:SERVICEHUB_EMAIL");
-			CirmMessage msg = MessageManager.get().createMessageFromTemplate(
+			CirmMimeMessage msg = MessageManager.get().createMimeMessageFromTemplate(
 					bo, emailTemplate, subject, to, cc, bcc,comments);
-			emailsToSend.add(msg);
-			MessageManager.get().sendEmails(emailsToSend);
+			msgsToSend.add(msg);
+			MessageManager.get().sendMessages(msgsToSend);
 			return ok();
 		}
 		catch(Exception e)
@@ -2325,16 +2326,16 @@ public class LegacyEmulator extends RestService
 					return ko("Can only create an activity on an open SR.");
 				ActivityManager manager = new ActivityManager();
 				OWLNamedIndividual activity = individual("legacy:" + activityCode);
-				//hilpold whole algorithm should be inside a transaction and SendEmailOnTxSuccessListener used
-				List<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();
+				//hilpold whole algorithm should be inside a transaction and SendMessagesOnTxSuccessListener used
+				List<CirmMessage> msgsToSend = new ArrayList<CirmMessage>();
 				//Create the activity ignoring occur day settings on TM callback.
-				manager.createActivityOccurNow(activity, bo, emailsToSend);
+				manager.createActivityOccurNow(activity, bo, msgsToSend);
 				persister.saveBusinessObjectOntology(bo.getOntology());
-				for (CirmMessage m : emailsToSend) 
+				for (CirmMessage m : msgsToSend) 
 				{
 					m.addExplanation("LE.createActivity " + activityCode);
 				}
-				MessageManager.get().sendEmails(emailsToSend);
+				MessageManager.get().sendMessages(msgsToSend);
 				ThreadLocalStopwatch.stop("END /bo/{boid}/activities/create/{activityCode} success " + boid + " " + activityCode);
 				return ok();
 			} else 
@@ -2432,14 +2433,14 @@ public class LegacyEmulator extends RestService
                                    if (now.after(due))
                                    {
                                 	   ActivityManager manager = new ActivityManager();
-                                	   //TODO hilpold full method should be inside a transaction and SendEmailOnTxSuccessListener used
-                                	   List<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();
-                                	   manager.createActivity(individual("legacy:"	+ overdueActivity), null, null, bo, null, null, emailsToSend);
-                                	   manager.updateActivityIfAutoDefaultOutcome(activityToCheck, bo, emailsToSend);
+                                	   //TODO hilpold full method should be inside a transaction and SendMessagesOnTxSuccessListener used
+                                	   List<CirmMessage> msgsToSend = new ArrayList<CirmMessage>();
+                                	   manager.createActivity(individual("legacy:"	+ overdueActivity), null, null, bo, null, null, msgsToSend);
+                                	   manager.updateActivityIfAutoDefaultOutcome(activityToCheck, bo, msgsToSend);
                                 	   persister.saveBusinessObjectOntology(bo.getOntology());
-                                	   for (CirmMessage m : emailsToSend) 
+                                	   for (CirmMessage m : msgsToSend) 
                                 		   m.addExplanation("LE.createWhenOverDue boid " + boid + " ACt: " + activityFragment);
-                                	   MessageManager.get().sendEmails(emailsToSend);
+                                	   MessageManager.get().sendMessages(msgsToSend);
                                     }
                                }
                                ThreadLocalStopwatch.stop("END " + callInfo);

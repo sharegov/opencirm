@@ -189,7 +189,7 @@ public class ActivityManager
     			createActivity(activityType, outcome, null, null, bo, createdDate, completedDate, null, localMessages);
     			for (CirmMessage lm : localMessages) 
     			{
-    				lm.addExplanation("createDefaultActivities T: " + serviceCaseType.getIRI().getFragment());
+  					lm.addExplanation("createDefaultActivities T: " + serviceCaseType.getIRI().getFragment());
     				messages.add(lm);
     			}
 			}
@@ -221,7 +221,7 @@ public class ActivityManager
         			createActivity(activityType, outcome, null, null, bo, createdDate, completedDate, null, localMessages);
         			for (CirmMessage lm : localMessages) 
         			{
-        				lm.addExplanation("createAutoOnPendingActivities T: " + srTypeInd.getIRI().getFragment());
+       					lm.addExplanation("createAutoOnPendingActivities T: " + srTypeInd.getIRI().getFragment());
         				messages.add(lm);
         			}
     			}
@@ -522,16 +522,29 @@ public class ActivityManager
     				System.out.println("createActivity: email creation prevented, because serviceActivity " + serviceActivity + " Type: " + activityType + " hasAssignActivityToOutcomeEmail, was executed and still noone assigned.");
     			} else 
     			{
-    				CirmMessage m = MessageManager.get().createMessageFromTemplate(bo, dataProperty(activityType, "legacy:hasLegacyCode"), emailTemplate);
+    				CirmMimeMessage m = MessageManager.get().createMimeMessageFromTemplate(bo, dataProperty(activityType, "legacy:hasLegacyCode"), emailTemplate);
     				if (m!= null) {
     					m.addExplanation("createActivity " + serviceActivity.getIRI().getFragment() 
     							+ " Tpl: " + emailTemplate.getIRI().getFragment());
     					messages.add(m);
     				}
-    				else
+    				else {
     					System.err.println("ActivityManager: created Message was Null for " + (bo != null? bo.getObjectId() : bo) + "act: " + serviceActivity + " actT:" + activityType + " tmpl: " + emailTemplate);
+    				}
     			}
     		}
+    		OWLNamedIndividual smsTemplate = objectProperty(activityType, "legacy:hasSmsTemplate");
+    		if(smsTemplate != null && USE_MESSAGE_MANAGER)
+    		{
+    			CirmSmsMessage m = MessageManager.get().createSmsMessageFromTemplate(bo, dataProperty(activityType, "legacy:hasLegacyCode"), smsTemplate);
+    			if (m!= null) {
+    				messages.add(m);
+    			}
+    			else {
+    				System.err.println("ActivityManager: created SMS Message was Null for " + (bo != null? bo.getObjectId() : bo) + "act: " + serviceActivity + " actT:" + activityType + " tmpl: " + smsTemplate);
+    			}
+    		}
+
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -718,7 +731,7 @@ public class ActivityManager
 				if(emailTemplate != null && USE_MESSAGE_MANAGER)
 				{
 					System.out.println("updateactivity & email: aType: " + activityType);
-					CirmMessage m = MessageManager.get().createMessageFromTemplate(bo, dataProperty(activityType, "legacy:hasLegacyCode"), emailTemplate);
+					CirmMimeMessage m = MessageManager.get().createMimeMessageFromTemplate(bo, dataProperty(activityType, "legacy:hasLegacyCode"), emailTemplate);
 					if (m!= null) {
 						m.addExplanation("updateActivity outcomeEmailAssign " + serviceActivity.getIRI().getFragment() 
 								+ " AType: " + activityType 
@@ -728,7 +741,24 @@ public class ActivityManager
 					}
 					else
 						System.err.println("ActivityManager: created Message was Null for " + (bo != null? bo.getObjectId() : bo) + " act:" + activityType + " tmpl: " + emailTemplate);
+				}
+				OWLNamedIndividual smsTemplate = objectProperty(activityType, "legacy:hasSmsTemplate");
+				if(smsTemplate != null && USE_MESSAGE_MANAGER)
+				{
+					System.out.println("updateactivity & sms: aType: " + activityType);
+					CirmSmsMessage m = MessageManager.get().createSmsMessageFromTemplate(bo, dataProperty(activityType, "legacy:hasLegacyCode"), smsTemplate);
+					if (m!= null) {
+						m.addExplanation("updateActivity outcomeSmsAssign " + serviceActivity.getIRI().getFragment() 
+								+ " AType: " + activityType 
+								+ " Outcome: " + outcome
+								+ " Tpl: " + smsTemplate.getIRI().getFragment());
+						messages.add(m);
+					}
+					else {
+						System.err.println("ActivityManager: created SMS Message was Null for " + (bo != null? bo.getObjectId() : bo) + " act:" + activityType + " tmpl: " + smsTemplate);
+					}
 				} 
+
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -758,7 +788,7 @@ public class ActivityManager
 		//close service case on outcome
 		triggerCloseCaseOnOutcome(serviceActivity, outcome, bo, messages);
 		//Send email when status changes to X-Error
-		triggerSendEmailOnOutCome(outcome, bo, messages);
+		triggerSendMessageOnOutCome(outcome, bo, messages);
 	}
 	
 	/**
@@ -766,9 +796,8 @@ public class ActivityManager
 	 * @param outcome : The Outcome Individual which is to be set as the Outcome of the ServiceActivity (can be null)
 	 * @param bo : The Business Ontology of the Service Request
 	 * @param messages : 
-	 */
-	
-	private void triggerSendEmailOnOutCome(OWLNamedIndividual outcome,
+	 */	
+	private void triggerSendMessageOnOutCome(OWLNamedIndividual outcome,
 			BOntology bo, List<CirmMessage> messages) {
 		if (outcome  == null) return;
 		// ensure HGDB individual if not yet in repo:
@@ -781,22 +810,39 @@ public class ActivityManager
 			System.out.println("outcomeEvent:"+outcomeEvent);
 			OWLNamedIndividual emailTemplate = objectProperty(outcomeEvent,"legacy:hasEmailTemplate");
 			System.out.println("emailTemplate:"+emailTemplate);
+			OWLNamedIndividual smsTemplate = objectProperty(outcomeEvent,"legacy:hasSmsTemplate");
+			System.out.println("smsTemplate:" + smsTemplate);
 			Set<OWLNamedIndividual> srType =   objectProperties(outcomeEvent,"legacy:hasServiceCase");
 			System.out.println("srType:"+srType);
 			OWLIndividual boSRType = individual(bo.getTypeIRI("legacy"));
 			System.out.println("boSRType:"+boSRType);
 			if (emailTemplate != null && USE_MESSAGE_MANAGER && srType.contains(boSRType)) {
 				System.out.println("Sending Email:");
-				CirmMessage m = MessageManager.get().createMessageFromTemplate(bo, dataProperty(outcomeEvent, "legacy:hasLegacyCode"),emailTemplate);
-				System.out.println("CirmMessage is : "+m);
+				CirmMimeMessage m = MessageManager.get().createMimeMessageFromTemplate(bo, dataProperty(outcomeEvent, "legacy:hasLegacyCode"),emailTemplate);
+				System.out.println("CirmMimeMessage is : "+m);
 				if (m != null) {
 					m.addExplanation("triggerSendEmailOnOutCome " + outcome);
 					messages.add(m);
-				} else
+				} else {
 					System.err.println("ActivityManager: Message is NULL");
+				}
 			}
-			else{
+			else {
 				System.out.println(boSRType+ " IS NOT AN INTERFACE SR TYPE: EMAIL WILL NOT BE SENT");
+			}
+			if (smsTemplate != null && USE_MESSAGE_MANAGER && srType.contains(boSRType)) {
+				System.out.println("Sending SMS:");
+				CirmSmsMessage m = MessageManager.get().createSmsMessageFromTemplate(bo, dataProperty(outcomeEvent, "legacy:hasLegacyCode"),smsTemplate);
+				System.out.println("CirmSmsMessage is : "+ m);
+				if (m != null) {
+					m.addExplanation("triggerSendEmailOnOutCome " + outcome);
+					messages.add(m);
+				} else {
+					System.err.println("ActivityManager: Message is NULL");
+				}
+			}
+			else {
+				System.out.println(boSRType+ " IS NOT AN INTERFACE SR TYPE: SMS WILL NOT BE SENT");
 			}
 		}
 	}
