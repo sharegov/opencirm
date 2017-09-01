@@ -71,6 +71,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
     		self.isCreatedBy = username;
     	}
     	self.emailCustomer = false;
+    	self.hasNotificationPreference = "";
     	if(isCitizenActor(iri))
 	    		self.isAnonymous = false;
     }
@@ -1410,19 +1411,51 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			return true;
 		};
 		
-		self.isCitizenAnonymous = function() {
+		self.changeCitizenAnonymous = function() {
 			var citizen = self.getFirstCitizenActor();
 			if(citizen == null)
 				return false;
 			if(citizen.isAnonymous() === true) {
 				citizen.CellPhoneNumber()[0].number('0000000000');
 				citizen.Name("Anonymous");
+				citizen.hasNotificationPreference("");
 			}
 			else if(citizen.Name() === "Anonymous") {
 				citizen.CellPhoneNumber()[0].number('');
 				citizen.Name("");
+				citizen.hasNotificationPreference("");
 			}
 		}; 
+
+		self.isCitizenAnonymous = function() {
+			var citizen = self.getFirstCitizenActor();
+			if(citizen == null) {
+				return false;
+			} else {
+				return citizen.isAnonymous() === true;
+			}
+		}
+
+		self.getSelectableCitizenNotificationPrefs = function() {
+			var options = [];
+			var emailCTmpl = (self.srType && self.srType().transientHasCitizenEmailTemplate === true);
+			var smsCTmpl = (self.srType && self.srType().transientHasCitizenSmsTemplate === true);			
+			options.push({id:"N", label: "No Notification"});
+			if (emailCTmpl) {
+				options.push({id:"E", label: "E-mail only"});
+			}
+			if (smsCTmpl) {
+				options.push({id:"S", label: "SMS only"});
+			}
+			if (emailCTmpl && smsCTmpl) {
+				options.push({id:"A", label: "E-mail & SMS"});
+			}
+			return options;
+		};
+
+		self.hasSelectableCitizenNotificationPrefs = function() {
+			return (self.srType && (self.srType().transientHasCitizenEmailTemplate === true || self.srType().transientHasCitizenSmsTemplate === true));
+		};
 
 		self.getCitizenActorField = function(el) {
 			var citizen = self.getFirstCitizenActor();
@@ -1442,10 +1475,15 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 		
 		self.getCitizenActorEmailError = function() {
 			var citizen = self.getFirstCitizenActor();
-			if(citizen != null)
-				return citizen.hasEmailAddress().label.hasError;
-			else
+			if(citizen != null) {
+				var result = (citizen.hasEmailAddress().label.hasError() 
+					|| (citizen.hasNotificationPreference() === "E" || citizen.hasNotificationPreference() === "A")
+				);
+				return result;
+			}
+			else {
 				return citizen;
+			}
 		};
 
 		self.getCitizenActorCellPhone = function() {

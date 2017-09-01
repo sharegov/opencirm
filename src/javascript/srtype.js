@@ -18,7 +18,7 @@
  * 
  * @author hilpold
  */
-define(["jquery", "U" ]), function($, U) {
+define(["jquery", "U" ], function($, U) {
 
 	//Constants for finding templates that notify citizen in hasTo/hasCC template properties.
 	var VAR_CITIZEN_CELL_PHONE = 'CITIZENS_CELL_PHONE';
@@ -79,4 +79,4 @@ define(["jquery", "U" ]), function($, U) {
 		hasCitizenEmailTemplate : hasCitizenEmailTemplate,
 		hasCitizenSmsTemplate : hasCitizenSmsTemplate
 	}
-}
+})
