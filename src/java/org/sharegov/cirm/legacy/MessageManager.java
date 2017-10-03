@@ -81,6 +81,9 @@ import org.sharegov.cirm.BOntology;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.rest.LegacyEmulator;
+import org.sharegov.cirm.utils.MessageTemplateUtil;
+import org.sharegov.cirm.utils.MessagingPreference;
+import org.sharegov.cirm.utils.SrJsonUtil;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 import org.sharegov.cirm.utils.xpath.Context;
 import org.sharegov.cirm.utils.xpath.Resolver;
@@ -158,6 +161,10 @@ public class MessageManager
 	private volatile InternetAddress messageSenderAddress;
 	
 	private volatile SmsService smsService;
+	
+	private final MessageTemplateUtil mtUtil = new MessageTemplateUtil();
+	
+	private final SrJsonUtil srUtil = new SrJsonUtil();
 	
 	private static class MessageManagerHolder {
 		private static MessageManager instance = new MessageManager();
@@ -278,8 +285,24 @@ public class MessageManager
 				bodyTemplate = dataProperty(messageTemplate, "legacy:hasBody");
 			OWLLiteral hasHighPriority = dataProperty(messageTemplate, "legacy:hasHighPriority");	
 			boolean highPriority = (hasHighPriority !=null && hasHighPriority.isBoolean() && hasHighPriority.parseBoolean());
-			Map<String, String> parameters = fillParameters(sr, legacyCode, toTemplate != null ? toTemplate
-					.getLiteral() : null, ccTemplate != null ? ccTemplate.getLiteral() : null,
+			String toTemplateLiteral = toTemplate != null ? toTemplate.getLiteral() : null;
+			String ccTemplateLiteral = ccTemplate != null ? ccTemplate.getLiteral() : null;
+			// citizen messaging preference processing
+			if(toTemplateLiteral != null && mtUtil.hasCitizenEmailRecipient(toTemplateLiteral)) {
+				MessagingPreference msgPref = srUtil.getCitizenNotificationPreference(sr);
+				if(msgPref != null && !msgPref.prefersEmail()) {
+					//System.out.println(msgPref.getLabel());
+					toTemplateLiteral = mtUtil.removeCitizenCellPhoneRecipient(toTemplateLiteral);
+				}
+			}
+			if(ccTemplateLiteral != null && mtUtil.hasCitizenEmailRecipient(ccTemplateLiteral)) {
+				MessagingPreference msgPref = srUtil.getCitizenNotificationPreference(sr);
+				if(msgPref != null && !msgPref.prefersEmail()) {
+					ccTemplateLiteral = mtUtil.removeCitizenCellPhoneRecipient(ccTemplateLiteral);
+				}
+			}
+			//
+			Map<String, String> parameters = fillParameters(sr, legacyCode, toTemplateLiteral, ccTemplateLiteral,
 					subjectTemplate != null ? subjectTemplate.getLiteral() : null, bodyTemplate != null ? bodyTemplate
 							.getLiteral() : null);
 			String to = null;
@@ -289,9 +312,9 @@ public class MessageManager
 			String bcc = null;
 			String bccTest = null;
 			if (toTemplate != null)
-				to = applyTemplate(toTemplate.getLiteral(), parameters);
+				to = applyTemplate(toTemplateLiteral, parameters);
 			if (ccTemplate != null)
-				cc = applyTemplate(ccTemplate.getLiteral(), parameters);
+				cc = applyTemplate(ccTemplateLiteral, parameters);
 			if (subjectTemplate != null)
 				subject = applyTemplate(subjectTemplate.getLiteral(), parameters);
 			if (bodyTemplate != null)
@@ -374,7 +397,7 @@ public class MessageManager
 	}
 	
 	/**
-	 * 
+	 * Internal Method to create an Sms message. Respects Citizen messaging preference.
 	 * @param sr
 	 *            - The sr to be transformed.
 	 * @param legacyCode
@@ -395,21 +418,26 @@ public class MessageManager
 			//OWLNamedIndividual messageTemplateClass = OWL.individual("legacy:MessageTemplate");			
 			OWLLiteral toTemplate = dataProperty(messageTemplate, "legacy:hasTo");
 			OWLLiteral bodyTemplate; 
+			String toTemplateLiteral = toTemplate != null ? toTemplate.getLiteral() : null;
+			if (mtUtil.hasCitizenCellPhoneRecipient(toTemplateLiteral)) {
+				MessagingPreference msgPref = srUtil.getCitizenNotificationPreference(sr);
+				if(msgPref == null || !msgPref.prefersSMS()) {
+					toTemplateLiteral = mtUtil.removeCitizenCellPhoneRecipient(toTemplateLiteral);
+				}
+			}
 			if (useLegacyBody)
 				bodyTemplate = dataProperty(messageTemplate, "legacy:hasLegacyBody");
 			else
 				bodyTemplate = dataProperty(messageTemplate, "legacy:hasBody");
-			Map<String, String> parameters = fillParameters(sr, legacyCode, toTemplate != null ? toTemplate
-					.getLiteral() : null, bodyTemplate != null ? bodyTemplate.getLiteral() : null);
+			String bodyTemplateLiteral = bodyTemplate != null ? bodyTemplate.getLiteral() : null;
+			Map<String, String> parameters = fillParameters(sr, legacyCode, toTemplateLiteral, bodyTemplateLiteral);
 			String to = null;
 			String body = null;
 			if (toTemplate != null)
-				to = applyTemplate(toTemplate.getLiteral(), parameters);
+				to = applyTemplate(toTemplateLiteral, parameters);
 			if (bodyTemplate != null)
 			{
-				//TODO String bodyTemplateStr = useLegacyBody? legacyBodyToHTML(bodyTemplate) : bodyTemplate.getLiteral();  
 				String bodyTemplateStr = bodyTemplate.getLiteral();
-				//bodyTemplateStr = legacyBodyToHTML(bodyTemplateStr);
 				body = applyTemplate(bodyTemplateStr, parameters);
 			}
 			if (to != null)
