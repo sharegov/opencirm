@@ -799,6 +799,9 @@
         "rdfs:label": {
           "$ref": "#/definitions/rdfs:label"
         },
+        "legacy:hasAnswerValue": {
+           "type": "string"
+        },
         "legacy:hasActivity": {
           "$ref": "#/definitions/legacy:Activity"
         },
