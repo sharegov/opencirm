@@ -1208,6 +1208,7 @@ public class MessageManager
 				{
 					try
 					{
+						smsService = SmsService.get();
 						OWLLiteral host = OWL.dataProperty( (OWLNamedIndividual)Refs.configSet.resolve().get("SMTPConfig"), "hasValue");
 						Properties newProps = new Properties();
 						newProps.setProperty("mail.smtp.host", host.getLiteral());
@@ -1347,7 +1348,7 @@ public class MessageManager
 	private void sendSMS(CirmSmsMessage smsMessage)
 	{
 		try{
-			if (smsService == null) smsService = new SmsService();
+			if (smsService == null) smsService = SmsService.get();
 			smsService.sendSMS(smsMessage);
 		} catch (Exception e)
 		{
