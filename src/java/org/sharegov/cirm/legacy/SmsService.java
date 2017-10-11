@@ -80,7 +80,7 @@ public class SmsService {
 	
 	private SmsService(String url, String clientId, String token) {
 		if(url == null || clientId == null || token == null) {
-			throw new IllegalArgumentException("An Sms service constructor paramter was null. Were " 
+			throw new IllegalArgumentException("An Sms service constructor parameter was null. Were " 
 					+ url + " " + clientId + " " + token);
 		}
 		this.url = url;
@@ -155,7 +155,7 @@ public class SmsService {
 			ThreadLocalStopwatch.error("ERROR: SmsService: SOME TEXT MESSAGES COULD NOT BE SENT. Failed: " 
 					+ (successTarget - successActual) +  " of " + successTarget);
 		} else {
-			ThreadLocalStopwatch.error("DONE: SmsService: All " + successActual + " text messages were successfully sent.");
+			ThreadLocalStopwatch.now("DONE: SmsService: All " + successActual + " text messages were successfully sent.");
 		}
 	}
 
@@ -190,7 +190,7 @@ public class SmsService {
 		smsPayload.set("message", text);
 		Json result = GenUtils.httpPostJson(url, smsPayload);
 		ThreadLocalStopwatch.now("SmsService: END https Sending one sms");
-		if (result != null && !result.toString().isEmpty()) {
+		if (result != null && !(result.isString() && result.asString().isEmpty())) {
 			ThreadLocalStopwatch.now("SmsService: http result: " + result);
 		}
 	}

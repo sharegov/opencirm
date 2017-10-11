@@ -710,35 +710,11 @@ public class MessageManager
     				tryRecoverSendException(mimeMessage, e);
     			}
 			} else {
-				//TODO error mesage type not implemented
 				ThreadLocalStopwatch.error("error message type not implemented " + message);
 			}
 		}
 	}
 	
-//	/**
-//	 * Sends all messages in List, tries a recovery message on exception with template information.
-//	 * A recovery email will contain a detailed creation explanation of the message.
-//	 * @param messages
-//	 */
-//	public void sendEmails(List<CirmMimeMessage> messages) 
-//	{
-//		for (CirmMimeMessage message : messages)
-//		{
-//			try 
-//			{
-//				if (INCLUDE_EXPLANATION_IN_EMAIL) 
-//				{
-//					message.addExplanation("<br>Msg generated on server: " + getServerShortName());
-//					message.includeExplanationInBody();
-//				}
-//				sendEmail(message);
-//			} catch (Exception e)
-//			{
-//				tryRecoverSendException(message, e);
-//			}
-//		}
-//	}
 	
 	/**
 	 * Tries to recover from a send message failure if caused by a SendFailedException.
@@ -1344,17 +1320,21 @@ public class MessageManager
 		return result;
 	}
 	
-	
+	/**
+	 * Sends a CirmSmsMessage using a short messaging service, possibly splitting the message into multiple texts.
+	 * @param smsMessage
+	 */
 	private void sendSMS(CirmSmsMessage smsMessage)
 	{
 		try{
-			if (smsService == null) smsService = SmsService.get();
+			if (smsService == null) {
+				smsService = SmsService.get();
+			}
 			smsService.sendSMS(smsMessage);
 		} catch (Exception e)
 		{
-			//TODO: handle the exception.
+			ThreadLocalStopwatch.error("ERROR MessageManager: sendSMS failed with " + e);
+			e.printStackTrace();
 		}
-		
 	}
-
 }
