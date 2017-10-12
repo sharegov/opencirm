@@ -145,7 +145,7 @@
 			</div>
 			<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
 	        <div class="grid_3 alpha">
-				<input data-bind="value: $root.getCitizenActorEmail(), valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: $root.getCitizenActorEmailError()}" placeholder="E-mail"/>
+				<input data-bind="value: $root.getCitizenActorEmail(), valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: $root.getCitizenActorEmailError()}" placeholder="Email"/>
 			</div>
 	        <div class="grid_2">
 				<input data-bind="inputmask: { value: $root.getCitizenActorCellPhone() , mask:'999-999-9999', autoUnmask: true} , valueUpdate: 'keyup' , attr:{disabled: $root.isCustomerLocked()}, css: { error: $root.getCitizenActorCellPhoneError()}" placeholder="Phone Number"/>
@@ -166,8 +166,9 @@
 			   			optionsCaption:'Please Select', 
 			   			optionsValue: 'id',
 			   			optionsText: 'label',
+			   			event: {change: $root.citizenNotificationSelectionChanged},
 			   			attr:{disabled: $root.isCustomerLocked() || $root.isCitizenAnonymous() },
-			   			css: { error: $root.getCitizenActorField('hasNotificationPreference')() === '' }" style="width:200px;">
+			   			css: { error: $root.getCitizenActorField('hasNotificationPreference')() === undefined && !$root.isCitizenAnonymous()}" style="width:200px;">
 				</select>
 			</div>
 			<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
