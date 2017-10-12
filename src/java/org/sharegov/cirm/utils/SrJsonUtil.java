@@ -15,6 +15,10 @@
  ******************************************************************************/
 package org.sharegov.cirm.utils;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import mjson.Json;
 
 /**
@@ -78,6 +82,89 @@ public class SrJsonUtil {
 		} else {
 			//no properties or no hasXCoordinate, ok in some cases, return null.
 			result = null;
+		}
+		return result;
+	}
+	
+	/**
+	 * Gets the notification preference of the citizen by hasNotificationPreference property.
+	 * (if more than one citizen is found in the SR, the first serialized citizen's preference is returned.)
+	 * If the first citizen does not have a hasNotificationPreference, MessagingPreference.Undefined is returned.
+	 * @param sr
+	 * @return null, if no citizen found in SR.
+	 */
+	public MessagingPreference getCitizenNotificationPreference(Json sr) {
+		List<Json> citizens = getCitizenActors(sr);
+		if (citizens.isEmpty()) {
+			return null;
+		} else {
+			return getActorNotificationPreference(citizens.get(0));
+		}
+	}
+	
+	/**
+	 * Gets the actors notification preference or returns Undefined if not available.
+	 * @param serviceCaseActor
+	 * @return
+	 */
+	MessagingPreference getActorNotificationPreference(Json serviceCaseActor) {
+		if (serviceCaseActor.has("hasNotificationPreference")) {
+			String prefValue = serviceCaseActor.at("hasNotificationPreference").asString();
+			if (prefValue.isEmpty()) {
+				return MessagingPreference.UNDEFINED;
+			} else {
+				return MessagingPreference.valueOf(prefValue);
+			}
+		} else {
+			return MessagingPreference.UNDEFINED;
+		}
+	}
+	
+	public List<Json> getCitizenActors(Json sr) {
+		List<Json> result = new ArrayList<>();
+		// "hasServiceCaseActor" [] //hasServiceActor obj with iri or string http://www.miamidade.gov/cirm/legacy#CITIZEN
+		List<Json> actors = getActors(sr);
+		for (Json actor : actors) {
+			if (isCitizenActor(actor)) {
+				result.add(actor);
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Determines if the actor is of type CITIZEN.
+	 * @param serviceCaseActor
+	 * @return
+	 */
+	boolean isCitizenActor(Json serviceCaseActor) {
+		if (!serviceCaseActor.has("hasServiceActor")) throw new IllegalArgumentException("No hasServiceActor property in " + serviceCaseActor);
+		boolean result;
+		Json hasServiceActor = serviceCaseActor.at("hasServiceActor");
+		if (hasServiceActor.isObject()) {
+			result = hasServiceActor.at("iri").asString().endsWith("#CITIZEN");
+		} else if (hasServiceActor.isString()) {
+			result = hasServiceActor.asString().endsWith("#CITIZEN");
+		} else {
+			throw new IllegalArgumentException("hasServiceActor must be string or ojb with iri " + serviceCaseActor);
+		}
+		return result;
+	}
+	
+	
+	/**
+	 * Returns hasServiceCaseActor always as Json List.
+	 * @param sr
+	 * @return
+	 */
+	public List<Json> getActors(Json sr) {
+		List<Json> result;
+		Json root = sr;
+		if (root.has("properties")) root = root.at("properties");
+		if (root.has("hasServiceCaseActor")) {
+			result = (root.at("hasServiceCaseActor").isArray()) ? root.at("hasServiceCaseActor").asJsonList() : Collections.singletonList(root.at("hasServiceCaseActor"));
+		} else {
+			result = Collections.emptyList();
 		}
 		return result;
 	}
