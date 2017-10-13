@@ -292,13 +292,13 @@ public class MessageManager
 				MessagingPreference msgPref = srUtil.getCitizenNotificationPreference(sr);
 				if(msgPref != null && !msgPref.prefersEmail()) {
 					//System.out.println(msgPref.getLabel());
-					toTemplateLiteral = mtUtil.removeCitizenCellPhoneRecipient(toTemplateLiteral);
+					toTemplateLiteral = mtUtil.removeCitizenEmailRecipient(toTemplateLiteral);
 				}
 			}
 			if(ccTemplateLiteral != null && mtUtil.hasCitizenEmailRecipient(ccTemplateLiteral)) {
 				MessagingPreference msgPref = srUtil.getCitizenNotificationPreference(sr);
 				if(msgPref != null && !msgPref.prefersEmail()) {
-					ccTemplateLiteral = mtUtil.removeCitizenCellPhoneRecipient(ccTemplateLiteral);
+					ccTemplateLiteral = mtUtil.removeCitizenEmailRecipient(ccTemplateLiteral);
 				}
 			}
 			//
