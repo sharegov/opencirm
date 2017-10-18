@@ -662,6 +662,9 @@
         "legacy:hasEmailTemplate": {
           "$ref": "#/definitions/legacy:hasEmailTemplate"
         },
+		"legacy:hasSmsTemplate": {
+          "$ref": "#/definitions/legacy:hasSmsTemplate"
+        },
         "legacy:isAutoOnPending": {
           "$ref": "#/definitions/legacy:IntakeMethod"
         },
@@ -1082,6 +1085,45 @@
         "iri",
         "legacy:hasTo",
         "legacy:hasSubject",
+        "legacy:hasBody",
+        "type"
+      ],
+      "type": "object"
+    },
+	"legacy:hasSmsTemplate": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/reference"
+        },
+        {
+          "$ref": "#/definitions/legacy:hasSmsTemplateObject"
+        }
+      ]
+    },
+    "legacy:hasSmsTemplateObject": {
+      "additionalProperties": false,
+      "properties": {
+        "iri": {
+          "$ref": "#/definitions/iri"
+        },
+        "rdfs:label": {
+          "$ref": "#/definitions/rdfs:label"
+        },
+        "legacy:hasTo": {
+          "type": "string"
+        },
+        "legacy:hasBody": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "legacy:MessageTemplate"
+          ]
+        },
+      },
+      "required": [
+        "iri",
+        "legacy:hasTo",
         "legacy:hasBody",
         "type"
       ],
