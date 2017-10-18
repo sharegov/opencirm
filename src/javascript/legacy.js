@@ -1341,7 +1341,8 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 					return el.CASE_NUMBER();
 			}
 		};
-
+		
+		//SR click in ASD dispatch view
 		self.populateSH = function(el) {
 			$("#populate_legacy_dialog_alert").dialog({ height: 150, width: 300, modal: true, buttons: {
 				"View Activities" : function() {
@@ -2335,13 +2336,15 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 					return el.hasCaseNumber;
 			}
 		};
-
+		
+		//SR click in Basic Search
 		self.populateSH = function(el) {
 			$("#populate_legacy_dialog_alert").dialog({ height: 150, width: 300, modal: true, buttons: {
-				"View Activities" : function() {
+				"View Service Request" : function() {
 					$(document).trigger(InteractionEvents.populateSH, [el.boid]);
-					$("#populate_legacy_dialog_alert").dialog('close');
-					$(document).trigger(InteractionEvents.showServiceActivities, []);
+					$("#populate_legacy_dialog_alert").dialog('close');					
+					$(document).trigger(InteractionEvents.showServiceHub, []);
+					$(document).trigger(InteractionEvents.resetServiceHubToSRMain, []);
 				},
 				"View Report" : function() {
 					$("#populate_legacy_dialog_alert").dialog('close');
