@@ -1,5 +1,6 @@
 package org.sharegov.cirm;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,6 +14,7 @@ import mjson.Json;
 public class OntologyChangesRepo {
 	
 	private static String repositoryFile = "c:/cirmservices/persistent/changes_repository.json";
+	private static String archiveDirectory = "c:/cirmservices/persistent/archive/";
 	
 	private static OntologyChangesRepo instance;
 	private Map<String, Map<Integer, OntologyCommit>> ontoChangesMap;	
@@ -58,6 +60,21 @@ public class OntologyChangesRepo {
 	 */
 	public Map<Integer, OntologyCommit> getAllRevisionChangesForOnto (String onto){
 		return ontoChangesMap.get(onto);
+	}
+	
+	public int getLastRevisionNumber (String onto){
+		Map<Integer, OntologyCommit> revisions =  ontoChangesMap.get(onto);
+		
+		int maxRev = 0;
+		if (revisions != null){
+			for (int rx : revisions.keySet()){
+				if (rx > maxRev){
+					maxRev = rx;
+				}
+			}
+		}
+		
+		return maxRev;
 	}
 	
 	public  OntologyCommit getOntoRevisionChanges(String onto, int revision) {		
@@ -115,6 +132,27 @@ public class OntologyChangesRepo {
 			e.printStackTrace();
 		}	
 	}
+	
+	public synchronized void backup (){
+		try {
+			JsonUtil.writeToFile(toJson(), archiveDirectory + "changes_repository_backup_" + timestamp() + ".json");
+		} catch (Exception e){
+			System.out.println("Cannot save repository to file!");
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}	
+	}
+	
+	@SuppressWarnings("deprecation")
+	private String timestamp(){
+		Date time = new java.util.Date(System.currentTimeMillis());
+		
+		return ((Integer) (time.getMonth() + 1)).toString() + "_" + ((Integer) time.getDate()).toString() + "_" +
+			   ((Integer) (1900 + time.getYear())).toString() + "_" + 
+		       ((Integer) time.getHours()).toString() + "_" + ((Integer) time.getHours()).toString();
+				
+	}
+	
 	
 	public Json toJson(){
 		Json result = Json.array();

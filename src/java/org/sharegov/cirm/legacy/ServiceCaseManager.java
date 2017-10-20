@@ -120,6 +120,28 @@ public class ServiceCaseManager extends OntoAdmin {
 		
 		//Initialize Changes Repository
 		OntologyChangesRepo.getInstance();
+		//copy the repo and figure out max revision number 
+		OntologyChangesRepo repo = OntologyChangesRepo.getInstance().getCopy();
+		int lastRevisionOnRepo = repo.getLastRevisionNumber(OWL.ontology().getOntologyID().toString());
+		//figure out current revision
+		int currentRevision = getCurrentRevision();
+		
+		if (currentRevision < lastRevisionOnRepo){
+			System.out.println(" Re-appliying pending changes...");
+			
+			
+			OntologyChangesRepo.getInstance().clearAll();
+			
+			for (OWLOntology o: OWL.ontologies()){
+				Map<Integer, OntologyCommit> changes = repo.getAllRevisionChangesForOnto(o.getOntologyID().toString());
+			
+				if (changes != null){
+					for (OntologyCommit cx : changes.values()){					
+						commit( cx.getUserName(), cx.getComment(), cx.getChanges());
+					}
+				}
+			}
+		}
 		//Initialize Deployment List
 		Deployments.getInstance();
 		
@@ -1049,6 +1071,8 @@ public class ServiceCaseManager extends OntoAdmin {
 		System.out.print("Detecting approved revisions...");
 		
 		OntologyChangesRepo originalRepo =  OntologyChangesRepo.getInstance().getCopy();
+		
+		originalRepo.backup();
 		
 		int approved = 0;
 		for (OWLOntology o: OWL.ontologies()){
