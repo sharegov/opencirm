@@ -525,6 +525,9 @@
         "legacy:hasActivity": {
           "$ref": "#/definitions/legacy:Activity"
         },
+        "legacy:hasOutcome": {
+          "$ref": "#/definitions/legacy:Outcome"
+        },
         "legacy:hasStatus": {
           "$ref": "#/definitions/legacy:hasStatus"
         }
@@ -820,7 +823,8 @@
         "type": {
           "enum": [
             "legacy:ActivityTrigger",
-            "legacy:QuestionTrigger"
+            "legacy:QuestionTrigger",
+			"legacy:ActivityAssignment"
           ]
         },
         "iri": {
