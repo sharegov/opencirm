@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.sharegov.cirm;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import org.semanticweb.owlapi.model.OWLLiteral;
@@ -44,6 +45,8 @@ import org.sharegov.cirm.utils.ObjectRef;
 import org.sharegov.cirm.utils.Ref;
 import org.sharegov.cirm.utils.RequestScopeRef;
 import org.sharegov.cirm.utils.SingletonRef;
+
+import mjson.Json;
 
 public class Refs
 {
@@ -147,7 +150,10 @@ public class Refs
 				}});
 	public static final Ref<OWLSerialEntityCache> owlJsonCache = 
 			new SingletonRef<OWLSerialEntityCache>(new OWLSerialEntityCache());
-	
+
+	public static final Ref<ConcurrentHashMap<String, Json>> owlJsonSrTypeWithTransientCache = 
+			new SingletonRef<ConcurrentHashMap<String, Json>>(new ConcurrentHashMap<String, Json>(800));
+
 	public static final Ref<OwlRepo> owlRepo = new SingletonRef<OwlRepo>(
 			StartUp.getConfig().has("metaDatabaseLocation") ?
 			OwlRepo.getInstance() : null);

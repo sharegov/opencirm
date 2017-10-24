@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-define(['rest', 'U', 'srtype', 'store!'], function(rest, U, srtype, store) {
+define(['rest', 'U', 'store!'], function(rest, U, store) {
         
     var top = new rest.Client(U.baseurl);
     
@@ -73,13 +73,12 @@ define(['rest', 'U', 'srtype', 'store!'], function(rest, U, srtype, store) {
                  });
                  return x;
             }},
-            {"hasName": "serviceCases", "hasQueryExpression" : "legacy:ServiceCase",            
+            {"hasName": "serviceCases", "hasUrl": "/individuals/transient/srTypesTransient",            
                 "map":function(A) {
                     //A = [A];  
                     var m = {};
                     $.each(A, function(i,v) {
                     	var serviceCase = prepareServiceCaseTypeForUI(v);
-                        addServiceCaseTransientProperties(serviceCase);
                         //TODO check reason why we do this twice
                         m[v.iri] = prepareServiceCaseTypeForUI(serviceCase);
                     });
@@ -210,9 +209,8 @@ define(['rest', 'U', 'srtype', 'store!'], function(rest, U, srtype, store) {
          */
         function reloadServiceCaseType(serviceCaseTypeIri) {
         	var serviceCasePrefixedIri = "legacy:" + U.IRI.name(serviceCaseTypeIri);
-        	var serviceCase = top.get("/individuals/" + serviceCasePrefixedIri);
+        	var serviceCase = top.get("/individuals/transient/srTypeTransient/" + serviceCasePrefixedIri);
         	var preparedSR = prepareServiceCaseTypeForUI(serviceCase);
-        	addServiceCaseTransientProperties(serviceCase);
         	self.cached["serviceCases"][serviceCaseTypeIri] = preparedSR;
         	//Clear dependent caches
         	self.cached["serviceCaseList"] = null;
@@ -261,27 +259,7 @@ define(['rest', 'U', 'srtype', 'store!'], function(rest, U, srtype, store) {
             });             
             U.resolveIris(serviceCase);  
             return serviceCase;
-        } 
-        
-        /**
-         * Adds zero, one, or two transient/derived properties transientHasCitizenEmailTemplate / transientHasCitizenSmsTemplate 
-         * only if the determined value that is derived from parsing the srtype is true.
-         */
-        function addServiceCaseTransientProperties(serviceCaseUi) {
-        	try {
-        		var hasCitizenEmailTemplate = srtype.hasCitizenEmailTemplate(serviceCaseUi);
-        		var hasCitizenSmsTemplate = srtype.hasCitizenSmsTemplate(serviceCaseUi);
-        		if (hasCitizenEmailTemplate === true) {
-        			serviceCaseUi.transientHasCitizenEmailTemplate = hasCitizenEmailTemplate;
-        		}
-        		if (hasCitizenSmsTemplate === true) {
-        			serviceCaseUi.transientHasCitizenSmsTemplate = hasCitizenSmsTemplate;
-        		}
-        	} catch(err) {
-        		console.log("Error during addServiceCaseTransientProperties ignored " + err);
-        	}
-        }
-        
+        }              
     }
 
     var meta = new MetaDataRefs();

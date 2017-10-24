@@ -25,6 +25,7 @@ import static org.sharegov.cirm.utils.GenUtils.ko;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -45,6 +46,7 @@ import org.sharegov.cirm.legacy.Permissions;
 import org.sharegov.cirm.legacy.ServiceCaseManager;
 import org.sharegov.cirm.owl.OWLSerialEntityCache;
 import org.sharegov.cirm.utils.GenUtils;
+import org.sharegov.cirm.utils.SrTypeJsonUtil;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 import org.sharegov.cirm.utils.TraceUtils;
 
@@ -172,13 +174,13 @@ public class OWLIndividuals extends RestService
 	{
 		
 		OWLNamedIndividual ind = individual(individualName);
-		Json el = OWL.toJSON(ontology(), ind);
 		if (!isClientExempt() &&
 			reasoner().getTypes(ind, false).containsEntity(OWL.owlClass("Protected")) &&
 			!Permissions.check(individual("BO_View"), 
 								individual(individualName), 
 								getUserActors()))
 			return ko("Permission denied.");
+		Json el = OWL.toJSON(ontology(), ind);
 		return el;				
 	}
 	
@@ -300,7 +302,6 @@ public class OWLIndividuals extends RestService
 			throw new IllegalAccessError ("Access denied - protected resources could be returned, please split the query.");
 		}
 		
-//			
 		OWLSerialEntityCache jsonEntities = Refs.owlJsonCache.resolve();
 		Json j = Json.array();
 		for (OWLNamedIndividual ind : OWL.queryIndividuals(queryAsString))
@@ -310,4 +311,68 @@ public class OWLIndividuals extends RestService
 		return j;
 	}
 
+	
+	/**
+	 * <p>
+	 * Retrieve an individual by its name. The name can be a full IRI or a prefixed short form where
+	 * the prefix is one of the prefixes registered with the system.
+	 * </p>
+	 * @param individualName The name of the individual (e.g. 
+	 * <code>http://www.miamidade.gov.ontology#City_of_Miami</code> or <code>legacy:TM15</code>) 
+	 * @return The standard JSON representation of the individual.
+	 * @throws OWLException
+	 */
+	@GET
+	@Path("/transient/srType/{name}")
+	public Json getSrTypeTransient(@PathParam("name") String iriOrPrefixed) throws OWLException
+	{
+		try
+		{
+			Json nonTransient = getOWLIndividualByName(iriOrPrefixed);
+			//Could be ko permission denied.
+			if (nonTransient.has("iri")) {				
+				Json srTypeTransient = cachedGetSrTypeTransient(nonTransient);
+				return srTypeTransient;
+			} else {
+				return nonTransient;
+			}
+		}
+		catch (Throwable t)
+		{
+			t.printStackTrace(System.err);
+			return Json.object();
+		}
+	}
+	/**
+	 * Gets all sr types permitted for the user with all transient properties.
+	 * @return
+	 */
+	@GET
+	@Path("/transient/srTypesTransient")
+	public synchronized Json getSrTypesTransient() {
+		Json result;
+		Json allPermittedTypes = doQuery("legacy:ServiceCase");
+		if (allPermittedTypes.isArray()) {
+			result = Json.array();
+			for (Json srType: allPermittedTypes.asJsonList()) {
+				Json srTypeTransient = cachedGetSrTypeTransient(srType);
+				result.add(srTypeTransient);
+			}
+		} else {
+			result = allPermittedTypes;
+		}
+		return result;
+	}
+	
+	private Json cachedGetSrTypeTransient(Json srType) {
+		ConcurrentHashMap<String, Json> iri2JsonCache = Refs.owlJsonSrTypeWithTransientCache.resolve();
+		String iri = srType.at("iri").asString();
+		Json srTypeTransient = iri2JsonCache.get(iri);
+		if (srTypeTransient == null) {
+			srTypeTransient = srType.dup();
+			SrTypeJsonUtil.applyTransientProperties(srTypeTransient);
+			iri2JsonCache.putIfAbsent(iri, srTypeTransient);
+		}
+		return srTypeTransient;
+	}
 }
