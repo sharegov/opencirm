@@ -46,5 +46,63 @@ public class SrTypeJsonUtil {
 			return result;
 		}
 	}
+	
+	/**
+	 * Calculates and adds two boolean properties hasCitizenEmailTemplate and hasCitizenSmsTemplate if true.
+	 * @param type
+	 */
+	public static void applyTransientProperties(Json type) {
+		boolean hasCitizenEmailTemplate = hasCitizenEmailTemplate(type);
+		boolean hasCitizenSmsTemplate = hasCitizenSmsTemplate(type);
+		if (hasCitizenEmailTemplate) {
+			type.set("transientHasCitizenEmailTemplate", hasCitizenEmailTemplate);
+		}
+		if (hasCitizenSmsTemplate) {
+			type.set("transientHasCitizenSmsTemplate", hasCitizenSmsTemplate);
+		}
+	}
+	
+	public static boolean hasCitizenEmailTemplate(Json type) {
+		if (!type.has("hasActivity")) return false;
+		boolean result = false;
+		if (type.at("hasActivity").isArray()) {
+			for (Json activity : type.at("hasActivity").asJsonList()) {
+				if (activityHasCitizenEmailTemplate(activity)) {
+					result = true;
+					break;
+				}
+			}
+		} else if (type.at("hasActivity").isObject()) {
+			result = activityHasCitizenEmailTemplate(type.at("hasActivity"));
+		}
+		return result;
+	}
+	
+	public static boolean hasCitizenSmsTemplate(Json type) {
+		if (!type.has("hasActivity")) return false;
+		boolean result = false;
+		if (type.at("hasActivity").isArray()) {
+			for (Json activity : type.at("hasActivity").asJsonList()) {
+				if (activityHasCitizenSmsTemplate(activity)) {
+					result = true;
+					break;
+				}
+			}
+		} else if (type.at("hasActivity").isObject()) {
+			result = activityHasCitizenSmsTemplate(type.at("hasActivity"));
+		}
+		return result;
+	}
+	
+	private static boolean activityHasCitizenEmailTemplate(Json activity) {
+		if (!activity.isObject() || !activity.has("hasEmailTemplate") || !activity.at("hasEmailTemplate").has("hasTo")) return false;
+		boolean result = activity.at("hasEmailTemplate").at("hasTo").asString().contains("CITIZENS_EMAIL");
+		return result;
+	}
 
+	private static boolean activityHasCitizenSmsTemplate(Json activity) {
+		if (!activity.isObject() || !activity.has("hasSmsTemplate") || !activity.at("hasSmsTemplate").has("hasTo")) return false;
+		boolean result = activity.at("hasSmsTemplate").at("hasTo").asString().contains("CITIZENS_CELL_PHONE");
+		return result;
+	}
 }
