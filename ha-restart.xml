@@ -177,8 +177,8 @@
 			<param name="server" value="s0020284" />
 		</antcall>
 		<echo message="Wait until server up...${maxwaitstart} seconds" />
-		<waitfor maxwait="${maxwaitstart}" maxwaitunit="second">
-			<http url="https://s0020284/individuals?q=legacy:Status" />
+		<waitfor maxwait="${maxwaitstart}" maxwaitunit="second" timeoutproperty="timeoutprop">
+				<socket server="s0020284" port="${https-port}"/>
 		</waitfor>
 		<updateClients server="s0020284" />		
 		<echo message="311Hub Test refresh completed" />
