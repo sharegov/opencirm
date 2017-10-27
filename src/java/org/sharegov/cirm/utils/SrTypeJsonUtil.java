@@ -95,13 +95,23 @@ public class SrTypeJsonUtil {
 	}
 	
 	private static boolean activityHasCitizenEmailTemplate(Json activity) {
-		if (!activity.isObject() || !activity.has("hasEmailTemplate") || !activity.at("hasEmailTemplate").has("hasTo")) return false;
+		if (!activity.isObject() 
+				|| !activity.has("hasEmailTemplate") 
+				|| !activity.at("hasEmailTemplate").isObject() 
+				|| !activity.at("hasEmailTemplate").has("hasTo")) {
+			return false;
+		}
 		boolean result = activity.at("hasEmailTemplate").at("hasTo").asString().contains("CITIZENS_EMAIL");
 		return result;
 	}
 
 	private static boolean activityHasCitizenSmsTemplate(Json activity) {
-		if (!activity.isObject() || !activity.has("hasSmsTemplate") || !activity.at("hasSmsTemplate").has("hasTo")) return false;
+		if (!activity.isObject() 
+				|| !activity.has("hasSmsTemplate") 
+				|| !activity.at("hasSmsTemplate").isObject() 
+				|| !activity.at("hasSmsTemplate").has("hasTo")) {
+			return false;
+		}
 		boolean result = activity.at("hasSmsTemplate").at("hasTo").asString().contains("CITIZENS_CELL_PHONE");
 		return result;
 	}
