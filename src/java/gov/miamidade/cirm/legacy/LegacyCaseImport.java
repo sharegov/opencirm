@@ -277,7 +277,7 @@ public class LegacyCaseImport
 			loadPersonnelIDsAndUsernames(csrJdbcConn);
             StringBuffer sql2 = new StringBuffer();
 			sql2.append("select a.EID || '' AS EID,a.SERVICE_REQUEST_NUM,a.TYPE_CODE,"); 
-			sql2.append("	a.GROUP_CODE,a.PRIORITY_CODE,REPLACE(a.STATUS_CODE, 'C_LIEN', 'C-LIEN') as STATUS_CODE,");
+			sql2.append("	a.GROUP_CODE,a.GROUP_DESC,a.PRIORITY_CODE,REPLACE(a.STATUS_CODE, 'C_LIEN', 'C-LIEN') as STATUS_CODE,");
 			sql2.append("   a.STATUS_DATE,a.ORIG_SERVICE_REQUEST_EID,");
 			sql2.append("   a.CREATION_REASON_CODE,a.RELATED_REASON_CODE,");
 			sql2.append("	a.METHOD_RECEIVED_CODE,a.GEO_STREET_NAME_EID,");
@@ -291,10 +291,10 @@ public class LegacyCaseImport
 			sql2.append("	a.BEGIN_RESOLUTION_DATE,a.CREATED_DATE,");
 			sql2.append("	a.CREATED_BY_EID,a.UPDATED_DATE,a.UPDATED_BY_EID,");
 			sql2.append("	a.GEO_AREA_CODE,a.GEO_AREA_VALUE, b.SERVICE_REQUEST_NUM AS PARENT_SERVICE_REQUEST_NUM");
-			sql2.append(" 	from SERVICE_REQUESTS a left outer join SERVICE_REQUESTS b on a.ORIG_SERVICE_REQUEST_EID = b.EID");
+			sql2.append(" 	from CSR.SERVICE_REQUESTS a left outer join CSR.SERVICE_REQUESTS b on a.ORIG_SERVICE_REQUEST_EID = b.EID");
 			StringBuffer countSql = new StringBuffer();
 			countSql.append("select count(*)");
-			countSql.append(" 	from SERVICE_REQUESTS a left outer join SERVICE_REQUESTS b on a.ORIG_SERVICE_REQUEST_EID = b.EID");
+			countSql.append(" 	from CSR.SERVICE_REQUESTS a left outer join CSR.SERVICE_REQUESTS b on a.ORIG_SERVICE_REQUEST_EID = b.EID");
 			StringBuffer whereClause;
 			if(serviceRequestNumber != null)
 			{
@@ -308,8 +308,11 @@ public class LegacyCaseImport
 				whereClause = new StringBuffer();
 				String statusExpression = config.getProperty("status-expression", "='C-CLOSED'");
 				whereClause.append(" where (a.STATUS_CODE " + statusExpression + ") ");
-				String types = config.getProperty("types");
-				whereClause.append(" and a.TYPE_CODE in (" +types +")");
+				String types = config.getProperty("types","");
+				if(!"".equals(types))
+				{
+					whereClause.append(" and a.TYPE_CODE in (" +types +")");
+				}
 				String dateRangeExpression =config.getProperty("date-range-expression"); 
 				whereClause.append(" and a.CREATED_DATE " + dateRangeExpression);
 				if(config.getProperty("restart", "false").trim().equals("true"))

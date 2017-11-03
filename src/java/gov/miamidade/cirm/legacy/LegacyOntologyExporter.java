@@ -583,8 +583,9 @@ public class LegacyOntologyExporter
             StringBuffer sql2 = new StringBuffer();
 			sql2.append("select def.SERVICE_REQUEST_TYPE_CODE, code.DESCRIPTION,"); 
 			sql2.append(" def.EXTERNAL_DESCRIPTION, def.LOCATION_INTAKE_OPTION_CODE");
-			sql2.append(" ,def.VALID_LOCATION_IS_REQD_IND, GroupTasks.GetJurisdictionCode( code.OWNER_CODE ) ");
-			sql2.append(" ,StandardTasks.GetDescription('GROUP',GroupTasks.GetJurisdictionCode( code.OWNER_CODE )) ");
+			sql2.append(" ,def.VALID_LOCATION_IS_REQD_IND");
+			sql2.append(" , (select code_code from st_codes where code_code = code.OWNER_CODE and type_code = 'GROUP') ");
+			sql2.append(" ,(select description from st_codes where code_code = code.OWNER_CODE and type_code = 'GROUP') ");
 			sql2.append(" ,def.DEFAULT_GEO_AREA_CODE, GEO_AREA_IS_REQD_IND,DEFAULT_INTAKE_STATUS_CODE,ALLOWABLE_CREATE_MODULE_CODES,DEFAULT_PRIORITY_CODE,DEFAULT_METHOD_RECEIVED_CODE ");
 			sql2.append(" ,code.OWNER_CODE AS CSR_GROUP_CODE ");
 			sql2.append(" ,def.DURATIONS_DAYS ");
@@ -592,7 +593,7 @@ public class LegacyOntologyExporter
 			sql2.append(" from sr_definitions def, st_codes code");
 			sql2.append(" where def.SERVICE_REQUEST_TYPE_CODE=code.CODE_CODE");
 			sql2.append(" and code.TYPE_CODE='SRSRTYPE'");
-			sql2.append(" and GroupTasks.GetJurisdictionCode( code.OWNER_CODE ) in (" + jurisdiction + ")");
+			//sql2.append(" and ((select code_code from st_codes where code_code = code.OWNER_CODE and type_code = 'GROUP')) in (" + jurisdiction + ")");
 			//sql2.append(" and (code.stop_date is null or def.SERVICE_REQUEST_TYPE_CODE in("+ stopDatedSRList +") or code.stop_date = '15-Mar-2013')"); //");
 			sql2.append(" and def.SERVICE_REQUEST_TYPE_CODE in("+ stopDatedSRList +")"); //");
 			sql2.append(" and def.stop_date is null  ");
@@ -601,7 +602,7 @@ public class LegacyOntologyExporter
 			ResultSet rs = stmt.executeQuery(sql2.toString());	
 			String mdc = "http://www.miamidade.gov/ontology";
 			String base = "http://www.miamidade.gov/cirm/legacy";
-			String exported = "http://www.miamidade.gov/cirm/legacy/exported";
+			String exported = "http://www.miamidade.gov/cirm/legacy";
 			DefaultPrefixManager pm = new DefaultPrefixManager(base+ "#");
 			pm.setPrefix("mdc:",mdc+"#");
 			pm.setPrefix("legacy:",base+"#");
@@ -1027,7 +1028,8 @@ public class LegacyOntologyExporter
         {
             StringBuffer sql = new StringBuffer();
             sql.append("select service_request_type_code, activity_code, ");
-            sql.append("       stcodestasks.getdescription('SRACTVTY', ACTIVITY_CODE) as activity_description, ");
+            sql.append(" (select description from st_codes where code_code = ACTIVITY_CODE and type_code = 'SRACTVTY') as activity_description, ");
+            //sql.append("       stcodestasks.getdescription('SRACTVTY', ACTIVITY_CODE) as activity_description, ");
             sql.append("       default_outcome_code, suspense_period_days, ");
             sql.append("       default_occur_days, automatically_create_ind, order_by, ");
             sql.append("       business_codes, allowable_outcome_codes,follow_on_activity_code, ");
@@ -1406,7 +1408,7 @@ public class LegacyOntologyExporter
     	try
     	{
             StringBuffer sql = new StringBuffer();
-            sql.append("select def.participant_type_code, stcodestasks.getdescription('SRPARTIC', def.participant_type_code) as PARTICIPANT_DESCRIPTION, def.entity_table, def.business_codes,def.AUTOMATICALLY_CREATE_IND, def.ORDER_BY ");
+            sql.append("select def.participant_type_code, (select description from st_codes where code_code = def.participant_type_code and type_code = 'SRPARTIC') as PARTICIPANT_DESCRIPTION, def.entity_table, def.business_codes,def.AUTOMATICALLY_CREATE_IND, def.ORDER_BY ");
             sql.append("       from sr_participant_definitions def");
             sql.append("       where def.SERVICE_REQUEST_TYPE_CODE='" + serviceCode + "'");
             sql.append("       and def.STOP_DATE is null");
