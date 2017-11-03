@@ -1370,9 +1370,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			repo.ensurePeerStarted();			
 			
 			String propertyID = "hasServiceCaseAlert";
-					
-			Date now = new Date();
-			String newIri = individualID + "_ALERT_" + Long.toString(now.getTime());
+			String newIri = individualID + "_ALERT";
 			
 			Json data = Json.object().set("iri", newIri)
 									 .set("rdfs:label", newLabelContent)
@@ -1427,11 +1425,8 @@ public class ServiceCaseManager extends OntoAdmin {
 			String propertyID = "legacy:hasServiceCaseAlert";
 			
 			if(data.at("iri").isNull())
-			{
-				
-				Date now = new Date(); 
-				
-				String newIri = "http://www.miamidade.gov/cirm/legacy#" + individualID + "_ALERT_" + Long.toString(now.getTime());
+			{				
+				String newIri = "http://www.miamidade.gov/cirm/legacy#" + individualID + "_ALERT";
 				data.set("iri", newIri); 
 			}
 			
