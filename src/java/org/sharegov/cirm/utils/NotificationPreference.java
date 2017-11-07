@@ -16,14 +16,14 @@
 package org.sharegov.cirm.utils;
 
 /**
- * MessagingPreference represents SR actor/citizen preferences for email and SMS messaging.
+ * NotificationPreference represents SR actor/citizen preferences for email and SMS messaging as enumerated values for the hasNotificationPreference owl data property. 
  * If undefined, the actor will by default receive an email, but not SMS/text messages.
  * SMS/text messages may incur cost and are therefore only sent if actor/citizen consents to receiving these.
  * 
  * @author Thomas Hilpold
  *
  */
-public enum MessagingPreference {
+public enum NotificationPreference {
 	UNDEFINED ("UNDEFINED"),
 	A ("ALL"),
 	E ("EMAIL_ONLY"),
@@ -32,7 +32,7 @@ public enum MessagingPreference {
 
 	private String label;
 	
-	MessagingPreference(String label) {
+	NotificationPreference(String label) {
 		this.label = label;
 	}
 	
@@ -40,11 +40,19 @@ public enum MessagingPreference {
 		return label;
 	}
 	
-	public boolean prefersEmail() {
+	/**
+	 * The value indicates that sending an email is ok (Undefined, A, or E).
+	 * @return
+	 */
+	public boolean isEmailOk() {
 		return this.equals(UNDEFINED) || this.equals(A)|| this.equals(E);
 	}
 	
-	public boolean prefersSMS() {
+	/**
+	 * The value indicates that sending an SMS/Text Message is ok (A or S).
+	 * @return
+	 */
+	public boolean isSmsOk() {
 		return this.equals(A) || this.equals(S);		
 	}
 }

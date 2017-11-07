@@ -82,7 +82,7 @@ import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.rest.LegacyEmulator;
 import org.sharegov.cirm.utils.MessageTemplateUtil;
-import org.sharegov.cirm.utils.MessagingPreference;
+import org.sharegov.cirm.utils.NotificationPreference;
 import org.sharegov.cirm.utils.SrJsonUtil;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 import org.sharegov.cirm.utils.xpath.Context;
@@ -289,15 +289,15 @@ public class MessageManager
 			String ccTemplateLiteral = ccTemplate != null ? ccTemplate.getLiteral() : null;
 			// citizen messaging preference processing
 			if(toTemplateLiteral != null && mtUtil.hasCitizenEmailRecipient(toTemplateLiteral)) {
-				MessagingPreference msgPref = srUtil.getCitizenNotificationPreference(sr);
-				if(msgPref != null && !msgPref.prefersEmail()) {
+				NotificationPreference msgPref = srUtil.getCitizenNotificationPreference(sr);
+				if(msgPref != null && !msgPref.isEmailOk()) {
 					//System.out.println(msgPref.getLabel());
 					toTemplateLiteral = mtUtil.removeCitizenEmailRecipient(toTemplateLiteral);
 				}
 			}
 			if(ccTemplateLiteral != null && mtUtil.hasCitizenEmailRecipient(ccTemplateLiteral)) {
-				MessagingPreference msgPref = srUtil.getCitizenNotificationPreference(sr);
-				if(msgPref != null && !msgPref.prefersEmail()) {
+				NotificationPreference msgPref = srUtil.getCitizenNotificationPreference(sr);
+				if(msgPref != null && !msgPref.isEmailOk()) {
 					ccTemplateLiteral = mtUtil.removeCitizenEmailRecipient(ccTemplateLiteral);
 				}
 			}
@@ -420,8 +420,8 @@ public class MessageManager
 			OWLLiteral bodyTemplate; 
 			String toTemplateLiteral = toTemplate != null ? toTemplate.getLiteral() : null;
 			if (mtUtil.hasCitizenCellPhoneRecipient(toTemplateLiteral)) {
-				MessagingPreference msgPref = srUtil.getCitizenNotificationPreference(sr);
-				if(msgPref == null || !msgPref.prefersSMS()) {
+				NotificationPreference msgPref = srUtil.getCitizenNotificationPreference(sr);
+				if(msgPref == null || !msgPref.isSmsOk()) {
 					toTemplateLiteral = mtUtil.removeCitizenCellPhoneRecipient(toTemplateLiteral);
 				}
 			}

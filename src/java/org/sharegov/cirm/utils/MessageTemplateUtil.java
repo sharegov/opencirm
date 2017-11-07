@@ -16,9 +16,9 @@
 package org.sharegov.cirm.utils;
 
 /**
- * Utilities for the Message Manager, primarily handling actor messaging / notification preferences.
+ * Utilities for Message Templates, primarily related to sms/email messaging to citizen.
+ * 
  * @author Thomas Hilpold
- *
  */
 public class MessageTemplateUtil {
 	

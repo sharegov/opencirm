@@ -89,11 +89,11 @@ public class SrJsonUtil {
 	/**
 	 * Gets the notification preference of the citizen by hasNotificationPreference property.
 	 * (if more than one citizen is found in the SR, the first serialized citizen's preference is returned.)
-	 * If the first citizen does not have a hasNotificationPreference, MessagingPreference.Undefined is returned.
+	 * If the first citizen does not have a hasNotificationPreference, NotificationPreference.Undefined is returned.
 	 * @param sr
 	 * @return null, if no citizen found in SR.
 	 */
-	public MessagingPreference getCitizenNotificationPreference(Json sr) {
+	public NotificationPreference getCitizenNotificationPreference(Json sr) {
 		List<Json> citizens = getCitizenActors(sr);
 		if (citizens.isEmpty()) {
 			return null;
@@ -107,16 +107,16 @@ public class SrJsonUtil {
 	 * @param serviceCaseActor
 	 * @return
 	 */
-	MessagingPreference getActorNotificationPreference(Json serviceCaseActor) {
+	NotificationPreference getActorNotificationPreference(Json serviceCaseActor) {
 		if (serviceCaseActor.has("hasNotificationPreference")) {
 			String prefValue = serviceCaseActor.at("hasNotificationPreference").asString();
 			if (prefValue.isEmpty()) {
-				return MessagingPreference.UNDEFINED;
+				return NotificationPreference.UNDEFINED;
 			} else {
-				return MessagingPreference.valueOf(prefValue);
+				return NotificationPreference.valueOf(prefValue);
 			}
 		} else {
-			return MessagingPreference.UNDEFINED;
+			return NotificationPreference.UNDEFINED;
 		}
 	}
 	
