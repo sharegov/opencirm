@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
  */
 class UxLogAnalyzer {
 	
-	static final int ANALYSIS_DAYS_HISTORY_CUTOFF_DEFAULT = 7;	
+	static final int ANALYSIS_DAYS_HISTORY_CUTOFF_DEFAULT = 7;
 	
 	static final boolean DBG_MATCHES = false;
 	
@@ -49,9 +49,10 @@ class UxLogAnalyzer {
 	
 	//static String logMatch = "END updateServiceCase data"; 
 	//static String logMatch = "sendEmail: One Email sent to";
-	//static String logMatch = "END createNewKOSR";
+	static String logMatch = "END createNewKOSR";
 	//static String logMatch = "END saveBusinessObjectOntology";
-	static String logMatch = "END DuplicateCheck"; 
+	//static String logMatch = "END DuplicateCheck"; 
+	//static String logMatch = "END lookupAdvancedSearch"; 
 	//static String logMatch = "END asdDispatchLookup"; 
 	//static String logMatch = "End GisService getLocationInfo Call"; 
 	//static String logMatch = "END populateGisDataInternal"; 
@@ -125,7 +126,7 @@ class UxLogAnalyzer {
 			File curLogFile = getRotatingLogFile(baseLogFile, rotatingLogNumber);
 			if (curLogFile != null) {
 				Date curLogFileLastModified = new Date(curLogFile.lastModified());
-				continueNextRotatingLog = (curLogFileLastModified.after(cutOffMinDate) || curLogFile.equals(cutOffMinDate));
+				continueNextRotatingLog = (curLogFileLastModified.after(cutOffMinDate) || curLogFileLastModified.equals(cutOffMinDate));
 				if (continueNextRotatingLog) {
 					System.out.println("Analyzing " + curLogFile+ " (LastMod: " + logDf.format(curLogFileLastModified) + ")");
 					analyzeOneRotatingLogFile(curLogFile, lineMatch, cutOffMinDate);
@@ -290,13 +291,14 @@ class UxLogAnalyzer {
 		 */
 		void printDayPercentiles() {
 			System.out.println("311Hub percentiles in seconds for log lines matching: " + logMatch);
-			System.out.println("Date            \t10th\t20th\t30th\t40th\t50th\t60th\t70th\t80th\t90th\t95th\t99th\t100th\tNrOfSamples");
+			System.out.println("Date            \tAvg\t10th\t20th\t30th\t40th\t50th\t60th\t70th\t80th\t90th\t95th\t99th\t100th\tNrOfSamples");
 			for (Map.Entry<Date, List<Double>> e : durationsByDay.entrySet()) {
 				List<Double> sortedList = e.getValue();
 				Collections.sort(sortedList);
 				double valuesPer10Percent = sortedList.size() / 10.0;
 				//System.out.println(sortedList.size() + " per10: " + valuesPer10Percent);
 				System.out.print(logDf.format(e.getKey())  );
+				System.out.print("\t" + avgDf.format(getAverage(sortedList)));
 				int start = (int)Math.round(valuesPer10Percent);
 				if (valuesPer10Percent == 0) valuesPer10Percent = 1;
 				for (int i = 0; i < 10; i++) {
@@ -322,6 +324,15 @@ class UxLogAnalyzer {
 				System.out.print("\t" + sortedList.size());
 				System.out.println();
 			}
+		}
+
+		private double getAverage(List<Double> sortedList) {
+			if(sortedList.isEmpty()) return 0;
+			double total = 0;
+			for(Double val : sortedList) {
+				total += val;
+			}
+			return total / sortedList.size();
 		}
 	}
 	

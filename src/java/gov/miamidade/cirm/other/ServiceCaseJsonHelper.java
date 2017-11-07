@@ -682,7 +682,7 @@ public class ServiceCaseJsonHelper
     			} else {
     				//ignore
     			}    			
-    		}    		
+    		}
     	} catch(Exception e) {
     		System.err.println("Error during persContactTypeChange, but continuing: " + e);
     		e.printStackTrace();
@@ -690,17 +690,27 @@ public class ServiceCaseJsonHelper
     }
     
     private static void typeChangeExistingPersContactActivity(Json oneSA, String newTypeFragment) {
-    	if (oneSA.has("hasActivity") && (oneSA.at("hasActivity").has("iri"))) {
-    		String iri = oneSA.at("hasActivity").at("iri").asString();// eg http://www.miamidade.gov/cirm/legacy#PW16_PERSCNTC
-    		if (iri.endsWith("_PERSCNTC")) {
-    			String newFragment = newTypeFragment.trim() + "_PERSCNTC"; //eg PW394_PERSCNTC
-    			String newIri = iri.replaceFirst("#.*", "#" + newFragment);
-    			oneSA.at("hasActivity").set("iri", newIri);
-    			System.out.println("typeChangeExistingPersContactActivity to " + newIri);
-    		}
+    	//Determine current activity type
+    	if (!oneSA.has("hasActivity")) return;
+    	Json hasActivity = oneSA.at("hasActivity");
+    	String iri = null;
+    	if (hasActivity.isObject() && hasActivity.has("iri")) {
+        		iri = hasActivity.at("iri").asString();// eg http://www.miamidade.gov/cirm/legacy#PW16_PERSCNTC
+    		} else if (hasActivity.isString()) {
+    			iri = hasActivity.asString();
     	} else {
     		//no iri, no hasActivity, ignore
     	}
+		if (iri !=null && iri.endsWith("_PERSCNTC")) {
+			String newFragment = newTypeFragment.trim() + "_PERSCNTC"; //eg PW394_PERSCNTC
+			String newIri = iri.replaceFirst("#.*", "#" + newFragment);			
+			System.out.println("typeChangeExistingPersContactActivity to " + newIri);
+			if (hasActivity.isObject()) {
+				hasActivity.set("iri", newIri);
+			} else {
+				//String
+				oneSA.set("hasActivity", newIri);
+			}
+		}
     }
-
 }
