@@ -42,7 +42,7 @@ public class SmsService {
 	 * If true splits messages longer than MAX_TXT_LENGHT into multiple parts.
 	 */
 	public final static boolean USE_MAX_TXT_LENGHT = true;
-	public final static int MAX_TXT_LENGHT = 100;
+	public final static int MAX_TXT_LENGHT = 160;
 
 	private String url;
 	private String clientId;
