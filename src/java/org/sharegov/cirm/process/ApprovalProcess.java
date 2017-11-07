@@ -34,7 +34,7 @@ public class ApprovalProcess
 	private ApprovalState approvalState;
 	private List<ApprovalSideEffect> sideEffects = new ArrayList<ApprovalSideEffect>();
     private BOntology bo;
-    private List<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();
+    private List<CirmMessage> msgsToSend = new ArrayList<CirmMessage>();
     private ArrayList<BOntology> withMetadata = new ArrayList<BOntology>();
     private Json locationInfo = Json.object();
     
@@ -145,14 +145,14 @@ public class ApprovalProcess
         return bo;
     }
     
-	public List<CirmMessage> getEmailsToSend()
+	public List<CirmMessage> getMsgsToSend()
 	{
-		return emailsToSend;
+		return msgsToSend;
 	}
 
-	public void setEmailsToSend(List<CirmMessage> emailsToSend)
+	public void setMsgsToSend(List<CirmMessage> msgsToSend)
 	{
-		this.emailsToSend = emailsToSend;
+		this.msgsToSend = msgsToSend;
 	}
 
 	public ArrayList<BOntology> getWithMetadata()

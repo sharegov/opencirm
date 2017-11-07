@@ -73,12 +73,13 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
                  });
                  return x;
             }},
-            {"hasName": "serviceCases", "hasQueryExpression" : "legacy:ServiceCase",            
+            {"hasName": "serviceCases", "hasUrl": "/individuals/transient/srTypesTransient",            
                 "map":function(A) {
                     //A = [A];  
                     var m = {};
                     $.each(A, function(i,v) {
                     	var serviceCase = prepareServiceCaseTypeForUI(v);
+                        //TODO check reason why we do this twice
                         m[v.iri] = prepareServiceCaseTypeForUI(serviceCase);
                     });
                     // May we could a 'get' method here the accept IRI fragments and prepends
@@ -208,7 +209,7 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
          */
         function reloadServiceCaseType(serviceCaseTypeIri) {
         	var serviceCasePrefixedIri = "legacy:" + U.IRI.name(serviceCaseTypeIri);
-        	var serviceCase = top.get("/individuals/" + serviceCasePrefixedIri);
+        	var serviceCase = top.get("/individuals/transient/srTypeTransient/" + serviceCasePrefixedIri);
         	var preparedSR = prepareServiceCaseTypeForUI(serviceCase);
         	self.cached["serviceCases"][serviceCaseTypeIri] = preparedSR;
         	//Clear dependent caches
@@ -258,11 +259,7 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
             });             
             U.resolveIris(serviceCase);  
             return serviceCase;
-        } 
-        
-        
-        
-        
+        }              
     }
 
     var meta = new MetaDataRefs();

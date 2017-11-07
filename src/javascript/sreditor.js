@@ -71,6 +71,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
     		self.isCreatedBy = username;
     	}
     	self.emailCustomer = false;
+    	self.hasNotificationPreference = "";
     	if(isCitizenActor(iri))
 	    		self.isAnonymous = false;
     }
@@ -182,6 +183,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 		ko.extenders.email = function(target, overrideMessage) {
 			self.commonExtenderForAll(target, overrideMessage, "EMAIL");
 		};
+		ko.extenders.email_conditional = function(target, overrideMessage) {
+			self.commonExtenderForAll(target, overrideMessage, "EMAIL_CONDITIONAL");
+		};
 		ko.extenders.email_required = function(target, overrideMessage) {
 			self.commonExtenderForAll(target, overrideMessage, "EMAIL_REQ");
 		};
@@ -252,7 +256,10 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 				target.conditionallyRequired(false);
 				target.isStandardizedStreet(false);
 			}
-			
+			if(type == "EMAIL_CONDITIONAL") {
+				target.conditionallyRequired = ko.observable();
+				target.conditionallyRequired(false);				
+			}
 			function validate(newValue) { //all required fields empty check
 				if(U.isEmptyString(newValue) && !target.conditionallyRequired) {
 					if(type != undefined && type.indexOf("REQ") == -1) {
@@ -317,10 +324,18 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 					}
 					return true;
 				}
-				else if(type == "EMAIL" || type == "EMAIL_REQ") { //validate email field
+				else if(type == "EMAIL" || type == "EMAIL_REQ" || type == "EMAIL_CONDITIONAL") { //validate email field
 					//var emailFilter = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+(?:[A-Z]{2}|com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|museum)/;
 					var emailFilter = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-					if(emailFilter.test(newValue)) {
+					if (U.isEmptyString(newValue) && type == "EMAIL_CONDITIONAL") {
+						if (target.conditionallyRequired()) {
+							target.hasError(true);
+							target.validationMessage("Required");
+						} else {
+							target.hasError(false);
+							target.validationMessage("");
+						}
+					} else if(emailFilter.test(newValue)) {
 						target.hasError(false);
 						target.validationMessage("");
 					}
@@ -408,6 +423,17 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			}
 			validate(target());
 			target.subscribe(validate);
+			//
+			// hilpold: For EMAIL_CONDITIONAL where a conditionallyRequired observable
+			// should lead to revalidation and possibly UI update, we need to subscribe to changes
+			// and ensure revalidation, so hasError updates on a conditionally required change,
+			// even if the email value has not changed.
+			//
+			if(type == "EMAIL_CONDITIONAL") {
+				target.conditionallyRequired.subscribe( function() {
+					validate(target());
+				});
+			}
 			return target;
 		}
 		
@@ -1410,20 +1436,53 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			return true;
 		};
 		
-		self.isCitizenAnonymous = function() {
+		self.changeCitizenAnonymous = function() {
 			var citizen = self.getFirstCitizenActor();
 			if(citizen == null)
 				return false;
 			if(citizen.isAnonymous() === true) {
 				citizen.CellPhoneNumber()[0].number('0000000000');
 				citizen.Name("Anonymous");
+				citizen.hasNotificationPreference(undefined);
 			}
 			else if(citizen.Name() === "Anonymous") {
 				citizen.CellPhoneNumber()[0].number('');
 				citizen.Name("");
+				citizen.hasNotificationPreference(undefined);
 			}
 		}; 
 
+		self.isCitizenAnonymous = function() {
+			var citizen = self.getFirstCitizenActor();
+			if(citizen == null) {
+				return false;
+			} else {
+				return citizen.isAnonymous() === true;
+			}
+		}
+
+		self.getSelectableCitizenNotificationPrefs = function() {
+			var options = [];
+			var emailCTmpl = (self.srType && self.srType().transientHasCitizenEmailTemplate === true);
+			var smsCTmpl = (self.srType && self.srType().transientHasCitizenSmsTemplate === true);			
+			if (emailCTmpl && smsCTmpl) {
+				options.push({id:"A", label: "Email & SMS/Text"});
+			}
+			if (emailCTmpl) {
+				options.push({id:"E", label: "Email only"});
+			}
+			if (smsCTmpl) {
+				options.push({id:"S", label: "SMS/Text only"});
+			}
+			options.push({id:"N", label: "No Notification"});
+			return options;
+		};
+
+		self.hasSelectableCitizenNotificationPrefs = function() {
+			return (self.srType && (self.srType().transientHasCitizenEmailTemplate === true || self.srType().transientHasCitizenSmsTemplate === true));
+		};
+
+		
 		self.getCitizenActorField = function(el) {
 			var citizen = self.getFirstCitizenActor();
 			if(citizen != null)
@@ -1440,12 +1499,35 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 				return citizen;
 		};
 		
+		self.setCitizenActorEmailRequired = function(isRequired) {
+			var firstCitzenEmailLabelKo = self.getCitizenActorEmail();
+			firstCitzenEmailLabelKo.conditionallyRequired(isRequired);
+			firstCitzenEmailLabelKo(firstCitzenEmailLabelKo());
+		};
+		
+		//Might show a disclaimer pop up for sms and adjust email validation
+		self.citizenNotificationSelectionChanged = function() {
+			var firstCitizenNotificationPrefField = self.getCitizenActorField('hasNotificationPreference');
+			var selectedPref = ko.toJS(firstCitizenNotificationPrefField);
+			var showAlert = (selectedPref === "S" || selectedPref === "A");
+			if (showAlert === true) {
+				var msg = "Depending on your cell phone plan, sms/text message and data rates may apply.";
+				alertDialog(msg);
+			}
+			var emailRequired = (selectedPref === "E" || selectedPref === "A");
+			self.setCitizenActorEmailRequired(emailRequired);
+		};
+		
+		//Return hasError observable
 		self.getCitizenActorEmailError = function() {
 			var citizen = self.getFirstCitizenActor();
-			if(citizen != null)
-				return citizen.hasEmailAddress().label.hasError;
-			else
-				return citizen;
+			if(citizen != null) {
+				var result = citizen.hasEmailAddress().label.hasError;
+				return result;
+			}
+			else {
+				return ko.observable();
+			}
 		};
 
 		self.getCitizenActorCellPhone = function() {
@@ -2296,7 +2378,11 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
     	
     	self.addExtendersToActor = function(el, isFirstCitizen)
     	{
-			el.hasEmailAddress().label.extend({ email : ""});
+    		if (isFirstCitizen) {
+				el.hasEmailAddress().label.extend({ email_conditional : ""});
+    		} else {
+				el.hasEmailAddress().label.extend({ email : ""});
+    		}
 			
 			$.each(el, function(prop,value) {
 				if(prop.indexOf('Number') != -1)

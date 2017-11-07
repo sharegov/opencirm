@@ -399,7 +399,14 @@ public class GenUtils
 
 	public static Json httpPostJson(String url, Json json)
 	{
-		return Json.read(httpPost(url, json.toString(), "Content-Type", "application/json"));
+		String response = httpPost(url, json.toString(), "Content-Type", "application/json");
+		if (response == null) {
+			return null;
+		} else if (response.isEmpty()) {
+			return Json.make("");
+		} else {
+			return Json.read(response);
+		}
 	}
 	
 	public static Document httpPostXml(String url, Document xml)
