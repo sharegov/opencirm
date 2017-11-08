@@ -98,7 +98,7 @@ class LogSearch {
 			File curLogFile = getRotatingLogFile(baseLogFile, rotatingLogNumber);
 			if (curLogFile != null) {
 				Date curLogFileLastModified = new Date(curLogFile.lastModified());
-				continueNextRotatingLog = (curLogFileLastModified.after(cutOffMinDate) || curLogFile.equals(cutOffMinDate));
+				continueNextRotatingLog = (curLogFileLastModified.after(cutOffMinDate) || curLogFileLastModified.equals(cutOffMinDate));
 				if (continueNextRotatingLog) {
 					System.out.println("Analyzing " + curLogFile+ " (LastMod: " + logDf.format(curLogFileLastModified) + ")");
 					analyzeOneRotatingLogFile(curLogFile, lineMatch, cutOffMinDate);
