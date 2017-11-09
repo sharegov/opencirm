@@ -5877,9 +5877,17 @@ public class RelationalStoreImpl implements RelationalStore
     			SQLException sqe = (SQLException)t;
     			do 
     			{
-	    			int c = sqe.getErrorCode(); 
-	    			if (c == 8177 || c == 8006)
+	    			int c = sqe.getErrorCode();
+	    			//ORA-08177 can't serialize access for this transaction
+	    			//ORA-08006 specified row no longer exists
+	    			if (c == 8177 || c == 8006) {
 	    				return true;
+	    			}
+	    			//ORA-00060: deadlock detected while waiting for resource
+	    			if (c == 60) {
+	    				ThreadLocalStopwatch.now("RelationalStoreImpl: ORA deadlock - allowing retry");
+	    				return true;
+	    			}
 	    			sqe = sqe.getNextException();
     			} while (sqe != null);
     		}
