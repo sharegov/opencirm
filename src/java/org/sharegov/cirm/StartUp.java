@@ -98,11 +98,16 @@ public class StartUp extends ServerResource
 					))
 			.set("metaDatabaseLocation", "c:/temp/dbConf")
 			.set("allClientsExempt", true)
-			.set("network", Json.object(				
-					"user", "cirmservice_production",
-					"password","cirmsprod",
+//			.set("network", Json.object(				
+//					"user", "cirmservice_production",
+//					"password","cirmsprod",
+//					"serverUrl","s0144818",
+//					"ontoServer","ontology_server_production"))
+			.set("network", Json.object(
+					"user", "cirmconfigservice_test",
+					"password","ccstest",
 					"serverUrl","s0144818",
-					"ontoServer","ontology_server_production"))
+					"ontoServer","ontology_server_test"))
 			.set("ontologyPrefixes", Json.object(
 					"legacy:", "http://www.miamidade.gov/cirm/legacy#",
 					"mdc:", "http://www.miamidade.gov/ontology#",
@@ -110,7 +115,7 @@ public class StartUp extends ServerResource
 					))
 			.set("cachedReasonerPopulate", false)
 			.set("startDepartmentIntegration", "x.x.xxx")
-			.set("isConfigMode", false);
+			.set("isConfigMode", true);
 
 	private final static StartupHttpInitializer HTTP_INIT = new StartupHttpInitializer();
 	
