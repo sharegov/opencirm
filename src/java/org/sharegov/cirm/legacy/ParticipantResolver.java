@@ -23,10 +23,15 @@ import java.util.Properties;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.sharegov.cirm.OWL;
+import org.sharegov.cirm.utils.PhoneNumberUtil;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
 import mjson.Json;
-
+/**
+ * 
+ * @author Unknown, Syed Abbas
+ *
+ */
 public class ParticipantResolver implements VariableResolver
 {
 	public static boolean DBG = true;
@@ -59,6 +64,10 @@ public class ParticipantResolver implements VariableResolver
 	public static final String VAR20_CITIZENS_PHONE_NTYPE_SELD4 = "$$CITIZENS_PHONE_NTYPE_SELD4$$"; // Phone number of CITIZEN
 	public static final String VAR21_CITIZENS_PHONE_NTYPE_SELD5 = "$$CITIZENS_PHONE_NTYPE_SELD5$$"; // Phone number of CITIZEN
 	
+	
+	
+	//NEW VARIABLE FOR CELL PHONE - used to send SMS messages
+	public static final String VAR22_CITIZENS_CELL_PHONE = "$$CITIZENS_CELL_PHONE$$";
 
 	private enum ActorEnum {
 		CITIZEN, APPLICAN
@@ -94,6 +103,10 @@ public class ParticipantResolver implements VariableResolver
 			{
 				result = getActorPhonesMultiLine(getActorJson(sr, ActorEnum.CITIZEN));
 			}
+		else if(VAR22_CITIZENS_CELL_PHONE.equals(variableName))
+		{
+				result = getCellPhone(getActorJson(sr, ActorEnum.CITIZEN));
+		}
 		else if (VAR14_CITIZENS_PHONE_NTYPE_DET.equals(variableName)
 				|| VAR15_CITIZENS_PHONE_NTYPE_DETD1.equals(variableName)
 				|| VAR16_CITIZENS_PHONE_NTYPE_DETD4.equals(variableName)
@@ -130,31 +143,31 @@ public class ParticipantResolver implements VariableResolver
 		if (actorJsonObj.has("HomePhoneNumber"))
 		{
 			found++;
-			result += "Home: " + actorJsonObj.at("HomePhoneNumber").asString();
+			result += "Home: " + PhoneNumberUtil.formatPhoneDataForDisplay(actorJsonObj.at("HomePhoneNumber").asString());
 		}
 		if (actorJsonObj.has("CellPhoneNumber"))
 		{
 			if (found > 0) result = result + "\r\n";
 			found++;
-			result += "Cell: " + actorJsonObj.at("CellPhoneNumber").asString();
+			result += "Cell: " + PhoneNumberUtil.formatPhoneDataForDisplay(actorJsonObj.at("CellPhoneNumber").asString());
 		}
 		if (actorJsonObj.has("BusinessPhoneNumber"))
 		{
 			if (found > 0) result = result + "\r\n";
 			found++;
-			result += "Biz:  " + actorJsonObj.at("BusinessPhoneNumber").asString();
+			result += "Biz:  " + PhoneNumberUtil.formatPhoneDataForDisplay(actorJsonObj.at("BusinessPhoneNumber").asString());
 		}
 		if (actorJsonObj.has("OtherPhoneNumber")) 
 		{
 			if (found > 0) result = result + "\r\n";
 			found++;
-			result += "Other:" + actorJsonObj.at("OtherPhoneNumber").asString();
+			result += "Other:" + PhoneNumberUtil.formatPhoneDataForDisplay(actorJsonObj.at("OtherPhoneNumber").asString());
 		}
 		if (actorJsonObj.has("FaxNumber")) 
 		{
 			if (found > 0) result = result + "\r\n";
 			found++;
-			result += "Fax:  " + actorJsonObj.at("FaxNumber").asString();
+			result += "Fax:  " + PhoneNumberUtil.formatPhoneDataForDisplay(actorJsonObj.at("FaxNumber").asString());
 		}
 		if (found > 1) 
 			return result + "\r\n";
@@ -247,5 +260,18 @@ public class ParticipantResolver implements VariableResolver
 				return actor;
 		}
 		return Json.object();
+	}
+	/**
+	 * Finds the cell phone number of the citizens.
+	 */
+	private static String getCellPhone(Json actor){
+		if (actor.has("CellPhoneNumber"))
+		{
+			return actor.at("CellPhoneNumber").asString();
+		}
+		else
+		{
+			return null;
+		}
 	}
 }

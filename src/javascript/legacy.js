@@ -1341,7 +1341,8 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 					return el.CASE_NUMBER();
 			}
 		};
-
+		
+		//SR click in ASD dispatch view
 		self.populateSH = function(el) {
 			$("#populate_legacy_dialog_alert").dialog({ height: 150, width: 300, modal: true, buttons: {
 				"View Activities" : function() {
@@ -2335,13 +2336,15 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 					return el.hasCaseNumber;
 			}
 		};
-
+		
+		//SR click in Basic Search
 		self.populateSH = function(el) {
 			$("#populate_legacy_dialog_alert").dialog({ height: 150, width: 300, modal: true, buttons: {
-				"View Activities" : function() {
+				"View Service Request" : function() {
 					$(document).trigger(InteractionEvents.populateSH, [el.boid]);
-					$("#populate_legacy_dialog_alert").dialog('close');
-					$(document).trigger(InteractionEvents.showServiceActivities, []);
+					$("#populate_legacy_dialog_alert").dialog('close');					
+					$(document).trigger(InteractionEvents.showServiceHub, []);
+					$(document).trigger(InteractionEvents.resetServiceHubToSRMain, []);
 				},
 				"View Report" : function() {
 					$("#populate_legacy_dialog_alert").dialog('close');
@@ -2843,10 +2846,18 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 				var city = answerhub.AddressModel().getCity(self.searchCriteria.atAddress().municipality());
 				if(city != undefined && city.iri)
 				{
-					if(self.misc.query().atAddress === undefined)
-						self.misc.query().atAddress = {"type":"Street_Address"};
-					self.misc.query().atAddress.Street_Address_City = {"iri": city.iri};
-					self.misc.counter(self.misc.counter() + 1);
+					//2017.07.15 hilpold Use city only if zip code is NOT provided to find all cases by zip code,
+					//even if city iri in database is invalid.
+					//This fix should be considered temporary until all city iris in the db are fixed and
+					//all sources for bad city iris have been identified.\
+					//Reference mdcirm
+					if(U.isEmptyString(self.searchCriteria.atAddress().Zip_Code())) {
+						//Only use city if no zip provided
+						if(self.misc.query().atAddress === undefined)
+							self.misc.query().atAddress = {"type":"Street_Address"};
+						self.misc.query().atAddress.Street_Address_City = {"iri": city.iri};
+						self.misc.counter(self.misc.counter() + 1);
+					}
 				}
 			}
 			if(!U.isEmptyString(self.searchCriteria.atAddress().Zip_Code()))

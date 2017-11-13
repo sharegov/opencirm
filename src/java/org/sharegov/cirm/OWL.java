@@ -987,46 +987,83 @@ public class OWL
 		return dataFactory().getOWLClassAssertionAxiom(e, i);
 	}
 	
+	/**
+	 * Calculates a date by adding days to a start date. Calendar days are added unless UseWorkWeek is set.
+	 * UseWorkweek will skip Saturdays, Sundays, and ontology configured holidays in the calculation.
+	 * See Ontology class Observed_County_Holiday for configured holidays, which must be updated anually. 
+	 * 
+	 * If days are null, a clone of start is returned.
+	 * 
+	 * @param start the date to start calculation from.
+	 * @param days the days to add (calendar or workDays if useWorkWeek is set)
+	 * @param useWorkWeek sets a five day non holiday work week for calculation.
+	 * @return never null
+	 */
 	public static Date addDaysToDate(Date start, float days, boolean useWorkWeek)
 	{
-		Date result = null;
-		int seconds = (int) (86400 * days);
-		Calendar c = Calendar.getInstance();
-		Set<OWLLiteral> holidays = new HashSet<OWLLiteral>();
-		
-		for(OWLNamedIndividual holiday: reasoner()
-				.getInstances(owlClass("Observed_County_Holiday"), false).getFlattened())
-		{
-				for(OWLLiteral date: reasoner().getDataPropertyValues(holiday, dataProperty("hasDate")))
-				{
-					if (date != null)
-						holidays.add(date);
-				}
+		if (days < 0 && useWorkWeek) throw new IllegalArgumentException("Cannot calculate negative days for useWorkWeek to start " + start + ", days was " + days); 
+		if (days == 0) {
+			return new Date(start.getTime());
 		}
+		Date result = null;
+		int fullDays = (int) days;
+		int partialDaySeconds = (int) (86400 * (days - (int)days));
+		Calendar c = Calendar.getInstance();
 		c.setTime(start);
 		if (!useWorkWeek)
 		{
-			c.add(Calendar.SECOND, seconds);
-			result = c.getTime();
+			//Fulldays needed for Daylight saving time accuracy.
+			c.add(Calendar.DATE, fullDays);
+			c.add(Calendar.SECOND, partialDaySeconds);
 		}
 		else
 		{
-			int diff = seconds % 86400; 
-			for(int workSeconds = 0; workSeconds < seconds-diff;)
+			Set<OWLLiteral> holidays = new HashSet<OWLLiteral>();
+			//Get all holidays
+			for(OWLNamedIndividual holiday: reasoner()
+					.getInstances(owlClass("Observed_County_Holiday"), false).getFlattened())
 			{
-				c.add(Calendar.SECOND, 86400);
-				int dow = c.get(Calendar.DAY_OF_WEEK);
-				if(!( dow == Calendar.SATURDAY 
-						|| dow == Calendar.SUNDAY))
-				{
-					OWLLiteral literal = dateLiteral(c.getTime());
-					if(!holidays.contains(literal))
-						workSeconds = workSeconds + 86400;
-				}
-				
+					for(OWLLiteral date: reasoner().getDataPropertyValues(holiday, dataProperty("hasDate")))
+					{
+						if (date != null)
+							holidays.add(date);
+					}
 			}
-			c.add(Calendar.SECOND, diff);
-			result = c.getTime();
+
+			//5 day workweek calculation			
+			//Find start workday
+			while (!isWorkDay(c, holidays)) {
+				c.add(Calendar.DATE, 1);
+			}
+			//Add day by day, not counting non workdays
+			int workDays = 0;
+			while (workDays < fullDays) {
+				c.add(Calendar.DATE, 1);
+				if (isWorkDay(c, holidays)) {
+					workDays = workDays + 1;
+				}
+			}
+			//Add time
+			c.add(Calendar.SECOND, partialDaySeconds);
+		}
+		result = c.getTime();
+		return result;
+	}
+	
+	/**
+	 * Determines if a date falls on a workday, considering Sat, Sun and given holidays as non-workdays.
+	 * @param c a date
+	 * @param holidays must not be null.
+	 * @return
+	 */
+	public static boolean isWorkDay(Calendar c, Set<OWLLiteral> holidays) {
+		if (holidays == null) throw new IllegalArgumentException("holidays required, was null");
+		boolean result;
+		int dow = c.get(Calendar.DAY_OF_WEEK);
+		result = (dow != Calendar.SATURDAY && dow != Calendar.SUNDAY);
+		if (result) {
+			OWLLiteral literal = dateLiteral(c.getTime());
+			result = !holidays.contains(literal);
 		}
 		return result;
 	}

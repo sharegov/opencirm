@@ -33,18 +33,36 @@
         <div class="grid_5 alpha" id="srTypeList">
 			<span class="input_clear">
 	        	<input id="srTypeID" data-bind="jqueryui: {widget: 'autocomplete', options:{source:getFilteredSCList()} }, event: {keydown: validateOnEnter}, css: {color_green: data().type().length > 0}" class="ic_field" style="width:312px" type="text" placeholder="Service Request Type">
-				<input class="ic_clear button_icon" type="button" value="Clear" data-bind="event: {click: function(data,event){$root.clearSR();}}" style="border-top-right-radius:0; -moz-border-radius-topright:0; border-bottom-right-radius:0; -moz-border-radius-bottomright:0;">
+                <input class="ic_clear button_icon" type="button" value="Clear" data-bind="event: {click: function(data,event){$root.typeChangeOrClearSR();}}" style="border-top-right-radius:0; -moz-border-radius-topright:0; border-bottom-right-radius:0; -moz-border-radius-bottomright:0;">
             	<input class="submit h23_submit" type="button" value="Search" data-bind="click: srTypeLookup">
             </span>
         </div>
-        
-        <div class="grid_2 omega">
+
+
+ 		<div class="grid_2 omega">
 			<input type="button" value="Clear All TABS" data-bind="click: clearAllTabs">
         </div>
 
 		<div id="sh_dialog_alert" class="display_none" title="Service Request Alert"> </div>
 		<div id="sh_dialog_clear" class="display_none" title="Service Request Clear Message"> </div>
+		<div id="sh_dialog_typeChange" class="display_none" title="Service Request Type Change for Pending SR">
+			<p>Please select a target SR type to change the type of the current service request.</p>
+            <div class="grid_5 alpha omega" id="srTypeListTypeChange">
+			    <span class="input_clear">
+	        	<input id="srTypeIDForTypeChange" data-bind="jqueryui: {widget: 'autocomplete', options:{source:getFilteredSCList()} }, css: {}" class="ic_field" style="width:312px" type="text" placeholder="Service Request Type">
+				<input class="ic_clear button_icon" type="button" value="Clear" data-bind="event: {click: function(data,event){$root.clearSrTypeIDForTypeChange();} }" style="border-top-right-radius:0; -moz-border-radius-topright:0; border-bottom-right-radius:0; -moz-border-radius-bottomright:0;">
+                </span>
+            </div>
+			<div class="grid_5 alpha omega">
+			<p>After a successful type change, please approve the SR and save it. <br>To revert a pending type change, please load the SR again before saving it.
+				<br>With your approval of the SR no further type change is allowed.<br><br>All answers will be copied into the description field for your review.
+				<br>Please also reapply any changes you made prior to the type change.</p>
+			</div>
+		</div>
+
 		<div id="all_clear_dialog" class="display_none" title="Master Clear"> </div>
+
+
 
 		<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
 
@@ -127,19 +145,31 @@
 			</div>
 			<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
 	        <div class="grid_3 alpha">
-				<input data-bind="value: $root.getCitizenActorEmail(), valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: $root.getCitizenActorEmailError()}" placeholder="email"/>
+				<input data-bind="value: $root.getCitizenActorEmail(), valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: $root.getCitizenActorEmailError()}" placeholder="Email"/>
 			</div>
 	        <div class="grid_2">
-				<input data-bind="value: $root.getCitizenActorCellPhone(), valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: $root.getCitizenActorCellPhoneError()}" placeholder="Phone Number"/>
+				<input data-bind="inputmask: { value: $root.getCitizenActorCellPhone() , mask:'999-999-9999', autoUnmask: true} , valueUpdate: 'keyup' , attr:{disabled: $root.isCustomerLocked()}, css: { error: $root.getCitizenActorCellPhoneError()}" placeholder="Phone Number"/>
 			</div>
 			<div class="grid_2 omega">
-				<input type="checkbox" style="width:18px;display:inline;" data-bind="checked: $root.getCitizenActorField('isAnonymous'), event:{change: $root.isCitizenAnonymous()}, attr:{disabled: $root.isCustomerLocked()}, click: $root.showAnonymousAlert"/>
+				<input type="checkbox" style="width:18px;display:inline;" data-bind="checked: $root.getCitizenActorField('isAnonymous'), event:{change: $root.changeCitizenAnonymous()}, attr:{disabled: $root.isCustomerLocked()}, click: $root.showAnonymousAlert"/>
 				<label>Anonymous</label>
 			</div>
 			<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
-			<div class="grid_7 alpha omega">
+			<div class="grid_7 alpha omega" data-bind="visible: $root.hasSelectableCitizenNotificationPrefs() !== true">
 				<input type="checkbox" style="width:18px;display:inline;" data-bind="checked: $root.getCitizenActorEmailCustomer()"/>
 				<label>After creating/updating the Service Request, send an email to this Customer</label>
+			</div>
+			<div class="grid_7 alpha omega" data-bind="visible: $root.hasSelectableCitizenNotificationPrefs() === true">
+			   <label>Would you like to be notified of Service Request changes?</label></br>
+			   	<select data-bind="options: $root.getSelectableCitizenNotificationPrefs(), 
+			   			value: $root.getCitizenActorField('hasNotificationPreference'), 
+			   			optionsCaption:'Please Select', 
+			   			optionsValue: 'id',
+			   			optionsText: 'label',
+			   			event: {change: $root.citizenNotificationSelectionChanged},
+			   			attr:{disabled: $root.isCustomerLocked() || $root.isCitizenAnonymous() },
+			   			css: { error: $root.getCitizenActorField('hasNotificationPreference')() === undefined && !$root.isCitizenAnonymous()}" style="width:200px;">
+				</select>
 			</div>
 			<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
 			<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
@@ -212,6 +242,7 @@
 					<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
 					<h5>Contact Information:</h5>
 
+					<!-- Hilpold: Removing option to add multiple phone numbers per type 
 					<select style="width:210px;" data-bind="attr: {id: $root.getActorPhoneTypeListRowId($data), disabled: $root.isCustomerLocked()} ">
 						<option value="undefined">Select Contact Number Type</option>
 						<option value="HomePhoneNumber">Home Phone Number</option>
@@ -221,57 +252,68 @@
 						<option value="OtherPhoneNumber">Other Phone Number</option>
 					</select>
 					<img src="images/add.png" data-bind="visible: $root.isCustomerLocked() == false, click: $root.addContactNumber" title="Add" onmouseover="this.style.cursor='pointer';" style="cursor: pointer;">
-
+ 					-->
+ 					
 					<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
 					
 					<div data-bind="foreach: HomePhoneNumber">
 						 <div class="grid_2 alpha">
 						 	<label>Home Phone No:</label>
 						 </div>
-						 <input style="width:132px;" data-bind="value: number, valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: number.hasError }" placeholder="Home Phone Number"/>
+						 <input style="width:132px;" data-bind="inputmask: { value: number , mask:'999-999-9999', autoUnmask: true}, valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: number.hasError }" placeholder="Home Phone Number"/>
 						 &nbsp; &nbsp;
 						 <input style="width:52px;" data-bind="value: extn, valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: extn.hasError }" placeholder="extn"/>
+						 <!-- Hilpold: Removing delete phone nr option
 						 <img src="images/delete.png" data-bind="visible: $root.isCustomerLocked() == false, click: function(data, event){$root.deleteContactNumber($data, 'HomePhoneNumber', $parent)}" title="Delete" onmouseover="this.style.cursor='pointer';" style="cursor: pointer;">
+						  -->
 						<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
 					</div>
 					<div data-bind="foreach: CellPhoneNumber">
 						 <div class="grid_2 alpha">
 						 	<label>Cell Phone No:</label>
 						 </div>
-						 <input style="width:132px;" data-bind="value: number, valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: number.hasError }" placeholder="Cell Phone Number"/>
+						 <input style="width:132px;" data-bind="inputmask: { value: number , mask:'999-999-9999', autoUnmask: true}, valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: number.hasError }" placeholder="Cell Phone Number"/>
 						 &nbsp; &nbsp;
 						 <input style="width:52px;" data-bind="value: extn, valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: extn.hasError }" placeholder="extn"/>
+						 <!-- Hilpold: Removing delete phone nr option						 
 						 <img src="images/delete.png" data-bind="visible: $root.isCustomerLocked() == false, click: function(data, event){$root.deleteContactNumber($data, 'CellPhoneNumber', $parent)}" title="Delete" onmouseover="this.style.cursor='pointer';" style="cursor: pointer;">
+						 -->
 						<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
 					</div>
 					<div data-bind="foreach: BusinessPhoneNumber">
 						 <div class="grid_2 alpha">
 						 	<label>Business Phone No:</label>
 						 </div>
-						 <input style="width:132px;" data-bind="value: number, valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: number.hasError }" placeholder="Business Phone Number"/>
+						 <input style="width:132px;" data-bind="inputmask: { value: number , mask:'999-999-9999', autoUnmask: true}, valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: number.hasError }" placeholder="Business Phone Number"/>
 						 &nbsp; &nbsp;
 						 <input style="width:52px;" data-bind="value: extn, valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: extn.hasError }" placeholder="extn"/>
+						 <!-- Hilpold: Removing delete phone nr option	
 						 <img src="images/delete.png" data-bind="visible: $root.isCustomerLocked() == false, click: function(data, event){$root.deleteContactNumber($data, 'BusinessPhoneNumber', $parent)}" title="Delete" onmouseover="this.style.cursor='pointer';" style="cursor: pointer;">
+						 -->
 						<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
 					</div>
 					<div data-bind="foreach: FaxNumber">
 						 <div class="grid_2 alpha">
 						 	<label>Fax No:</label>
 						 </div>
-						 <input style="width:132px;" data-bind="value: number, valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: number.hasError }" placeholder="Fax Number"/>
+						 <input style="width:132px;" data-bind="inputmask: { value: number , mask:'999-999-9999', autoUnmask: true}, valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: number.hasError }" placeholder="Fax Number"/>
 						 &nbsp; &nbsp;
 						 <input style="width:52px;" data-bind="value: extn, valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: extn.hasError }" placeholder="extn"/>
+						  <!-- Hilpold: Removing delete phone nr option	
 						 <img src="images/delete.png" data-bind="visible: $root.isCustomerLocked() == false, click: function(data, event){$root.deleteContactNumber($data, 'FaxNumber', $parent)}" title="Delete" onmouseover="this.style.cursor='pointer';" style="cursor: pointer;">
+						 -->
 						<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
 					</div>
 					<div data-bind="foreach: OtherPhoneNumber">
 						 <div class="grid_2 alpha">
 						 	<label>Other Phone No:</label>
 						 </div>
-						 <input style="width:132px;" data-bind="value: number, valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: number.hasError }" placeholder="Other Phone Number"/>
+						 <input style="width:132px;" data-bind="inputmask: { value: number , mask:'999-999-9999', autoUnmask: true}, valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: number.hasError }" placeholder="Other Phone Number"/>
 						 &nbsp; &nbsp;
 						 <input style="width:52px;" data-bind="value: extn, valueUpdate: 'keyup', attr:{disabled: $root.isCustomerLocked()}, css: { error: extn.hasError }" placeholder="extn"/>
+						 <!-- Hilpold: Removing delete phone nr option	
 						 <img src="images/delete.png" data-bind="visible: $root.isCustomerLocked() == false, click: function(data, event){$root.deleteContactNumber($data, 'OtherPhoneNumber', $parent)}" title="Delete" onmouseover="this.style.cursor='pointer';" style="cursor: pointer;">
+						 -->
 						<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
 					</div>
 					<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
@@ -808,6 +850,19 @@ HTML templates
 	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
 </script>
 
+<script type="text/html" id="phoneNumTemplate">
+	<div class="grid_7 alpha omega">
+		<label data-bind="text: hasServiceField().label(), css: {highlight_text : $root.isHighlighted($data)} "></label>
+	</div>
+	<div class="grid_5 alpha">
+		<input placeholder="" class="tooltip" data-bind="inputmask: { value: hasAnswerValue().literal , mask:'999-999-9999', autoUnmask: true}, valueUpdate: 'afterkeydown', hasfocus: hasAnswerValue().literal.hasInputFocus, css: { error: hasAnswerValue().literal.hasError }, attr :{title: hasAnswerValue().literal.toolTipTitle }" ></input>
+	</div>
+	<div class="grid_1 omega">
+		<label data-bind='visible: hasAnswerValue().literal.hasError, text: hasAnswerValue().literal.validationMessage, css: { red_text: hasAnswerValue().literal.hasError }' />
+	</div>
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+</script>
+
 <script type="text/html" id="charStreetTemplate">
 	<div class="grid_7 alpha omega">
 		<label data-bind="text: hasServiceField().label(), css: {highlight_text : $root.isHighlighted($data)} "></label>
@@ -843,6 +898,17 @@ HTML templates
 	</div>
 	<div class="grid_6 alpha omega">
 		<input placeholder="" disabled="disabled" class="tooltip" data-bind="value: hasAnswerValue().literal,  attr: { title: hasAnswerValue().literal }"></input>
+	</div>
+	
+	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
+</script>
+
+<script type="text/html" id="phoneNumDisabledTemplate">
+	<div class="grid_7 alpha omega">
+		<label data-bind="text: hasServiceField().label(), css: {highlight_text : $root.isHighlighted($data)} "></label>
+	</div>
+	<div class="grid_6 alpha omega">
+		<input placeholder="" disabled="disabled" class="tooltip" data-bind="inputmask: { value: hasAnswerValue().literal , mask:'999-999-9999', autoUnmask: true},  attr: { title: hasAnswerValue().literal }"></input>
 	</div>
 	
 	<div class="clear" style="margin-bottom:10px;">&nbsp;</div>

@@ -3236,18 +3236,18 @@ public class RelationalStoreImpl implements RelationalStore
 		else if (typeSQLAsStr.equals(Concepts.INTEGER))
 		{
 			// this will throw NPE if value null.
-			int valueInt;
+			long valueLong;
 			if (value instanceof BigInteger)
 			{
-				valueInt = ((BigInteger) value).intValue();
+				valueLong = ((BigInteger) value).longValue();
 			} 
 			else if (value instanceof BigDecimal)
 			{
-				valueInt = ((BigDecimal) value).intValue();
+				valueLong = ((BigDecimal) value).longValue();
 			} 
 			else if (value != null)
 			{
-				valueInt = ((Number) value).intValue();
+				valueLong = ((Number) value).longValue();
 			} 
 			else
 			{
@@ -3258,11 +3258,15 @@ public class RelationalStoreImpl implements RelationalStore
 			if (value != null && typeOWL.isBuiltIn()
 					&& typeOWL.getBuiltInDatatype() == OWL2Datatype.XSD_BOOLEAN)
 			{
-				boolean valueBool = valueInt == 0 ? false : true;
+				boolean valueBool = valueLong == 0 ? false : true;
 				result = factory.getOWLLiteral(valueBool);
 			} else
 			{
-				result = factory.getOWLLiteral(valueInt);
+				if (valueLong > Integer.MAX_VALUE || valueLong < Integer.MIN_VALUE) {
+					result = factory.getOWLLiteral("" + valueLong, OWL2Datatype.XSD_LONG);
+				} else {
+					result = factory.getOWLLiteral((int)valueLong);
+				}				
 			}
 		} 
 		else if (typeSQLAsStr.equals(Concepts.DOUBLE))
@@ -5447,7 +5451,7 @@ public class RelationalStoreImpl implements RelationalStore
 				if (literal.isBoolean())
 					ps.setLong(index, literal.parseBoolean() ? 1 : 0);
 				else
-					ps.setLong(index, literal.parseInteger());
+					ps.setLong(index, Long.parseLong(literal.getLiteral()));
 			} else if (t.equals(Concepts.DOUBLE))
 				ps.setDouble(index, ((OWLLiteral) value).parseDouble());
 			else if (t.equals(Concepts.TIMESTAMP))
@@ -5873,9 +5877,17 @@ public class RelationalStoreImpl implements RelationalStore
     			SQLException sqe = (SQLException)t;
     			do 
     			{
-	    			int c = sqe.getErrorCode(); 
-	    			if (c == 8177 || c == 8006)
+	    			int c = sqe.getErrorCode();
+	    			//ORA-08177 can't serialize access for this transaction
+	    			//ORA-08006 specified row no longer exists
+	    			if (c == 8177 || c == 8006) {
 	    				return true;
+	    			}
+	    			//ORA-00060: deadlock detected while waiting for resource
+	    			if (c == 60) {
+	    				ThreadLocalStopwatch.now("RelationalStoreImpl: ORA deadlock - allowing retry");
+	    				return true;
+	    			}
 	    			sqe = sqe.getNextException();
     			} while (sqe != null);
     		}

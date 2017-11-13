@@ -5,5 +5,4 @@ src/uploaded/
 *.iml
 javadoc/
 .settings/org.eclipse.jdt.core.prefs
-logs/departmentalJMSListener_150318-141412.log
-logs/departmentalJMSListener_150318-162603.log
+logs/

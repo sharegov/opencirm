@@ -71,6 +71,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
     		self.isCreatedBy = username;
     	}
     	self.emailCustomer = false;
+    	self.hasNotificationPreference = "";
     	if(isCitizenActor(iri))
 	    		self.isAnonymous = false;
     }
@@ -182,6 +183,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 		ko.extenders.email = function(target, overrideMessage) {
 			self.commonExtenderForAll(target, overrideMessage, "EMAIL");
 		};
+		ko.extenders.email_conditional = function(target, overrideMessage) {
+			self.commonExtenderForAll(target, overrideMessage, "EMAIL_CONDITIONAL");
+		};
 		ko.extenders.email_required = function(target, overrideMessage) {
 			self.commonExtenderForAll(target, overrideMessage, "EMAIL_REQ");
 		};
@@ -252,7 +256,10 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 				target.conditionallyRequired(false);
 				target.isStandardizedStreet(false);
 			}
-			
+			if(type == "EMAIL_CONDITIONAL") {
+				target.conditionallyRequired = ko.observable();
+				target.conditionallyRequired(false);				
+			}
 			function validate(newValue) { //all required fields empty check
 				if(U.isEmptyString(newValue) && !target.conditionallyRequired) {
 					if(type != undefined && type.indexOf("REQ") == -1) {
@@ -317,10 +324,18 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 					}
 					return true;
 				}
-				else if(type == "EMAIL" || type == "EMAIL_REQ") { //validate email field
+				else if(type == "EMAIL" || type == "EMAIL_REQ" || type == "EMAIL_CONDITIONAL") { //validate email field
 					//var emailFilter = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+(?:[A-Z]{2}|com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|museum)/;
 					var emailFilter = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-					if(emailFilter.test(newValue)) {
+					if (U.isEmptyString(newValue) && type == "EMAIL_CONDITIONAL") {
+						if (target.conditionallyRequired()) {
+							target.hasError(true);
+							target.validationMessage("Required");
+						} else {
+							target.hasError(false);
+							target.validationMessage("");
+						}
+					} else if(emailFilter.test(newValue)) {
 						target.hasError(false);
 						target.validationMessage("");
 					}
@@ -408,6 +423,17 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			}
 			validate(target());
 			target.subscribe(validate);
+			//
+			// hilpold: For EMAIL_CONDITIONAL where a conditionallyRequired observable
+			// should lead to revalidation and possibly UI update, we need to subscribe to changes
+			// and ensure revalidation, so hasError updates on a conditionally required change,
+			// even if the email value has not changed.
+			//
+			if(type == "EMAIL_CONDITIONAL") {
+				target.conditionallyRequired.subscribe( function() {
+					validate(target());
+				});
+			}
 			return target;
 		}
 		
@@ -1053,7 +1079,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			}
 		});
 
-		self.loadFromServerByCaseNumber = function(lookup_boid) {
+
+        self.loadFromServerByCaseNumber = function(lookup_boid) {
 			var query = {"type":"legacy:ServiceCase", "legacy:hasCaseNumber":lookup_boid};
 			cirm.top.async().postObject("/legacy/caseNumberSearch", query, function(result) {
 				$("#sh_dialog_sr_lookup").dialog('close');
@@ -1409,20 +1436,53 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			return true;
 		};
 		
-		self.isCitizenAnonymous = function() {
+		self.changeCitizenAnonymous = function() {
 			var citizen = self.getFirstCitizenActor();
 			if(citizen == null)
 				return false;
 			if(citizen.isAnonymous() === true) {
-				citizen.CellPhoneNumber()[0].number('000-000-0000');
+				citizen.CellPhoneNumber()[0].number('0000000000');
 				citizen.Name("Anonymous");
+				citizen.hasNotificationPreference(undefined);
 			}
 			else if(citizen.Name() === "Anonymous") {
 				citizen.CellPhoneNumber()[0].number('');
 				citizen.Name("");
+				citizen.hasNotificationPreference(undefined);
 			}
 		}; 
 
+		self.isCitizenAnonymous = function() {
+			var citizen = self.getFirstCitizenActor();
+			if(citizen == null) {
+				return false;
+			} else {
+				return citizen.isAnonymous() === true;
+			}
+		}
+
+		self.getSelectableCitizenNotificationPrefs = function() {
+			var options = [];
+			var emailCTmpl = (self.srType && self.srType().transientHasCitizenEmailTemplate === true);
+			var smsCTmpl = (self.srType && self.srType().transientHasCitizenSmsTemplate === true);			
+			if (emailCTmpl && smsCTmpl) {
+				options.push({id:"A", label: "Email & SMS/Text"});
+			}
+			if (emailCTmpl) {
+				options.push({id:"E", label: "Email only"});
+			}
+			if (smsCTmpl) {
+				options.push({id:"S", label: "SMS/Text only"});
+			}
+			options.push({id:"N", label: "No Notification"});
+			return options;
+		};
+
+		self.hasSelectableCitizenNotificationPrefs = function() {
+			return (self.srType && (self.srType().transientHasCitizenEmailTemplate === true || self.srType().transientHasCitizenSmsTemplate === true));
+		};
+
+		
 		self.getCitizenActorField = function(el) {
 			var citizen = self.getFirstCitizenActor();
 			if(citizen != null)
@@ -1439,12 +1499,35 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 				return citizen;
 		};
 		
+		self.setCitizenActorEmailRequired = function(isRequired) {
+			var firstCitzenEmailLabelKo = self.getCitizenActorEmail();
+			firstCitzenEmailLabelKo.conditionallyRequired(isRequired);
+			firstCitzenEmailLabelKo(firstCitzenEmailLabelKo());
+		};
+		
+		//Might show a disclaimer pop up for sms and adjust email validation
+		self.citizenNotificationSelectionChanged = function() {
+			var firstCitizenNotificationPrefField = self.getCitizenActorField('hasNotificationPreference');
+			var selectedPref = ko.toJS(firstCitizenNotificationPrefField);
+			var showAlert = (selectedPref === "S" || selectedPref === "A");
+			if (showAlert === true) {
+				var msg = "Depending on your cell phone plan, sms/text message and data rates may apply.";
+				alertDialog(msg);
+			}
+			var emailRequired = (selectedPref === "E" || selectedPref === "A");
+			self.setCitizenActorEmailRequired(emailRequired);
+		};
+		
+		//Return hasError observable
 		self.getCitizenActorEmailError = function() {
 			var citizen = self.getFirstCitizenActor();
-			if(citizen != null)
-				return citizen.hasEmailAddress().label.hasError;
-			else
-				return citizen;
+			if(citizen != null) {
+				var result = citizen.hasEmailAddress().label.hasError;
+				return result;
+			}
+			else {
+				return ko.observable();
+			}
 		};
 
 		self.getCitizenActorCellPhone = function() {
@@ -2153,13 +2236,19 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
                     self.removeDuplicates();
                     setModel(result.bo, model, model.srType(), type, true, false);
                
-                    var meta = []; 
-                    meta.push(new metadata("sr",srid));
-                    meta.push(new metadata("type",type));
+                    
                    
                     //2149 Optional Image upload - disabled meta until next week
                     //Enabled again
-                    updateMetadata(meta, self.data().properties().hasAttachment()); 
+                    try {
+                    	var meta = []; 
+                        meta.push(new metadata("sr",srid));
+                        meta.push(new metadata("type",type));
+                        
+                    	updateMetadata(meta, self.data().properties().hasAttachment());
+                    } catch(err) {
+                    	console.log("Error during meta: " + err);
+                    }
                 }
                 else if(result.ok == false) {
                     $("#sh_save_progress").dialog('close');
@@ -2289,7 +2378,11 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
     	
     	self.addExtendersToActor = function(el, isFirstCitizen)
     	{
-			el.hasEmailAddress().label.extend({ email : ""});
+    		if (isFirstCitizen) {
+				el.hasEmailAddress().label.extend({ email_conditional : ""});
+    		} else {
+				el.hasEmailAddress().label.extend({ email : ""});
+    		}
 			
 			$.each(el, function(prop,value) {
 				if(prop.indexOf('Number') != -1)
@@ -2425,20 +2518,38 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
     				 return false; //ignore the element
     			}
     			if(self.data().boid().length > 0 && self.data().properties().hasStatus().label().toLowerCase().indexOf('open') == -1) {
+    				//SR SAVED AND NOT OPEN
 	    			//If status locked then should be able to add only Personal Contact Activity.
 	    			if(self.isLockedStatus()) {
 	    				//If SR is LOCKED then always show 'Personal Contact' Activity
-		    			if(v.hasLegacyCode && v.hasLegacyCode == "PERSCNTC")
+		    			if(v.hasLegacyCode && v.hasLegacyCode == "PERSCNTC") {
 	    					return true;
+		    			}
+		    			else if(v.hasLegacyCode && v.hasLegacyCode == "FEEDBACK") {
+	    					return true;
+		    			}
+		    			else if(v.hasLegacyCode && v.hasLegacyCode == "FEEDBACKWEB") {
+	    					return true;
+		    			}
+		    			else if(v.hasLegacyCode && v.hasLegacyCode == "COMFEEDBACK") {
+	    					return true;
+		    			}
 		    			//if PW/WM SR then show 'SWM Urgent Notification' Activity
-		    			if(self.isPWWMCase() && v.hasLegacyCode && v.hasLegacyCode == "SWMURGN")
+		    			else if(self.isPWWMCase() && v.hasLegacyCode && v.hasLegacyCode == "SWMURGN") {
 	    					return true;
+		    			} else {
+		    				//Do not show activity
+		    			}
 		    		}
-	    			else if(v.hasBusinessCodes && v.hasBusinessCodes.indexOf("INSSPEC") != -1) 
+	    			else if(v.hasBusinessCodes && v.hasBusinessCodes.indexOf("INSSPEC") != -1) {
+	    				//SR NOT LOCKED OR OPEN, SHOW ALL INSSPEC ACTIVITIES
 			    			return true; 
+	    			}
     			}
-    			else
+    			else {
+    				//SR OPEN SHOW ALL ACTIVITIES
     				return true;
+    			}
     		});
 
 			return tempActs.sort(function(a,b) {
@@ -2908,12 +3019,12 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 		};
 		
 		self.returnRegularTemplate = {
-			"CHAR":"charTemplate", "NUMBER":"charTemplate", "PHONENUM":"charTemplate", "DATE":"dateTemplate", 
+			"CHAR":"charTemplate", "NUMBER":"charTemplate", "PHONENUM":"phoneNumTemplate", "DATE":"dateTemplate", 
 			"TIME":"timeTemplate", "CHARLIST":"charListTemplate", "CHARMULT":"charMultTemplate", 
 			"CHAROPT":"charOptTemplate", "CHARLISTOPT":"charOptTemplate", "undefined":"charTemplate"
 		};
 		self.returnDisabledTemplate = {
-			"CHAR":"charDisabledTemplate", "NUMBER":"charDisabledTemplate", "PHONENUM":"charDisabledTemplate", 
+			"CHAR":"charDisabledTemplate", "NUMBER":"charDisabledTemplate", "PHONENUM":"phoneNumDisabledTemplate", 
 			"DATE":"dateDisabledTemplate", "TIME":"timeDisabledTemplate", "CHARLIST":"charListDisabledTemplate", 
 			"CHARMULT":"charMultDisabledTemplate", "CHAROPT":"charOptDisabledTemplate", 
 			"CHARLISTOPT":"charOptDisabledTemplate", "undefined":"charDisabledTemplate"
@@ -3031,41 +3142,147 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			self.removeDuplicates();
 			patchPlaceholdersforIE();
 		};
-		
+//-----------------------------
+// TTPE CHANGE FUNCTIONS START
+// ----------------------------
+        self.isTypeChangeSrAllowed = function(type) {
+            var ok = self.isPendingApproval;
+        	return ok;
+        }
+
+        self.typeChangeSR = function(type) {
+            if(self.data().type() == "") {
+                $('#srTypeIDForTypeChange').val("");
+                return;
+            }//sh_dialog_typeChange
+            //$("#sh_dialog_typeChange")[0].innerText = "Are you sure you want to change the type current SR ?"
+            $("#sh_dialog_typeChange").dialog({ height: 300, width: 500, modal: true, buttons: {
+                "Start SR Type Change" : function() {
+                    var typeLabel = $('#srTypeIDForTypeChange').val().trim();
+                    var targetTypeFragment = cirm.refs.serviceCaseList[typeLabel];
+                    if(!targetTypeFragment || U.isEmptyString(targetTypeFragment))
+                    {
+                        alertDialog("Please select a target SR type");
+                        return true;
+                    }
+                    $("#sh_dialog_typeChange").dialog('close');
+                    var caseNumber = $('[name="SR Lookup"]').val().trim();
+                    if(U.isEmptyString(caseNumber))
+                    {
+                        alertDialog("No case number was selected.");
+                        return true;
+                    }
+                    //Try change SR type with validation
+                    self.loadFromServerByCaseNumberWithTypeChange(caseNumber, targetTypeFragment);
+                    patchPlaceholdersforIE();
+                },
+                "Cancel": function() {
+                    $("#sh_dialog_typeChange").dialog('close');
+                    self.clearSR();
+                    return;
+                }
+            }
+            });
+        }
+        //Dialog Functions
+        self.clearSrTypeIDForTypeChange = function() {
+        	$("#srTypeIDForTypeChange").val("");
+		}
+
+		//Loads an SR from the server converted to a target type. Only use if case is in approval and was only pending.
+        self.loadFromServerByCaseNumberWithTypeChange = function(caseNumber, targetTypeFragment) {
+            cirm.top.async().get("/typeChange/loadAsTargetTypeForApproval/" + caseNumber, { "targetTypeFragment" : targetTypeFragment}, function(result) {
+                $("#sh_dialog_sr_lookup").dialog('close');
+                if(result.ok) {
+                	var msg = "Your type change was successfully completed!\n";
+                    msg += "Answers of the old SR are provided in the Description field, please copy paste them where appropriate.\n\n"
+                    msg += "The type change is only permanent, when you save the SR.\n"
+                    msg += "Before saving, you can undo the type change by reloading the SR.\n"
+                    msg += "311Hub will now start the approval process with the new type.\n"
+                    $("#sh_dialog_alert")[0].innerText = msg;
+                    $("#sh_dialog_alert").dialog({ height: 300, width: 500, modal: true, buttons: {
+                        "Continue" : function() {
+                            $("#sh_dialog_alert").dialog('close');
+                            //Now Apply type changed SR to UI
+                            self.removeDuplicates();
+                            fetchSR(result.bo, self, false);
+                        }
+                    }
+                    });
+                }
+                else
+                {
+                    switch(result.error)
+                    {
+                        case "Case not found.":
+                        {
+                            showErrorDialog("Service request : "+ caseNumber + " was not found. <br>" + result.error);
+                            break;
+                        }
+                        case "Permission denied.":
+                        {
+                            showErrorDialog("An error occurred while searching for the Service Request : <br>"+result.error);
+                            break;
+                        }
+                        default :
+                        {
+                            showErrorDialog("An error occurred during type change of the Service Request : <br>"+result.error);
+                            break;
+                        }
+                    }
+                }
+            });
+        };
+        self.typeChangeOrClearSR = function(type) {
+            if(self.data().type() == "") {
+                $('#srTypeID').val("");
+                return;
+            }
+            if (self.isPendingApproval) {
+                self.typeChangeSR(type);
+            } else {
+                self.clearSR()
+            }
+		}
+//-----------------------------
+// TTPE CHANGE FUNCTIONS END
+// ----------------------------
+
 		self.clearSR = function(type) {
 			if(self.data().type() == "") {
    				$('#srTypeID').val("");
 				return;
 			}
-			$("#sh_dialog_clear")[0].innerText = "Are you sure you want to clear the current SR ?"
-    		$("#sh_dialog_clear").dialog({ height: 150, width: 350, modal: true, buttons: {
-				"Yes" : function() {
-	   				$(document).trigger(legacy.InteractionEvents.SrTypeSelection, []);
-       				$('#srTypeID').val("");
-					$('[name="SR Lookup"]').val("");
-					var tempAddr = self.data().properties().atAddress();
-					var tempX = self.data().properties().hasXCoordinate();
-					var tempY = self.data().properties().hasYCoordinate();
-					self.removeDuplicates();
-					self.data(emptyModel.data);
-					self.srType(emptyModel.srType);
-					self.originalData(emptyModel.originalData);
-					self.data().properties().atAddress(tempAddr);
-					self.data().properties().hasXCoordinate(tempX);
-					self.data().properties().hasYCoordinate(tempY);
-					self.removeAddressExtenders(self.data());
-					self.clearEmail();
-					$("#sh_dialog_clear").dialog('close');
-					patchPlaceholdersforIE();
-					if(type != undefined)
-						self.startNewServiceRequest(type);
-				},
-				"No": function() {
-				  	$("#sh_dialog_clear").dialog('close');
-				  	return;
-				}
-			  } 
-			});
+            $("#sh_dialog_clear")[0].innerText = "Are you sure you want to clear the current SR ?"
+            $("#sh_dialog_clear").dialog({
+                height: 150, width: 350, modal: true, buttons: {
+                    "Yes": function () {
+                        $(document).trigger(legacy.InteractionEvents.SrTypeSelection, []);
+                        $('#srTypeID').val("");
+                        $('[name="SR Lookup"]').val("");
+                        var tempAddr = self.data().properties().atAddress();
+                        var tempX = self.data().properties().hasXCoordinate();
+                        var tempY = self.data().properties().hasYCoordinate();
+                        self.removeDuplicates();
+                        self.data(emptyModel.data);
+                        self.srType(emptyModel.srType);
+                        self.originalData(emptyModel.originalData);
+                        self.data().properties().atAddress(tempAddr);
+                        self.data().properties().hasXCoordinate(tempX);
+                        self.data().properties().hasYCoordinate(tempY);
+                        self.removeAddressExtenders(self.data());
+                        self.clearEmail();
+                        $("#sh_dialog_clear").dialog('close');
+                        patchPlaceholdersforIE();
+                        if (type != undefined)
+                            self.startNewServiceRequest(type);
+                    },
+                    "No": function () {
+                        $("#sh_dialog_clear").dialog('close');
+                        return;
+                    }
+                }
+            });
 		};
 
 		self.clearAllTabs = function() {

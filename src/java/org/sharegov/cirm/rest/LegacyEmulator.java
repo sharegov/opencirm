@@ -42,6 +42,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -50,8 +51,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -103,6 +102,7 @@ import org.sharegov.cirm.event.EventDispatcher;
 import org.sharegov.cirm.gis.GisDAO;
 import org.sharegov.cirm.legacy.ActivityManager;
 import org.sharegov.cirm.legacy.CirmMessage;
+import org.sharegov.cirm.legacy.CirmMimeMessage;
 import org.sharegov.cirm.legacy.MessageManager;
 import org.sharegov.cirm.legacy.Permissions;
 import org.sharegov.cirm.owl.Model;
@@ -125,13 +125,16 @@ import org.sharegov.cirm.stats.CirmStatistics;
 import org.sharegov.cirm.stats.CirmStatisticsFactory;
 import org.sharegov.cirm.stats.SRCirmStatsDataReporter;
 import org.sharegov.cirm.utils.ConcurrentLockedToOpenException;
+import org.sharegov.cirm.utils.DueDateUtil;
 import org.sharegov.cirm.utils.ExcelExportUtil;
 import org.sharegov.cirm.utils.GenUtils;
+import org.sharegov.cirm.utils.GisInfoUtil;
 import org.sharegov.cirm.utils.JsonUtil;
 import org.sharegov.cirm.utils.PDFExportUtil;
 import org.sharegov.cirm.utils.PDFViewReport;
 import org.sharegov.cirm.utils.RemoveAttachmentsOnTxSuccessListener;
-import org.sharegov.cirm.utils.SendEmailOnTxSuccessListener;
+import org.sharegov.cirm.utils.SendMessagesOnTxSuccessListener;
+import org.sharegov.cirm.utils.SrJsonUtil;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 import org.sharegov.cirm.workflows.WebServiceCallTask;
 
@@ -145,11 +148,13 @@ public class LegacyEmulator extends RestService
 
 	public static final int MAX_CALLWS_ATTEMPTS = 3;
 	
-	private static Logger logger = Logger.getLogger("org.sharegov.cirm");
-
 	private static Map<String, IRI> hasTypeMappingToXSD;
 
 	private final SRCirmStatsDataReporter srStatsReporter = CirmStatisticsFactory.createServiceRequestStatsReporter(Refs.stats.resolve(), "LegacyEmulator");
+	
+	private DueDateUtil dueDateUtil = new DueDateUtil();
+	private GisInfoUtil gisInfoUtil = new GisInfoUtil();
+	private SrJsonUtil srJsonUtil = new SrJsonUtil();
 	
 	public LegacyEmulator()
 	{
@@ -398,16 +403,21 @@ public class LegacyEmulator extends RestService
 	// properties should really be only data that is part of the objects (the hasGisDataId is, but not
 	// the full gisAddressData thingy). 
 	// -- Boris
-	public void addAddressData(Json data)
+	public void addAddressData(Json srJson)
 	{
-		if(data.at("properties").has("legacy:hasGisDataId") &&
-				!data.at("properties").has("gisAddressData"))
+		Json props = srJson.at("properties");
+		//2017.07.14 Tom: 
+		// new case will have hasGisDataId here, so condition never met for newSr.
+		// However, performance wise this is better and UI seems ok without it. 
+		// If gisAddressData is needed by client,
+		// it should be used from in memory locationInfo
+		if(props.has("legacy:hasGisDataId") && 
+				!props.has("gisAddressData"))
 		{
 			Json serviceLayersInfo = GisDAO.getGisData(
-			        data.at("properties").at("legacy:hasGisDataId").asString());
+					props.at("legacy:hasGisDataId").asString());
 			if(serviceLayersInfo.has("address"))
-				data.at("properties").
-					set("gisAddressData", serviceLayersInfo.at("address"));
+				props.set("gisAddressData", serviceLayersInfo.at("address"));
 		}
 	}
 
@@ -685,7 +695,7 @@ public class LegacyEmulator extends RestService
 		boids.add(Long.parseLong(boid));
 		try
 		{
-			ThreadLocalStopwatch.start("START LE.printServiceRequest " + boid);
+			ThreadLocalStopwatch.startTop("START LE.printServiceRequest " + boid);
 			Representation report = makePDFCaseReports(boids);
 			ThreadLocalStopwatch.stop("END LE.printServiceRequest");
 			srStatsReporter.succeeded("printServiceRequest", CirmStatistics.UNKNOWN, boid);
@@ -898,7 +908,7 @@ public class LegacyEmulator extends RestService
 	{
 		try
 		{
-			if (DBG) ThreadLocalStopwatch.getWatch().time("START lookupAdvancedSearch");
+			if (DBG) ThreadLocalStopwatch.startTop("START lookupAdvancedSearch");
 			QueryTranslator qt = new QueryTranslator();
 			RelationalStore store = getPersister().getStore();
 			Json resultsArray = Json.array();
@@ -1033,11 +1043,11 @@ public class LegacyEmulator extends RestService
 		}
 		catch (Exception e)
 		{
+			ThreadLocalStopwatch.fail("FAILED lookupAdvancedSearch with " + e);
 			e.printStackTrace();
 			return ko(e.getMessage());
 		} finally {
-			if (DBG) ThreadLocalStopwatch.getWatch().time("END lookupAdvancedSearch");
-			ThreadLocalStopwatch.dispose();
+			if (DBG) ThreadLocalStopwatch.stop("END lookupAdvancedSearch");
 		}
 	}
 
@@ -1127,9 +1137,23 @@ public class LegacyEmulator extends RestService
 	
 	private Json findField(Json fields, String code)
 	{
-		for (Json f : fields.asJsonList())
-			if (f.at("hasServiceField").is("hasLegacyCode", code))
-				return f;
+		if (fields.isArray()) {
+			for (Json f : fields.asJsonList()) {
+				if (f.at("hasServiceField").is("hasLegacyCode", code)) {
+					return f;
+				}
+			}
+			//not found return nil
+		} else if (fields.isObject()) {
+			if (fields.at("hasServiceField").is("hasLegacyCode", code)) {
+				return fields;
+			} else {
+				//not found return nil
+			}
+		} else {
+			//primitive return nil
+		}
+		//
 		return Json.nil();
 	}
 	
@@ -1143,14 +1167,52 @@ public class LegacyEmulator extends RestService
 			return left.isObject() && right.isObject() && left.is("hasAnswerValue", right.at("hasAnswerValue"));
 	}
 	
+	/**
+	 * Have x or y coordinates changed by more than 0.01, did a coord value change to null or a null coord change to a value.
+	 * 
+	 * @param existingSr
+	 * @param newSr
+	 * @return
+	 */
+	public boolean hasCoordinatesUpdated(Json existingSr, Json newSr) {
+		Double existingX = srJsonUtil.gethasXCoordinate(existingSr);
+		Double existingY = srJsonUtil.gethasYCoordinate(existingSr);
+		Double newX = srJsonUtil.gethasXCoordinate(newSr);
+		Double newY = srJsonUtil.gethasYCoordinate(newSr);
+		//X updated?
+		boolean updatedX = false;
+		if (existingX != null) {
+			if (newX != null) {
+				updatedX = Math.abs(newX - existingX) > 0.01;
+			} else {
+				//old not null, new null -> bad case
+				updatedX = true;
+			}
+		} else {
+			//old null, new not null or null
+			updatedX = newX != null;
+		}
+		//Y updated?
+		boolean updatedY = false;
+		if (existingY != null) {
+			if (newY != null) {
+				updatedY = Math.abs(newY - existingY) > 0.01;
+			} else {
+				//old not null, new null -> bad case
+				updatedY = true;
+			}
+		} else {
+			//old null, new not null or null
+			updatedY = newY != null;
+		}
+		return (updatedX || updatedY);
+	}
+	
 	public boolean hasAddressUpdated(Json existing, Json newdata)
-	{		
-		if (existing.at("properties").has("hasXCoordinate") || newdata.at("properties").has("hasXCoordinate"))
-			if (!existing.at("properties").is("hasXCoordinate", newdata.at("properties").at("hasXCoordinate")))
-				return true;
-		if (existing.at("properties").has("hasYCoordinate") || newdata.at("properties").has("hasYCoordinate"))
-			if (!existing.at("properties").is("hasYCoordinate", newdata.at("properties").at("hasYCoordinate")))
-				return true;
+	{	
+		if (hasCoordinatesUpdated(existing, newdata)) {
+			return true;
+		}
 		// FIXME: this address field by field comparison is not accurate because
 		// sometimes the state will include the label, sometimes not so non-essential
 		// differences are picked up.
@@ -1166,8 +1228,9 @@ public class LegacyEmulator extends RestService
 					return true;
 			}
 		}
-		else if (newdata.at("properties").has("atAddress"))
+		else if (newdata.at("properties").has("atAddress")) {
 			return true;
+		}
 		Json lans = existing.at("properties").at("hasServiceAnswer");
 		Json rans = newdata.at("properties").at("hasServiceAnswer");
 		if (lans != null && rans != null)
@@ -1184,7 +1247,7 @@ public class LegacyEmulator extends RestService
 	public Json updateServiceCaseTransaction(final Json newValue, 
 											 final Json existing,
 											 Date updatedDate,
-											 final List<CirmMessage> emailsToSend,
+											 final List<CirmMessage> msgsToSend,
 											 final String originator)
 	{
 		final Json serviceCase = newValue.dup();
@@ -1238,16 +1301,16 @@ public class LegacyEmulator extends RestService
 				// an overwrite of interface changes.
 				throw new ConcurrentLockedToOpenException();
 			} else {
-				mngr.changeStatus(currentStatus, newStatus, updatedDate, (srModifiedBy != null)?srModifiedBy.getLiteral():null, bontology, emailsToSend);
+				mngr.changeStatus(currentStatus, newStatus, updatedDate, (srModifiedBy != null)?srModifiedBy.getLiteral():null, bontology, msgsToSend);
 				if (individual("legacy:O-LOCKED").equals(newStatus)) {
-					mngr.createAutoOnLockedActivities(bontology, new Date(), emailsToSend);
+					mngr.createAutoOnLockedActivities(bontology, new Date(), msgsToSend);
 				}
 			}
 		}
 
 		//Update those existing Activities for which Outcome is set in current request
 		if(uiActs.asJsonList().size() > 0)
-			updateExistingActivities(uiActs, dbActs, mngr, bontology, boid, emailsToSend);
+			updateExistingActivities(uiActs, dbActs, mngr, bontology, boid, msgsToSend);
 
 		
 		String srModifiedByStr = srModifiedBy == null? null : srModifiedBy.getLiteral();
@@ -1275,7 +1338,7 @@ public class LegacyEmulator extends RestService
 								    bontology,
 								    createdDate, 
 								    actCreatedBy,
-								    emailsToSend);
+								    msgsToSend);
 			else
 			{
 				OWLNamedIndividual outcome = hasOutcome != null ? individual(hasOutcome.at("iri").asString()) : null;
@@ -1287,7 +1350,7 @@ public class LegacyEmulator extends RestService
 									createdDate,
 									completedDate,
 									actCreatedBy,
-									emailsToSend);
+									msgsToSend);
 			}
 			if (!eachActivity.has("legacy:hasOutcome") && eachActivity.is("legacy:isAccepted", true))
 			{
@@ -1313,13 +1376,16 @@ public class LegacyEmulator extends RestService
 			    }
 			});
 		}		
-		if (hasAddressUpdated(existing, newValue))
+		if (hasAddressUpdated(existing, newValue)) {
 			populateGisData(serviceCase, bontology);
+		}
 		Json updateResult = updateServiceCase(bontology);
 		if (updateResult.is("ok", true))
 		{
 			Json result = bontology.toJSON();
+			ThreadLocalStopwatch.now("START Adding address data");			
 			addAddressData(result);
+			ThreadLocalStopwatch.now("END Adding address data");			
 			//Register Top Level Tx fire Update event
 			CirmTransaction.get().addTopLevelEventListener(new CirmTransactionListener() {
 			    public void transactionStateChanged(final CirmTransactionEvent e)
@@ -1347,7 +1413,7 @@ public class LegacyEmulator extends RestService
 			if(actorEmails != null)
 			{
 				sendEmailToCustomers(bontology, 
-						actorEmails.asJsonList(), emailsToSend, 
+						actorEmails.asJsonList(), msgsToSend, 
 						result.at("properties").at("hasCaseNumber").asString(),
 						OWL.getEntityLabel(individual("legacy:"+result.at("type").asString()))
 				);
@@ -1370,18 +1436,18 @@ public class LegacyEmulator extends RestService
 		try
 		{
 			ThreadLocalStopwatch.start("START updateServiceCase (str)");
-			final List<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();
+			final List<CirmMessage> msgsToSend = new ArrayList<CirmMessage>();
 			Json result =  Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
 			public Json call()
 			{
-				emailsToSend.clear();
-				CirmTransaction.get().addTopLevelEventListener(new SendEmailOnTxSuccessListener(emailsToSend));
+				msgsToSend.clear();
+				CirmTransaction.get().addTopLevelEventListener(new SendMessagesOnTxSuccessListener(msgsToSend));
 				//Saving the current context as we are losing when 
 				//using another get/post internally 
 				Response current = Response.getCurrent();
 				Long boid = serviceCaseParam.at("boid").asLong();
 				Json bo = findServiceCaseOntology(boid).toJSON();
-				Json result = updateServiceCaseTransaction(serviceCaseParam, bo, updateDate, emailsToSend, originator);
+				Json result = updateServiceCaseTransaction(serviceCaseParam, bo, updateDate, msgsToSend, originator);
 				Response.setCurrent(current);
 				return result;
 			}});			
@@ -1572,36 +1638,72 @@ public class LegacyEmulator extends RestService
 		}
 	}
 	
+	/**
+	 * Updates bOntology by replacing or adding legacy:hasGisDataId long and hasFolio long, stores in GIS_INFO table,
+	 * returns full locationInfo. 
+	 * Prefer to use outside transaction, because a http get is issued to MDCGIS.
+	 * 
+	 * @param legacyForm
+	 * @param bontology
+	 * @return
+	 */
 	public Json populateGisData(Json legacyForm, BOntology bontology)
+	{
+		ThreadLocalStopwatch.getWatch().time("START populateGisData");
+		Json result;
+		if (legacyForm.at("properties").has("hasXCoordinate")
+				&& legacyForm.at("properties").has("hasYCoordinate")) {
+			double x = legacyForm.at("properties").at("hasXCoordinate").asDouble();
+			double y = legacyForm.at("properties").at("hasYCoordinate").asDouble();
+			//Retry up to 2x 500 ms pause:
+			Json locationInfo = Refs.gisClient.resolve().getLocationInfo(x, y, null, 3, 500);
+			result = populateGisDataInternal(legacyForm, bontology, locationInfo);
+		} else {
+			result = Json.nil();
+		}
+		return result;
+	}
+	
+	/**
+	 * Updates bOntology by replacing or adding legacy:hasGisDataId long and hasFolio long, stores in GIS_INFO table,
+	 * returns modified locationInfo for MD-PWS cases if Intersection, Corridor or Area location type.
+	 * Prefer to use inside transaction, but requires locationInfo, best acquired before tx start to avoid repeated http calls on retry.
+	 * 
+	 * @param legacyForm
+	 * @param bontology
+	 * @param locationInfo
+	 * @return
+	 */
+	private Json populateGisDataInternal(Json legacyForm, BOntology bontology, Json locationInfo)
 	{
 		// Checking for x and y properties before adding as Address it not
 		// mandatory anymore
-		if (legacyForm.at("properties").has("hasXCoordinate")
-				&& legacyForm.at("properties").has("hasYCoordinate"))
+		if (locationInfo != null && locationInfo != Json.nil())
 		{
-			if (DBG)
-				ThreadLocalStopwatch.getWatch().time("START populateGisData");
-			Json locationInfo = Refs.gisClient.resolve().getLocationInfo(
-							legacyForm.at("properties").at("hasXCoordinate")
-									.asDouble(), legacyForm.at("properties")
-									.at("hasYCoordinate").asDouble(), null);
-			Json scase = ontoToJson(bontology);
-			if (legacyForm.at("properties").has("hasLegacyInterface"))
-				scase.at("properties").set("hasLegacyInterface", 
-										   legacyForm.at("properties").at("hasLegacyInterface"));
-			Json extendedInfo = Json.nil();
-			try
-			{
-				extendedInfo = Refs.gisClient.resolve().getInformationForCase(scase);
-			}
-			catch (Throwable t)
-			{
-				extendedInfo = Json.object().set("error", t.toString());
-			}
-			if (!extendedInfo.isNull())
-				locationInfo.set("extendedInfo", extendedInfo);
-			else
+			ThreadLocalStopwatch.getWatch().time("START populateGisDataInternal");
+			//1. MD-PWS only: Extended info for Intersection/Corridor/Area location types
+			if (isMdPwsInterfaceCase(legacyForm)) {
+					Json scase = ontoToJson(bontology);
+					if (legacyForm.at("properties").has("hasLegacyInterface"))
+    				scase.at("properties").set("hasLegacyInterface", 
+    										   legacyForm.at("properties").at("hasLegacyInterface"));
+    			Json extendedInfo = Json.nil();
+    			try
+    			{
+    				extendedInfo = Refs.gisClient.resolve().getInformationForCase(scase);
+    			}
+    			catch (Throwable t)
+    			{
+    				extendedInfo = Json.object().set("error", t.toString());
+    			}
+    			if (!extendedInfo.isNull())
+    				locationInfo.set("extendedInfo", extendedInfo);
+    			else
+    				locationInfo.delAt("extendedInfo");
+			} else {
 				locationInfo.delAt("extendedInfo");
+			}
+			//2. DBCreate and set/update legacy:hasGisDataId to business ontology
 			Json gisLiteral = Json.make(GisDAO.getGisDBId(locationInfo, false));
 			OWLLiteral owlLiteral = bontology.getDataProperty(
 					bontology.getBusinessObject(), "legacy:hasGisDataId");
@@ -1618,11 +1720,41 @@ public class LegacyEmulator extends RestService
 									.set("literal", gisLiteral.asLong())
 									.set("type",
 											"http://www.w3.org/2001/XMLSchema#integer"));
+			
+			//3. get folio from locationInfo and set/update legacy:hasGisDataId to business ontology as long value
+			OWLLiteral folioLiteral = bontology.getDataProperty(
+					bontology.getBusinessObject(), "hasFolio");
+			if(folioLiteral != null)
+			{    
+				bontology.deleteDataProperty(
+						bontology.getBusinessObject(), 
+						dataProperty("hasFolio"));
+			}
+			Long folioVal = gisInfoUtil.getFolioFromLocationInfo(locationInfo);
+			if (folioVal != null) {
+				bontology.addDataProperty(
+						bontology.getBusinessObject(),
+						dataProperty("hasFolio"),
+						Json.object()
+								.set("literal", folioVal.longValue())
+								.set("type",
+										"http://www.w3.org/2001/XMLSchema#long"));
+				ThreadLocalStopwatch.now("Folio set: " + folioVal);
+			}
 			if (DBG)
-				ThreadLocalStopwatch.getWatch().time("END populateGisData");
+				ThreadLocalStopwatch.getWatch().time("END populateGisDataInternal");
+			//4. Completed
 			return locationInfo;
 		}
 		return Json.nil();
+	}
+	
+	private boolean isMdPwsInterfaceCase(Json srJson) {
+		Json props = srJson.at("properties");
+		boolean isPwsInterfaceCase = props.isObject() && props.has("hasLegacyInterface") 
+				&& (props.is("hasLegacyInterface", "MD-PWS") || props.at("hasLegacyInterface").is("hasLegacyCode", "MD-PWS")
+					);
+		return isPwsInterfaceCase;
 	}
 
 	/**
@@ -1671,46 +1803,74 @@ public class LegacyEmulator extends RestService
 	public Json createNewKOSR(@FormParam("data") final String formData)
 	{
 		ThreadLocalStopwatch.startTop("START createNewKOSR");
-		final Json legacyForm = read(formData);		
-		final boolean hasCaseNumber = legacyForm.has("properties")
-				&& legacyForm.at("properties").has("legacy:hasCaseNumber") 
-				&& legacyForm.at("properties").at("legacy:hasCaseNumber").isString();
+		//
+		// Pre transaction processing
+		//
+		//
+		final Json newSrJson = read(formData);		
+		//1. Determine SR basics
+		final boolean hasCaseNumber = newSrJson.has("properties")
+				&& newSrJson.at("properties").has("legacy:hasCaseNumber") 
+				&& newSrJson.at("properties").at("legacy:hasCaseNumber").isString();
+		final boolean hasCoordinates = newSrJson.has("properties") 
+				&& newSrJson.at("properties").has("hasXCoordinate")
+				&& newSrJson.at("properties").has("hasYCoordinate");
+		
+		final Json locationInfo;
 		try
 		{
-			// System.out.println("new SR to save: " + legacyForm);
-			final Json actorEmails = legacyForm.at("properties").atDel("actorEmails");
-			final Json hasRemovedAttachment = legacyForm.at("properties").atDel("hasRemovedAttachment");
-			final String type = legacyForm.at("type").asString();
+			//2. Set/Overwrite Due date for SR.
+			dueDateUtil.setDueDateNewSr(newSrJson);
+			//3. Get actor emails, removed attachments, and type.
+			final Json actorEmails = newSrJson.at("properties").atDel("actorEmails");
+			final Json hasRemovedAttachment = newSrJson.at("properties").atDel("hasRemovedAttachment");
+			final String type = newSrJson.at("type").asString();
+			//4. Permission enforcement
 			if (!isClientExempt()
 					&& !Permissions.check(individual("BO_New"),
-							individual(type), getUserActors()))
+							individual(type), getUserActors())) {
 				return ko("Permission denied.");
+			}
 			
-			//TODO PUT GIS INFO CALL OUTSIDE TRANSACTION!!!
+			//5. Slow GIS http call for LocationInfo, if sr has coordinates 
+			if (hasCoordinates) {
+				double xCoordinate = newSrJson.at("properties").at("hasXCoordinate").asDouble();
+				double yCoordinate = newSrJson.at("properties").at("hasYCoordinate").asDouble();
+				String[] layers = null;				
+				locationInfo = Refs.gisClient.resolve().getLocationInfo(xCoordinate, yCoordinate, layers, 3, 500);
+				//locationinfo will be used inside tx call. see below.
+			} else {
+				locationInfo = Json.object();
+			}
 			
-			//DB, but sequence only, rollback no effect on sequences.
+			//
+			// DB Transaction A - Create boid and caseNumber 
+			// (Open311 cases will have case number already)  
+			//
+			// Sequence only, rollback no effect on sequences.
 			getPersister().getStore().txn(new CirmTransaction<Object> () {
 				@Override
 				public Object call() throws Exception
 				{
-					legacyForm.set("boid", Refs.idFactory.resolve().newId(null));
+					newSrJson.set("boid", Refs.idFactory.resolve().newId(null));
 					if (!hasCaseNumber) {
-						createCaseNumber(legacyForm);
+						createCaseNumber(newSrJson);
 					}
 					return null;
 				}
 			}
 			);
-			final List<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();
-			final Json locationInfo = Json.object();
-			// BO, def activities, email, saveBo, IFaces, 
+			final List<CirmMessage> msgsToSend = new ArrayList<CirmMessage>();
+
+			//
+			// DB Transaction B - Main processing
+			//
 			Json result = getPersister().getStore().txn(new CirmTransaction<Json> () {
 				@Override
 				public Json call() throws Exception
 				{
 					tryDeleteAttachments(hasRemovedAttachment);	
-					final BOntology bontology = BOntology.makeRuntimeBOntology(legacyForm);
-									
+					final BOntology bontology = BOntology.makeRuntimeBOntology(newSrJson);
 					
 					//Saving the current context as we are losing when 
 					//using another get/post internally. 
@@ -1718,15 +1878,15 @@ public class LegacyEmulator extends RestService
 					ThreadLocalStopwatch.now("START createDefaultActivities");
 					ActivityManager am = new ActivityManager();
 					//TODO hilpold move this to where emails are created
-					emailsToSend.clear();
-					CirmTransaction.get().addTopLevelEventListener(new SendEmailOnTxSuccessListener(emailsToSend));
-					am.createDefaultActivities(owlClass(type), bontology, GenUtils.parseDate(legacyForm.at("properties").at("hasDateCreated").asString()), emailsToSend);
+					msgsToSend.clear();
+					CirmTransaction.get().addTopLevelEventListener(new SendMessagesOnTxSuccessListener(msgsToSend));
+					am.createDefaultActivities(owlClass(type), bontology, GenUtils.parseDate(newSrJson.at("properties").at("hasDateCreated").asString()), msgsToSend);
 					Response.setCurrent(current);
 					ThreadLocalStopwatch.now("END createDefaultActivities");
-					Json locationInfoTmp = populateGisData(legacyForm, bontology);
-					if (!locationInfoTmp.isNull())
+					Json locationInfoTmp = populateGisDataInternal(newSrJson, bontology, locationInfo);
+					if (!locationInfoTmp.isNull()) {
 						locationInfo.with(locationInfoTmp);
-					//validateResources(legacyForm, bontology);
+					}
 					//DB
 					getPersister().saveBusinessObjectOntology(bontology.getOntology());			
 					// delete any removed Images, if save succeeds only																	
@@ -1739,12 +1899,12 @@ public class LegacyEmulator extends RestService
 						{
 							BOntology withMeta = addMetaDataAxioms(bontology);
 							withMetadata.add(withMeta);
-							CirmMessage msg = MessageManager.get().createMessageFromTemplate(
+							CirmMimeMessage msg = MessageManager.get().createMimeMessageFromTemplate(
 									withMeta,
 									dataProperty(individual(type),
 											"legacy:hasLegacyCode"), emailTemplate);
 							msg.addExplanation("createNewKOSR SR template " + emailTemplate.getIRI().getFragment());
-							emailsToSend.add(msg);
+							msgsToSend.add(msg);
 						}
 						catch (Throwable t)
 						{
@@ -1753,6 +1913,7 @@ public class LegacyEmulator extends RestService
 					}
                     final Json result = bontology.toJSON();
                     addAddressData(result);
+                    //Fire legacy:NewServiceCaseEvent on later tx success
 					CirmTransaction.get().addTopLevelEventListener(new CirmTransactionListener() {
 					    public void transactionStateChanged(final CirmTransactionEvent e)
 					    {
@@ -1781,7 +1942,7 @@ public class LegacyEmulator extends RestService
 					if(actorEmails != null)
 					{
 						sendEmailToCustomers(bontology, 
-								actorEmails.asJsonList(), emailsToSend, 
+								actorEmails.asJsonList(), msgsToSend, 
 								result.at("properties").at("hasCaseNumber").asString(),
 								OWL.getEntityLabel(individual("legacy:"+result.at("type").asString()))
 						);
@@ -1790,21 +1951,25 @@ public class LegacyEmulator extends RestService
 					return ok().set("bo", result);
 				}
 			});
+
+			//
+			// Post Transaction processing
+			//
 			if (locationInfo.has("extendedInfo") && locationInfo.at("extendedInfo").has("error"))
 			{
 				GenUtils.reportPWGisProblem(result.at("bo").at("properties").at("hasCaseNumber").asString(),
 						locationInfo.at("extendedInfo").at("error"));
 				ThreadLocalStopwatch.error("Error createNewKOSR - Gis problem " + result.at("bo").at("properties").at("hasCaseNumber").asString());
 			}
-			//MessageManager.get().sendEmails(emailsToSend);
-			srStatsReporter.succeeded("create", legacyForm);
+			//MessageManager.get().sendEmails(msgsToSend);
+			srStatsReporter.succeeded("create", newSrJson);
 			ThreadLocalStopwatch.stop("END createNewKOSR");
 			return result;					
 		}
 		catch (Throwable e)
 		{
 			Throwable t = GenUtils.getRootCause(e);
-			srStatsReporter.failed("create", legacyForm, e.toString() + "Rootcause: " + t.toString(), e.getMessage() + "Root Msg: " + t.getMessage());
+			srStatsReporter.failed("create", newSrJson, e.toString() + "Rootcause: " + t.toString(), e.getMessage() + "Root Msg: " + t.getMessage());
 			ThreadLocalStopwatch.fail("FAIL createNewKOSR");
 			System.out.println("formData passed into createNewKOSR : "+formData);
 			e.printStackTrace();
@@ -1814,19 +1979,19 @@ public class LegacyEmulator extends RestService
 
 	private void sendEmailToCustomers(BOntology bo, 
 				List<Json> customers, 
-				List<CirmMessage> emailsToSend, 
+				List<CirmMessage> msgsToSend, 
 				String caseNumber, String srType)
 		{
 			for(Json customer : customers)
 			{
-				CirmMessage msg = MessageManager.get().createMessageFromTemplate(
+				CirmMimeMessage msg = MessageManager.get().createMimeMessageFromTemplate(
 						bo, individual("legacy:SERVICEHUB_EMAIL_CUSTOMERS"), 
 						srType + " " + caseNumber, 
 						customer.at("email").asString(), 
 						null, null, null);
 	//					"Dear "+customer.at("name").asString()
 	//					+", \n We successfully processed the Service Request.");
-				emailsToSend.add(msg);
+				msgsToSend.add(msg);
 			}
 		}
 
@@ -1834,39 +1999,52 @@ public class LegacyEmulator extends RestService
 	 * Saves a new non Cirm originated (e.g. PW, CMS Interfaces, Open311) or referral service case into the cirm database.
 	 * If the SR is saved in pending state autoOnPending activities may be created and emails be sent.
 	 * 
+	 * Due date will be set based on srType (if not already provided in newSrJson).
+	 * 
 	 * Must be called from within a CirmTransaction.
 	 * @param legacyform
 	 * @return
 	 */
-	public Json saveNewCaseTransaction(Json legacyForm)
+	public Json saveNewCaseTransaction(Json newSRJson)
 	{
-		boolean hasCaseNumber = legacyForm.has("properties")
-				&& legacyForm.at("properties").has("legacy:hasCaseNumber") 
-				&& legacyForm.at("properties").at("legacy:hasCaseNumber").isString();
+		boolean hasCaseNumber = newSRJson.has("properties")
+				&& newSRJson.at("properties").has("legacy:hasCaseNumber") 
+				&& newSRJson.at("properties").at("legacy:hasCaseNumber").isString();
+		String type = newSRJson.at("type").asString();
+		// 1 Set due date if not provided by external system or in referral case, ignore errors.
+		try {
+			if (!dueDateUtil.hasDueDateNewSr(newSRJson)) {
+				dueDateUtil.setDueDateNewSr(newSRJson);
+			} else {
+				ThreadLocalStopwatch.now("saveNewCaseTransaction: Received Sr with due date, type: " + type);
+			}
+		} catch (Exception e) {
+			ThreadLocalStopwatch.error("saveNewCaseTransaction: Ignored Exception during Due Date checking or setting for a new SR, type: " + type + " Exception: ");
+			e.printStackTrace();
+		}
 		OperationService op = new OperationService();
-		// 1 Determine SR type and create a new case number
-		String type = legacyForm.at("type").asString();
+		// 2 Determine SR type and create a new case number
 		int i = type.indexOf("legacy:");
 		if (i == -1)
 			type = "legacy:" + type;
 		BOntology bontology = op.createBusinessObject(owlClass(type));
-		legacyForm.set("boid", bontology.getObjectId());
+		newSRJson.set("boid", bontology.getObjectId());
 		if (!hasCaseNumber) {
-			createCaseNumber(legacyForm);
+			createCaseNumber(newSRJson);
 		}
-		// 2 Parse all legacyForm data into a business ontology
-		bontology = BOntology.makeRuntimeBOntology(legacyForm);
-		populateGisData(legacyForm, bontology);	
-		//3 Check pending and create autoOnPending activities
+		// 3 Parse all legacyForm data into a business ontology
+		bontology = BOntology.makeRuntimeBOntology(newSRJson);
+		populateGisData(newSRJson, bontology);	
+		// 4 Check pending and create autoOnPending activities
 		if (OWL.individual("legacy:O-PENDNG").equals(bontology.getObjectProperty("legacy:hasStatus"))) {
 			List<CirmMessage> messages = new ArrayList<>();
 			ActivityManager amgr = new ActivityManager();
 			amgr.createAutoOnPendingActivities(bontology, new Date(), messages);
-			CirmTransaction.get().addTopLevelEventListener(new SendEmailOnTxSuccessListener(messages));
+			CirmTransaction.get().addTopLevelEventListener(new SendMessagesOnTxSuccessListener(messages));
 		}
-		//4 Save BO		
+		// 5 Save BO		
 		getPersister().saveBusinessObjectOntology(bontology.getOntology());
-		// 5 Extend BO by adding meta data axioms		
+		// 6 Extend BO by adding meta data axioms		
 		final BOntology bontologyVerbose;
 		try
 		{
@@ -1878,7 +2056,7 @@ public class LegacyEmulator extends RestService
 		}
 		final Json bontologyVerboseJson = OWL.toJSON(bontologyVerbose.getOntology(), bontology.getBusinessObject()); 
 		bontologyVerboseJson.set("boid", bontology.getObjectId());
-		// 6 Fire a legacy:NewServiceCaseExternalEvent only if the overall transaction finishes successfully.
+		// 7 Fire a legacy:NewServiceCaseNonCirmEvent only if the overall transaction finishes successfully.
 		// This ignores retries (we're inside a repeatable transaction!), so the event is guaranteed to fire only once.
 		// Assumes access to final variables bontologyVerboseJson, bontologyVerbose during event processing,
 		// so we must not change the json bontologyVerboseJson points to after returning it.
@@ -1924,7 +2102,7 @@ public class LegacyEmulator extends RestService
 				Json result = saveNewCaseTransaction(Json.read(formData)); 
 				ThreadLocalStopwatch.stop("END saveNewServiceRequest (referral?)");
 				return result;
-			}});			
+			}});
 		}
 		catch (Exception e)
 		{
@@ -1977,12 +2155,12 @@ public class LegacyEmulator extends RestService
 			String comments = data.has("comments")? data.at("comments").asString() : null;
 
 			BOntology bo = findServiceCaseOntology(boid);
-			final List<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();
+			final List<CirmMessage> msgsToSend = new ArrayList<CirmMessage>();
 			OWLNamedIndividual emailTemplate = individual("legacy:SERVICEHUB_EMAIL");
-			CirmMessage msg = MessageManager.get().createMessageFromTemplate(
+			CirmMimeMessage msg = MessageManager.get().createMimeMessageFromTemplate(
 					bo, emailTemplate, subject, to, cc, bcc,comments);
-			emailsToSend.add(msg);
-			MessageManager.get().sendEmails(emailsToSend);
+			msgsToSend.add(msg);
+			MessageManager.get().sendMessages(msgsToSend);
 			return ok();
 		}
 		catch(Exception e)
@@ -2148,16 +2326,16 @@ public class LegacyEmulator extends RestService
 					return ko("Can only create an activity on an open SR.");
 				ActivityManager manager = new ActivityManager();
 				OWLNamedIndividual activity = individual("legacy:" + activityCode);
-				//hilpold whole algorithm should be inside a transaction and SendEmailOnTxSuccessListener used
-				List<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();
+				//hilpold whole algorithm should be inside a transaction and SendMessagesOnTxSuccessListener used
+				List<CirmMessage> msgsToSend = new ArrayList<CirmMessage>();
 				//Create the activity ignoring occur day settings on TM callback.
-				manager.createActivityOccurNow(activity, bo, emailsToSend);
+				manager.createActivityOccurNow(activity, bo, msgsToSend);
 				persister.saveBusinessObjectOntology(bo.getOntology());
-				for (CirmMessage m : emailsToSend) 
+				for (CirmMessage m : msgsToSend) 
 				{
 					m.addExplanation("LE.createActivity " + activityCode);
 				}
-				MessageManager.get().sendEmails(emailsToSend);
+				MessageManager.get().sendMessages(msgsToSend);
 				ThreadLocalStopwatch.stop("END /bo/{boid}/activities/create/{activityCode} success " + boid + " " + activityCode);
 				return ok();
 			} else 
@@ -2255,14 +2433,14 @@ public class LegacyEmulator extends RestService
                                    if (now.after(due))
                                    {
                                 	   ActivityManager manager = new ActivityManager();
-                                	   //TODO hilpold full method should be inside a transaction and SendEmailOnTxSuccessListener used
-                                	   List<CirmMessage> emailsToSend = new ArrayList<CirmMessage>();
-                                	   manager.createActivity(individual("legacy:"	+ overdueActivity), null, null, bo, null, null, emailsToSend);
-                                	   manager.updateActivityIfAutoDefaultOutcome(activityToCheck, bo, emailsToSend);
+                                	   //TODO hilpold full method should be inside a transaction and SendMessagesOnTxSuccessListener used
+                                	   List<CirmMessage> msgsToSend = new ArrayList<CirmMessage>();
+                                	   manager.createActivity(individual("legacy:"	+ overdueActivity), null, null, bo, null, null, msgsToSend);
+                                	   manager.updateActivityIfAutoDefaultOutcome(activityToCheck, bo, msgsToSend);
                                 	   persister.saveBusinessObjectOntology(bo.getOntology());
-                                	   for (CirmMessage m : emailsToSend) 
+                                	   for (CirmMessage m : msgsToSend) 
                                 		   m.addExplanation("LE.createWhenOverDue boid " + boid + " ACt: " + activityFragment);
-                                	   MessageManager.get().sendEmails(emailsToSend);
+                                	   MessageManager.get().sendMessages(msgsToSend);
                                     }
                                }
                                ThreadLocalStopwatch.stop("END " + callInfo);
@@ -2440,9 +2618,8 @@ public class LegacyEmulator extends RestService
 	public Json validateServiceOnXY(@QueryParam("type") String typeCode,
 			@QueryParam("x") String x, @QueryParam("y") String y)
 	{
-		// if (1==1)
-		// return Json.object().set("isAvailable", true);
-		Json result = Json.object().set("isAvailable", false);
+		ThreadLocalStopwatch.startTop("START validate " + typeCode + " at " + x + ", " + y);
+		Json result; 
 		try
 		{
 			Json propertyInfo = Json.object();
@@ -2450,13 +2627,17 @@ public class LegacyEmulator extends RestService
 					"coordinates",
 					Json.object().set("x", new BigDecimal(x))
 							.set("y", new BigDecimal(y)));
-			result.set("isAvailable", Refs.gisClient.resolve().isAvailable(propertyInfo,
-				     OWL.fullIri("legacy:" + typeCode)));
+			
+			boolean isValidXyForType = Refs.gisClient.resolve().isAvailable(propertyInfo, OWL.fullIri("legacy:" + typeCode));
+			result = Json.object().set("isAvailable", isValidXyForType);
 		}
 		catch (Exception e)
 		{
-			logger.log(Level.WARNING, "Could not validate service on x,y", e);
+			result = Json.object().set("isAvailable", false);
+			ThreadLocalStopwatch.error("ERROR validate " + e);
+			e.printStackTrace();
 		}
+		ThreadLocalStopwatch.stop("END validate " + result);
 		return result;
 	}
 
@@ -2465,7 +2646,7 @@ public class LegacyEmulator extends RestService
 	@Produces("application/json")
 	public Json duplicateCheckService(@FormParam("data") String formData)
 	{
-		if (DBG) ThreadLocalStopwatch.startTop("START DuplicateCheck");
+		if (DBG) ThreadLocalStopwatch.startTop("START DuplicateCheck " + formData);
 		List<Map<String, Object>> duplicates;
 		Json result = ok();
 		Json json = Json.read(formData);
@@ -2513,7 +2694,7 @@ public class LegacyEmulator extends RestService
 						null, null, unit, locationName, city, state, zip,
 						fullAddr, createdDate, true);
 			}
-
+			if (DBG) ThreadLocalStopwatch.now("DUPLICATE Query completed");
 			if (duplicates == null)
 			{
 				result.set("count", 0).set("message",
@@ -2530,10 +2711,11 @@ public class LegacyEmulator extends RestService
 					boids.add(dup.at("boid").asString());
 					details.add(dup);
 				}
-				if(!boids.isEmpty())
-				for (Map<String, Object> rc : getAllRelatedCases(boids, boid, hasCaseNumber))
-				{
-					details.add(rc);
+				if(!boids.isEmpty()) {
+    				for (Map<String, Object> rc : getAllRelatedCases(boids, boid, hasCaseNumber))
+    				{
+    					details.add(rc);
+    				}
 				}
 				result.set("count", details.asJsonList().size());
 				result.set("details", details).set("message", "Success");
@@ -2542,14 +2724,14 @@ public class LegacyEmulator extends RestService
 		}
 		catch (Exception e)
 		{
+			if (DBG) ThreadLocalStopwatch.fail("FAIL DuplicateCheck ");
 			System.out.println("formData passed into duplicateCheckService : "+formData);
 			e.printStackTrace();
 			return ko(e);
 		}
 		finally
 		{
-			if (DBG) ThreadLocalStopwatch.getWatch().time("END DuplicateCheck");
-			ThreadLocalStopwatch.dispose();
+			if (DBG) ThreadLocalStopwatch.stop("END DuplicateCheck");
 		}
 
 	}
@@ -2773,9 +2955,13 @@ public class LegacyEmulator extends RestService
 		statement.setParameters(parameters);
 		statement.setTypes(parameterTypes);
 		RelationalStore store = getPersister().getStore();
-		if (DBGSQL)
-			System.out.println("DUPLICATE \r\n" + select.SQL());
-		return store.query(statement, Refs.tempOntoManager.resolve().getOWLDataFactory());
+		ThreadLocalStopwatch.now("DUPLICATE Query start");
+		if (DBGSQL) {			
+			ThreadLocalStopwatch.now("Query: \r\n" + select.SQL());
+			System.out.println(Arrays.toString(parameters.toArray()));
+			System.out.println(Arrays.toString(parameterTypes.toArray()));
+		}
+		return store.query(statement, Refs.tempOntoManager.resolve().getOWLDataFactory());		
 	}
 
 	@POST
@@ -2783,7 +2969,7 @@ public class LegacyEmulator extends RestService
 	@Produces("application/json")
 	public Json relatedCasesCheckService(@FormParam("data") String formData)
 	{
-		if(DBG) ThreadLocalStopwatch.startTop("START relatedCases");
+		if(DBG) ThreadLocalStopwatch.startTop("START relatedCases " + formData);
 		Json json = Json.read(formData);
 		String boid = json.has("boid") ? json.at("boid").asString() : null;
 		String hasCaseNumber = json.has("hasCaseNumber") ? 
@@ -2816,8 +3002,6 @@ public class LegacyEmulator extends RestService
 		}
 		catch (Exception e)
 		{
-			System.out.println(
-				"formData passed into relatedCasesCheckService : "+formData);
 			e.printStackTrace();
 			return ko(e);
 		}
@@ -2927,7 +3111,8 @@ public class LegacyEmulator extends RestService
 	/**
 	 * Creates a new Service Request.
 	 * 
-	 * 04/07/2015 -Sabbas - Annotated as a REST endpoint to provide access to a clean SR save with no SideEffects.
+	 * 04/07/2015 -Sabbas - Annotated as a REST endpoint to provide access to a clean SR save with no SideEffects, 
+	 * except that due date will be set, if not provided.
 	 *  
 	 * @param sr : The Service Request data as json
 	 * @return : returns the SR
@@ -2939,8 +3124,12 @@ public class LegacyEmulator extends RestService
 	@Consumes("application/json")
 	public Json saveNewServiceRequestEndpoint(Json sr)
 	{ 
-		return saveNewServiceRequest(sr.toString());
+		ThreadLocalStopwatch.startTop("START saveNewServiceRequestEndpoint");
+		Json result = saveNewServiceRequest(sr.toString());
+		ThreadLocalStopwatch.stop("END saveNewServiceRequestEndpoint");
+		return result;
 	}
+	
 	/**
 	 * Get the current Approval State of the SR. 
 	 *
@@ -2954,16 +3143,20 @@ public class LegacyEmulator extends RestService
 	@Path("sr/{caseNumber}/approvalState")
 	@Produces("application/json")
 	public Json getApprovalState(@PathParam("caseNumber") String caseNumber)
-	{
+	{	Json result;
+		ThreadLocalStopwatch.startTop("START approvalState " + caseNumber);
 		try {
 			Json sr = OWL.prefix(lookupByCaseNumber(caseNumber));
 			ApprovalProcess approvalProcess = new ApprovalProcess();
 			approvalProcess.setSr(sr);
-			return Json.object().set("caseNumber", caseNumber)
+			result = Json.object().set("caseNumber", caseNumber)
 					.set("approvalState", approvalProcess.getApprovalState().toString());
+			ThreadLocalStopwatch.stop("END approvalState");
 		} catch (Exception e) {
-			return ko(e);
+			result = ko(e);
+			ThreadLocalStopwatch.stop("FAIL approvalState");
 		}
+		return result;
 	}
 	
 	/**

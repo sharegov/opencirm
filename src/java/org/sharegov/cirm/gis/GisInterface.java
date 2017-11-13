@@ -53,14 +53,54 @@ import mjson.Json;
  * specific case, implement the <code>getInformationForCase</code> method
  * </p>
  * 
- * @author Borislav Iordanov
+ * @author Borislav Iordanov, Thomas Hilpold
  *
  */
 public interface GisInterface
 {
+	/**
+	 * Gets layer data from GIS for the given projected location.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param layers
+	 * @return
+	 */
     Json getLocationInfo(double x, double y, String [] layers);
-    Json getExtendedGisInfo(String locationType, String part1, String part2, String part3, String part4);
+    
+    /**
+     * Gets layer data from GIS for the given projected location and retries on certain errors considered retriable.
+     * 
+     * @param x
+     * @param y
+     * @param layers
+     * @param maxAttempts number of attempts, 2 means one retry on retriable error.
+     * @param sleepTime in milliseconds between retriable failed attempts
+     * @return
+     */
+    Json getLocationInfo(double x, double y, String [] layers, int maxAttempts, long sleepTimeMs);
+    
+    /**
+     * Gets public works GIS data specific to non-location/property types, which are Area, Corridor, and Intersection.
+     *  
+     * @param locationType
+     * @param street1 must not be null
+     * @param street2 must not be null (Intersection or other)
+     * @param street3 must not be null for Corridor and Area
+     * @param street4 must not be null for Area
+     * @return nil() if locationtype unknown or street params don't match locationtype.
+     */
+    Json getExtendedGisInfo(String locationType, String street1, String street2, String street3, String street4);
+    
+    /**
+     * Gets extendedGisInfo if the given serviceCase is a MD-PWS interface case and has a non Location/Property locationType.
+     * For MD-PWS, GIS1 answer will determine locationType and GIS2-6 streets 1-4.
+     * 
+     * @param serviceCase
+     * @return extendedGisInfo or Json.nil() if Non PWS or property location.
+     */
     Json getInformationForCase(Json serviceCase);
+    
     Mapping<Json, Boolean> makeGisFilter(Json locationInfo, boolean removeUnavailable, String[] layers);
     boolean isAvailable(Json propertyInfo, IRI caseType);    
     boolean testLayerValue(Json locationInfo, 

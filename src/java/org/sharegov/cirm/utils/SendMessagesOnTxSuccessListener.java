@@ -34,18 +34,18 @@ import org.sharegov.cirm.legacy.MessageManager;
  * @author Thomas Hilpold
  *
  */
-public class SendEmailOnTxSuccessListener implements CirmTransactionListener
+public class SendMessagesOnTxSuccessListener implements CirmTransactionListener
 {
 
 	final List<CirmMessage> cirmMessages;
 	
-	public SendEmailOnTxSuccessListener(final CirmMessage message) 
+	public SendMessagesOnTxSuccessListener(final CirmMessage message) 
 	{
 		if (message == null) throw new IllegalArgumentException("message was null");
 		cirmMessages = Collections.singletonList(message);
 	}
 
-	public SendEmailOnTxSuccessListener(final List<CirmMessage> messages) 
+	public SendMessagesOnTxSuccessListener(final List<CirmMessage> messages) 
 	{
 		if (messages == null) throw new IllegalArgumentException("messages was null");
 		cirmMessages = messages;
@@ -57,8 +57,8 @@ public class SendEmailOnTxSuccessListener implements CirmTransactionListener
 		if (e.isSucceeded()) 
 		{
 			if (!cirmMessages.isEmpty()) {
-				ThreadLocalStopwatch.getWatch().time("SendEmailOnTxSuccessListener sending " + cirmMessages.size());
-				MessageManager.get().sendEmails(cirmMessages);
+				ThreadLocalStopwatch.getWatch().time("SendMessagesOnTxSuccessListener sending " + cirmMessages.size());
+				MessageManager.get().sendMessages(cirmMessages);
 			} 
 		}
 	}

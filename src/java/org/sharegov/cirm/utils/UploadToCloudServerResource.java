@@ -57,53 +57,42 @@ public class UploadToCloudServerResource extends ServerResource
 	 */
 	@Post 
 	public Representation upload(Representation entity){
-		
+		ThreadLocalStopwatch.startTop("START UPLOAD");
 		String s3URl = getUploadServiceUrl() + "upload64encoded?prefix=cirm_";
-		//String s3URl = "http://10.9.25.144:6060/s3/upload64encoded?prefix=cirm_";
-		Json json = Json.object();
-		Json request = Json.object();
-		Json result; 
-		RestletFileUpload upload = new RestletFileUpload();
-		
-		Representation rep =  new StringRepresentation(GenUtils.ko("Unable to upload, bad request.").toString(),
-	        		org.restlet.data.MediaType.TEXT_HTML);
+		Representation resultRep = null;
 		 
-		
-		
-		if(entity == null && org.restlet.data.MediaType.MULTIPART_FORM_DATA.equals(entity.getMediaType(),
-                true) == false)
+		if(entity == null) //?? && org.restlet.data.MediaType.MULTIPART_FORM_DATA.equals(entity.getMediaType(), true) == false)
 		{
-			return rep;
+			resultRep = new StringRepresentation(GenUtils.ko("Unable to upload, bad request. Entity was null").toString(),
+		        		org.restlet.data.MediaType.TEXT_HTML);
+		 	ThreadLocalStopwatch.fail("FAIL UPLOAD Entity was null");
+			return resultRep;
 		}
 		
-	
-		HttpClient client;
-		PostMethod post = new PostMethod(s3URl);
-		
-		String contentType, type, name;
-		String [] tokens; 
-		
 		try
-			{
+		{
+			 RestletFileUpload upload = new RestletFileUpload();
              FileItemIterator fit = upload.getItemIterator(entity);
              while(fit.hasNext()) 
              {
+         		//Will only read first uploadAttachment and then break
              	FileItemStream stream = fit.next();
              	if(stream.getFieldName().equals("uploadAttachment"))
              	{
-             		type = "";
+             		HttpClient client;
+            		PostMethod post = new PostMethod(s3URl);
+             		Json resultJson = Json.object();
+               		String contentType, name;
+               		
              		contentType = stream.getContentType();
-             		name = stream.getName();
-             		name = name.replaceAll("\\s+","");
-             		name = name.replaceAll("_","");
-             		name = name.replaceAll("-","");
-             		name = name.replaceAll("\\.","-");
-             		name = name + "-";
+             		String streamName = stream.getName();
+             		name = formatStreamName(stream.getName());
+             		ThreadLocalStopwatch.now("StreamName " + streamName + " > " + name + " Type: " + contentType);
              		
-             		String extn = contentType.substring(contentType.indexOf("/")+1);
+             		//String extn = contentType.substring(contentType.indexOf("/")+1);
              		byte[] file = GenUtils.getBytesFromStream(stream.openStream(), true);
-             		Base64 base64 = new Base64();
-             		String encoded = base64.encode(file,false);
+             		String encoded = Base64.encode(file, false);
+            		Json request = Json.object();
              		request.set("data", encoded);
              		request.set("contentType", contentType);
              		request.set("name", name);
@@ -117,31 +106,57 @@ public class UploadToCloudServerResource extends ServerResource
              		
              		if (statusCode != HttpStatus.SC_OK)
              		{
-             			json.set("ok", false);
+             			resultJson.set("ok", false);
              		}
              		else 
              		{
              			String responseString = post.getResponseBodyAsString();
+                		Json result; 
              			result = Json.read(responseString);
-             			json.set("ok", true);
-             			json.set("key", result.at("value").at("key").asString());
-             			json.set("url", result.at("value").at("url").asString());
+             			resultJson.set("ok", true);
+             			resultJson.set("key", result.at("value").at("key").asString());
+             			resultJson.set("url", result.at("value").at("url").asString());
              			
              		}
-             		rep = new StringRepresentation(json.toString(), (org.restlet.data.MediaType)org.restlet.data.MediaType.TEXT_HTML);
-             		break;
-             		
+             		resultRep = new StringRepresentation(resultJson.toString(), (org.restlet.data.MediaType)org.restlet.data.MediaType.TEXT_HTML);
+             		ThreadLocalStopwatch.stop("END UPLOAD " + resultJson);
+             		//exit loop after first uploadAttachment
+             		break;             		
              	}
+             } //while
+             if (resultRep == null) {
+     			resultRep = new StringRepresentation(GenUtils.ko("Unable to upload, bad request. No uploadAttachment").toString(),
+		        		org.restlet.data.MediaType.TEXT_HTML);
+     			ThreadLocalStopwatch.fail("FAIL UPLOAD No uploadAttachment");
              }
-			}
+		}
 		 catch (Exception e) {
-         	e.printStackTrace();
-			}
-		
-		
-		
-		 
-		 return rep;
+			 	ThreadLocalStopwatch.fail("FAIL UPLOAD with " + e);
+			 	e.printStackTrace();
+			 	resultRep =  new StringRepresentation(GenUtils.ko("Unable to upload, bad request. " + e.toString()).toString(),
+		        		org.restlet.data.MediaType.TEXT_HTML);
+		}		
+		return resultRep;
 	}
 	
+	/**
+	 * Converts stream name from client into desirable file name, removing path, and replacing certain chars.
+	 * @param streamName
+	 * @return
+	 */
+	private String formatStreamName(String streamName) {
+		//Find filename for the cases where path is included in stream name:
+ 		int startFilenameIdx  = Math.max(streamName.lastIndexOf('/'), streamName.lastIndexOf('\\'));
+ 		if (startFilenameIdx >= 0) {  
+ 			streamName = streamName.substring(startFilenameIdx + 1);             			
+ 		}
+ 		//name is now filename only without possible path.
+ 		streamName = streamName.replaceAll("\\s+","");
+ 		streamName = streamName.replaceAll("_","");
+ 		streamName = streamName.replaceAll("-","");
+ 		streamName = streamName.replaceAll("\\.","-");
+ 		streamName = streamName + "-";
+ 		return streamName;
 	}
+	
+}
