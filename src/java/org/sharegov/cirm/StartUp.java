@@ -22,6 +22,8 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Vector;
 import java.util.logging.Level;
 
@@ -52,6 +54,7 @@ import org.restlet.routing.Filter;
 import org.restlet.routing.Redirector;
 import org.restlet.routing.Router;
 import org.restlet.routing.Template;
+import org.restlet.service.CorsService;
 import org.restlet.service.EncoderService;
 import org.sharegov.cirm.legacy.ActivityManager;
 import org.sharegov.cirm.legacy.MessageManager;
@@ -85,6 +88,7 @@ public class StartUp extends ServerResource
 			.set("keystore", "cirm.jks")
 			.set("storePass", "password")
 			.set("keyPass", "password")
+			.set("enableCors", true)
 			.set("defaultOntologyIRI", "http://www.miamidade.gov/cirm/legacy")
 			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#ProdConfigSet")
 			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#TestConfigSet")
@@ -226,7 +230,11 @@ public class StartUp extends ServerResource
 	
 	public static Restlet createRestServicesApp()
 	{
-	    final JaxRsApplication app = new JaxRsApplication(server.getContext().createChildContext());	    
+	    final JaxRsApplication app = new JaxRsApplication(server.getContext().createChildContext());	
+	    //Enable CORS Service on root app
+	    if (config.is("enableCors", true)) {
+	    	enableCors(app);
+	    }
 	    EncoderService encoderService = new EncoderService();
 	    encoderService.setEnabled(true);
 	    //app.setEncoderService(encoderService);
@@ -237,7 +245,7 @@ public class StartUp extends ServerResource
 	    	Vector<File> v = new Vector<File>();
 	    	v.add(new File(new File(config.at("workingDir").asString()), "hotdeploy"));
 		    AdaptiveClassLoader loader = new AdaptiveClassLoader(v, true);
-		    MainRestApplication main = new MainRestApplication(loader);
+		    MainRestApplication main = new MainRestApplication(loader);		    
 		    main.configure(OWL.individual(config.at("mainApplication").asString()));
 		    app.add(main);
 	    }
@@ -266,6 +274,15 @@ public class StartUp extends ServerResource
 	    Filter formParamFix = new FormParamAdditionalDecodeFilter(app.getContext());
 	    formParamFix.setNext(encoder);
 	    return formParamFix;
+	}
+	
+	private static void enableCors(Application app) {
+		CorsService corsService = new CorsService();         
+		corsService.setAllowedOrigins(new HashSet<>(Arrays.asList("*")));
+		corsService.setAllowedCredentials(true);
+		corsService.setSkippingResourceForCorsOptions(true);
+		System.out.println("CORS ENABLED FOR REST ENDPOINTS WITH SKIP OPTIONS");
+		app.getServices().add(corsService);
 	}
 	
 	static URL selfUrl()
