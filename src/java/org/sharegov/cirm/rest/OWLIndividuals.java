@@ -408,7 +408,7 @@ public class OWLIndividuals extends RestService
 	@Path("/transient/srTypesTransient")
 	public synchronized Json getSrTypesTransient() {
 		Json result;
-		Json allPermittedTypes = serialize(doQuery("legacy:ServiceCase"), MetaOntology.getPrefixShortFormProvider());
+		Json allPermittedTypes = serialize(doQuery("legacy:ServiceCase"), null);
 		if (allPermittedTypes.isArray()) {
 			result = Json.array();
 			for (Json srType: allPermittedTypes.asJsonList()) {

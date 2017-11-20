@@ -35,7 +35,8 @@ public class ClearOWLEntityCacheForSrTypeModification implements EventTrigger
 				cr.clearCache();
 			}
 			Refs.owlJsonCache.resolve().clearAll();
-			Refs.ontologyTransformer.resolve().clearPredicateCache();		
+			Refs.ontologyTransformer.resolve().clearPredicateCache();
+			Refs.owlJsonSrTypeWithTransientCache.resolve().clear();
 		}
 	}
 }
