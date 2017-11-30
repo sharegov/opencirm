@@ -336,13 +336,13 @@ public class ServiceCaseManager extends OntoAdmin {
 			if (p.has("iri")){
 				ind = OWL.individual(p.at("iri").asString());	
 			} else {
-				throw new IllegalArgumentException("Cannot find IRI property for Individual: " + p.asString());
+				throw new IllegalArgumentException("Cannot find IRI property for Individual: " + p.toString());
 			}			
 		} else {
 			try {
 				ind = OWL.individual(p.asString());				
 			} catch (Exception e) {
-				throw new IllegalArgumentException("Cannot build Individual: " + p.asString());				
+				throw new IllegalArgumentException("Cannot build Individual: " + p.toString());				
 			}
 		}
 		
