@@ -1466,13 +1466,13 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			var emailCTmpl = (self.srType && self.srType().transientHasCitizenEmailTemplate === true);
 			var smsCTmpl = (self.srType && self.srType().transientHasCitizenSmsTemplate === true);			
 			if (emailCTmpl && smsCTmpl) {
-				options.push({id:"A", label: "Email & SMS/Text"});
+				options.push({id:"A", label: "Email & Text"});
 			}
 			if (emailCTmpl) {
 				options.push({id:"E", label: "Email only"});
 			}
 			if (smsCTmpl) {
-				options.push({id:"S", label: "SMS/Text only"});
+				options.push({id:"S", label: "Text only"});
 			}
 			options.push({id:"N", label: "No Notification"});
 			return options;
@@ -1511,7 +1511,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			var selectedPref = ko.toJS(firstCitizenNotificationPrefField);
 			var showAlert = (selectedPref === "S" || selectedPref === "A");
 			if (showAlert === true) {
-				var msg = "Depending on your cell phone plan, sms/text message and data rates may apply.";
+				var msg = "Depending on your cell phone plan, text message and data rates may apply.";
 				alertDialog(msg);
 			}
 			var emailRequired = (selectedPref === "E" || selectedPref === "A");
