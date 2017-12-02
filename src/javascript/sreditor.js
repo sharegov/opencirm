@@ -1598,12 +1598,19 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			self.duplicateDetails({});
 			if(!U.isEmptyString(self.data().type()))
 			{
-				if(U.isEmptyString(self.originalData().properties.hasStatus.iri))
-					self.data().properties().hasStatus().iri(self.originalData().properties.hasStatus);
-				else
-				{
-					self.data().properties().hasStatus().iri(self.originalData().properties.hasStatus.iri);
-					self.data().properties().hasStatus().label(self.originalData().properties.hasStatus.label);
+				try {
+					if(U.isEmptyString(self.originalData().properties.hasStatus.iri)) {
+						self.data().properties().hasStatus().iri(self.originalData().properties.hasStatus);
+					}
+					else
+					{
+						self.data().properties().hasStatus().iri(self.originalData().properties.hasStatus.iri);
+						self.data().properties().hasStatus().label(self.originalData().properties.hasStatus.label);
+					}
+				} catch (err) {
+					console.log("Error during remove duplicates (ref mdcirm: 3625) " + err);
+					console.log("Error data:" + self.originalData());
+					alert("SYSTEM ERROR 3625 Occurred - please reload SR and proceed.")
 				}
 			}
 		};
