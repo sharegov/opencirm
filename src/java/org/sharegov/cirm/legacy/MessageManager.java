@@ -93,15 +93,34 @@ import org.xml.sax.InputSource;
 import de.odysseus.staxon.json.JsonXMLInputFactory;
 
 /**
- * Class to apply legacy messageTemplates and builds MimeMessage(s) for email.
+ * MessageManager is responsible to creating email and sms CirmMessages through it's template engine.<br>
+ * <br>
+ * It is also capable of dispatching CirmMessages in a generalized manner, by utilizing smtp or our SMSService class.<br>
+ * <br>
+ * Message creation through applying the service request against SR type configured templates normally happens inside 
+ * of a transaction. A Cirm transaction may need to retry in 311Hub to complete.<br>
+ * <br>
+ * Message sending is normally only triggered after the CirmTransaction was successful, to ensure messages are only sent once, 
+ * even if multiple retries were needed in high db load situations for the transaction to complete.<br>
+ * <br>
+ * For special variables CITIZENS_EMAIL, and CITIZENS_CELL_PHONE for texting, the citizen's messaging preference is also evaluated in this class.<br>
+ * <br>
+ * Template based emails normally contain an explanation as white text inside the email to allow analysis (which trigger, template, etc).<br>
+ * <br>
+ * For our test systems, a test mode sends emails and sms to a configured test user group.<br>
+ * Citizen notification testing or demoing by sending to the actual user entered email or cell phone is possible, 
+ * if a template ONLY defines the citizen as recipient and the citizen's messaging preferences on intake allow.<br>
+ * <br>
+ * <br>
+ * Details:<br>
  * It uses a json to DOM bridge to leverage xPath and XSL when evaluating
  * variables. The only non-java* dependency is on staxon api to create a Dom
  * from json.
- * 
+ * <br>
  * Call reinit() after an ontology change that affects MessageManagerConfiguration.
- * 
+ * <br>
  * This class is Thread Safe. 
- * 
+ * <br>
  * @author SABBAS, hilpold
  * 
  */

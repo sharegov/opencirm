@@ -24,6 +24,10 @@ import mjson.Json;
  * <br>
  * Splitting long messages will preserve whole words in message parts.<br>
  * <br>
+ * SMS Template Configuration user may decide one or more split points for longer templates that require multiple texts using [START_NEXT] 
+ * tag in body template.<br>
+ * If any split text is still longer than MAX_TXT_LENGTH (160 ASCII) it will be broken into further messages.
+ * <br> 
  * This class is thread safe.<br>
  * 
  * @author Camilo, Thomas Hilpold, Syed
