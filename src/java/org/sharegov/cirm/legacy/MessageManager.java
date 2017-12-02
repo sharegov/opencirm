@@ -120,6 +120,15 @@ public class MessageManager
 	 */
 	private static boolean TEST_MODE_USE_DEFAULT_TO = true; 
 
+	/**
+	 * For templates that have CITIZEN_EMAIL or for SMS only CITIZEN_CELL_PHONE 
+	 * as ONLY recipient in hasTo AND hasCc templates, send to the citizen also (Add to the test user hasTo default).
+	 * This allows any user to test our citizen email/sms capability using his own email/cell in our test systems.
+	 * (Set to false eg. for interface closing tests after a db restore from prod to test.)
+	 */
+	private static boolean TEST_MODE_SENDS_TO_CITIZEN = true; 
+
+	
 	private static boolean FORCE_TEST_RECOVERY = false;
 
 	/**
@@ -288,18 +297,21 @@ public class MessageManager
 			String toTemplateLiteral = toTemplate != null ? toTemplate.getLiteral() : null;
 			String ccTemplateLiteral = ccTemplate != null ? ccTemplate.getLiteral() : null;
 			// citizen messaging preference processing
+			boolean citizenIsOnlyRecipient = false;
 			if(toTemplateLiteral != null && mtUtil.hasCitizenEmailRecipient(toTemplateLiteral)) {
 				NotificationPreference msgPref = srUtil.getCitizenNotificationPreference(sr);
 				if(msgPref != null && !msgPref.isEmailOk()) {
 					//System.out.println(msgPref.getLabel());
 					toTemplateLiteral = mtUtil.removeCitizenEmailRecipient(toTemplateLiteral);
 				}
+				citizenIsOnlyRecipient = mtUtil.hasOnlyCitizenEmailRecipient(toTemplateLiteral);
 			}
 			if(ccTemplateLiteral != null && mtUtil.hasCitizenEmailRecipient(ccTemplateLiteral)) {
 				NotificationPreference msgPref = srUtil.getCitizenNotificationPreference(sr);
 				if(msgPref != null && !msgPref.isEmailOk()) {
 					ccTemplateLiteral = mtUtil.removeCitizenEmailRecipient(ccTemplateLiteral);
 				}
+				citizenIsOnlyRecipient = mtUtil.hasOnlyCitizenEmailRecipient(ccTemplateLiteral);
 			}
 			//
 			Map<String, String> parameters = fillParameters(sr, legacyCode, toTemplateLiteral, ccTemplateLiteral,
@@ -352,10 +364,15 @@ public class MessageManager
 				{
 					//testmode do not send to real recipients, but bcc as to only
 					body = getTestModeHeader(to, cc, messageTemplate) + body;
-					if (TEST_MODE_USE_DEFAULT_TO)
-						to = DEFAULT_TO_ADDRESS;
-					else
+					if (TEST_MODE_USE_DEFAULT_TO) {
+						if (TEST_MODE_SENDS_TO_CITIZEN && citizenIsOnlyRecipient) {
+							to = to + ";" + DEFAULT_TO_ADDRESS;
+						} else {
+							to = DEFAULT_TO_ADDRESS;
+						}
+					} else {
 						to = bccTest;
+					}
 					cc = null; 
 					bcc = null;
 				}
@@ -419,11 +436,13 @@ public class MessageManager
 			OWLLiteral toTemplate = dataProperty(messageTemplate, "legacy:hasTo");
 			OWLLiteral bodyTemplate; 
 			String toTemplateLiteral = toTemplate != null ? toTemplate.getLiteral() : null;
+			boolean citizenIsOnlyRecipient = false;
 			if (mtUtil.hasCitizenCellPhoneRecipient(toTemplateLiteral)) {
 				NotificationPreference msgPref = srUtil.getCitizenNotificationPreference(sr);
 				if(msgPref == null || !msgPref.isSmsOk()) {
 					toTemplateLiteral = mtUtil.removeCitizenCellPhoneRecipient(toTemplateLiteral);
 				}
+				citizenIsOnlyRecipient = mtUtil.hasOnlyCitizenCellPhoneRecipient(toTemplateLiteral);				
 			}
 			if (useLegacyBody)
 				bodyTemplate = dataProperty(messageTemplate, "legacy:hasLegacyBody");
@@ -449,12 +468,15 @@ public class MessageManager
 				//
 				if (isTestMode())
 				{
-					//testmode do not send to real recipients, but bcc as to only
-					body = "" + messageTemplate + "\r\n" + body;
-					if (TEST_MODE_USE_DEFAULT_TO)
-						to = DEFAULT_TO_CELLPHONE;
-					else
+					if (TEST_MODE_USE_DEFAULT_TO) {
+						if (TEST_MODE_SENDS_TO_CITIZEN && citizenIsOnlyRecipient) {
+							to = to + ";" + DEFAULT_TO_CELLPHONE;
+						} else {
+							to = DEFAULT_TO_CELLPHONE;
+						}
+					} else {
 						to = "7869732464";
+					}
 				}
 				if (to != null) { 
 					msg.setPhone(to);
@@ -465,8 +487,6 @@ public class MessageManager
 				if (body == null)
 					body = "No body defined (in template)!";
 				msg.setTxt(body);				
-				//creation explanation
-				//msg.addExplanation("createMessage" + messageTemplate.getIRI().getFragment());
 			}
 		}
 		catch (Exception e)
