@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
  */
 class UxLogAnalyzer {
 	
-	static final int ANALYSIS_DAYS_HISTORY_CUTOFF_DEFAULT = 7;
+	static final int ANALYSIS_DAYS_HISTORY_CUTOFF_DEFAULT = 2;
 	
 	static final boolean DBG_MATCHES = false;
 	
@@ -50,6 +50,7 @@ class UxLogAnalyzer {
 	//static String logMatch = "END updateServiceCase data"; 
 	//static String logMatch = "sendEmail: One Email sent to";
 	static String logMatch = "END createNewKOSR";
+	//static String logMatch = "DONE: SmsService: All";
 	//static String logMatch = "END saveBusinessObjectOntology";
 	//static String logMatch = "END DuplicateCheck"; 
 	//static String logMatch = "END lookupAdvancedSearch"; 

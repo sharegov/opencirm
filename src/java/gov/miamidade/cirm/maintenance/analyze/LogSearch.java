@@ -32,13 +32,20 @@ import java.util.regex.Pattern;
  */
 class LogSearch {
 	
-	static final int ANALYSIS_DAYS_HISTORY_CUTOFF_DEFAULT = 30;	
+	static final int ANALYSIS_DAYS_HISTORY_CUTOFF_DEFAULT = 1;	
 	
 	static final boolean DBG_MATCHES = false;
 	
 	static final double BAD_UX_THRESHOLD_SECS = 10;	
 	
-	static String logMatch = "Caused by: java.sql.BatchUpdateException: ORA-00060"; 
+	//static String logMatch = "Caused by: java.sql.BatchUpdateException: ORA-00060"; 
+	//static String logMatch = "text messages were successfully sent";
+	//static String logMatch = "ERROR: SmsService:";
+	//static String logMatch = "DONE: SmsService: All";
+	//static String logMatch = "ERROR: SmsService: SOME TEXT MESSAGES COULD NOT BE SENT.";
+	//static String logMatch = "ERROR: SmsService: NO TEXT MESSAGE COULD BE SENT.";
+	//static String logMatch = "ERROR: SmsService: Error during sending, message to";
+	static String logMatch = "SmsService: END https Sending one sms";
 	
 	
 	static String[] rotatingLogSeriesBaseFiles = new String[] {
