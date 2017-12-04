@@ -93,15 +93,34 @@ import org.xml.sax.InputSource;
 import de.odysseus.staxon.json.JsonXMLInputFactory;
 
 /**
- * Class to apply legacy messageTemplates and builds MimeMessage(s) for email.
+ * MessageManager is responsible to creating email and sms CirmMessages through it's template engine.<br>
+ * <br>
+ * It is also capable of dispatching CirmMessages in a generalized manner, by utilizing smtp or our SMSService class.<br>
+ * <br>
+ * Message creation through applying the service request against SR type configured templates normally happens inside 
+ * of a transaction. A Cirm transaction may need to retry in 311Hub to complete.<br>
+ * <br>
+ * Message sending is normally only triggered after the CirmTransaction was successful, to ensure messages are only sent once, 
+ * even if multiple retries were needed in high db load situations for the transaction to complete.<br>
+ * <br>
+ * For special variables CITIZENS_EMAIL, and CITIZENS_CELL_PHONE for texting, the citizen's messaging preference is also evaluated in this class.<br>
+ * <br>
+ * Template based emails normally contain an explanation as white text inside the email to allow analysis (which trigger, template, etc).<br>
+ * <br>
+ * For our test systems, a test mode sends emails and sms to a configured test user group.<br>
+ * Citizen notification testing or demoing by sending to the actual user entered email or cell phone is possible, 
+ * if a template ONLY defines the citizen as recipient and the citizen's messaging preferences on intake allow.<br>
+ * <br>
+ * <br>
+ * Details:<br>
  * It uses a json to DOM bridge to leverage xPath and XSL when evaluating
  * variables. The only non-java* dependency is on staxon api to create a Dom
  * from json.
- * 
+ * <br>
  * Call reinit() after an ontology change that affects MessageManagerConfiguration.
- * 
+ * <br>
  * This class is Thread Safe. 
- * 
+ * <br>
  * @author SABBAS, hilpold
  * 
  */
@@ -120,6 +139,15 @@ public class MessageManager
 	 */
 	private static boolean TEST_MODE_USE_DEFAULT_TO = true; 
 
+	/**
+	 * For templates that have CITIZEN_EMAIL or for SMS only CITIZEN_CELL_PHONE 
+	 * as ONLY recipient in hasTo AND hasCc templates, send to the citizen also (Add to the test user hasTo default).
+	 * This allows any user to test our citizen email/sms capability using his own email/cell in our test systems.
+	 * (Set to false eg. for interface closing tests after a db restore from prod to test.)
+	 */
+	private static boolean TEST_MODE_SENDS_TO_CITIZEN = true; 
+
+	
 	private static boolean FORCE_TEST_RECOVERY = false;
 
 	/**
@@ -288,18 +316,21 @@ public class MessageManager
 			String toTemplateLiteral = toTemplate != null ? toTemplate.getLiteral() : null;
 			String ccTemplateLiteral = ccTemplate != null ? ccTemplate.getLiteral() : null;
 			// citizen messaging preference processing
+			boolean citizenIsOnlyRecipient = false;
 			if(toTemplateLiteral != null && mtUtil.hasCitizenEmailRecipient(toTemplateLiteral)) {
 				NotificationPreference msgPref = srUtil.getCitizenNotificationPreference(sr);
 				if(msgPref != null && !msgPref.isEmailOk()) {
 					//System.out.println(msgPref.getLabel());
 					toTemplateLiteral = mtUtil.removeCitizenEmailRecipient(toTemplateLiteral);
 				}
+				citizenIsOnlyRecipient = mtUtil.hasOnlyCitizenEmailRecipient(toTemplateLiteral);
 			}
 			if(ccTemplateLiteral != null && mtUtil.hasCitizenEmailRecipient(ccTemplateLiteral)) {
 				NotificationPreference msgPref = srUtil.getCitizenNotificationPreference(sr);
 				if(msgPref != null && !msgPref.isEmailOk()) {
 					ccTemplateLiteral = mtUtil.removeCitizenEmailRecipient(ccTemplateLiteral);
 				}
+				citizenIsOnlyRecipient = mtUtil.hasOnlyCitizenEmailRecipient(ccTemplateLiteral);
 			}
 			//
 			Map<String, String> parameters = fillParameters(sr, legacyCode, toTemplateLiteral, ccTemplateLiteral,
@@ -352,10 +383,15 @@ public class MessageManager
 				{
 					//testmode do not send to real recipients, but bcc as to only
 					body = getTestModeHeader(to, cc, messageTemplate) + body;
-					if (TEST_MODE_USE_DEFAULT_TO)
-						to = DEFAULT_TO_ADDRESS;
-					else
+					if (TEST_MODE_USE_DEFAULT_TO) {
+						if (TEST_MODE_SENDS_TO_CITIZEN && citizenIsOnlyRecipient) {
+							to = to + ";" + DEFAULT_TO_ADDRESS;
+						} else {
+							to = DEFAULT_TO_ADDRESS;
+						}
+					} else {
 						to = bccTest;
+					}
 					cc = null; 
 					bcc = null;
 				}
@@ -419,11 +455,13 @@ public class MessageManager
 			OWLLiteral toTemplate = dataProperty(messageTemplate, "legacy:hasTo");
 			OWLLiteral bodyTemplate; 
 			String toTemplateLiteral = toTemplate != null ? toTemplate.getLiteral() : null;
+			boolean citizenIsOnlyRecipient = false;
 			if (mtUtil.hasCitizenCellPhoneRecipient(toTemplateLiteral)) {
 				NotificationPreference msgPref = srUtil.getCitizenNotificationPreference(sr);
 				if(msgPref == null || !msgPref.isSmsOk()) {
 					toTemplateLiteral = mtUtil.removeCitizenCellPhoneRecipient(toTemplateLiteral);
 				}
+				citizenIsOnlyRecipient = mtUtil.hasOnlyCitizenCellPhoneRecipient(toTemplateLiteral);				
 			}
 			if (useLegacyBody)
 				bodyTemplate = dataProperty(messageTemplate, "legacy:hasLegacyBody");
@@ -449,12 +487,15 @@ public class MessageManager
 				//
 				if (isTestMode())
 				{
-					//testmode do not send to real recipients, but bcc as to only
-					body = "" + messageTemplate + "\r\n" + body;
-					if (TEST_MODE_USE_DEFAULT_TO)
-						to = DEFAULT_TO_CELLPHONE;
-					else
+					if (TEST_MODE_USE_DEFAULT_TO) {
+						if (TEST_MODE_SENDS_TO_CITIZEN && citizenIsOnlyRecipient) {
+							to = to + ";" + DEFAULT_TO_CELLPHONE;
+						} else {
+							to = DEFAULT_TO_CELLPHONE;
+						}
+					} else {
 						to = "7869732464";
+					}
 				}
 				if (to != null) { 
 					msg.setPhone(to);
@@ -465,8 +506,6 @@ public class MessageManager
 				if (body == null)
 					body = "No body defined (in template)!";
 				msg.setTxt(body);				
-				//creation explanation
-				//msg.addExplanation("createMessage" + messageTemplate.getIRI().getFragment());
 			}
 		}
 		catch (Exception e)
