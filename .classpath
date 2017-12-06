@@ -4,7 +4,6 @@
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="lib" path="lib/activation.jar"/>
 	<classpathentry kind="lib" path="lib/aterm-java-1.6.jar"/>
-	<classpathentry kind="lib" path="lib/commons-codec-1.3.jar"/>
 	<classpathentry kind="lib" path="lib/commons-httpclient-3.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-1.0.4.jar"/>
 	<classpathentry kind="lib" path="lib/commons-net-3.2.jar"/>
@@ -68,7 +67,7 @@
 	<classpathentry kind="lib" path="lib/restlet/org.restlet.ext.fileupload.jar"/>
 	<classpathentry kind="lib" path="lib/restlet/org.restlet.ext.jaxrs.jar"/>
 	<classpathentry kind="lib" path="lib/restlet/org.restlet.ext.jetty.jar" sourcepath="C:/worklib/restlet-jse-2.3.5/src/org.restlet.ext.jetty"/>
-	<classpathentry kind="lib" path="lib/restlet/org.restlet.jar"/>
+	<classpathentry kind="lib" path="lib/restlet/org.restlet.jar" sourcepath="C:/Users/hilpold/AppData/Local/Temp/.org.sf.feeling.decompiler1512452704400/source/org.restlet-2.3.5-sources-1512542705242.jar"/>
 	<classpathentry kind="lib" path="lib/restlet/javax.ws.rs.jar"/>
 	<classpathentry kind="lib" path="lib/jetty/org.eclipse.jetty.client.jar"/>
 	<classpathentry kind="lib" path="lib/jetty/org.eclipse.jetty.http.jar"/>
@@ -79,7 +78,7 @@
 	<classpathentry kind="lib" path="lib/jetty/org.eclipse.jetty.spdy.http.common.jar"/>
 	<classpathentry kind="lib" path="lib/jetty/org.eclipse.jetty.spdy.http.server.jar"/>
 	<classpathentry kind="lib" path="lib/jetty/org.eclipse.jetty.spdy.server.jar"/>
-	<classpathentry kind="lib" path="lib/jetty/org.eclipse.jetty.util.jar"/>
+	<classpathentry kind="lib" path="lib/jetty/org.eclipse.jetty.util.jar" sourcepath="C:/Users/hilpold/AppData/Local/Temp/.org.sf.feeling.decompiler1512436334557/source/jetty-util-9.2.6.v20141205-sources-1512452156249.jar"/>
 	<classpathentry kind="lib" path="lib/restlet/com.sun.jaxb.jar"/>
 	<classpathentry kind="lib" path="lib/restlet/javax.mail.jar"/>
 	<classpathentry kind="lib" path="lib/restlet/org.apache.commons.fileupload.jar"/>
@@ -89,5 +88,6 @@
 	<classpathentry kind="lib" path="lib/restlet/servlet-api-3.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_60"/>
 	<classpathentry kind="lib" path="lib/mjson-1.3.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec-1.10.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
