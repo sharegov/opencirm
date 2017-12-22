@@ -5181,8 +5181,8 @@ public class RelationalStoreImpl implements RelationalStore
 						eachRow.set(columnName, rs.getString(columnName));
 					if (columnType == Types.NUMERIC)
 					{
-						int i = rs.getInt(columnName);
-						eachRow.set(columnName, i != 0 ? Integer.toString(i) : "");
+						long i = rs.getLong(columnName);
+						eachRow.set(columnName, i != 0 ? "" + i : "");
 					}
 					if (columnType == Types.TIMESTAMP)
 					{

@@ -51,7 +51,7 @@ public class StartupUtils
 	 * 
 	 * @return  space separated String
 	 */
-	static String getStrongSSLCipherSuitesParamString() {
+	public static String getStrongSSLCipherSuitesParamString() {
 		return getListAsParamString(getStrongSSLCipherSuites());
 	}
 
@@ -60,7 +60,7 @@ public class StartupUtils
 	 * 
 	 * @return space separated String
 	 */
-	static String getWeakSSLCipherSuitesParamString() {
+	public static String getWeakSSLCipherSuitesParamString() {
 		return getListAsParamString(getWeakSSLCipherSuites());
 	}
 
