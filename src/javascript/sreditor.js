@@ -1501,8 +1501,11 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 		
 		self.setCitizenActorEmailRequired = function(isRequired) {
 			var firstCitzenEmailLabelKo = self.getCitizenActorEmail();
-			firstCitzenEmailLabelKo.conditionallyRequired(isRequired);
-			firstCitzenEmailLabelKo(firstCitzenEmailLabelKo());
+			//Check if email label was extended. Locked citizens are not.
+			if (firstCitzenEmailLabelKo.conditionallyRequired) {
+				firstCitzenEmailLabelKo.conditionallyRequired(isRequired);
+				firstCitzenEmailLabelKo(firstCitzenEmailLabelKo());
+			}
 		};
 		
 		//Might show a disclaimer pop up for sms and adjust email validation
