@@ -793,6 +793,14 @@ public class MetaOntology
 	}
 	
 	protected static OWL2Datatype getDataPropertyType (OWLIndividual individual, OWLDataProperty property){
+		for (OWLOntology O: OWL.ontologies()){	
+			if (O.containsDataPropertyInSignature(IRI.create(property.getIRI().toURI().toString()))){
+				for (OWLDataRange type: property.getRanges(O)){
+					return type.asOWLDatatype().getBuiltInDatatype();
+				}
+			}
+		}
+		
 		for (OWLOntology O: OWL.ontologies()){					
 			for (OWLAxiom a : O.getDataPropertyAssertionAxioms(individual)) {
 				Set <OWLDataProperty> p = a.getDataPropertiesInSignature();
@@ -801,14 +809,6 @@ public class MetaOntology
 					for (OWLDatatype type: s){
 						return type.getBuiltInDatatype();
 					}
-				}
-			}
-		}
-		
-		for (OWLOntology O: OWL.ontologies()){	
-			if (O.containsDataPropertyInSignature(IRI.create(property.getIRI().toURI().toString()))){
-				for (OWLDataRange type: property.getRanges(O)){
-					return type.asOWLDatatype().getBuiltInDatatype();
 				}
 			}
 		}
