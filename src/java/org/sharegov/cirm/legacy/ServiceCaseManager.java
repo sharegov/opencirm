@@ -100,6 +100,7 @@ public class ServiceCaseManager extends OntoAdmin {
 //																				  "legacy:ServiceAnswerUpdateTimeout",
 																				  "legacy:ServiceAnswerConstraint",
 																				  "legacy:MessageTemplate",
+																				  "legacy:SmsTemplate",
 																				  "Department_County",
 																				  "Commission_County"
 																				  )) ;
