@@ -1121,7 +1121,7 @@
         },
         "type": {
           "enum": [
-            "legacy:MessageTemplate"
+            "legacy:SmsTemplate"
           ]
         },
       },
