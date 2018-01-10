@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.GET;
@@ -646,9 +647,10 @@ public class OntoAdmin extends RestService
 	}
 	
 	private void applyChangesSinceRevision (OWLOntology o, int baseRevision){
-		Map<Integer, OntologyCommit> changes = OntologyChangesRepo.getInstance().getAllRevisionChangesForOnto(o.getOntologyID().toString());
+		Map<Integer, OntologyCommit> curentChanges = OntologyChangesRepo.getInstance().getAllRevisionChangesForOnto(o.getOntologyID().toString());
+		Map<Integer, OntologyCommit> newChanges = new ConcurrentHashMap<>();
 		
-		if (changes != null && !changes.isEmpty()) {
+		if (curentChanges != null && !curentChanges.isEmpty()) {
 		
 			VersionedOntology vo = repo().getVersionControlledOntology(o);
 			
@@ -656,18 +658,24 @@ public class OntoAdmin extends RestService
 				throw new RuntimeException ("Ontology found, but not versioned: " + o.getOntologyID());
 			}
 			
-			for (int key = baseRevision + 1, lim = changes.keySet().size() + baseRevision; key <= lim; key++){
-				if (changes.containsKey(key)){
-					OntologyCommit cx = changes.get(key);
+			for (int key = baseRevision + 1, lim = curentChanges.keySet().size() + baseRevision; key <= lim; key++){
+				if (curentChanges.containsKey(key)){
+					OntologyCommit cx = curentChanges.get(key);
 					OWL.manager().applyChanges(cx.getChanges());
 					vo.commit(cx.getUserName(), cx.getComment());
 					int newRevision = vo.getHeadRevision().getRevision();
+					cx.setRevision(newRevision);
+					newChanges.put(newRevision, cx);
 					OntologyChangesRepo.getInstance().deleteOntoRevisionChanges(o.getOntologyID().toString(), key);
-					OntologyChangesRepo.getInstance().setOntoRevisionChanges(o.getOntologyID().toString(), newRevision, cx);
 				} else {
 					lim++;
 				}
 			}
+			
+			for (int rx: newChanges.keySet()) {
+				OntologyChangesRepo.getInstance().setOntoRevisionChanges(o.getOntologyID().toString(), rx, newChanges.get(rx));
+			}
+			
 		} else System.out.println("No previous changes saved for: " + o.getOntologyID().toString());
 	}
 
