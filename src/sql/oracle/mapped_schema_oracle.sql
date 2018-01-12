@@ -41,6 +41,7 @@ create table CIRM_SR_REQUESTS ( SR_REQUEST_ID number(19,0) not null,
 						  		CREATED_DATE timestamp(3),
 						  		UPDATED_BY varchar2(255),
 						  		UPDATED_DATE timestamp(3),
+						  		APPROVED_DATE timestamp(3),
                                 constraint CIRM_SR_REQUESTS_PK primary key (SR_REQUEST_ID)
 							   	    USING INDEX PCTFREE 30 INITRANS 100 MAXTRANS 255
                               ) PCTFREE 30 PCTUSED 40 INITRANS 100 ROWDEPENDENCIES;
