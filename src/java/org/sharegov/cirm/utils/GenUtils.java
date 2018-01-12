@@ -532,6 +532,9 @@ public class GenUtils
 	 */
 	public static java.util.Date parseDate(String isoDateString)
 	{
+		if (isoDateString.endsWith("Z")) {
+			isoDateString = isoDateString.substring(0, isoDateString.length()-2) + "-0000";
+		}
 		try
 		{
 			SimpleDateFormat myDateFormat = ISO_DATE_FORMATS.get();
