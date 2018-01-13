@@ -1873,6 +1873,10 @@ public class LegacyEmulator extends RestService
 					tryDeleteAttachments(hasRemovedAttachment);	
 					final BOntology bontology = BOntology.makeRuntimeBOntology(newSrJson);
 					
+					Json locationInfoTmp = populateGisDataInternal(newSrJson, bontology, locationInfo);
+					if (!locationInfoTmp.isNull()) {
+						locationInfo.with(locationInfoTmp);
+					}
 					//Saving the current context as we are losing when 
 					//using another get/post internally. 
 					Response current = Response.getCurrent();
@@ -1884,10 +1888,7 @@ public class LegacyEmulator extends RestService
 					am.createDefaultActivities(owlClass(type), bontology, GenUtils.parseDate(newSrJson.at("properties").at("hasDateCreated").asString()), msgsToSend);
 					Response.setCurrent(current);
 					ThreadLocalStopwatch.now("END createDefaultActivities");
-					Json locationInfoTmp = populateGisDataInternal(newSrJson, bontology, locationInfo);
-					if (!locationInfoTmp.isNull()) {
-						locationInfo.with(locationInfoTmp);
-					}
+
 					//DB
 					getPersister().saveBusinessObjectOntology(bontology.getOntology());			
 					// delete any removed Images, if save succeeds only																	
