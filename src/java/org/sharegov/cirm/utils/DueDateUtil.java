@@ -69,7 +69,25 @@ public class DueDateUtil {
 	}
 	
 	/**
-	 * Internal setDueDate.
+	 * Sets the correct due date in the given existing Sr based on a custom start date (e.g. approvalDate), srtype duration and srType workweek configuration.<br>
+	 * (Created date of SR is not used)
+	 * Existing SRs are loaded mostly without namespace qualified iri fragments.<br>
+	 * <br>
+	 * If a due date already exists in newSr it will be overwritten.<br>
+	 * <br>
+	 * Examples:<br>
+	 * type: "PW6102" //no legacy prefix for existing.<br>
+	 * properties/hasDueDate: "2017-09-14T19:45:48.000-0000" //no legacy: prefix<br>
+	 * <br>
+	 * @param existingSr sr json without legacy: namespace prefixes.
+	 * @param startDate the start date for adding type specific duration for due date calculation
+	 */
+	public void setDueDateExistingSr(Json existingSr, Date startDate) {
+		setDueDateSrImpl(existingSr, false, startDate);
+	}
+	
+	/**
+	 * Internal setDueDate using created date set in sr.
 	 * @param srJson
 	 * @param newSrJson true if new with legacy: prefix, false if existing without prefixes.
 	 */
@@ -80,7 +98,20 @@ public class DueDateUtil {
 			 validateExistingSr(srJson);
 		}
 		String dateCreatedStr = srJson.at("properties").at("hasDateCreated").asString();
-		String typeStr = newSrJson? srJson.at("type").asString() : "legacy:" + srJson.at("type").asString();
+		Date created = GenUtils.parseDate(dateCreatedStr);
+		setDueDateSrImpl(srJson, newSrJson, created);
+	}	
+	
+	private void setDueDateSrImpl(Json srJson, boolean newSrJson, Date startDate) {
+		if (newSrJson) {
+			validateNewSr(srJson);
+		} else {
+			 validateExistingSr(srJson);
+		}
+		String typeStr = srJson.at("type").asString();
+		if (!(typeStr.startsWith("legacy:") || typeStr.contains("#"))) {
+			typeStr =  "legacy:" + typeStr;
+		}
 		IRI typeIri = OWL.fullIri(typeStr);
 		Json type = getSRType(typeIri);
 		double durationDays = SrTypeJsonUtil.getDurationDays(type);
@@ -93,15 +124,14 @@ public class DueDateUtil {
 			return;
 		} else {
 			boolean useWorkWeek = SrTypeJsonUtil.isDuration5DayBased(type);
-			Date created = GenUtils.parseDate(dateCreatedStr);
-			Date due = OWL.addDaysToDate(created, (float)durationDays, useWorkWeek);
+			Date due = OWL.addDaysToDate(startDate, (float)durationDays, useWorkWeek);
 			String dueStr = GenUtils.formatDate(due);
 			if (newSrJson) {
 				srJson.at("properties").set("legacy:hasDueDate", dueStr);
 			} else {
 				srJson.at("properties").set("hasDueDate", dueStr);
 			}
-			ThreadLocalStopwatch.now("SR Due date set: " + due + " (=" + created + " + " + durationDays + " ww5:" + useWorkWeek + " type: " + typeStr + ")");
+			ThreadLocalStopwatch.now("SR Due date set: " + due + " (=" + startDate + " + " + durationDays + " ww5:" + useWorkWeek + " type: " + typeStr + ")");
 		}
 	}	
 
