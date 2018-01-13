@@ -15,6 +15,8 @@
  ******************************************************************************/
 package gov.miamidade.cirm.reports;
 
+import static org.sharegov.cirm.OWL.fullIri;
+import static org.sharegov.cirm.OWL.individual;
 import static org.sharegov.cirm.rest.OperationService.getPersister;
 
 import java.io.File;
@@ -53,9 +55,11 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.sharegov.cirm.CirmTransaction;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.legacy.MessageManager;
+import org.sharegov.cirm.rdb.Concepts;
 import org.sharegov.cirm.rdb.Query;
 import org.sharegov.cirm.rdb.QueryTranslator;
 import org.sharegov.cirm.rdb.RelationalStore;
+import org.sharegov.cirm.rdb.Sql;
 import org.sharegov.cirm.rest.LegacyEmulator;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.ServiceRequestReportUtil;
@@ -348,19 +352,50 @@ public class ReportRecyclingComplaintsXls
     	return new Date[] {from, to};
     }
     
-	/**
-	 * Creates a query finding all SRs for a given time range and zone.
-	 * 
-	 * :{"hasGeoPropertySet":{"type":"GeoPropertySet","GIS_SWRECWK":"like(3%)"},
-	 * "sortBy":"boid","sortDirection":"desc",
-	 * "currentPage":2,"type":"legacy:SWMRECIS","itemsPerPage":15,
-	 * "hasDateCreated":"between(2013-04-25T00:00:00.000,2013-05-31T23:59:59.999)"}
-	 *
-	 * @param from
-	 * @param to
-	 * @param zones
-	 * @return
-	 */
+//   mdcirm 3696 Hilpold: KEPT FOR ROLLBACK IF ADDING APPROVAL_DATE to query failed. . 
+//	/**
+//	 * Creates a query finding all SRs for a given time range and zone.
+//	 * 
+//	 * :{"hasGeoPropertySet":{"type":"GeoPropertySet","GIS_SWRECWK":"like(3%)"},
+//	 * "sortBy":"boid","sortDirection":"desc",
+//	 * "currentPage":2,"type":"legacy:SWMRECIS","itemsPerPage":15,
+//	 * "hasDateCreated":"between(2013-04-25T00:00:00.000,2013-05-31T23:59:59.999)"}
+//	 *
+//	 * @param from
+//	 * @param to
+//	 * @param zones
+//	 * @return
+//	 */
+//    public Query createQuery(Date from, Date to, int zone, RelationalStore store)
+//    {
+//    	if (from == null || to == null || zone < 1 || to.before(from)) 
+//    		throw new IllegalArgumentException("from " + from + " before to ?" + to + " zone > 0 ?" + zone);
+//    	String fromStr = GenUtils.formatDate(from);
+//    	String toStr = GenUtils.formatDate(to);    	
+//    	Json pattern = Json.object();
+//    	pattern.set("caseSensitive", false);
+//    	pattern.set("currentPage", 1);
+//    	pattern.set("itemsPerPage", 1000);
+//    	pattern.set("sortBy","GIS_SWRECWK");
+//    	pattern.set("sortDirection","asc");
+//    	//Do not change the type of Service Request. As the report is specific to this type.
+//    	//pattern.set("type", Json.array("legacy:SWMRECIS"));
+//    	pattern.set("type", Json.array("legacy:SWMRECIS"));
+//    	//pattern.set("hasStatus", "O-OPEN");
+//    	pattern.set("hasDateCreated", "between("+ fromStr + "," + toStr + ")");
+//    	Json geoSet = Json.object();
+//    	geoSet.set("type", "GeoPropertySet");
+//    	geoSet.set("GIS_SWRECWK", "like ("+ zone + "%)");
+//    	pattern.set("hasGeoPropertySet", geoSet);
+//    	QueryTranslator qt = new QueryTranslator();
+//    	Query q = qt.translate(pattern, store);
+//    	q.getStatement().getSql().COLUMN("GIS_SWRECWK");
+//    	//q.getStatement().getSql().ORDER_BY("GIS_SWRECWK");
+//    	//q.getStatement().getSql().ORDER_DIRECTION("asc");
+//    	if (DBG) System.out.println("ReportQuery: " + q.getStatement().getSql().SQL());    	
+//    	return q;
+//    }
+    
     public Query createQuery(Date from, Date to, int zone, RelationalStore store)
     {
     	if (from == null || to == null || zone < 1 || to.before(from)) 
@@ -369,25 +404,26 @@ public class ReportRecyclingComplaintsXls
     	String toStr = GenUtils.formatDate(to);    	
     	Json pattern = Json.object();
     	pattern.set("caseSensitive", false);
-    	pattern.set("currentPage", 1);
-    	pattern.set("itemsPerPage", 1000);
-    	pattern.set("sortBy","GIS_SWRECWK");
-    	pattern.set("sortDirection","asc");
-    	//Do not change the type of Service Request. As the report is specific to this type.
-    	//pattern.set("type", Json.array("legacy:SWMRECIS"));
     	pattern.set("type", Json.array("legacy:SWMRECIS"));
-    	//pattern.set("hasStatus", "O-OPEN");
-    	pattern.set("hasDateCreated", "between("+ fromStr + "," + toStr + ")");
     	Json geoSet = Json.object();
     	geoSet.set("type", "GeoPropertySet");
     	geoSet.set("GIS_SWRECWK", "like ("+ zone + "%)");
     	pattern.set("hasGeoPropertySet", geoSet);
     	QueryTranslator qt = new QueryTranslator();
     	Query q = qt.translate(pattern, store);
-    	q.getStatement().getSql().COLUMN("GIS_SWRECWK");
-    	//q.getStatement().getSql().ORDER_BY("GIS_SWRECWK");
-    	//q.getStatement().getSql().ORDER_DIRECTION("asc");
-    	if (DBG) System.out.println("ReportQuery: " + q.getStatement().getSql().SQL());
+    	q.getStatement().getSql().COLUMN("GIS_SWRECWK").COLUMN("CREATED_DATE").COLUMN("APPROVED_DATE");
+    	Sql sql = q.getStatement().getSql();
+    	sql.WHERE("(CREATED_DATE BETWEEN ? AND ? OR APPROVED_DATE BETWEEN ? AND ? )").ORDER_BY("GIS_SWRECWK");
+    	q.getStatement().getParameters().add(fromStr);
+    	q.getStatement().getParameters().add(toStr);
+    	q.getStatement().getParameters().add(fromStr);
+    	q.getStatement().getParameters().add(toStr);
+    	q.getStatement().getTypes().add(individual(fullIri(Concepts.TIMESTAMP)));
+    	q.getStatement().getTypes().add(individual(fullIri(Concepts.TIMESTAMP)));
+    	q.getStatement().getTypes().add(individual(fullIri(Concepts.TIMESTAMP)));
+    	q.getStatement().getTypes().add(individual(fullIri(Concepts.TIMESTAMP)));
+    	
+    	if (DBG) System.out.println("ReportQuery: " + q.getStatement().getSql().SQL());    	
     	return q;
     }
 	       
