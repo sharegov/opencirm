@@ -113,6 +113,7 @@ import org.sharegov.cirm.process.CreateDefaultActivities;
 import org.sharegov.cirm.process.CreateNewSREmail;
 import org.sharegov.cirm.process.PopulateGisData;
 import org.sharegov.cirm.process.SaveOntology;
+import org.sharegov.cirm.process.SetApprovalAndDueDates;
 import org.sharegov.cirm.rdb.Concepts;
 import org.sharegov.cirm.rdb.DBIDFactory;
 import org.sharegov.cirm.rdb.Query;
@@ -1872,6 +1873,10 @@ public class LegacyEmulator extends RestService
 					tryDeleteAttachments(hasRemovedAttachment);	
 					final BOntology bontology = BOntology.makeRuntimeBOntology(newSrJson);
 					
+					Json locationInfoTmp = populateGisDataInternal(newSrJson, bontology, locationInfo);
+					if (!locationInfoTmp.isNull()) {
+						locationInfo.with(locationInfoTmp);
+					}
 					//Saving the current context as we are losing when 
 					//using another get/post internally. 
 					Response current = Response.getCurrent();
@@ -1883,10 +1888,7 @@ public class LegacyEmulator extends RestService
 					am.createDefaultActivities(owlClass(type), bontology, GenUtils.parseDate(newSrJson.at("properties").at("hasDateCreated").asString()), msgsToSend);
 					Response.setCurrent(current);
 					ThreadLocalStopwatch.now("END createDefaultActivities");
-					Json locationInfoTmp = populateGisDataInternal(newSrJson, bontology, locationInfo);
-					if (!locationInfoTmp.isNull()) {
-						locationInfo.with(locationInfoTmp);
-					}
+
 					//DB
 					getPersister().saveBusinessObjectOntology(bontology.getOntology());			
 					// delete any removed Images, if save succeeds only																	
@@ -3172,6 +3174,7 @@ public class LegacyEmulator extends RestService
 	@Consumes("application/json")
 	public Json approveCase(final Json legacyform)
 	{
+		final Date approvalDateTime = new Date();
 		ThreadLocalStopwatch.startTop("START approveCase");
 		//We check if another user approved the case already after this user loaded the case to ensure
 		//the case is only approved once. This must be done in the same transaction as the approval.
@@ -3198,7 +3201,8 @@ public class LegacyEmulator extends RestService
     				ApprovalProcess approvalProcess = new ApprovalProcess();
     				approvalProcess.setSr(legacyform);
     				approvalProcess.getSideEffects().add(new AttachSendEmailListener());
-    				approvalProcess.getSideEffects().add(new CreateDefaultActivities());
+    				approvalProcess.getSideEffects().add(new SetApprovalAndDueDates(approvalDateTime));
+    				approvalProcess.getSideEffects().add(new CreateDefaultActivities(approvalDateTime));
     				approvalProcess.getSideEffects().add(new PopulateGisData());
     				approvalProcess.getSideEffects().add(new SaveOntology());
     				approvalProcess.getSideEffects().add(new CreateNewSREmail());

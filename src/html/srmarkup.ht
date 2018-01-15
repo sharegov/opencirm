@@ -609,6 +609,9 @@
         <label>Created:</label>
 		<input name="Status" type="text" data-bind="value: computeDate(data().properties().hasDateCreated)" readonly=true/><br>
         
+         <label data-bind="visible:data().properties().hasDateApproved">Approved:</label>
+		<input name="ApprovedDate" type="text" data-bind="visible:data().properties().hasDateApproved, value: computeDate(data().properties().hasDateApproved)" readonly=true/><br>
+
          <label>Due:</label>
 		<input name="DueDate" type="text" data-bind="value: computeDate(data().properties().hasDueDate)" readonly=true/><br>
         

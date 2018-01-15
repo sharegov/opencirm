@@ -1,14 +1,12 @@
 package org.sharegov.cirm.process;
 
-import static org.sharegov.cirm.OWL.individual;
-import static org.sharegov.cirm.OWL.ontology;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.sharegov.cirm.OWL;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.owl.OWLSerialEntityCache;
@@ -84,8 +82,11 @@ public class ServiceCaseTypeChanger {
 		//Clear OLD ANSWERS!!
 		target.at("properties").set("hasServiceAnswer", Json.array());
 		target.at("properties").set("hasDetails", newHasDetails);
-		// Calculate and set new Due date based on target type:
-		dueDateUtil.setDueDateExistingSr(target);
+		// Calculate and set new Due date based on target type and now:
+		//We don't know the approval date at this point, but we want to show the user a realistic date, 
+		//which will be set/overwritten later on approval by the server side approval process.
+		//We assume that the SR is pending at this point.
+		dueDateUtil.setDueDateExistingSr(target, new Date());
 		return target;
 	}
 	
