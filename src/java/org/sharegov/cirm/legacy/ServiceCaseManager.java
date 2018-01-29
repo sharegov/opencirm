@@ -1245,7 +1245,7 @@ public class ServiceCaseManager extends OntoAdmin {
 						
 			if (pushedSomething || (!pushedSomething && targetRevision <= lastMatch(OWL.ontology()))){	
 				if (deploymentx.isRestart()){												
-					if (StartUp.getConfig().at("network").at("ontoServer").asString().toLowerCase() == "ontology_server_production"){	
+					if (StartUp.getConfig().at("network").at("ontoServer").asString().toLowerCase().contains("production")){	
 						notifyClusterRestartStarted();
 						System.out.println("Cluster Restart Started!!!");
 						return GenUtils.httpPostWithBasicAuth(jenkingsEndpointRefreshOntosOnlyProduction, "cirm", "admin", "");
