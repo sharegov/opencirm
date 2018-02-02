@@ -2463,6 +2463,72 @@ public class LegacyEmulator extends RestService
     }
 
 	/**
+	 * TM callback for MDSHARED_REMINDER DUE. Completes activity and sends email.
+	 * @param boid
+	 * @param activityFragment
+	 * @return
+	 */
+	@GET
+    @Path("/bo/{boid}/reminderdue/{activityFragment}")
+    @Produces("application/json")	
+    public Json createReminderDue(@PathParam("boid") Long boid, @PathParam("activityFragment") String activityFragment )
+    {	
+		   String callInfo = "/bo/{boid}/reminderdue/{activityFragment} " + boid + " / " + activityFragment;
+           ThreadLocalStopwatch.startTop("START " + callInfo);
+           try
+           {
+                  OperationService op = new OperationService();
+                  RelationalOWLPersister persister = getPersister();
+                  BOntology bo = op.getBusinessObjectOntology(boid);
+                  if (bo != null && bo.getBusinessObject() != null)
+                  {
+                        if (!isClientExempt()
+                                      && !Permissions.check(individual("BO_Update"),
+                                                    individual(bo.getTypeIRI("legacy")),
+                                                    getUserActors()))
+                        {
+                            ThreadLocalStopwatch.fail("FAIL permission denied " + callInfo);
+                        	return ko("Permission denied.");
+                        }
+                        OWLOntology o = bo.getOntology();
+                        
+                        OWLNamedIndividual activityToCheck = o.getOWLOntologyManager().getOWLDataFactory().getOWLNamedIndividual(OWL.fullIri(activityFragment)); 
+                        if (o.getIndividualsInSignature(true).contains(activityToCheck))
+                        {
+                               if ((bo.getDataProperty(activityToCheck, "legacy:hasCompletedDate") != null) 
+                            	   	   || (bo.getDataProperty(activityToCheck, "legacy:hasCompletedTimestamp") != null)) 
+                            	   return ok();
+                               List<CirmMessage> msgsToSend = new ArrayList<>();
+                               ActivityManager manager = new ActivityManager();
+                               OWLNamedIndividual completeOutcome = OWL.individual(OWL.fullIri("legacy:OUTCOME_COMPLETE"));
+                               manager.updateActivity(activityToCheck, completeOutcome, null, null, "auto", bo, msgsToSend);
+                               persister.saveBusinessObjectOntology(bo.getOntology());
+                               //Email any plus the generic due template
+                               OWLLiteral legacyCode = OWL.literal("REMINDER");
+                               OWLNamedIndividual emailTemplate = OWL.individual(OWL.fullIri("legacy:MDSHARED_REMINDER_DUE_GENASSIG"));
+                               CirmMimeMessage m = MessageManager.get().createMimeMessageFromTemplate(bo, legacyCode, emailTemplate);
+                               m.addExplanation("LE.createReminderDue boid " + boid + " Act: " + activityFragment);
+                               msgsToSend.add(m);
+                               MessageManager.get().sendMessages(msgsToSend);
+                                                             
+                               ThreadLocalStopwatch.stop("END " + callInfo);
+                               return ok();
+                        }
+                        ThreadLocalStopwatch.fail("FAIL orig activity not found " + callInfo);
+                        return ko("Original activity not found.");
+                  }
+                  ThreadLocalStopwatch.fail("FAIL bo not found " + callInfo);
+                  return ko("No business object found with id " + boid);
+           }
+           catch (Throwable e)
+           {
+               ThreadLocalStopwatch.fail("FAIL with " + e + " " + callInfo);
+               e.printStackTrace();
+               return ko(e);
+           }
+    }
+	
+	/**
 	 * Calls a web service (retries up to MAX_CALLWS_ATTEMPS == 3)
 	 * @param type the type of web service to call (see ontologies)
 	 * @param arguments string array of arguments
