@@ -1245,6 +1245,64 @@ public class LegacyEmulator extends RestService
 		return false;
 	}
 	
+	/**
+	 * Processes a new activities submitted as json on SR creation or update with all triggers/emails.
+	 * And updates bontology with the new axioms.
+	 */
+	private OWLNamedIndividual createProcessNewActivityFromJson(final BOntology bontology, 
+			final Json newActivityJson, 
+			final String srCreateOrUpdateUser,
+			final List<CirmMessage> msgsToSend,
+			final ActivityManager actMgr
+			) {
+			final OWLNamedIndividual newActivity = individual(newActivityJson.at("legacy:hasActivity")
+																 .at("iri").asString());
+			String details = newActivityJson.has("legacy:hasDetails") ? newActivityJson
+					.at("legacy:hasDetails").asString() : null;
+			String assignedTo = newActivityJson.has("legacy:isAssignedTo") ? newActivityJson
+					.at("legacy:isAssignedTo").asString() : null;
+			String actCreatedBy = newActivityJson.has("isCreatedBy") ? newActivityJson
+							.at("isCreatedBy").asString() : srCreateOrUpdateUser;					
+			Json hasOutcome = newActivityJson.has("legacy:hasOutcome") ? newActivityJson
+					.at("legacy:hasOutcome") : null;
+			java.util.Date createdDate = newActivityJson.has("hasDateCreated") ? 
+							GenUtils.parseDate(newActivityJson.at("hasDateCreated").asString()) : null; 
+			java.util.Date completedDate = newActivityJson.has("legacy:hasCompletedTimestamp") ? 
+						GenUtils.parseDate(newActivityJson.at("legacy:hasCompletedTimestamp").asString()) : null; 
+			if (hasOutcome == null && completedDate == null)
+				actMgr.createActivity(newActivity, 
+								    details, 
+								    assignedTo, 
+								    bontology,
+								    createdDate, 
+								    actCreatedBy,
+								    msgsToSend);
+			else
+			{
+				OWLNamedIndividual outcome = hasOutcome != null ? individual(hasOutcome.at("iri").asString()) : null;
+				actMgr.createActivity(newActivity, 
+									outcome, 
+									details, 
+									assignedTo, 
+									bontology,
+									createdDate,
+									completedDate,
+									actCreatedBy,
+									msgsToSend);
+			}
+			if (!newActivityJson.has("legacy:hasOutcome") && newActivityJson.is("legacy:isAccepted", true))
+			{
+				OWLNamedIndividual activityTypeInd = individual(newActivityJson.at("legacy:hasActivity").at("iri").asString());
+				Set<OWLNamedIndividual> outcomes = reasoner().getObjectPropertyValues(
+						activityTypeInd, objectProperty("legacy:hasDefaultOutcome")).getFlattened();
+				if(outcomes.size() > 0)
+				{
+					newActivityJson.set("hasOutcome", OWL.toJSON(outcomes.iterator().next()));
+				}
+			}			
+		return newActivity;
+	}
+	
 	public Json updateServiceCaseTransaction(final Json newValue, 
 											 final Json existing,
 											 Date updatedDate,
@@ -1315,68 +1373,28 @@ public class LegacyEmulator extends RestService
 
 		
 		String srModifiedByStr = srModifiedBy == null? null : srModifiedBy.getLiteral();
-		//06-20-2013 syed - set the createdBy to the SR modifier.
-		for (final Json eachActivity : newActivities.asJsonList())
-		{
-			final OWLNamedIndividual activity = individual(eachActivity.at("legacy:hasActivity")
-																 .at("iri").asString());
-			String details = eachActivity.has("legacy:hasDetails") ? eachActivity
-					.at("legacy:hasDetails").asString() : null;
-			String assignedTo = eachActivity.has("legacy:isAssignedTo") ? eachActivity
-					.at("legacy:isAssignedTo").asString() : null;
-			String actCreatedBy = eachActivity.has("isCreatedBy") ? eachActivity
-							.at("isCreatedBy").asString() : srModifiedByStr;					
-			Json hasOutcome = eachActivity.has("legacy:hasOutcome") ? eachActivity
-					.at("legacy:hasOutcome") : null;
-			java.util.Date createdDate = eachActivity.has("hasDateCreated") ? 
-							GenUtils.parseDate(eachActivity.at("hasDateCreated").asString()) : null; 
-			java.util.Date completedDate = eachActivity.has("legacy:hasCompletedTimestamp") ? 
-						GenUtils.parseDate(eachActivity.at("legacy:hasCompletedTimestamp").asString()) : null; 
-			if (hasOutcome == null && completedDate == null)
-				mngr.createActivity(activity, 
-								    details, 
-								    assignedTo, 
-								    bontology,
-								    createdDate, 
-								    actCreatedBy,
-								    msgsToSend);
-			else
-			{
-				OWLNamedIndividual outcome = hasOutcome != null ? individual(hasOutcome.at("iri").asString()) : null;
-				mngr.createActivity(activity, 
-									outcome, 
-									details, 
-									assignedTo, 
-									bontology,
-									createdDate,
-									completedDate,
-									actCreatedBy,
-									msgsToSend);
-			}
-			if (!eachActivity.has("legacy:hasOutcome") && eachActivity.is("legacy:isAccepted", true))
-			{
-				OWLNamedIndividual activityTypeInd = individual(eachActivity.at("legacy:hasActivity").at("iri").asString());
-				Set<OWLNamedIndividual> outcomes = reasoner().getObjectPropertyValues(
-						activityTypeInd, objectProperty("legacy:hasDefaultOutcome")).getFlattened();
-				if(outcomes.size() > 0)
-				{
-					eachActivity.set("hasOutcome", OWL.toJSON(outcomes.iterator().next()));
-				}
-			}
+		//2018.01.17 tom/syed - use SR modifiedBY as activity.createdBy, if not provided with activity.
+		
+		//Create and process new activities & triggers
+		for (final Json newActivityJson : newActivities.asJsonList()) {
+			OWLNamedIndividual newActivity = createProcessNewActivityFromJson(bontology, newActivityJson, srModifiedByStr, msgsToSend, mngr);
+			//Dispatch legacy:ServiceCaseNewActivityEvent new activity event
 			CirmTransaction.get().addTopLevelEventListener(new CirmTransactionListener() {
 			    public void transactionStateChanged(final CirmTransactionEvent e)
 			    {
 			    	if (e.isSucceeded())
 						EventDispatcher.get().dispatch(
 								OWL.individual("legacy:ServiceCaseNewActivityEvent"),
-	                            activity,			                 
+								newActivity,			                 
 	                            OWL.individual("BO_New"),
                                 Json.object("serviceCase", serviceCase,
-                                            "activity", eachActivity,
+                                            "activity", newActivityJson,
                                             "originator", originator));			
 			    }
 			});
-		}		
+		}
+		
+		
 		if (hasAddressUpdated(existing, newValue)) {
 			populateGisData(serviceCase, bontology);
 		}
@@ -1816,6 +1834,7 @@ public class LegacyEmulator extends RestService
 		final boolean hasCoordinates = newSrJson.has("properties") 
 				&& newSrJson.at("properties").has("hasXCoordinate")
 				&& newSrJson.at("properties").has("hasYCoordinate");
+		final Json newActivitiesOnSubmission = newSrJson.at("properties").atDel("legacy:hasServiceActivity");
 		
 		final Json locationInfo;
 		try
@@ -1886,9 +1905,19 @@ public class LegacyEmulator extends RestService
 					msgsToSend.clear();
 					CirmTransaction.get().addTopLevelEventListener(new SendMessagesOnTxSuccessListener(msgsToSend));
 					am.createDefaultActivities(owlClass(type), bontology, GenUtils.parseDate(newSrJson.at("properties").at("hasDateCreated").asString()), msgsToSend);
+					ThreadLocalStopwatch.now("END createDefaultActivities");					
+					if (newActivitiesOnSubmission != null) {
+						List<Json> newActs = newActivitiesOnSubmission.asJsonList();
+						if (newActs.size() > 0) {
+							ThreadLocalStopwatch.now("START createNewActivities");
+							for (Json newActivityJson : newActs) {
+								createProcessNewActivityFromJson(bontology, newActivityJson, null, msgsToSend, am);
+							}
+							ThreadLocalStopwatch.now("END createNewActivities");
+						}
+					}
 					Response.setCurrent(current);
-					ThreadLocalStopwatch.now("END createDefaultActivities");
-
+					
 					//DB
 					getPersister().saveBusinessObjectOntology(bontology.getOntology());			
 					// delete any removed Images, if save succeeds only																	
