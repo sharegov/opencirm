@@ -316,10 +316,12 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 		self.address = addressModel;
 		self.accountNumber = ko.observable("");
 		self.result = ko.observable({"record":null});
+		self.WCS_NON_BULKYTRA_TYPES = ["BULKYUPD", "EZGO", "GARBAGEM", "MISSEDBU"]
 
 		self.validateResult = ko.observable({ "AccountInfo":{Accounts:[], "ReturnMsg": ""} });
 		U.visit(self.validateResult(), U.makeObservableTrimmed);
 		self.enableValidationForBULKYTRA = false;
+		self.enableValidationForNonBULKYTRA = false;
 
 		function alertDialogWCS(msg) {
 	    	$("#wcs_dialog_alert")[0].innerText = msg;
@@ -498,7 +500,18 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 		
 		self.handleSrTypeChange = function(srTypeFragment) 
 		{
-			self.setValidationForBULKYTRA(srTypeFragment == "BULKYTRA");
+			if(self.result() || self.result().record) {
+				//Clear on any type or no type
+				self.clear();
+			}
+			if (srTypeFragment) {
+				//Only modify validation choice if an actal SR type is provided
+				//a call with undefined may be emitted even if a WCS types is selected(sic!).
+				var isBulky = srTypeFragment == "BULKYTRA";
+				self.setValidationForBULKYTRA(isBulky);
+				var isNonBulkyWCS = !isBulky && self.WCS_NON_BULKYTRA_TYPES.indexOf(srTypeFragment) >= 0;
+				self.enableValidationForNonBULKYTRA = isNonBulkyWCS;
+			}
 		}
 		/**
 		 * Sets validation as true if sr type is BULKYTRA
@@ -507,18 +520,19 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 		{
 			self.enableValidationForBULKYTRA = enabled;
 		};
+
 		/**
-		 * Disables the Send to SR button if sr type is BULKYTRA and if validateForBULKYTRA returns false. 
+		 * Disables the Send to SR button if sr type is bulkytra or other WCS and validation fails
+		 *
 		 */
 		self.isButtonDisable = function () {
 			//Only validate if srEditor enabled bulkytra validation
-			if (!self.enableValidationForBULKYTRA) 
-			{ 
-				return false;
-			} else 
-			{
-				//Don't disable button if validation is ok.
+			if (self.enableValidationForBULKYTRA) {
 				return !validateForBULKYTRA();
+			} else if (self.enableValidationForNonBULKYTRA) {
+				return !validateForNonBULKY();
+			} else {
+				return false;
 			}
 		};
 		
@@ -526,41 +540,70 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 		 * Validates the wcs service results for a BULKYTRA sr.
 		 * returns true, if WCS results allow for a new BULKYTRA SR for the given account.
 		 */
-		self.validateForBULKYTRA = function() {
-			var validationResult;
-			var accNO = self.result().record.AccountInfo.Accounts[0].Account.AccountNumber;
-			var wcsAccount = cirm.top.get('/legacy/ws/WCSAccountQueryByAccount?arg='+accNO).result.WCS.Accounts.Account;
-			var noOfTripsLeft = wcsAccount.Trips;
-			var accStatus = wcsAccount.AccountStatus;
-			var workOrders = cirm.top.get('/legacy/ws/WCSBulkyQueryByAccount?arg='+accNO).result.WCS.WorkOrders;
-			var isPendingWorkOrder = false;
-			var pendingWorkOrderStatus = null;
-			workOrders = U.ensureArray(workOrders);
-			var idx = 0;
-			while (!isPendingWorkOrder && idx < workOrders.length) 
-			{ 
-				var workOrderStatus = workOrders[idx].WorkOrder.OrderStatus; 
-				if (workOrderStatus == "PP"  || workOrderStatus == "SC" || workOrderStatus == "CK")
+		self.validateForNonBULKY = function() {
+			var validationResult = false;
+			try {
+				var accNO = self.result().record.AccountInfo.Accounts[0].Account.AccountNumber;
+				var wcsAccount = cirm.top.get('/legacy/ws/WCSAccountQueryByAccount?arg='+accNO).result.WCS.Accounts.Account;
+				var accStatus = wcsAccount.AccountStatus;			
+				var pickup = wcsAccount.Pickup;
+				var pickupOk = pickup != "NO SCHEDULE";
+				var accountStatusOK = (accStatus == null || (accStatus !== "CANCELLED" && accStatus !== "SUSPENSE"));
+				validationResult = (accountStatusOK && pickupOk);
+				if (!validationResult) 
 				{
-					isPendingWorkOrder = true;
-					pendingWorkOrderStatus = workOrderStatus;
+					alertDialogWCS(self.getWCSErrorMessage(accStatus, pickupOk, 1000, false, undefined));
 				}
-				idx++;
+			} catch (err) {
+				alertDialogWCS("System error during WCS validation, please try again");
 			}
-			var accountStatusOK = (accStatus == null || (accStatus !== "CANCELLED" && accStatus !== "SUSPENSE"));
-			validationResult = (noOfTripsLeft > 0 && accountStatusOK && !isPendingWorkOrder);
-			if (!validationResult) 
-			{
-				alertDialogWCS(self.getWCSErrorMessage(noOfTripsLeft, accStatus, isPendingWorkOrder, pendingWorkOrderStatus));
+			return validationResult;
+		}
+
+		/**
+		 * Validates the wcs service results for a BULKYTRA sr.
+		 * returns true, if WCS results allow for a new BULKYTRA SR for the given account.
+		 */
+		self.validateForBULKYTRA = function() {
+			var validationResult = false;
+			try {
+				var accNO = self.result().record.AccountInfo.Accounts[0].Account.AccountNumber;
+				var wcsAccount = cirm.top.get('/legacy/ws/WCSAccountQueryByAccount?arg='+accNO).result.WCS.Accounts.Account;
+				var noOfTripsLeft = wcsAccount.Trips;
+				var accStatus = wcsAccount.AccountStatus;
+				var pickup = wcsAccount.Pickup;
+				var workOrders = cirm.top.get('/legacy/ws/WCSBulkyQueryByAccount?arg='+accNO).result.WCS.WorkOrders;
+				var isPendingWorkOrder = false;
+				var pendingWorkOrderStatus = null;
+				var pickupOk = pickup != "NO SCHEDULE";
+				workOrders = U.ensureArray(workOrders);
+				var idx = 0;
+				while (!isPendingWorkOrder && idx < workOrders.length) 
+				{ 
+					var workOrderStatus = workOrders[idx].WorkOrder.OrderStatus; 
+					if (workOrderStatus == "PP"  || workOrderStatus == "SC" || workOrderStatus == "CK")
+					{
+						isPendingWorkOrder = true;
+						pendingWorkOrderStatus = workOrderStatus;
+					}
+					idx++;
+				}
+				var accountStatusOK = (accStatus == null || (accStatus !== "CANCELLED" && accStatus !== "SUSPENSE"));
+				validationResult = (noOfTripsLeft > 0 && accountStatusOK && !isPendingWorkOrder && pickupOk);
+				if (!validationResult) 
+				{
+					alertDialogWCS(self.getWCSErrorMessage(accStatus, pickupOk, noOfTripsLeft, isPendingWorkOrder, pendingWorkOrderStatus));
+				}
+			} catch(err) {
+				alertDialogWCS("System error during WCS validation, please try again.")
 			}
 			return validationResult;
 		}
 		
 		/**
 		 * Builds the error message to be displayed on the screen when the validation fails.
-		 */
-		
-		self.getWCSErrorMessage = function (noOfTripsLeft, accStatus,isPendingWorkOrder, pendingWorkOrderStatus) {
+		 */		
+		self.getWCSErrorMessage = function (accStatus, pickupOk, noOfTripsLeft, isPendingWorkOrder, pendingWorkOrderStatus) {
 			var WCSErrorMessage = "The SR cannot be opened for this address because: \n";
 			if(noOfTripsLeft < 1)
 			{
@@ -582,7 +625,10 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 			if(isPendingWorkOrder)
 			{
 				WCSErrorMessage += "\nThere is a pending work order for this address. \n Pending Work Order Status:" + pendingWorkOrderStatus;	
-			}			
+			}
+			if (!pickupOk) {
+				WCSErrorMessage += "\nThere is no pickup scheduled yet for this account";	
+			}
 			return WCSErrorMessage;
 		};
 		
