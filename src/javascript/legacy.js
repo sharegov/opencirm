@@ -500,7 +500,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 		
 		self.handleSrTypeChange = function(srTypeFragment) 
 		{
-			if(self.result() || self.result().record) {
+			if(self.result() && self.result().record) {
 				//Clear on any type or no type
 				self.clear();
 			}
