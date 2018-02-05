@@ -86,8 +86,8 @@ public class StartUp extends ServerResource
 			.set("storePass", "password")
 			.set("keyPass", "password")
 			.set("defaultOntologyIRI", "http://www.miamidade.gov/cirm/legacy")
-			.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#ProdConfigSet")
-			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#TestConfigSet")
+//			.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#ProdConfigSet")
+			.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#TestConfigSet")
 			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#DevConfigSet")
 			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#LocalConfigSetXE")
 			//.set("ontologyConfigSet", "http://www.miamidade.gov/ontology#LocalConfigSet")
@@ -98,22 +98,22 @@ public class StartUp extends ServerResource
 					))
 			.set("metaDatabaseLocation", "c:/temp/dbConf")
 			.set("allClientsExempt", true)
-			.set("network", Json.object(				
-					"user", "cirmservice_production",
-					"password","cirmsprod",
-					"serverUrl","s0144818",
-					"ontoServer","ontology_server_production"))
-//			.set("network", Json.object(
-//					"user", "cirmconfigservice_test",
-//					"password","ccstest",
+//			.set("network", Json.object(				
+//					"user", "cirmservice_production",
+//					"password","cirmsprod",
 //					"serverUrl","s0144818",
-//					"ontoServer","ontology_server_test"))
+//					"ontoServer","ontology_server_production"))
+			.set("network", Json.object(
+					"user", "cirmconfigservice_test",
+					"password","ccstest",
+					"serverUrl","s0144818",
+					"ontoServer","ontology_server_test"))
 			.set("ontologyPrefixes", Json.object(
 					"legacy:", "http://www.miamidade.gov/cirm/legacy#",
 					"mdc:", "http://www.miamidade.gov/ontology#",
 					":", "http://www.miamidade.gov/ontology#"
 					))
-			.set("cachedReasonerPopulate", true)
+			.set("cachedReasonerPopulate", false)
 			.set("startDepartmentIntegration", "x.x.xxx")
 			.set("isConfigMode", true);
 
