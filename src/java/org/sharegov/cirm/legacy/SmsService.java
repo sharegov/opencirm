@@ -2,6 +2,7 @@ package org.sharegov.cirm.legacy;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
@@ -23,6 +24,10 @@ import mjson.Json;
  * <br>
  * Splitting long messages will preserve whole words in message parts.<br>
  * <br>
+ * SMS Template Configuration user may decide one or more split points for longer templates that require multiple texts using [START_NEXT] 
+ * tag in body template.<br>
+ * If any split text is still longer than MAX_TXT_LENGTH (160 ASCII) it will be broken into further messages.
+ * <br> 
  * This class is thread safe.<br>
  * 
  * @author Camilo, Thomas Hilpold, Syed
@@ -30,6 +35,12 @@ import mjson.Json;
 public class SmsService {
 	
 	public static boolean DBG = true;
+	
+	/**
+	 * Allows multiple messages defined in one message body.
+	 */
+	public final static String START_NEXT = "[START_NEXT]";
+	private final static String START_NEXT_PAT = Pattern.quote(START_NEXT);
 	
 	/**
 	 * The ontology config set parameter name where the configuration for this service is expected.
@@ -96,7 +107,6 @@ public class SmsService {
 		return url;
 	}
 
-
 	/**
 	 * Sends a text message, possibly to multiple phone numbers and, if length exceeds split into multiple sms messages.
 	 * Errors handled through exception logging.
@@ -116,6 +126,50 @@ public class SmsService {
 			ThreadLocalStopwatch.error(message.getExplanation());
 			return;
 		}
+		//check for and process [START_NEXT], also trim.
+		List<String> allTexts = checkSplitTextforStartNextToken(text);
+		if (allTexts.isEmpty()) {
+			ThreadLocalStopwatch.error("ERROR: SmsService: checkSplitTextforStartNextToken returned 0 messages. Not sending any message");
+			ThreadLocalStopwatch.error(message.getExplanation());
+		}
+		for (String oneText : allTexts) {
+			sendSMSInternal(phoneMult, oneText);
+		}
+	}
+	
+	/**
+	 * Check text for multiple defined messages using [START_NEXT] token in template body.
+	 * [START_NEXT] can be used inline or in a separate line, with or without surrounding whitespace, because.
+	 * each message will be trimmed and empty message will not be returned.
+	 * @param text
+	 * @return
+	 */
+	private List<String> checkSplitTextforStartNextToken(String text) {
+		List<String> result = new ArrayList<>();
+		String[] messages = text.split(START_NEXT_PAT);
+		for (String m : messages) {
+			//Filter white space only messages to also remove newline after START_NEXT while still allowing the token inline.
+			m = m.trim();
+			if(!m.isEmpty()) result.add(m);
+		}
+		return result;
+	}
+	
+	/**
+	 * Sends a text message, possibly to multiple phone numbers and, if length exceeds split into multiple sms messages.
+	 * Errors handled through exception logging.
+	 * 
+	 * @param message
+	 */
+	void sendSMSInternal(String phoneMult, String text) {
+		if (phoneMult == null || phoneMult.isEmpty()) {
+			ThreadLocalStopwatch.error("ERROR: SmsService: phone empty. Not sending message");
+			return;
+		}
+		if (text == null || text.isEmpty()) {
+			ThreadLocalStopwatch.error("ERROR: SmsService: text empty. Not sending message");
+			return;
+		}
 		List<String> textParts;
 		if (USE_MAX_TXT_LENGHT && text.length() > MAX_TXT_LENGHT) {
 			textParts = splitIntoParts(text, MAX_TXT_LENGHT);
@@ -129,7 +183,7 @@ public class SmsService {
 
 		String[] phones = phoneMult.split(";");
 		int successTarget = phones.length * textParts.size();
-		ThreadLocalStopwatch.now("SmsService: msg explanation info " + message.getExplanation());
+		//ThreadLocalStopwatch.now("SmsService: msg explanation info " + message.getExplanation());
 		int successActual = 0;
 		for (String onePhoneNumber : phones) {
 			try {

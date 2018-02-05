@@ -24,7 +24,17 @@ public class MessageTemplateUtil {
 	
 	public final String CITIZEN_EMAIL_VAR = "$$CITIZENS_EMAIL$$";
 	public final String CITIZEN_CELL_PHONE_VAR = "$$CITIZENS_CELL_PHONE$$";
-			
+
+	/**
+	 * True if only one recipient and recipient is CITIZEN_EMAIL_VAR.
+	 * @param recipientVariables
+	 * @return
+	 */
+	public boolean hasOnlyCitizenEmailRecipient(String recipientVariables) {
+		String[] vars = recipientVariables.split(";");
+		return (vars.length == 1 && CITIZEN_EMAIL_VAR.equals(vars[0]));
+	}
+	
 	public boolean hasCitizenEmailRecipient(String recipientVariables) {
 		for(String r : recipientVariables.split(";")) {
 			if (CITIZEN_EMAIL_VAR.equals(r)) return true;
@@ -37,6 +47,16 @@ public class MessageTemplateUtil {
 			if (CITIZEN_CELL_PHONE_VAR.equals(r)) return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * True if only one recipient and recipient is CITIZEN_CELL_PHONE_VAR.
+	 * @param recipientVariables
+	 * @return
+	 */
+	public boolean hasOnlyCitizenCellPhoneRecipient(String recipientVariables) {
+		String[] vars = recipientVariables.split(";");
+		return (vars.length == 1 && CITIZEN_CELL_PHONE_VAR.equals(vars[0]));
 	}
 	
 	public String removeCitizenEmailRecipient(String recipientVariables) {

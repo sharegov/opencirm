@@ -1466,13 +1466,13 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			var emailCTmpl = (self.srType && self.srType().transientHasCitizenEmailTemplate === true);
 			var smsCTmpl = (self.srType && self.srType().transientHasCitizenSmsTemplate === true);			
 			if (emailCTmpl && smsCTmpl) {
-				options.push({id:"A", label: "Email & SMS/Text"});
+				options.push({id:"A", label: "Email & Text"});
 			}
 			if (emailCTmpl) {
 				options.push({id:"E", label: "Email only"});
 			}
 			if (smsCTmpl) {
-				options.push({id:"S", label: "SMS/Text only"});
+				options.push({id:"S", label: "Text only"});
 			}
 			options.push({id:"N", label: "No Notification"});
 			return options;
@@ -1501,8 +1501,11 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 		
 		self.setCitizenActorEmailRequired = function(isRequired) {
 			var firstCitzenEmailLabelKo = self.getCitizenActorEmail();
-			firstCitzenEmailLabelKo.conditionallyRequired(isRequired);
-			firstCitzenEmailLabelKo(firstCitzenEmailLabelKo());
+			//Check if email label was extended. Locked citizens are not.
+			if (firstCitzenEmailLabelKo.conditionallyRequired) {
+				firstCitzenEmailLabelKo.conditionallyRequired(isRequired);
+				firstCitzenEmailLabelKo(firstCitzenEmailLabelKo());
+			}
 		};
 		
 		//Might show a disclaimer pop up for sms and adjust email validation
@@ -1511,7 +1514,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			var selectedPref = ko.toJS(firstCitizenNotificationPrefField);
 			var showAlert = (selectedPref === "S" || selectedPref === "A");
 			if (showAlert === true) {
-				var msg = "Depending on your cell phone plan, sms/text message and data rates may apply.";
+				var msg = "Depending on your cell phone plan, text message and data rates may apply.";
 				alertDialog(msg);
 			}
 			var emailRequired = (selectedPref === "E" || selectedPref === "A");
@@ -1598,12 +1601,19 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			self.duplicateDetails({});
 			if(!U.isEmptyString(self.data().type()))
 			{
-				if(U.isEmptyString(self.originalData().properties.hasStatus.iri))
-					self.data().properties().hasStatus().iri(self.originalData().properties.hasStatus);
-				else
-				{
-					self.data().properties().hasStatus().iri(self.originalData().properties.hasStatus.iri);
-					self.data().properties().hasStatus().label(self.originalData().properties.hasStatus.label);
+				try {
+					if(U.isEmptyString(self.originalData().properties.hasStatus.iri)) {
+						self.data().properties().hasStatus().iri(self.originalData().properties.hasStatus);
+					}
+					else
+					{
+						self.data().properties().hasStatus().iri(self.originalData().properties.hasStatus.iri);
+						self.data().properties().hasStatus().label(self.originalData().properties.hasStatus.label);
+					}
+				} catch (err) {
+					console.log("Error during remove duplicates (ref mdcirm: 3625) " + err);
+					console.log("Error data:" + self.originalData());
+					alert("SYSTEM ERROR 3625 Occurred - please reload SR and proceed.")
 				}
 			}
 		};
@@ -3622,14 +3632,14 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
     }
     	
     function fetchSR(bo, model, isNew) {
-    	var type = bo.type;
+		var type = bo.type;		
 		if(type.indexOf("legacy:") == -1) {
 			type = "legacy:"+type;
 			bo.type = type;
 		}
-	    var srType = cirm.refs.serviceCases["http://www.miamidade.gov/cirm/legacy#" + type.split(":")[1]]; 
+		var nonPrefixType = type.split(":")[1];
+	    var srType = cirm.refs.serviceCases["http://www.miamidade.gov/cirm/legacy#" + nonPrefixType]; 
 	    console.log('type', srType);
-	    
 		if(srType.hasServiceCaseAlert && bo.boid == "") {
 			$("#sh_dialog_alert")[0].innerText = srType.hasServiceCaseAlert.label;
 			$("#sh_dialog_alert").dialog({ height: 500, width: 500, modal: true, buttons: {
@@ -3651,6 +3661,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 				approvalCheck(bo.properties().hasCaseNumber(), model);
 			}
 		}
+		//Trigger type change event for validation update now that type is defined
+		$(document).trigger(legacy.InteractionEvents.SrTypeSelection, [nonPrefixType]);
     }
     
 	/**

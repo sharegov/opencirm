@@ -49,6 +49,7 @@ public class ServiceRequestResolver implements VariableResolver
 	public static final String VAR9_SR_DUE_DATE = "$$SR_DUE_DATE$$"; //'Mon DD, YYYY' null if no duration days configured
 	public static final String VAR10_SR_REMAINING_DAYS = "$$SR_REMAINING_DAYS$$"; //rounded integer now - created, null if no duration days configured
 	public static final String VAR11_SR_DURATION_CALENDAR_DAYS = "$$SR_DURATION_CALENDAR_DAYS$$"; //rounded integer due - created, null if no duration days configured
+	public static final String VAR12_SR_FOLIO = "$$SR_FOLIO$$"; //13 char string, prefix 0 were long value is 12.
 	
 	public static final String[] DATE_FORMAT_PATTERNS = new String[]
 			{ 	"MMM d, yyyy", //'Mon DD, YYYY'
@@ -79,6 +80,8 @@ public class ServiceRequestResolver implements VariableResolver
 			result = getSRRemainingDaysStr(sr);
 		else if (variableName.equals(VAR11_SR_DURATION_CALENDAR_DAYS))
 			result = getSrDurationCalendarDaysStr(sr);
+		else if (variableName.equals(VAR12_SR_FOLIO))
+			result = getSrFolioStr(sr);
 		else
 			result = null;
 		ThreadLocalStopwatch.getWatch().time("ServiceRequestResolver: Var: " + variableName + " result: " + result);
@@ -365,5 +368,23 @@ public class ServiceRequestResolver implements VariableResolver
 	private String getSRLocationString(Json sr)
 	{
 		return getSRLocationDetails(sr);
+	}
+	
+	/**
+	 * Get's the Sr folio as 13 char string or N/A, if not available.
+	 * @param sr
+	 * @return
+	 */
+	private String getSrFolioStr(Json sr) {
+		String result = "N/A";
+		Json rawFolio = sr.at("hasFolio");
+		if (rawFolio  != null && (rawFolio.isString() || rawFolio.isNumber())) {
+			result = rawFolio.asString();
+			if (result.length() == 12) {
+				//format as 13 length always
+				result = "0" + result;
+			}
+		}
+		return result;
 	}
 }
