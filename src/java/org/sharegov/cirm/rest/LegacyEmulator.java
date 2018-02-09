@@ -1269,6 +1269,9 @@ public class LegacyEmulator extends RestService
 							GenUtils.parseDate(newActivityJson.at("hasDateCreated").asString()) : null; 
 			java.util.Date completedDate = newActivityJson.has("legacy:hasCompletedTimestamp") ? 
 						GenUtils.parseDate(newActivityJson.at("legacy:hasCompletedTimestamp").asString()) : null; 
+			java.util.Date customDueDate = newActivityJson.has("legacy:hasDueDate") ? 
+								GenUtils.parseDate(newActivityJson.at("legacy:hasDueDate").asString()) : null; 
+						
 			if (hasOutcome == null && completedDate == null)
 				actMgr.createActivity(newActivity, 
 								    details, 
@@ -1276,6 +1279,7 @@ public class LegacyEmulator extends RestService
 								    bontology,
 								    createdDate, 
 								    actCreatedBy,
+								    customDueDate,
 								    msgsToSend);
 			else
 			{
@@ -1288,8 +1292,10 @@ public class LegacyEmulator extends RestService
 									createdDate,
 									completedDate,
 									actCreatedBy,
+									customDueDate,
 									msgsToSend);
 			}
+
 			if (!newActivityJson.has("legacy:hasOutcome") && newActivityJson.is("legacy:isAccepted", true))
 			{
 				OWLNamedIndividual activityTypeInd = individual(newActivityJson.at("legacy:hasActivity").at("iri").asString());
@@ -2466,7 +2472,7 @@ public class LegacyEmulator extends RestService
                                 	   ActivityManager manager = new ActivityManager();
                                 	   //TODO hilpold full method should be inside a transaction and SendMessagesOnTxSuccessListener used
                                 	   List<CirmMessage> msgsToSend = new ArrayList<CirmMessage>();
-                                	   manager.createActivity(individual("legacy:"	+ overdueActivity), null, null, bo, null, null, msgsToSend);
+                                	   manager.createActivity(individual("legacy:"	+ overdueActivity), null, null, bo, null, null, null, msgsToSend);
                                 	   manager.updateActivityIfAutoDefaultOutcome(activityToCheck, bo, msgsToSend);
                                 	   persister.saveBusinessObjectOntology(bo.getOntology());
                                 	   for (CirmMessage m : msgsToSend) 

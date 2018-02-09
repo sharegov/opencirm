@@ -186,7 +186,7 @@ public class ActivityManager
 				Date completedDate = null;
 				OWLNamedIndividual outcome = null; 
     			List<CirmMessage> localMessages = new ArrayList<CirmMessage>();
-    			createActivity(activityType, outcome, null, null, bo, createdDate, completedDate, null, localMessages);
+    			createActivity(activityType, outcome, null, null, bo, createdDate, completedDate, null, null, localMessages);
     			for (CirmMessage lm : localMessages) 
     			{
   					lm.addExplanation("createDefaultActivities T: " + serviceCaseType.getIRI().getFragment());
@@ -218,7 +218,7 @@ public class ActivityManager
 					Date completedDate = null;
     				OWLNamedIndividual outcome = null; 
         			List<CirmMessage> localMessages = new ArrayList<CirmMessage>();
-        			createActivity(activityType, outcome, null, null, bo, createdDate, completedDate, null, localMessages);
+        			createActivity(activityType, outcome, null, null, bo, createdDate, completedDate, null, null, localMessages);
         			for (CirmMessage lm : localMessages) 
         			{
        					lm.addExplanation("createAutoOnPendingActivities T: " + srTypeInd.getIRI().getFragment());
@@ -254,7 +254,7 @@ public class ActivityManager
     				Date completedDate = null;
     				OWLNamedIndividual outcome = null; 
         			List<CirmMessage> localMessages = new ArrayList<CirmMessage>();
-        			createActivity(activityType, outcome, null, null, bo, createdDate, completedDate, null, localMessages);
+        			createActivity(activityType, outcome, null, null, bo, createdDate, completedDate, null, null, localMessages);
         			for (CirmMessage lm : localMessages) 
         			{
         				lm.addExplanation("createAutoOnLockedActivities T: " + srTypeInd.getIRI().getFragment());
@@ -278,7 +278,7 @@ public class ActivityManager
 	 * @param messages
 	 */
 	public void createActivityOccurNow(OWLNamedIndividual activityType, BOntology bo, List<CirmMessage> messages) {
-		createActivityImpl(activityType, null, null, null, bo, null, null, null, messages, true);
+		createActivityImpl(activityType, null, null, null, bo, null, null, null, null, messages, true);
 	}
 
 	/**
@@ -291,7 +291,7 @@ public class ActivityManager
 	 * @param createdBy
 	 * @param messages
 	 */
-	public void createActivity(OWLNamedIndividual activityType, String details, String isAssignedTo, BOntology bo, Date createdDate, String createdBy, List<CirmMessage> messages)
+	public void createActivity(OWLNamedIndividual activityType, String details, String isAssignedTo, BOntology bo, Date createdDate, String createdBy, Date dueDate, List<CirmMessage> messages)
 	{
 		//Don't set the defaultOutcome, first the activityType needs to be accepted by the Assignee!!
 //		Set<OWLNamedIndividual> outcomes = reasoner().getObjectPropertyValues(
@@ -301,7 +301,7 @@ public class ActivityManager
 //		if(outcomes.size() > 0)
 //			createActivity(activity, outcomes.iterator().next(), details, isAssignedTo, bo);
 //		else
-			createActivity(activityType, null, details, isAssignedTo, bo, createdDate, null, createdBy, messages);
+			createActivity(activityType, null, details, isAssignedTo, bo, createdDate, null, createdBy, dueDate, messages);
 	}
 	
 	
@@ -327,9 +327,10 @@ public class ActivityManager
 							   Date createdDate,
 							   Date completedDate,
 							   String createdBy,
+							   Date dueDate,
 							   List<CirmMessage> messages)
 	{
-		createActivityImpl(activityType, outcome, details, isAssignedTo, bo, createdDate, completedDate, createdBy, messages, false);
+		createActivityImpl(activityType, outcome, details, isAssignedTo, bo, createdDate, completedDate, createdBy, dueDate, messages, false);
 	}
 	
 	/**
@@ -355,6 +356,7 @@ public class ActivityManager
 							   Date createdDate,
 							   Date completedDate,
 							   String createdBy,
+							   Date customDueDate,
 							   List<CirmMessage> messages,
 							   boolean ignoreOccurDays)
 	{
@@ -424,6 +426,21 @@ public class ActivityManager
 						dataProperty("legacy:hasUpdatedDate"),serviceActivity, 
 						createdDateLiteral
 					));
+			if (customDueDate != null) {
+				if (suspenseDaysConfiguredValue <= 0 ) {
+				OWLLiteral customDueDateLiteral = factory.getOWLLiteral(DatatypeFactory.newInstance()
+						.newXMLGregorianCalendar((GregorianCalendar)calcreated)
+						.toXMLFormat()
+						,OWL2Datatype.XSD_DATE_TIME_STAMP);
+				manager.addAxiom(o,
+						factory.getOWLDataPropertyAssertionAxiom(
+							dataProperty("legacy:hasDueDate"),serviceActivity, 
+							customDueDateLiteral
+						));
+				} else {
+					System.err.println("Custom due date only allowed if no suspense configured. Ignored. Due date will be set based on suspense.");
+				}
+			}
 			if(details != null)
 			{
 				manager.addAxiom(o,factory.getOWLDataPropertyAssertionAxiom(
@@ -979,9 +996,9 @@ public class ActivityManager
 				}
 				List<CirmMessage> localMessages = new ArrayList<CirmMessage>();
 				if(outcomes.size() > 0)
-					createActivity(a, outcomes.iterator().next(), null, (dupStaff) ? assignedTo : null, bo, newActCreatedDate, null, ACTIVITY_AUTO, localMessages);
+					createActivity(a, outcomes.iterator().next(), null, (dupStaff) ? assignedTo : null, bo, newActCreatedDate, null, ACTIVITY_AUTO, null, localMessages);
 				else
-					createActivity(a, null, null, (dupStaff) ? assignedTo : null, bo, newActCreatedDate, null, ACTIVITY_AUTO, localMessages);
+					createActivity(a, null, null, (dupStaff) ? assignedTo : null, bo, newActCreatedDate, null, ACTIVITY_AUTO, null, localMessages);
 				for (CirmMessage lm : localMessages) 
 				{
 					lm.addExplanation("triggerActivityAssignments " + assignedTo 
@@ -1153,9 +1170,9 @@ public class ActivityManager
 						.getFlattened();
 				List<CirmMessage>localMessages = new ArrayList<CirmMessage>();
 				if(outcomes.size() > 0)
-					createActivity(a, outcomes.iterator().next(), details, null, bo, null, null, null, localMessages);
+					createActivity(a, outcomes.iterator().next(), details, null, bo, null, null, null, null, localMessages);
 				else
-					createActivity(a, null, details, null, bo, null, null, null, localMessages);
+					createActivity(a, null, details, null, bo, null, null, null, null, localMessages);
 				for (CirmMessage lm : localMessages) 
 				{
 					lm.addExplanation("triggerActivityAssignmentsOnAnswer F:" + field.getIRI().getFragment() + " A:" + triggerAnswer.getIRI().getFragment()
@@ -1189,7 +1206,7 @@ public class ActivityManager
 			String oldStatusFragment = oldStatus.getIRI().getFragment();
 			details = oldStatusFragment == null? null : "Old: " + oldStatusFragment;
 		}
-		createActivity(statusChange, newStatus, details, null, bo, statusChangeDate, statusChangeDate, statusChangedBy, messages);
+		createActivity(statusChange, newStatus, details, null, bo, statusChangeDate, statusChangeDate, statusChangedBy, null, messages);
 	}
 	
 	/**
@@ -1526,5 +1543,5 @@ public class ActivityManager
 			}
 		} //outer while
 		return result;
-	}
+	}	
 }
