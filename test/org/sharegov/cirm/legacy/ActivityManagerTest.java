@@ -110,7 +110,7 @@ public class ActivityManagerTest
 		{
 			bo = BOntology.makeNewBusinessObject(c);			
 			List<CirmMessage> msgs = new ArrayList<CirmMessage>();
-			m.createActivity(OWL.individual("legacy:RAAM7_RAAMOD"), null, "Activity overdue", null, bo, null, null,null, msgs);
+			m.createActivity(OWL.individual("legacy:RAAM7_RAAMOD"), null, "Activity overdue", null, bo, null, null,null, null, msgs);
 			MessageManager.get().sendMessages(msgs);
 		}
 		catch (OWLOntologyCreationException e)
