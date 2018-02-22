@@ -3632,14 +3632,14 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
     }
     	
     function fetchSR(bo, model, isNew) {
-    	var type = bo.type;
+		var type = bo.type;		
 		if(type.indexOf("legacy:") == -1) {
 			type = "legacy:"+type;
 			bo.type = type;
 		}
-	    var srType = cirm.refs.serviceCases["http://www.miamidade.gov/cirm/legacy#" + type.split(":")[1]]; 
+		var nonPrefixType = type.split(":")[1];
+	    var srType = cirm.refs.serviceCases["http://www.miamidade.gov/cirm/legacy#" + nonPrefixType]; 
 	    console.log('type', srType);
-	    
 		if(srType.hasServiceCaseAlert && bo.boid == "") {
 			$("#sh_dialog_alert")[0].innerText = srType.hasServiceCaseAlert.label;
 			$("#sh_dialog_alert").dialog({ height: 500, width: 500, modal: true, buttons: {
@@ -3661,6 +3661,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 				approvalCheck(bo.properties().hasCaseNumber(), model);
 			}
 		}
+		//Trigger type change event for validation update now that type is defined
+		$(document).trigger(legacy.InteractionEvents.SrTypeSelection, [nonPrefixType]);
     }
     
 	/**
