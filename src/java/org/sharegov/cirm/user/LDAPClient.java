@@ -15,7 +15,6 @@
  ******************************************************************************/
 package org.sharegov.cirm.user;
 
-import java.util.Date;
 import java.util.Properties;
 import javax.naming.*;
 import javax.naming.directory.*;
@@ -25,22 +24,21 @@ import org.sharegov.cirm.utils.GenUtils;
 
 /**
  * Thread safe, self recovering Ldap client with limited functionality.
- * Keeps/pools one connection per caller thread and assumes a need to reconnect every 2 minutes.
- * Does NOT close connections after operations (which leads to undefined behavior if reused).
+ * Pool strategy is to keep one initial ldap context per client thread open and attempt 3x to recover on any error.
+ * Recovery means to remove ctx and try create a new one. 
+ * (If thread dies, java Ldap client's own finalize will closed & clean up.)
  * 
  * @author Thomas Hilpold
  *
  */
 public class LDAPClient {
-	
-	final ThreadLocal<LdapContextHolder> ldapContextsByThread = new ThreadLocal<LdapContextHolder>();
 
-	public final static long CONTEXT_TIMEOUT = 120 * 1000L; // Timeout and
-															// reconnect after 2
-															// minutes;
+	final ThreadLocal<LdapContext> ldapContextsByThread = new ThreadLocal<LdapContext>();
+
+	public final static int MAX_RETRY_CREATE = 3;
+	public final static int MAX_WAIT_MS = 300;
 
 	private final Properties params;
-	private volatile InitialLdapContext initCtx;
 
 	/// Class for short lived operation objects
 	private static abstract class Operation {
@@ -51,69 +49,83 @@ public class LDAPClient {
 		if (params == null)
 			throw new RuntimeException("LDAPClient created with null params.");
 		this.params = params;
-		init();
+		validateParams();
 	}
 
-	private LdapContextHolder getContextForThread() {
-		LdapContextHolder threadContextH = ldapContextsByThread.get();
+	private LdapContext getContextForThread() {
+		LdapContext threadContextH = ldapContextsByThread.get();
 		if (threadContextH == null) {
-			try {
-				synchronized (this) {
-					if (initCtx == null)
-						init();
-					if (initCtx == null)
-						throw new RuntimeException("LDAP down, we'll recover once it's back up.");
-					System.out.println("LDAP getting newInstance of context for" + Thread.currentThread());
-					LdapContext newCtx = initCtx.newInstance(null);
-					newCtx.reconnect(null);
-					threadContextH = new LdapContextHolder(newCtx);
-				}
-				ldapContextsByThread.set(threadContextH);
-			} catch (NamingException e) {
-				System.err.println("LDAP Failed to create context for thread: " + Thread.currentThread());
-				initCtx = null;
-				GenUtils.rethrowRuntime(e);
+			synchronized (this) {
+				System.out.println("LDAP getting newInstance of context for" + Thread.currentThread()
+						+ " for client: " + this.hashCode());
+				//Throws runtime on failure after multiple attempts.
+				threadContextH = tryCreateLdapCtx();
 			}
-		} else {
-			if (threadContextH.needsReconnect()) {
-				try {
-					threadContextH.getCtx().reconnect(null);
-					threadContextH.markConnectedNow();
-				} catch (NamingException e) {
-					System.err.println("LDAP Failed to reconnect for thread: " + Thread.currentThread());
-					GenUtils.rethrowRuntime(e);
-				}
-			}
+			ldapContextsByThread.set(threadContextH);
 		}
 		return threadContextH;
 	}
 
-	private synchronized void init() {
+	private synchronized void validateParams() {
+		System.out.println("LDAP INIT " + this.hashCode());
 		try {
-			initCtx = new InitialLdapContext(params, null);
+			InitialLdapContext initCtx = tryCreateLdapCtx();
+			initCtx.close();
 		} catch (NamingException e) {
 			System.err.println("LDAP Could not initialize initial context with parameters: " + params);
 			e.printStackTrace();
-			initCtx = null;
+			GenUtils.rethrowRuntime(e);
 		}
 	}
 
+	private InitialLdapContext tryCreateLdapCtx() {
+		InitialLdapContext c ;
+		int attempts = 0;
+		do {
+    		attempts ++;
+    		try {
+    			c = new InitialLdapContext(params, null);
+    		} catch (NamingException e) {
+				c = null;
+    			if (attempts < MAX_RETRY_CREATE) {    				
+    				System.err.println("Failed to create LDAP context " + attempts + "/" + MAX_RETRY_CREATE + " Exc: " + e);
+    				try {
+						Thread.sleep(attempts * MAX_WAIT_MS / MAX_RETRY_CREATE);
+					} catch (InterruptedException e1) {
+					}
+    			} else {
+    				System.err.println("Failed to create LDAP context - giving up ");
+    				GenUtils.rethrowRuntime(e);
+    			}
+    		}
+		} while (c == null && attempts <= MAX_RETRY_CREATE);
+		return c;
+	}
+	
 	private Object exec(Operation op) {
-		LdapContextHolder ctxH = getContextForThread();
-		Object result = null;
-		try {
-			result = op.run(ctxH.getCtx());
-			ctxH.markConnectedNow();
-		} catch (NamingException e) {
-			System.err.println("LDAP ERROR on exec:" + e + " on " + Thread.currentThread());
-			ldapContextsByThread.remove();
-			GenUtils.rethrowRuntime(e);
-		} catch (Throwable e) {
-			System.err.println("NON LDAP ERROR on exec:" + e + " on " + Thread.currentThread());
-			ldapContextsByThread.remove();
-			GenUtils.rethrowRuntime(e);
+		Exception exc = null;
+		for (int i = 0; i < 2; i ++) {
+			LdapContext ctx = getContextForThread();
+			Object result = null;
+			try {
+				result = op.run(ctx);
+				//exit on success
+				return result;
+			} catch (Exception e) {
+				exc = e;
+				//remove and getCtx will attempt recreate on one retry
+				//then throw without ctx on thread to recreate ctx on next user action.  
+				try {
+					ctx.close();
+				} catch (Exception ec) {
+					System.err.println("Non critical exception on close LDAP context: " + ec);
+				}
+				ldapContextsByThread.remove();		
+			}
 		}
-		return result;
+		System.err.println("ERROR on LDAP exec after retry:" + exc + " on " + Thread.currentThread());
+		GenUtils.rethrowRuntime(exc);
+		return null;
 	}
 
 	/**
@@ -182,48 +194,5 @@ public class LDAPClient {
 		System.err.println("LDAP Access Error: " + msg + "; stack trace may follow.");
 		if (t != null)
 			t.printStackTrace(System.err);
-	}
-
-	@Override
-	protected void finalize() throws Throwable {
-		super.finalize();
-		try {
-			if (initCtx != null)
-				initCtx.close();
-		} catch (Exception e) {
-			System.err.println("LDAP ERROR ON INITIAL CONTEXT CLOSE " + e);
-		}
-	}
-
-	/**
-	 * Holds context and last successful connect time by thread. <br>
-	 * Not thread safe.
-	 * 
-	 * @author Thomas Hilpold
-	 */
-	private static class LdapContextHolder {
-		private LdapContext ctx;
-		private Date lastUsed;
-
-		LdapContextHolder(LdapContext ctx) {
-			if (ctx == null)
-				throw new NullPointerException("ctx null not allowed.");
-			this.ctx = ctx;
-			this.lastUsed = new Date();
-		}
-
-		private LdapContext getCtx() {
-			return ctx;
-		}
-
-		private void markConnectedNow() {
-			lastUsed = new Date();
-		}
-
-		private boolean needsReconnect() {
-			Date now = new Date();
-			Date check = new Date(lastUsed.getTime() + CONTEXT_TIMEOUT);
-			return now.after(check);
-		}
 	}
 }
