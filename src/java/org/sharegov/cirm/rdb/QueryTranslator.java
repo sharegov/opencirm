@@ -74,7 +74,7 @@ public class QueryTranslator
 	/**
 	 * Triggers output of incoming JSON, resulting SQL and actual parameters.
 	 */
-	public static boolean DBG = true;
+	public static boolean DBG = false;
 	public static Pattern FUNCTIONS_PATTERN;
 	public static Pattern OPERATORS_PATTERN;
 
