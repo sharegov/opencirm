@@ -66,7 +66,7 @@ import org.sharegov.cirm.Refs;
  * 
  * @see legacy.js to learn about the JSON format or set DBG to true and submit search queryies.
  *   
- * @author SABBAS, PhaniUpadrasta, hilpold (answer search)
+ * @author SABBAS, PhaniUpadrasta, Thomas Hilpold (answer search, search by email (iri as string mapped))
  */
 public class QueryTranslator
 {
@@ -74,7 +74,7 @@ public class QueryTranslator
 	/**
 	 * Triggers output of incoming JSON, resulting SQL and actual parameters.
 	 */
-	public static boolean DBG = false;
+	public static boolean DBG = true;
 	public static Pattern FUNCTIONS_PATTERN;
 	public static Pattern OPERATORS_PATTERN;
 
@@ -808,6 +808,30 @@ public class QueryTranslator
 		statement.getTypes().add(individual(datatype.getIRI()));
 	}
 	
+	/**
+	 * See mapping hasEmailAddress storeIRI_asString true
+	 */
+	private void buildMappedIriAsStringQuery(Sql select, Statement statement, String mappedPropTable, Map<OWLProperty<?, ?>, OWLNamedIndividual> columns, String key, Json value, 
+				boolean caseSensitive, Integer i)
+	{
+		
+		String mappedPropColumn = columns.get(objectProperty(fullIri(key))).getIRI().getFragment();
+		String iriAsStringValue = value.at("iri").asString();
+		select.JOIN(TABLE_IRI +" "+TABLE_IRI+i).ON(mappedPropColumn, TABLE_IRI+i+".ID");
+		select.AND();
+		if (caseSensitive) {
+			select.WHERE(TABLE_IRI+i +".IRI").EQUALS("?");
+		} else {
+			select.WHERE("UPPER(" + TABLE_IRI+i +".IRI)").EQUALS("UPPER(?)");			
+		}
+		
+		if (iriAsStringValue != null) {
+			iriAsStringValue = iriAsStringValue.trim();
+		}
+		statement.getParameters().add(iriAsStringValue);
+		statement.getTypes().add(individual(fullIri(Concepts.VARCHAR)));
+	}
+	
 	private void buildMappedDataQuery(Sql select, Statement statement, 
 										Map<OWLProperty<?, ?>, OWLNamedIndividual> columns,
 										String key, Json value,
@@ -989,7 +1013,14 @@ public class QueryTranslator
 					else if(ont.isDeclared(objectProperty(fullIri(objproperty.getKey())), true))
 					{
 						if(objproperty.getValue().isObject()) {
-							if(objproperty.getValue().at("type") != null) 
+							//See hasEmailAddress
+							Set<OWLLiteral> storeIRIasString = reasoner().getDataPropertyValues(individual(objproperty.getKey()), dataProperty("storeIRI_asString"));
+							if(!storeIRIasString.isEmpty() && storeIRIasString.iterator().next().getLiteral().equals("true")) 
+							{
+								//See hasEmailAddress
+								buildMappedIriAsStringQuery(select, statement, innerTable, columns, objproperty.getKey(), objproperty.getValue(), caseSensitive, ++i);
+							}
+							else if (objproperty.getValue().at("type") != null) 
 							{
 								buildInnerObjectQuery(ont, select, statement, objproperty.getKey(), 
 										objproperty.getValue(), identifiers, datatypes, table, caseSensitive, ++i);
@@ -1402,6 +1433,10 @@ public class QueryTranslator
 					sql.PAGINATION(column, values[0]);
 				else
 					sql.PAGINATION(getColumn(datatype, i), values[0]);
+				break;
+			}
+			default: {
+				System.err.println("Query translator: Not understood " + o);
 				break;
 			}
 		}
