@@ -709,6 +709,115 @@
         },
         "mdc:hasUsername": {
           "$ref": "#/definitions/mdc:username"
+        },
+		"legacy:hasAssignmentRule": {
+			"$ref": "#/definitions/legacy:AssignmentRuleNested"
+		}
+      }
+    },
+	"legacy:AssignmentRuleNested": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/reference"
+        },
+        {
+          "$ref": "#/definitions/legacy:AssignmentRuleObject"
+        },
+        {
+          "$ref": "#/definitions/legacy:ListOfAssignmentRuleObject"
+        }
+      ]
+    },
+    "legacy:ListOfAssignmentRuleObject": {
+      "items": {
+        "type": "object",
+        "oneOf": [
+          {
+            "$ref": "#/definitions/reference"
+          },
+          {
+            "$ref": "#/definitions/legacy:AssignmentRuleObject"
+          }
+        ]
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "legacy:AssignmentRuleObject": {
+      "type": "object",
+      "properties": {
+        "rdfs:label": {
+          "$ref": "#/definitions/rdfs:label"
+        },
+        "mdc:hasName": {
+          "$ref": "#/definitions/mdc:name"
+        },
+        "mdc:hasUsername": {
+          "$ref": "#/definitions/mdc:username"
+        },
+        "mdc:hasvalue": {
+          "$ref": "#/definitions/mdc:value"
+        },
+        "mdc:hasGisLayer": {
+          "$ref": "#/definitions/mdc:hasGisLayer"
+        },
+        "type": {
+          "enum": [
+            "legacy:GeoBasedUserAssignment"
+          ]
+        },
+        "iri": {
+          "$ref": "#/definitions/iri"
+        }
+      }
+    },
+	"mdc:hasGisLayer": {
+		"oneOf": [
+					{
+					  "$ref": "#/definitions/reference"
+					},
+					{
+					  "$ref": "#/definitions/mdc:GisLayerObject"
+					},
+					{
+					  "$ref": "#/definitions/mdc:ListOfGisLayerObject"
+					}
+				 ]
+	},
+    "mdc:ListOfGisLayerObject": {
+      "items": {
+        "type": "object",
+        "oneOf": [
+          {
+            "$ref": "#/definitions/reference"
+          },
+          {
+            "$ref": "#/definitions/mdc:GisLayerObject"
+          }
+        ]
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "mdc:GisLayerObject": {
+      "type": "object",
+      "properties": {
+        "rdfs:label": {
+          "$ref": "#/definitions/rdfs:label"
+        },
+        "mdc:hasName": {
+          "$ref": "#/definitions/mdc:name"
+        },
+        "mdc:hasUrl": {
+          "$ref": "#/definitions/mdc:url"
+        },
+        "type": {
+          "enum": [
+            "mdc:GeoLayer"
+          ]
+        },
+        "iri": {
+          "$ref": "#/definitions/iri"
         }
       }
     },
@@ -832,7 +941,16 @@
         }
       }
     },
+    "mdc:name": {
+      "type": "string"
+    },
     "mdc:username": {
+      "type": "string"
+    },
+    "mdc:value": {
+      "type": "string"
+    },
+    "mdc:url": {
       "type": "string"
     },
     "legacy:hasAnswer": {
