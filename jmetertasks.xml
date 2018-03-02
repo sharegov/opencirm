@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project basedir="." name="CiRM Services" default="make-dist">
+<project basedir="." name="CiRM Services" default="">
 	<description>CiRM Services Build and Deployment File</description>
     <property name="versionSuffix" value=""/> <!-- e.g. "beta" or "rc" -->
     <property name="opencirm" value="../opencirm"/>
