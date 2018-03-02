@@ -1893,7 +1893,8 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 				// TIME -> not currently supported
 				createdStartDate:"", "createdEndDate":"", "updatedStartDate":"", "updatedEndDate":"", "overdueDate":"",
 				"hasStatus":{"iri":undefined, "label":""},
-				"hasPriority":{"iri":undefined, "label":""},"name":"", "lastName":"", 
+				"hasPriority":{"iri":undefined, "label":""},
+				"name":"", "lastName":"", "email":"", "cellPhone":"", //Actor
 				"atAddress":{
 					"fullAddress":"", "municipality":"", 
 					Street_Address_City:{"iri":"", "label":"" }, 
@@ -2927,6 +2928,20 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 				self.misc.query()["legacy:hasServiceCaseActor"].LastName = self.searchCriteria.lastName();
 				self.misc.counter(self.misc.counter() + 1);
 			}
+			if(!U.isEmptyString(self.searchCriteria.email()))
+			{
+				if(self.misc.query()["legacy:hasServiceCaseActor"] === undefined)
+					self.misc.query()["legacy:hasServiceCaseActor"] = {"type":"legacy:ServiceCaseActor"};
+				self.misc.query()["legacy:hasServiceCaseActor"].hasEmailAddress = { "iri":"mailto:"+self.searchCriteria.email()};
+				self.misc.counter(self.misc.counter() + 1);
+			}
+			if(!U.isEmptyString(self.searchCriteria.cellPhone()))
+			{
+				if(self.misc.query()["legacy:hasServiceCaseActor"] === undefined)
+					self.misc.query()["legacy:hasServiceCaseActor"] = {"type":"legacy:ServiceCaseActor"};
+				self.misc.query()["legacy:hasServiceCaseActor"].CellPhoneNumber = self.searchCriteria.cellPhone();
+				self.misc.counter(self.misc.counter() + 1);
+			}
 			if(!U.isEmptyString(self.searchCriteria.geoLayerAttr().iri()))
 			{
 				self.misc.query().hasGeoPropertySet = {"type":"GeoPropertySet"};
@@ -3194,6 +3209,8 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 			self.searchCriteria.modifiedBy("");
 			self.searchCriteria.name("");
 			self.searchCriteria.lastName("");
+			self.searchCriteria.email("");
+			self.searchCriteria.cellPhone("");
 			self.searchCriteria.geoLayerAttr().iri(undefined);
 			self.searchCriteria.geoLayerAreaSearchValue("");
 			self.misc.metaData().columns(8);
