@@ -795,6 +795,34 @@ public class ServiceCaseAdmin extends RestService {
 		
 	}
 	
+	/**
+	 * Removes an existing individual from the ontology.
+	 * 
+	 */
+	@DELETE
+	@Path("ontology/remove/{individualFragment}")
+	public Response removeIndividual(@PathParam("individualFragment") String individualFragment,  @QueryParam ("userName") String userName, @QueryParam ("comment") String comment)
+	{			
+		try
+		{ 
+			if (userName == null || userName.isEmpty()) throw new IllegalArgumentException("username null or empty");
+			if (individualFragment == null || individualFragment.isEmpty()) throw new IllegalArgumentException("Individual Fragment null or empty");		
+			
+			return Response.ok(ServiceCaseManager.getInstance().removeObjectOnto(individualFragment, userName, comment), MediaType.APPLICATION_JSON).build();
+		}
+		catch(Exception e){
+			ThreadLocalStopwatch.now("Error found Removing Individual.");
+			
+			e.printStackTrace();
+			return Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(Json.object().set("error", e.getClass().getName())
+							.set("message", e.getMessage())).build();
+		}
+		
+	}
+	
 	// create a copy of the individual {individualID} on the ontology identified under newID
 
 	

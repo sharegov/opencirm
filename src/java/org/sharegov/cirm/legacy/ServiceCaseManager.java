@@ -1485,7 +1485,7 @@ public class ServiceCaseManager extends OntoAdmin {
 			if (oldAlert.isObject() && oldAlert.has("iri")){
 				OWLNamedIndividual ind = OWL.individual(oldAlert.at("iri").asString());
 				evictionList.add(ind.getIRI().getFragment());
-				changes = MetaOntology.getRemoveAllPropertiesIndividualChanges(ind);
+				changes = MetaOntology.getRemoveAllIndividualChanges(ind);
 			} else throw new IllegalArgumentException("No alert for individual " + PREFIX + individualID);
 			
 			String comment = "Delete Alert Message for SR "+ PREFIX + individualID + " - " + getIndividualLabel(individualID);	
@@ -1676,6 +1676,45 @@ public class ServiceCaseManager extends OntoAdmin {
 		} throw new IllegalArgumentException("Cannot add new object: "+ PREFIX +  individualID + " to the ontology.");	
  	
 	}
+
+	public Json removeObjectOnto (String individualFullID, String userName, String comment){	
+		String individualID = MetaOntology.getIndividualIdentifier(individualFullID);
+		
+		List<String> evictionList = new ArrayList<String>();
+		evictionList.add(individualID);		
+		
+		boolean r = false;
+		
+		OwlRepo repo = getRepo();
+		synchronized (repo) {
+			repo.ensurePeerStarted();		
+			
+			List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+						
+			ThreadLocalStopwatch.now("---- Start Creating Removal Changes for individual: " + individualFullID);
+			
+			changes.addAll(MetaOntology.getRemoveIndividualAllObjectChanges(individualFullID));
+			
+			changes = MetaOntology.clearChanges(changes);
+			
+			ThreadLocalStopwatch.now("---- Ended Creating Removal Changes for individual: " + individualFullID);
+			
+			ThreadLocalStopwatch.now("---- Start Commiting Changes.");
+			
+			r = commit(userName, comment, changes);
+			
+			ThreadLocalStopwatch.now("---- Ended Commiting Changes.");	
+							
+		}
+		
+		if (r){
+			registerChange(individualID);
+			clearCache(evictionList);
+			return Json.object().set("success", true);
+		} throw new IllegalArgumentException("Cannot remove object: "+ individualFullID + " to the ontology.");	
+ 	
+	}
+	
 	
 	public Json cloneObjectOnto (String sourceID, String newID, String userName, String comment){	
 		Json data = MetaOntology.cloneSerializedIndividual(sourceID, newID);

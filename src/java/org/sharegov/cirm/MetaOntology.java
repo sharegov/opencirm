@@ -260,6 +260,21 @@ public class MetaOntology
 		return result;
 	}
 	
+	public static List<OWLOntologyChange> getRemoveIndividualAllObjectChanges (String individualID){
+		OWLOntology O = OWL.ontology();
+		String ontologyIri = Refs.defaultOntologyIRI.resolve();
+
+		if (O == null) {
+			throw new RuntimeException("Ontology not found: " + ontologyIri);
+		}
+		
+		OWLOntologyManager manager = OWL.manager();
+		OWLDataFactory factory = manager.getOWLDataFactory();
+		OWLIndividual individual = factory.getOWLNamedIndividual(MetaOntology.getFullIri(individualID)); 
+		
+		return getRemoveAllIndividualChanges (individual);		
+	}
+	
 	public static List<OWLOntologyChange> getRemoveIndividualObjectPropertyChanges (String individualID){
 		OWLOntology O = OWL.ontology();
 		String ontologyIri = Refs.defaultOntologyIRI.resolve();
@@ -458,7 +473,7 @@ public class MetaOntology
 		OWLIndividual newInd = factory.getOWLNamedIndividual(MetaOntology.getFullIri(PREFIX + newData.at("iri").asString())); 
 		OWLIndividual oldInd = factory.getOWLNamedIndividual(MetaOntology.getFullIri(PREFIX + oldData.at("iri").asString())); 
 		
-		List<OWLOntologyChange> result = getRemoveAllPropertiesIndividualChanges (oldInd);
+		List<OWLOntologyChange> result = getRemoveAllIndividualChanges (oldInd);
 		
 		result.addAll(makeObjectIndividual (newInd, newData, O, manager, factory));
 		
@@ -548,7 +563,7 @@ public class MetaOntology
 		return changes;
 	}
 	
-	public static List<OWLOntologyChange> getRemoveAllPropertiesIndividualChanges (OWLIndividual individual){
+	public static List<OWLOntologyChange> getRemoveAllIndividualChanges (OWLIndividual individual){
 		List<OWLOntologyChange> L = new ArrayList<OWLOntologyChange>();
 		
 		for (OWLOntology O: OWL.ontologies()){		
