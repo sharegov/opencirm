@@ -10,6 +10,7 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
@@ -189,6 +190,8 @@ import mjson.Json;
 					break;
 				case "ClassAssertion": decomposeClassAssertionAxiom(result, signature);
 					break;
+				case "Declaration": decomposeDeclarationAxiom(result, signature);
+					break;
 				default: throw new RuntimeException("Unknown Axiom Type: " + axiomType);
 			}
 			
@@ -237,6 +240,11 @@ import mjson.Json;
 			obj.set("xsdType", valueComponents[1]);
 		}
 		
+		private void decomposeDeclarationAxiom (Json obj, String signature){
+			String individual = signature.replace("NamedIndividual(<", "").replace(">)", "");
+			obj.set("individual", individual);
+		}
+		
 		private void decomposeClassAssertionAxiom (Json obj, String signature){
 			signature = signature.replaceAll("> ", ">%%");
 			String[] signatureComponents = signature.split("%%");
@@ -260,6 +268,7 @@ import mjson.Json;
 					case "ObjectPropertyAssertion": return buildObjectPropertyAssertionAxiom(ax, O, factory);
 					case "AnnotationAssertion": return buildAnnotationAssertionAxiom(ax, O, factory);
 					case "ClassAssertion": return buildClassAssertionAxiom(ax, O, factory);
+					case "Declaration": return buildDeclarationAxiom(ax, O, factory);
 					default: throw new RuntimeException("Unknown Axiom Type: " + ax.at("type").asString());
 				}
 			} else {
@@ -308,6 +317,17 @@ import mjson.Json;
 			    return factory.getOWLAnnotationAssertionAxiom(IRI.create(ax.at("individual").asString()), 
 														      factory.getOWLAnnotation(OWL.annotationProperty(ax.at("property").asString()), 
 														      factory.getOWLLiteral(ax.at("value").asString())));
+			} else {
+				throw new RuntimeException("Invalid Ontology Change structure.");
+			}	
+		}
+		
+		private OWLAxiom buildDeclarationAxiom(Json ax, OWLOntology O, OWLDataFactory factory){
+			if (ax.has("individual")){
+				OWLIndividual individual = OWL.individual(IRI.create(ax.at("individual").asString()));
+				
+				return factory.getOWLDeclarationAxiom((OWLEntity)individual);
+				
 			} else {
 				throw new RuntimeException("Invalid Ontology Change structure.");
 			}	
