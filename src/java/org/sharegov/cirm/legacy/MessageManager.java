@@ -83,6 +83,7 @@ import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.rest.LegacyEmulator;
 import org.sharegov.cirm.utils.MessageTemplateUtil;
 import org.sharegov.cirm.utils.NotificationPreference;
+import org.sharegov.cirm.utils.SrJsonSorter;
 import org.sharegov.cirm.utils.SrJsonUtil;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 import org.sharegov.cirm.utils.xpath.Context;
@@ -171,8 +172,8 @@ public class MessageManager
 	/**
 	 * Used when to-field has no addresses to avoid exception.
 	 */
-	public static final String DEFAULT_TO_ADDRESS = "hilpold@miamidade.gov;sanchoo@miamidade.gov;chirino@miamidade.gov";
-	public static final String DEFAULT_TO_CELLPHONE = "7869732464;9543001632";
+	public static final String DEFAULT_TO_ADDRESS = "hilpold@miamidade.gov;sanchoo@miamidade.gov";
+	public static final String DEFAULT_TO_CELLPHONE = "9543001632";
 	public static final String SR_DOM_ROOT_NODE = "sr";
 	public static final Pattern VAR_NAME_PATTERN = Pattern.compile("\\$\\$(.*?)\\$\\$");
 	public static Logger logger = Refs.logger.resolve();
@@ -710,6 +711,8 @@ public class MessageManager
 			OWLNamedIndividual boInd = o.getBusinessObject();
 			String boIndID = o.getObjectId();
 			Json sr = OWL.toJSON(o.getOntology(), boInd);
+			SrJsonSorter sorter = new SrJsonSorter();
+			sorter.sortSr(sr);
 			sr.set("boid", boIndID);
 			msg = createMimeMessage(sr, emailTemplate, subject, to, cc, bcc, comments);
 		}
