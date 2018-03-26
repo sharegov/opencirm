@@ -673,7 +673,7 @@ public class CityOfMiamiClient extends RestService
     			+ " message " 
     			+ cityReponse.getCityProcessMessage());
     			MessageManager.get().sendEmail("cirm@miamidade.gov", 
-					"hilpold@miamidade.gov;chirino@miamidade.gov;ioliva@miamigov.com;VOchoa@miamigov.com;angel.martin@miamidade.gov;silval@miamidade.gov;imarp@miamidade.gov", 
+					"hilpold@miamidade.gov;ioliva@miamigov.com;VOchoa@miamigov.com;silval@miamidade.gov;imarp@miamidade.gov", 
 					"[COM CASE REJECTED] " + cirmCaseNumber, cityReponse.getCityProcessMessage());
     		}
 
@@ -748,7 +748,7 @@ public class CityOfMiamiClient extends RestService
 			if (initiatedAt + 60*60*1000 > System.currentTimeMillis() && GenUtils.getRootCause(ex) instanceof java.net.SocketException)
 				// TODO : remove hardcoded email
 		    	MessageManager.get().sendEmail("cirm@miamidade.gov", 
-						"ioliva@miamigov.com;hilpold@miamidade.gov;chirino@miamidade.gov", 
+						"ioliva@miamigov.com;hilpold@miamidade.gov", 
 						"CityView web service seems down", "We've trying to contact web service at  " + serviceDescription.at("hasEndPoint") + 
 						" for an hour and connection fails repeatedly.");			
 				

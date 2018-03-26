@@ -170,9 +170,14 @@ public class QuickQuery {
 //	public static String[] PROPS = new String[] { "iri", "label" };
 	
 	//20 NUMBER
-	public static String DLQUERY = "legacy:hasDataType value \"NUMBER\"";
-	public static String[] PROPS = new String[] { "iri", "label" };
-//	//
+	//public static String DLQUERY = "legacy:hasDataType value \"NUMBER\"";
+	//public static String[] PROPS = new String[] { "iri", "label" };
+	
+	
+	//21 Servicecase with address validation disabled
+	public static String DLQUERY = "legacy:ServiceCase and legacy:hasValidLocationNotRequired value true ";
+	public static String[] PROPS = new String[] { "iri", "label", "hasJurisdictionCode", "hasValidLocationNotRequired", "isDisabled", "isDisabledCreate", "providedBy.label"};
+
 
 	public static String[] VAR3 = new String[]
 	{
