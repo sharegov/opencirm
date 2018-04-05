@@ -73,7 +73,118 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
             resetServiceHubToSRMain:"resetServiceHubToSRMain",
             StandardizeStreetRequest:"StandardizeStreetRequest"
     };
-
+    
+    //
+    // Recent Srs By Address
+    //
+    function RecentSrsByAddressModel() {
+        var self = this; 
+        self.pending = ko.observable(true);
+        self.recentSrs = ko.observableArray();        
+        self.totalSrs = ko.observable(0);        
+        self.lastFullAddressStr = "";
+        self.lastZip_CodeStr = "";
+        
+        //Helpers
+        self.address2query = function (fullAddressStr, Zip_CodeStr) {
+        	if (!fullAddressStr || !Zip_CodeStr) return null;
+        	var queryObj = {
+        			  "type": "legacy:ServiceCase",
+        			  "atAddress": {
+        			    "type": "Street_Address",
+        			    "fullAddress": "INVALID FULLADDRESS",
+        			    "Zip_Code": "33000"
+        			  },
+        			  "caseSensitive": false,
+        			  "currentPage": 1,
+        			  "itemsPerPage": 5,
+        			  "sortBy": "legacy:hasCaseNumber",
+        			  "sortDirection": "desc"
+        			};
+        	queryObj.atAddress.fullAddress = fullAddressStr;
+        	queryObj.atAddress.Zip_Code = Zip_CodeStr;
+        	return queryObj;
+        }
+        
+		//SR click in RecentSrsByAddress
+		self.populateSH = function(el) {
+			$("#populate_legacy_dialog_alert").dialog({ height: 150, width: 300, modal: true, buttons: {
+				"View Service Request" : function() {
+					$(document).trigger(InteractionEvents.populateSH, [el.boid]);
+					$("#populate_legacy_dialog_alert").dialog('close');					
+					$(document).trigger(InteractionEvents.showServiceHub, []);
+					$(document).trigger(InteractionEvents.resetServiceHubToSRMain, []);
+				},
+				"View Report" : function() {
+					$("#populate_legacy_dialog_alert").dialog('close');
+					U.download("/legacy/printView", {boid:el.boid}, true);
+				},
+				"Close": function() {
+				  	$("#populate_legacy_dialog_alert").dialog('close');
+				}
+			  } 
+			});
+		};
+        
+        //Core functions
+        self.cirmAdvSearchAsyncUpdateResultsArray = function (query) {
+            cirm.top.async().postObject('/legacy/advSearch', query, function(r) {
+            	self.recentSrs([]);
+            	self.totalSrs(r.totalRecords);
+            	$.each(r.resultsArray, function(index, record) {
+            		//Desc order ok in general but page returned is ascending...needs unshift
+            		self.recentSrs.unshift(record);
+            	});
+            	self.pending(false);
+            });
+        }
+        
+        self.addressValidatedNow = function (fullAddressStr, Zip_CodeStr) { 
+        	if (self.lastFullAddressStr == fullAddressStr && self.lastZip_CodeStr == Zip_CodeStr) {
+        		return;
+        	}
+        	self.pending(true);
+        	var query = self.address2query(fullAddressStr, Zip_CodeStr);
+        	if (query != null) {
+            	self.cirmAdvSearchAsyncUpdateResultsArray(query);
+        		self.lastFullAddressStr = fullAddressStr;
+        		self.lastZip_CodeStr = Zip_CodeStr;
+        	}
+        }
+        
+		$(document).bind(InteractionEvents.AddressValidated, function(event, address) {
+		     if (!address || !address.fullAddress() || !address.zip()) {
+		             return;
+		     }
+		     self.addressValidatedNow(address.fullAddress(), address.zip());
+			
+		});
+        return self;
+    }
+    
+    var recentSrsByAddressModel = null;
+    function getRecentSrsByAddressModel() { 
+        if (recentSrsByAddressModel == null) {
+        	recentSrsByAddressModel = new RecentSrsByAddressModel();
+        }
+        return recentSrsByAddressModel;
+    }
+    
+    function recentSrsByAddress() {
+        var self = {};
+        self.dom = $.tmpl($('#recentSrsByAddressTemplate', legacyTemplates))[0];
+        self.model = getRecentSrsByAddressModel();
+        self.embed = function(parent) {
+            ko.applyBindings(self.model, self.dom);
+              $(parent).append(self.dom);
+              return self;
+        }
+        return self;
+    }
+    
+    //
+    // Deprecated Service Call Model
+    //
     function ServiceCallModel() {
         var self = this; 
         self.callOngoing = ko.observable(false);
@@ -203,7 +314,10 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
         }        
         return self;
     }
-
+    
+    //
+    // Marquee Messages
+    //
     function getMarqueeMessages() {
         var messages = ko.observableArray();
         //var config = cirm.op.get('/individual/AnswerHubMarqueeList');        
@@ -3350,6 +3464,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
     }
     
     var M = {
+    	recentSrsByAddress: recentSrsByAddress,
         interactionHistory: interactionHistory,
         marquee:marquee,
         marqueeAdmin:marqueeAdmin,
