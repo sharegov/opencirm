@@ -4263,8 +4263,10 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
         self.embed = function(parent) {
             $(parent).append(self.markup);
             
-            var ihist = legacy.interactionHistory(); 
-		    ihist.embed($('#callInteractionContainer',self.markup));	
+            //var ihist = legacy.interactionHistory(); 
+		    //ihist.embed($('#callInteractionContainer',self.markup));	
+            var recentSrsByA = legacy.recentSrsByAddress();
+            recentSrsByA.embed($('#callInteractionContainer',self.markup));
         }        
 
         // Menu switch on SR details, not sure if this 

@@ -884,8 +884,10 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 			self.model.topicSearch.searchKnowledgeBase(t.hasText());
 		}).embed($('#popularSearchContainer',self.markup));
 		    
-		    var ihist = legacy.interactionHistory(); 
-		    ihist.embed($('#callInteractionContainer',self.markup));	
+		    //var ihist = legacy.interactionHistory(); 
+		    //ihist.embed($('#callInteractionContainer',self.markup));	
+			var recentSrsByA = legacy.recentSrsByAddress();
+			recentSrsByA.embed($('#callInteractionContainer',self.markup));
 		    
 		}
 		
