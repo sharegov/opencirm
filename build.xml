@@ -158,6 +158,20 @@
       </copy>
     </sequential>
   </macrodef>
+	
+	<macrodef name="deployHtmlJs" description="Deploy UI only to server specified in the 'server' parameter">
+	    <attribute name="server"/>
+	    <sequential>
+	      <copy todir="\\@{server}\cirmservices\src\html">
+	        <fileset dir="${dist}\src\html">
+	        </fileset>
+	      </copy>
+	      <copy todir="\\@{server}\cirmservices\src\javascript">
+	        <fileset dir="${dist}\src\javascript">
+	        </fileset>
+	      </copy>
+	    </sequential>
+	  </macrodef>	
 
  <macrodef name="updateClients" description="Triggers a client update event on the server.">
 	   <attribute name="server"/>
@@ -215,6 +229,11 @@
      <deploy server="s0020284"/>
    </target>
 
+   <target name="deployHtmlJs-test" depends="make-dist" description="Deploy UI dist folders only to test server">
+		<deployHtmlJs server="s0020269"/>   
+	    <deployHtmlJs server="s0020284"/>
+	</target>
+	
    <target name="deploy-public" depends="make-dist" description="Deploy to public server">
      <deploy server="s0142012"/>
    </target>
@@ -247,7 +266,7 @@
      <deploy server="s2030059"/>
      <deploy server="s2030060"/>
    </target>
-	
+
    <target name="restart-prod" description="Restart all production servers one after the other.">
      <restart server="s2030050"/>
      <restart server="s2030051"/>
