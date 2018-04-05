@@ -3371,7 +3371,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 		    {title:'SR Customers', div:'sr_actors'}, 
 		    {title:'SR Activities', div:'sr_activities'}, 
 		    //{title:'SR Info', div:'sr_info'}, 
-		    {title:'Geo Info', div:'sr_geo_info'}, 
+		    {title:'GIS Info', div:'sr_geo_info'}, 
 		    //{title:'Attachments', div:'sr_images'}
 		    
 		    ];
