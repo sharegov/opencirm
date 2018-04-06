@@ -32,28 +32,34 @@
 
 
 <script id="recentSrsByAddressTemplate" type="text/x-jquery-tmpl">
-<div data-bind="if: !$root.pending() ">
+<div data-bind="if: !$root.noAddress()">
 <br/>
-At this Address:<br/>
-<table cellpadding="0" cellspacing="2" border="0" width="100%">
-	<tbody data-bind="foreach: $root.recentSrs">
-	<tr>
-		<td align="left" width="100%">
-			<a href="#" data-bind="event: {click: $root.populateSH}">
-				<small data-bind="text: hasCaseNumber"/></small> 								
-			</a>
-			<small data-bind="text: hasStatus"/></small><br/> 
-			<small data-bind="text: hasDateCreated"/></small><br/>
-			<small data-bind="text: label"/></small><br/>
-		</td>
-	</tr>
-	</tbody>
-</table>
-<div  data-bind="if: $root.recentSrs().length > 0 ">
-	<label data-bind="text: $root.recentSrs().length"/> / </label><label data-bind="text: $root.totalSrs"/></label> SRs shown.
-</div>
-<div data-bind="if: $root.recentSrs().length == 0 ">
-	<label> No SRs found.</label>
+Location History:<br/>
+<div data-bind="if: !$root.pending()">
+	<table cellpadding="0" cellspacing="2" border="0" width="100%">
+		<tbody data-bind="foreach: $root.recentSrs">
+		<tr>
+			<td align="left" width="100%">
+				<a href="#" data-bind="event: {click: $root.populateSH}">
+					<small data-bind="text: hasCaseNumber"/></small> 								
+				</a>
+				<small data-bind="text: hasStatus"/></small><br/> 
+				<small data-bind="text: label"/></small><br/>
+				<!-- small data-bind="text: hasDateCreated"/></small><br/-->
+			</td>
+		</tr>
+		</tbody>
+	</table>
+	<div  data-bind="if: $root.recentSrs().length > 0 ">
+		<label data-bind="text: $root.recentSrs().length"/> / </label><label data-bind="text: $root.totalSrs"/></label> SRs shown.
+	</div>
+	<div data-bind="if: $root.recentSrs().length == 0 ">
+		<label> No SRs found.</label>
+	</div> 
+</div> <!-- end not pending -->
+<div data-bind="if: $root.pending()">
+<br/>
+updating...
 </div>
 </div>
 </script>

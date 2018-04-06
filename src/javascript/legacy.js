@@ -79,12 +79,23 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
     //
     function RecentSrsByAddressModel() {
         var self = this; 
-        self.pending = ko.observable(true);
+        self.noAddress = ko.observable(true);
+        self.pending = ko.observable(false);
         self.recentSrs = ko.observableArray();        
         self.totalSrs = ko.observable(0);        
         self.lastFullAddressStr = "";
         self.lastZip_CodeStr = "";
         
+        self.reset = function() {
+        	//noAddress true also cancels async call result update
+		    self.noAddress(true)
+        	self.pending(false);
+	        self.recentSrs([]);
+	        self.totalSrs(0);
+	        self.lastFullAddressStr = "";
+	        self.lastZip_CodeStr = "";
+        }
+
         //Helpers
         self.address2query = function (fullAddressStr, Zip_CodeStr) {
         	if (!fullAddressStr || !Zip_CodeStr) return null;
@@ -129,12 +140,14 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
         //Core functions
         self.cirmAdvSearchAsyncUpdateResultsArray = function (query) {
             cirm.top.async().postObject('/legacy/advSearch', query, function(r) {
-            	self.recentSrs([]);
-            	self.totalSrs(r.totalRecords);
-            	$.each(r.resultsArray, function(index, record) {
-            		//Desc order ok in general but page returned is ascending...needs unshift
-            		self.recentSrs.unshift(record);
-            	});
+            	if (!self.noAddress()) {
+	            	self.recentSrs([]);
+	            	self.totalSrs(r.totalRecords);
+	            	$.each(r.resultsArray, function(index, record) {
+	            		//Desc order ok in general but page returned is ascending...needs unshift
+	            		self.recentSrs.unshift(record);
+	            	});
+            	}
             	self.pending(false);
             });
         }
@@ -143,6 +156,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
         	if (self.lastFullAddressStr == fullAddressStr && self.lastZip_CodeStr == Zip_CodeStr) {
         		return;
         	}
+        	self.noAddress(false);
         	self.pending(true);
         	var query = self.address2query(fullAddressStr, Zip_CodeStr);
         	if (query != null) {
@@ -159,7 +173,13 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 		     self.addressValidatedNow(address.fullAddress(), address.zip());
 			
 		});
+		//subscribe to AnswerHub and ServiceHub not Basic search address clear
+		$(document).bind(InteractionEvents.AddressClear, function(event, address) {
+		        self.reset();
+		});		
+        
         return self;
+
     }
     
     var recentSrsByAddressModel = null;
