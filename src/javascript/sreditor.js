@@ -538,8 +538,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 					self.addServiceQuestionExtenders(v);
             	});
 				// C) Extend email and Phone numbers of each Actor to check for validity
-				// FirstCitizen will require Name, LastName, email and cell iff Sr isCitizenRequired Property is true
-				// name/last/email are only enforced for new Srs (to not prevent updates of older Srs for now)
+				// FirstCitizen will require Name, LastName, and cell iff Sr isCitizenRequired Property is true
+				// name/last are only enforced for new Srs (to not prevent updates of older Srs for now)
 				// hilpold 3/17/18
 				var firstCitizen = self.getFirstCitizenActor(request.properties().hasServiceCaseActor());
 				$.each(request.properties().hasServiceCaseActor(), function(i,v) {
@@ -2434,10 +2434,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 				if (isFirstCitizenRequired){
 					el.Name.extend({ required: "Required" });
 					el.LastName.extend({ required: "Required" });
-					el.hasEmailAddress().label.extend({ email_required : ""});
-				} else {
-					el.hasEmailAddress().label.extend({ email_conditional : ""});
 				}
+				el.hasEmailAddress().label.extend({ email_conditional : ""});
     		} else {
 				el.hasEmailAddress().label.extend({ email : ""});
     		}
