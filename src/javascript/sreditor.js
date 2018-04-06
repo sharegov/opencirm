@@ -2487,7 +2487,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
     	self.isCustomerLocked = function() {
 			if(self.isLockedStatus())
 			{
-    			if(self.isPWWMCase())
+    			if(self.isSWMCaseType())
     				return false;
     			else
     				return true;
@@ -2557,18 +2557,12 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			}
     	};
     	
-    	self.isPWWMCase = function() {
-    		if(self.srType().providedBy)
-    		{
-    			if(self.srType().providedBy.hasParentAgency && self.srType().providedBy.hasParentAgency.indexOf('Public_Works_Waste_Management') > 0)
-    				return true;
-    			else if(self.srType().providedBy.Department && self.srType().providedBy.Department.indexOf('Public_Works_Waste_Management') > 0)
-    				return true;
-    			else
-    				return false;
-    		}
-    		else
+    	self.isSWMCaseType = function() {
+    		if(self.srType().providedBy && self.srType().providedBy.iri) {
+    			return (self.srType().providedBy.iri.indexOf('#Solid_Waste_Management') > 0);
+    		} else {
     			return false;
+    		}
 		};
 		
 		self.isCitizenRequiredForSR = function() {
@@ -2598,7 +2592,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 	    					return true;
 		    			}
 		    			//if PW/WM SR then show 'SWM Urgent Notification' Activity
-		    			else if(self.isPWWMCase() && v.hasLegacyCode && v.hasLegacyCode == "SWMURGN") {
+		    			else if(self.isSWMCaseType() && v.hasLegacyCode && v.hasLegacyCode == "SWMURGN") {
 	    					return true;
 		    			} else {
 		    				//Do not show activity
@@ -2875,7 +2869,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 							return false;
 					}
 	    			//Temp Fix : if PW/WM SR then 'SWM Urgent Notification'
-					else if(self.isPWWMCase() && el.hasLegacyCode && el.hasLegacyCode() == "SWMURGN")
+					else if(self.isSWMCaseType() && el.hasLegacyCode && el.hasLegacyCode() == "SWMURGN")
 					{
 						if(!U.isEmptyString(el.isAutoAssign()))
 							return true;
@@ -2919,7 +2913,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 							return false;
 					}
 					//Temp Fix : if PW/WM SR then 'SWM Urgent Notification'
-					else if(self.isPWWMCase() && el.hasLegacyCode && el.hasLegacyCode() == "SWMURGN")
+					else if(self.isSWMCaseType() && el.hasLegacyCode && el.hasLegacyCode() == "SWMURGN")
 					{
 	    				if(!U.isEmptyString(el.hasCompletedTimestamp()))
 	    					return true;
@@ -2986,8 +2980,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 					if(el.hasLegacyCode && el.hasLegacyCode() == "PERSCNTC" 
 							&& U.isEmptyString(el.hasCompletedTimestamp()))
 						return "OutcomeSelectTemplate";
-	    			//Temp Fix : if PW/WM SR then 'SWM Urgent Notification'
-					else if(self.isPWWMCase() && el.hasLegacyCode && el.hasLegacyCode() == "SWMURGN"
+	    			//Temp Fix : if SWM SR then 'SWM Urgent Notification'
+					else if(self.isSWMCaseType() && el.hasLegacyCode && el.hasLegacyCode() == "SWMURGN"
 							&& U.isEmptyString(el.hasCompletedTimestamp()))
 						return "OutcomeSelectTemplate";
 				}
