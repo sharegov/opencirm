@@ -538,8 +538,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 					self.addServiceQuestionExtenders(v);
             	});
 				// C) Extend email and Phone numbers of each Actor to check for validity
-				// FirstCitizen will require Name, LastName, email and cell iff Sr isCitizenRequired Property is true
-				// name/last/email are only enforced for new Srs (to not prevent updates of older Srs for now)
+				// FirstCitizen will require Name, LastName, and cell iff Sr isCitizenRequired Property is true
+				// name/last are only enforced for new Srs (to not prevent updates of older Srs for now)
 				// hilpold 3/17/18
 				var firstCitizen = self.getFirstCitizenActor(request.properties().hasServiceCaseActor());
 				$.each(request.properties().hasServiceCaseActor(), function(i,v) {
@@ -2434,10 +2434,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 				if (isFirstCitizenRequired){
 					el.Name.extend({ required: "Required" });
 					el.LastName.extend({ required: "Required" });
-					el.hasEmailAddress().label.extend({ email_required : ""});
-				} else {
-					el.hasEmailAddress().label.extend({ email_conditional : ""});
 				}
+				el.hasEmailAddress().label.extend({ email_conditional : ""});
     		} else {
 				el.hasEmailAddress().label.extend({ email : ""});
     		}
@@ -2487,7 +2485,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
     	self.isCustomerLocked = function() {
 			if(self.isLockedStatus())
 			{
-    			if(self.isPWWMCase())
+    			if(self.isSWMCaseType())
     				return false;
     			else
     				return true;
@@ -2557,18 +2555,12 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			}
     	};
     	
-    	self.isPWWMCase = function() {
-    		if(self.srType().providedBy)
-    		{
-    			if(self.srType().providedBy.hasParentAgency && self.srType().providedBy.hasParentAgency.indexOf('Public_Works_Waste_Management') > 0)
-    				return true;
-    			else if(self.srType().providedBy.Department && self.srType().providedBy.Department.indexOf('Public_Works_Waste_Management') > 0)
-    				return true;
-    			else
-    				return false;
-    		}
-    		else
+    	self.isSWMCaseType = function() {
+    		if(self.srType().providedBy && self.srType().providedBy.iri) {
+    			return (self.srType().providedBy.iri.indexOf('#Solid_Waste_Management') > 0);
+    		} else {
     			return false;
+    		}
 		};
 		
 		self.isCitizenRequiredForSR = function() {
@@ -2598,7 +2590,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 	    					return true;
 		    			}
 		    			//if PW/WM SR then show 'SWM Urgent Notification' Activity
-		    			else if(self.isPWWMCase() && v.hasLegacyCode && v.hasLegacyCode == "SWMURGN") {
+		    			else if(self.isSWMCaseType() && v.hasLegacyCode && v.hasLegacyCode == "SWMURGN") {
 	    					return true;
 		    			} else {
 		    				//Do not show activity
@@ -2875,7 +2867,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 							return false;
 					}
 	    			//Temp Fix : if PW/WM SR then 'SWM Urgent Notification'
-					else if(self.isPWWMCase() && el.hasLegacyCode && el.hasLegacyCode() == "SWMURGN")
+					else if(self.isSWMCaseType() && el.hasLegacyCode && el.hasLegacyCode() == "SWMURGN")
 					{
 						if(!U.isEmptyString(el.isAutoAssign()))
 							return true;
@@ -2919,7 +2911,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 							return false;
 					}
 					//Temp Fix : if PW/WM SR then 'SWM Urgent Notification'
-					else if(self.isPWWMCase() && el.hasLegacyCode && el.hasLegacyCode() == "SWMURGN")
+					else if(self.isSWMCaseType() && el.hasLegacyCode && el.hasLegacyCode() == "SWMURGN")
 					{
 	    				if(!U.isEmptyString(el.hasCompletedTimestamp()))
 	    					return true;
@@ -2986,8 +2978,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 					if(el.hasLegacyCode && el.hasLegacyCode() == "PERSCNTC" 
 							&& U.isEmptyString(el.hasCompletedTimestamp()))
 						return "OutcomeSelectTemplate";
-	    			//Temp Fix : if PW/WM SR then 'SWM Urgent Notification'
-					else if(self.isPWWMCase() && el.hasLegacyCode && el.hasLegacyCode() == "SWMURGN"
+	    			//Temp Fix : if SWM SR then 'SWM Urgent Notification'
+					else if(self.isSWMCaseType() && el.hasLegacyCode && el.hasLegacyCode() == "SWMURGN"
 							&& U.isEmptyString(el.hasCompletedTimestamp()))
 						return "OutcomeSelectTemplate";
 				}
