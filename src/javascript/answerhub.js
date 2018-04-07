@@ -886,7 +886,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 		    
 		    //var ihist = legacy.interactionHistory(); 
 		    //ihist.embed($('#callInteractionContainer',self.markup));	
-			var recentSrsByA = legacy.recentSrsByAddress();
+			var recentSrsByA = legacy.locationHistory();
 			recentSrsByA.embed($('#callInteractionContainer',self.markup));
 		    
 		}

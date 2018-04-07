@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 Miami-Dade County
+ * Copyright 2018 Miami-Dade County
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,27 +24,6 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
     
     var legacyTemplates = $(legacyHtml);
 
-    // Temporary before SR tagging are fixed in PKBI to use the new IDs from the legacy ontology
-//    var serviceRequests = {}; // map SR title to SR individuals    
-/*    var serviceCaseList = {};
-    var autoCompleteServiceCaseList = [];
-    var metadata = {};
-    function loadMetadata()
-    { 
-        metadata.LegacyServiceCaseListInput = cirm.top.get("/individuals/LegacyServiceCaseListInput");
-        cirm.delayDataFetch(metadata.LegacyServiceCaseListInput.hasDataSource, 
-            function(A) { $.each(A, function (i,v) { 
-//	            serviceRequests[v.iri] = v;
-	            var tempLabel = v.label+' - '+v.hasJurisdictionCode;
-	    		serviceCaseList[tempLabel] = v.hasLegacyCode;
-	    		autoCompleteServiceCaseList.push({"label":tempLabel, "value":tempLabel});
-            }) }).call();
-//        metadata.agencies = cirm.top.get('/legacy/searchAgencyMap');
-//        metadata.departments = cirm.top.get('/individuals/instances/Department_County');
-//        metadata.municipalities = cirm.top.get('/individuals/instances/City_Organization?direct=true');
-    }
-    loadMetadata();
-   */ 
     var InteractionEvents = {
             StartCall : "StartCall",
             EndCall: "EndCall",
@@ -75,16 +54,27 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
     };
     
     //
-    // Recent Srs By Address
+    // Location history (Recent Srs By Address & total count)
     //
-    function RecentSrsByAddressModel() {
+    function LocationHistoryModel() {
         var self = this; 
         self.noAddress = ko.observable(true);
         self.pending = ko.observable(false);
         self.recentSrs = ko.observableArray();        
         self.totalSrs = ko.observable(0);        
-        self.lastFullAddressStr = "";
-        self.lastZip_CodeStr = "";
+        self.lastFullAddressStr = ko.observable("");
+        self.lastZip_CodeStr = ko.observable("");
+        self.buttonLabel = ko.computed(function() {
+        	var txt = "Location History ";
+        	if (self.pending()) {
+        		txt += "(..)"
+        	} else if (self.totalSrs() == 0) {
+        		txt = "No " + txt;
+        	} else {
+        		txt = txt + "(" + self.totalSrs() + ")";
+        	}
+            return txt;                    
+        }, self);
         
         self.reset = function() {
         	//noAddress true also cancels async call result update
@@ -92,8 +82,8 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
         	self.pending(false);
 	        self.recentSrs([]);
 	        self.totalSrs(0);
-	        self.lastFullAddressStr = "";
-	        self.lastZip_CodeStr = "";
+	        self.lastFullAddressStr("");
+	        self.lastZip_CodeStr("");
         }
 
         //Helpers
@@ -108,99 +98,128 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
         			  },
         			  "caseSensitive": false,
         			  "currentPage": 1,
-        			  "itemsPerPage": 5,
+        			  "itemsPerPage": 10,
         			  "sortBy": "legacy:hasCaseNumber",
-        			  "sortDirection": "desc"
+					  "sortDirection": "desc",
+					  "xComment" : "LocationHistory Feature"
         			};
         	queryObj.atAddress.fullAddress = fullAddressStr;
         	queryObj.atAddress.Zip_Code = Zip_CodeStr;
         	return queryObj;
         }
         
-		//SR click in RecentSrsByAddress
-		self.populateSH = function(el) {
-			$("#populate_legacy_dialog_alert").dialog({ height: 150, width: 300, modal: true, buttons: {
-				"View Service Request" : function() {
-					$(document).trigger(InteractionEvents.populateSH, [el.boid]);
-					$("#populate_legacy_dialog_alert").dialog('close');					
-					$(document).trigger(InteractionEvents.showServiceHub, []);
-					$(document).trigger(InteractionEvents.resetServiceHubToSRMain, []);
-				},
-				"View Report" : function() {
-					$("#populate_legacy_dialog_alert").dialog('close');
-					U.download("/legacy/printView", {boid:el.boid}, true);
-				},
-				"Close": function() {
-				  	$("#populate_legacy_dialog_alert").dialog('close');
-				}
-			  } 
-			});
-		};
-        
         //Core functions
         self.cirmAdvSearchAsyncUpdateResultsArray = function (query) {
-            cirm.top.async().postObject('/legacy/advSearch', query, function(r) {
-            	if (!self.noAddress()) {
-	            	self.recentSrs([]);
-	            	self.totalSrs(r.totalRecords);
-	            	$.each(r.resultsArray, function(index, record) {
-	            		//Desc order ok in general but page returned is ascending...needs unshift
-	            		self.recentSrs.unshift(record);
-	            	});
-            	}
-            	self.pending(false);
-            });
-        }
-        
-        self.addressValidatedNow = function (fullAddressStr, Zip_CodeStr) { 
-        	if (self.lastFullAddressStr == fullAddressStr && self.lastZip_CodeStr == Zip_CodeStr) {
-        		return;
-        	}
+			try{ 
+				cirm.top.async().postObject('/legacy/advSearch', query, function(r) {
+					if (!self.noAddress()) {
+						self.recentSrs([]);
+						self.totalSrs(r.totalRecords);
+						$.each(r.resultsArray, function(index, record) {
+							//Desc order ok in general but page returned is ascending...needs unshift
+							self.recentSrs.unshift(record);
+						});
+					}
+					self.pending(false);
+				}, function(err) {
+					self.reset();
+				});
+			} catch(err) {
+				self.reset();
+			}
+		}
+		
+        self.update = function (fullAddressStr, Zip_CodeStr) { 
         	self.noAddress(false);
         	self.pending(true);
         	var query = self.address2query(fullAddressStr, Zip_CodeStr);
         	if (query != null) {
             	self.cirmAdvSearchAsyncUpdateResultsArray(query);
-        		self.lastFullAddressStr = fullAddressStr;
-        		self.lastZip_CodeStr = Zip_CodeStr;
+        		self.lastFullAddressStr("" + fullAddressStr);
+        		self.lastZip_CodeStr("" + Zip_CodeStr);
         	}
         }
-        
+		
+		//Update Location History from db after address validation ok
 		$(document).bind(InteractionEvents.AddressValidated, function(event, address) {
 		     if (!address || !address.fullAddress() || !address.zip()) {
 		             return;
 		     }
-		     self.addressValidatedNow(address.fullAddress(), address.zip());
+		     self.update(address.fullAddress(), address.zip());
 			
 		});
-		//subscribe to AnswerHub and ServiceHub not Basic search address clear
+
+		//Reset on AnswerHub or ServiceHub (not Basic search) clear address
 		$(document).bind(InteractionEvents.AddressClear, function(event, address) {
 		        self.reset();
-		});		
-        
-        return self;
+		});
 
-    }
-    
-    var recentSrsByAddressModel = null;
-    function getRecentSrsByAddressModel() { 
-        if (recentSrsByAddressModel == null) {
-        	recentSrsByAddressModel = new RecentSrsByAddressModel();
-        }
-        return recentSrsByAddressModel;
-    }
-    
-    function recentSrsByAddress() {
-        var self = {};
-        self.dom = $.tmpl($('#recentSrsByAddressTemplate', legacyTemplates))[0];
-        self.model = getRecentSrsByAddressModel();
-        self.embed = function(parent) {
-            ko.applyBindings(self.model, self.dom);
-              $(parent).append(self.dom);
-              return self;
-        }
+		//Reset on any load SR start
+		$(document).bind(InteractionEvents.populateSH, function(event, boid) {
+		        self.reset();
+		});		
+
+		// LocationHistory Dialog
+		self.showLocationHistory = function() {
+			$("#dialog_Location_History").dialog({ height: 440, width: 700, modal: true, buttons: {
+				"Close" : function() { $("#dialog_Location_History").dialog('close'); }
+			 } 
+			});
+		}
+
+		//Open or print Sr Dialog if user clicks on SR ID.
+		self.populateSH = function(el) {
+			$("#populate_legacy_dialog_alert").dialog({ height: 150, width: 300, modal: true, buttons: {
+				"View Service Request" : function() {
+					$(document).trigger(InteractionEvents.populateSH, [el.boid]);
+					$("#dialog_Location_History").dialog('close');
+					$("#populate_legacy_dialog_alert").dialog('close');					
+					$(document).trigger(InteractionEvents.showServiceHub, []);
+					$(document).trigger(InteractionEvents.resetServiceHubToSRMain, []);
+				},
+				"View Report" : function() {
+					$("#dialog_Location_History").dialog('close');
+					$("#populate_legacy_dialog_alert").dialog('close');
+					U.download("/legacy/printView", {boid:el.boid}, true);
+				},
+				"Close": function() {
+						$("#populate_legacy_dialog_alert").dialog('close');
+				}
+				} 
+			});
+		};
+
         return self;
     }
+    
+    var locationHistoryModel = null;
+    function getLocationHistoryModel() { 
+        if (locationHistoryModel == null) {
+        	locationHistoryModel = new LocationHistoryModel();
+        }
+        return locationHistoryModel;
+    }
+    
+    var dlgEmbedded = false;
+    function locationHistory() {
+		var self = {};
+		self.dom = $.tmpl($('#locationHistoryTemplate', legacyTemplates))[0];
+		self.domDlg = $.tmpl($('#locationHistoryTemplateDlg', legacyTemplates))[0];
+		self.model = getLocationHistoryModel();
+		self.embed = function(parent) {
+			ko.applyBindings(self.model, self.dom);
+			ko.applyBindings(self.model, self.domDlg);
+				$(parent).append(self.dom);
+				if (!dlgEmbedded) {
+					$(parent).append(self.domDlg);
+				dlgEmbedded = true;
+				}
+				return self;
+		}
+		locationHistoryObj = self;
+		return locationHistoryObj;
+	}
+    
     
     //
     // Deprecated Service Call Model
@@ -3484,7 +3503,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
     }
     
     var M = {
-    	recentSrsByAddress: recentSrsByAddress,
+    	locationHistory: locationHistory,
         interactionHistory: interactionHistory,
         marquee:marquee,
         marqueeAdmin:marqueeAdmin,
@@ -3495,10 +3514,6 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
         popularSearchAdmin:popularSearchAdmin,
         popularSearches:popularSearches,
         InteractionEvents: InteractionEvents
-//        serviceRequests:serviceRequests,
-//        serviceCaseList:serviceCaseList,
-//		autoCompleteServiceCaseList:autoCompleteServiceCaseList,
-//        metadata:metadata
     };
     if (modulesInGlobalNamespace)
         window.legacy = M;

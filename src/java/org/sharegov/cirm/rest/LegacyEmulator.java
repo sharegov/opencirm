@@ -907,9 +907,14 @@ public class LegacyEmulator extends RestService
 	@Consumes("application/json")
 	public Json lookupAdvancedSearch(Json data)
 	{
+		String xComment = "";
+		if (data != null && data.has("xComment") && data.at("xComment").isString()) {
+			xComment = data.at("xComment").asString();
+			data.delAt("xComment");
+		}
 		try
-		{
-			if (DBG) ThreadLocalStopwatch.startTop("START lookupAdvancedSearch");
+		{	
+			if (DBG) ThreadLocalStopwatch.startTop("START lookupAdvancedSearch " + xComment);
 			QueryTranslator qt = new QueryTranslator();
 			RelationalStore store = getPersister().getStore();
 			Json resultsArray = Json.array();
@@ -1048,7 +1053,7 @@ public class LegacyEmulator extends RestService
 			e.printStackTrace();
 			return ko(e.getMessage());
 		} finally {
-			if (DBG) ThreadLocalStopwatch.stop("END lookupAdvancedSearch");
+			if (DBG) ThreadLocalStopwatch.stop("END lookupAdvancedSearch " + xComment);
 		}
 	}
 
