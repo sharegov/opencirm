@@ -3155,11 +3155,14 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 						return v;
 				}
 				if(v.isDisabled) {
-					if(!v.isDisabled())
+					//String property
+					if(v.isDisabled() != 'true') {
 						return v;
+					}
 				}
-				else
+				else {
 					return v;
+				}
 			});
 		};
 		
