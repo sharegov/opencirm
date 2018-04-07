@@ -113,12 +113,11 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 			try{ 
 				cirm.top.async().postObject('/legacy/advSearch', query, function(r) {
 					if (!self.noAddress()) {
-						self.recentSrs([]);
 						self.totalSrs(r.totalRecords);
-						$.each(r.resultsArray, function(index, record) {
-							//Desc order ok in general but page returned is ascending...needs unshift
-							self.recentSrs.unshift(record);
+						r.resultsArray.sort(function(a,b) {
+							return b.hasCaseNumber.localeCompare(a.hasCaseNumber)
 						});
+						self.recentSrs(r.resultsArray);
 					}
 					self.pending(false);
 				}, function(err) {
