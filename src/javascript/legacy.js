@@ -161,6 +161,7 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 
 		// LocationHistory Dialog
 		self.showLocationHistory = function() {
+			self.analyticsTrackButtonClick();
 			$("#dialog_Location_History").dialog({ height: 440, width: 700, modal: true, buttons: {
 				"Close" : function() { $("#dialog_Location_History").dialog('close'); }
 			 } 
@@ -188,6 +189,22 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 				} 
 			});
 		};
+
+		//Cirm Analytics
+		self.analyticsTrackButtonClick = function() {
+			var event = {};
+			event.category = "LocationInfo"
+			event.tag = "DialogOpened"
+			try {
+				event.info = "" + cirm.user.username;
+			} catch(err) {
+				//ignore err
+			}
+			cirm.top.async().postObject('/analytics/trackEvent', event, 
+				function(r) {}, 
+				function(err) {}
+			);
+		}
 
         return self;
     }
