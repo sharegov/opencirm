@@ -214,7 +214,7 @@
         <div id="answer_hub_right">
             <input name="map" type="button" value="Map" data-bind="click: addressSearch.launchMap">
             <input value="Last 5 Addresses" type="button" data-bind="click: addressSearch.showLast5Addr">
-            <a href="file://\\Etsddept\311 operations services\TRANSIT" class="button blue" style="width:126px; margin:10px 0 20px 0;">Transit</a>
+            <!--  a href="file://\\Etsddept\311 operations services\TRANSIT" class="button blue" style="width:126px; margin:10px 0 20px 0;">Transit</a-->
             <!--
             <input name="Transit" type="button" value="Transit" data-bind="click: $root.openTransitFolder">
             -->

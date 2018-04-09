@@ -30,6 +30,65 @@
 </div>
 </script>
 
+
+<script id="locationHistoryTemplate" type="text/x-jquery-tmpl">
+<div>
+	<div data-bind="if: !$root.noAddress() && !$root.pending()">
+			<div class="button_group">
+				<input type="button" class="button green_button" data-bind="value:$root.buttonLabel(), click: showLocationHistory"/>
+			</div>
+	</div>
+
+	<div data-bind="if: !$root.noAddress() && $root.pending()">
+	Loading Location history...
+	</div>
+</div>
+</script>
+
+<script id="locationHistoryTemplateDlg" type="text/x-jquery-tmpl">
+	<div id="dialog_Location_History" class="display_none" title="SR Location History">
+			<label data-bind="text: $root.lastFullAddressStr() + ', ' + $root.lastZip_CodeStr()"></label><br/>
+			<br/>
+			<table class="export_table table--even table--links" cellpadding="3" cellspacing="2" width="100%">
+					<thead>
+						<tr>
+							<th width="80px">ID</th>
+							<th>Status</th>
+							<th>Type</th>
+							<th>Created Date</th>
+						</tr>			
+					</thead>
+				<tbody data-bind="foreach: $root.recentSrs">		
+				<tr>
+					<td align="left">
+						<a href="#" data-bind="event: {click: $root.populateSH}">
+							<label data-bind="text: hasCaseNumber"></label> 								
+						</a>
+					</td>
+					<td>
+						<label data-bind="text: hasStatus"></label><br/> 
+					</td>
+					<td>
+						<label data-bind="text: label"></label><br/>
+					</td>
+					<td>
+						<label data-bind="text: hasDateCreated"></label><br/>
+					</td>
+				</tr>
+				</tbody>
+			</table>
+		<br/>
+		<div  data-bind="if: $root.recentSrs().length > 0 ">
+			<label data-bind="text: $root.recentSrs().length"></label> of <label data-bind="text: $root.totalSrs"></label> SRs shown.
+		</div>
+		<div data-bind="if: $root.recentSrs().length == 0 ">
+			<label> No SRs found.</label>
+		</div> 
+		</div>
+</script>
+
+
+
 <script id="marqueeAdminTemplate" type="text/x-jquery-tmpl">
 <div class="grid_breaker">
 
@@ -898,51 +957,55 @@
 			<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
 			<div id="advsearch_moreDetails" style="display:none">
 				<div class="grid_2 alpha">
-						<input type="text" placeholder="Customer's First Name" data-bind="value: searchCriteria.name">
+						<input type="text" tabindex="1" placeholder="Customer's First Name" data-bind="value: searchCriteria.name"><br/>
+						<br/>
+						<input type="text" tabindex="3" placeholder="Customer's Email" data-bind="value: searchCriteria.email">
 				</div>
 				<div class="grid_2">
-						<input type="text" placeholder="Customer's Last Name" data-bind="value: searchCriteria.lastName">
+						<input type="text" tabindex="2" placeholder="Customer's Last Name" data-bind="value: searchCriteria.lastName"><br/>
+						<br/>
+						<input type="text" tabindex="4" placeholder="Customer's Cell Phone" data-bind="inputmask: { value: searchCriteria.cellPhone , mask:'999-999-9999', autoUnmask: true}">
 				</div>
 	    		<div class="grid_2">
-					<select class="f_left" data-bind="options:allStatus, value:searchCriteria.hasStatus().iri, optionsValue:'iri', optionsText:'label', optionsCaption:'Select Status'"></select>
+					<select class="f_left" tabindex="5" data-bind="options:allStatus, value:searchCriteria.hasStatus().iri, optionsValue:'iri', optionsText:'label', optionsCaption:'Select Status'"></select>
 	    		</div>
 	    		<div class="grid_2">
-					<select multiple class="f_left" data-bind="options:selectableIntakeMethods, selectedOptions:searchCriteria.selectedIntake, optionsValue:'iri', optionsText:'label', optionsCaption:'Select Meth Recd'"></select>
+					<select multiple class="f_left" tabindex="6" data-bind="options:selectableIntakeMethods, selectedOptions:searchCriteria.selectedIntake, optionsValue:'iri', optionsText:'label', optionsCaption:'Select Meth Recd'"></select>
 	    		</div>
 	    		<div class="grid_2 omega">
-			        <select class="f_left" data-bind="options:allPriority, value:searchCriteria.hasPriority().iri, optionsValue:'iri', optionsText:'label', optionsCaption:'Select Priority'"></select>
+			        <select class="f_left" tabindex="7" data-bind="options:allPriority, value:searchCriteria.hasPriority().iri, optionsValue:'iri', optionsText:'label', optionsCaption:'Select Priority'"></select>
 	    		</div>
 				<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
 
 				<!-- FQ Question Search Line -->
 	    		<div class="grid_6 alpha">
-					<select class="f_left" data-bind="options:srQuestions, value:searchCriteria.serviceQuestion, optionsValue:'iri', optionsText:'label', optionsCaption:'Select Question', attr:{disabled: isDisabledServiceQuestion}" title="Please select a Service Request Type, to see the list of Questions associated with that Service Request Type"></select>
+					<select class="f_left" tabindex="8" data-bind="options:srQuestions, value:searchCriteria.serviceQuestion, optionsValue:'iri', optionsText:'label', optionsCaption:'Select Question', attr:{disabled: isDisabledServiceQuestion}" title="Please select a Service Request Type, to see the list of Questions associated with that Service Request Type"></select>
 	    		</div>
 				<!-- Hidden divs for answers -->
 	    		<div id="advancedSearchAnswerStringDiv" class="grid_4 omega" >
-					<input type="text" placeholder="Answer String" id="serviceQuestionAnswerTermString" data-bind="value:searchCriteria.serviceQuestionAnswerTermString, disable: isDisabledServiceAnswer"></input>
+					<input tabindex="9" type="text" placeholder="Answer String" id="serviceQuestionAnswerTermString" data-bind="value:searchCriteria.serviceQuestionAnswerTermString, disable: isDisabledServiceAnswer"></input>
 	    		</div>
 	   			<div id="advancedSearchAnswerChoiceDiv" class="grid_4 omega" style="display: none;">
-						<select class="f_left" id="serviceQuestionAnswerTermChoice" data-bind="value:searchCriteria.serviceQuestionAnswerTermChoice, options:srQuestionChoiceValues, optionsValue:'iri', optionsText:'label', optionsCaption:'Select Answer', attr:{disabled: isDisabledServiceAnswer}"></select>
+						<select tabindex="9" class="f_left" id="serviceQuestionAnswerTermChoice" data-bind="value:searchCriteria.serviceQuestionAnswerTermChoice, options:srQuestionChoiceValues, optionsValue:'iri', optionsText:'label', optionsCaption:'Select Answer', attr:{disabled: isDisabledServiceAnswer}"></select>
 				</div>
 				<div id="advancedSearchAnswerDateDiv"  style="display: none;">
 	    			<div class="grid_2">
 						<span title="Enter any Smart Date, e.g: -3, +3, today, yesterday, tomorrow, last friday, last April etc.">
-							<input type="text" id="serviceQuestionAnswerTermDateStart" placeholder="Answer Date (Start)" data-bind="value:searchCriteria.serviceQuestionAnswerTermDateStart, attr:{disabled: isDisabledServiceAnswer}, event:{keypress: checkDateOnEnter}"></input>
+							<input tabindex="9" type="text" id="serviceQuestionAnswerTermDateStart" placeholder="Answer Date (Start)" data-bind="value:searchCriteria.serviceQuestionAnswerTermDateStart, attr:{disabled: isDisabledServiceAnswer}, event:{keypress: checkDateOnEnter}"></input>
 	                    </span>
 	    			</div>
 	    			<div class="grid_2 omega">
 						<span title="Enter any Smart Date, e.g: -3, +3, today, yesterday, tomorrow, last friday, last April etc.">
-							<input type="text" id="serviceQuestionAnswerTermDateEnd"  placeholder="Answer Date (End)" data-bind="value:searchCriteria.serviceQuestionAnswerTermDateEnd, attr:{disabled: disabledEndDate('serviceQuestionAnswerTermDateStart', 'serviceQuestionAnswerTermDateEnd')}, event:{keypress: checkDateOnEnter}"></input>
+							<input tabindex="10" type="text" id="serviceQuestionAnswerTermDateEnd"  placeholder="Answer Date (End)" data-bind="value:searchCriteria.serviceQuestionAnswerTermDateEnd, attr:{disabled: disabledEndDate('serviceQuestionAnswerTermDateStart', 'serviceQuestionAnswerTermDateEnd')}, event:{keypress: checkDateOnEnter}"></input>
 	    	            </span>
 	    			</div>
 				</div>
 				<div id="advancedSearchAnswerNumberDiv" style="display: none;">
 		    		<div class="grid_2">
-						<input type="text" id="serviceQuestionAnswerTermNumberStart"  placeholder="Answer Number (Start)" data-bind="value:searchCriteria.serviceQuestionAnswerTermNumberStart, attr:{disabled: isDisabledServiceAnswer}"></input>
+						<input tabindex="9"  type="text" id="serviceQuestionAnswerTermNumberStart"  placeholder="Answer Number (Start)" data-bind="value:searchCriteria.serviceQuestionAnswerTermNumberStart, attr:{disabled: isDisabledServiceAnswer}"></input>
 	    			</div>
 	    			<div class="grid_2 omega">
-						<input type="text" id="serviceQuestionAnswerTermNumberEnd" placeholder="Answer Number (End)" data-bind="value:searchCriteria.serviceQuestionAnswerTermNumberEnd, attr:{disabled: disabledEndNumber('serviceQuestionAnswerTermNumberStart', 'serviceQuestionAnswerTermNumberEnd')}"></input>
+						<input  tabindex="10" type="text" id="serviceQuestionAnswerTermNumberEnd" placeholder="Answer Number (End)" data-bind="value:searchCriteria.serviceQuestionAnswerTermNumberEnd, attr:{disabled: disabledEndNumber('serviceQuestionAnswerTermNumberStart', 'serviceQuestionAnswerTermNumberEnd')}"></input>
 	    			</div>
 				</div>
 
@@ -953,19 +1016,19 @@
 				<!-- FQ Question Search Line End -->
 
 				<div class="grid_3 alpha">
-					<select class="f_left" data-bind="options:geoLayerAttribute, value:searchCriteria.geoLayerAttr().iri, optionsValue:'iri', optionsText:'label', optionsCaption:'Select Geo Layer/Area'"></select>
+					<select  tabindex="11" class="f_left" data-bind="options:geoLayerAttribute, value:searchCriteria.geoLayerAttr().iri, optionsValue:'iri', optionsText:'label', optionsCaption:'Select Geo Layer/Area'"></select>
 	    		</div>
 	    		<div class="grid_3">
-	                <input type="text" placeholder="Geo Layer/Area value" data-bind="value: searchCriteria.geoLayerAreaSearchValue, enable: $root.isEnabledGeoLayerArea()" title="To search for any value, for the selected Geo Layer/Area, leave this field blank">
+	                <input tabindex="12" type="text" placeholder="Geo Layer/Area value" data-bind="value: searchCriteria.geoLayerAreaSearchValue, enable: $root.isEnabledGeoLayerArea()" title="To search for any value, for the selected Geo Layer/Area, leave this field blank">
 	    		</div>
 	    		<div class="grid_2 omega">
 	    			<span title="Enter any Smart Date and either TAB out or click ENTER, e.g: -3, +3, today, yesterday, tomorrow, last friday, last April etc.">
-	                	<input type="text" id="overdueDate" placeholder="Over Due Date" data-bind="value: searchCriteria.overdueDate, event:{keydown: checkDateOnEnter}">
+	                	<input tabindex="13" type="text" id="overdueDate" placeholder="Over Due Date" data-bind="value: searchCriteria.overdueDate, event:{keydown: checkDateOnEnter}">
 	                </span>
 	    		</div>
 				<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
 	    		<div class="grid_6 alpha omega" data-bind="if:allDepartments.length > 1">
-					<select class="f_left" data-bind="options:allDepartments, value:searchCriteria.department, optionsValue:'cases', optionsText:'displayName', optionsCaption:'Select Jurisdiction, Department or Division', disable: isDisabledDepartment"></select>
+					<select tabindex="14" class="f_left" data-bind="options:allDepartments, value:searchCriteria.department, optionsValue:'cases', optionsText:'displayName', optionsCaption:'Select Jurisdiction, Department or Division', disable: isDisabledDepartment"></select>
     			</div>
 				<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
 			</div>
@@ -1030,6 +1093,10 @@
 		
 		.export_table td, .export_table th {
 		border-right:1px solid #ccc;
+		}
+		
+		.export_table td:last-child, .export_table th:last-child {
+			border-right-color: transparent;
 		}
 		</style>
 
