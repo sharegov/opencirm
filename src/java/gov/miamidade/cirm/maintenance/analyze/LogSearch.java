@@ -32,9 +32,10 @@ import java.util.regex.Pattern;
  */
 class LogSearch {
 	
-	static final int ANALYSIS_DAYS_HISTORY_CUTOFF_DEFAULT = 5;	
+	static final int ANALYSIS_DAYS_HISTORY_CUTOFF_DEFAULT = 0;	
 	
 	static final boolean DBG_MATCHES = false;
+	static final boolean LOG_FILENAMES = false;
 	
 	static final double BAD_UX_THRESHOLD_SECS = 10;	
 	
@@ -46,7 +47,7 @@ class LogSearch {
 	//static String logMatch = "ERROR: SmsService: NO TEXT MESSAGE COULD BE SENT.";
 	//static String logMatch = "ERROR: SmsService: Error during sending, message to";
 	//static String logMatch = "SmsService: END https Sending one sms";
-	static String logMatch = "Failed to create LDAP context";
+	static String logMatch = "trackEvent";
 	
 	
 	static String[] rotatingLogSeriesBaseFiles = new String[] {
@@ -62,6 +63,8 @@ class LogSearch {
 	public LogSearch() {
 	}
 	
+	private static int nrOfMatches = 0; 
+	
 	void run() {
 		System.out.println("***** Log search started *****");
 		System.out.println("Rotating base log files to analyze: " + rotatingLogSeriesBaseFiles.length);
@@ -72,6 +75,7 @@ class LogSearch {
 			File cur = new File(logFile);
 			analyzeRotatingLogFileSeries(cur, logMatch, cutOffDate);
 		}
+		System.out.println("Nr Of Matches: " + nrOfMatches);
 	}
 	
 	/**
@@ -108,10 +112,14 @@ class LogSearch {
 				Date curLogFileLastModified = new Date(curLogFile.lastModified());
 				continueNextRotatingLog = (curLogFileLastModified.after(cutOffMinDate) || curLogFileLastModified.equals(cutOffMinDate));
 				if (continueNextRotatingLog) {
-					System.out.println("Analyzing " + curLogFile+ " (LastMod: " + logDf.format(curLogFileLastModified) + ")");
+					if (LOG_FILENAMES) {
+						System.out.println("Analyzing " + curLogFile+ " (LastMod: " + logDf.format(curLogFileLastModified) + ")");
+					}
 					analyzeOneRotatingLogFile(curLogFile, lineMatch, cutOffMinDate);
 				} else {
-					System.out.println("Log history was complete.");
+					if (LOG_FILENAMES) {
+						System.out.println("Log history was complete.");
+					}
 				}
 			} else {
 				System.err.println("Log history incomplete for this series.");
@@ -155,7 +163,7 @@ class LogSearch {
 		boolean continueWithNextFile = true;
 		try (BufferedReader br = new BufferedReader(new FileReader(curLogFile))) {
 		    String line;
-		    System.out.println(curLogFile.getAbsolutePath());	    	
+		    if (LOG_FILENAMES) System.out.println(curLogFile.getAbsolutePath());	    	
 		    while ((line = br.readLine()) != null) {
 		    	Date curLineDate = analyzeLine(line, lineMatch, cutOffMinDate);
 		    	if (curLineDate != null && (curLineDate.before(cutOffMinDate) && continueWithNextFile)) {
@@ -193,6 +201,7 @@ class LogSearch {
 				lineDateTime = logDf.parse(dateTimeStr);
 				if (lineDateTime.after(cutoff)) {
 					System.out.println(line);
+					nrOfMatches ++;
 				}
 			} catch (ParseException e) {
 				System.out.println("Ignoring line: " + line);
