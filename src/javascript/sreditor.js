@@ -537,20 +537,24 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 				$.each(request.properties().hasServiceAnswer(), function(i,v) {
 					self.addServiceQuestionExtenders(v);
             	});
-           		// C) Extend email and Phone numbers of each Actor to check for validity
-        		var firstCitizen = self.getFirstCitizenActor(request.properties().hasServiceCaseActor());
-            	$.each(request.properties().hasServiceCaseActor(), function(i,v) {
+				// C) Extend email and Phone numbers of each Actor to check for validity
+				// FirstCitizen will require Name, LastName, and cell iff Sr isCitizenRequired Property is true
+				// name/last are only enforced for new Srs (to not prevent updates of older Srs for now)
+				// hilpold 3/17/18
+				var firstCitizen = self.getFirstCitizenActor(request.properties().hasServiceCaseActor());
+				$.each(request.properties().hasServiceCaseActor(), function(i,v) {
+					var isFirstCitizen = v === firstCitizen;
             		//Check if first Citizen actor, make first cellphone required
-        			if(firstCitizen != null && isCitizenActor(v.hasServiceActor().iri())) {
-        				if(!self.isNew && !self.isCustomerLocked() && firstCitizen.iri() == v.iri())
-        					self.addExtendersToActor(v, true);
-        				else if(self.isNew && !self.isCustomerLocked())
-        					self.addExtendersToActor(v, true);
-        				else
-        					self.addExtendersToActor(v);
+        			if(isFirstCitizen) {
+						if (!self.isCustomerLocked()) {
+							self.addExtendersToActor(v, true, self.isCitizenRequiredForSR());
+						} else {
+							self.addExtendersToActor(v, false, false);
+						}
         			}
-        			else
-        				self.addExtendersToActor(v);
+        			else {
+        				self.addExtendersToActor(v, false, false);
+					}
             	});
             	// D) Status, Priority, Method Received are required fields
             	request.properties().hasStatus().iri.extend({ required: "Required" });
@@ -1049,7 +1053,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 					var newSA = new ServiceActor(iri, label, cirm.user.username, self.getServerDateTime().asISODateString(), true);
 					U.visit(newSA, U.makeObservableTrimmed);
 	            	var isFirstCitizen = (!self.isCustomerLocked() && isCitizenActor(iri) && self.getFirstCitizenActor() == null) ? true : false;
-					self.addExtendersToActor(newSA, isFirstCitizen);
+					var isFirstCitizenRequired = isFirstCitizen && self.isCitizenRequiredForSR();
+					self.addExtendersToActor(newSA, isFirstCitizen, isFirstCitizenRequired);
 					addActorInfo(actorDetails, newSA);
 		    		self.data().properties().hasServiceCaseActor.push(newSA);
 				}
@@ -1518,10 +1523,34 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 				alertDialog(msg);
 			}
 			var emailRequired = (selectedPref === "E" || selectedPref === "A");
-			self.setCitizenActorEmailRequired(emailRequired);
+			if (!self.isCitizenRequiredForSR()) {
+				self.setCitizenActorEmailRequired(emailRequired);
+			}
 		};
 		
 		//Return hasError observable
+		self.getCitizenActorNameError = function() {
+			var citizen = self.getFirstCitizenActor();
+			if(citizen != null) {
+				var result = citizen.Name.hasError;
+				return result;
+			}
+			else {
+				return ko.observable();
+			}
+		};
+
+		self.getCitizenActorLastNameError = function() {
+			var citizen = self.getFirstCitizenActor();
+			if(citizen != null) {
+				var result = citizen.LastName.hasError;
+				return result;
+			}
+			else {
+				return ko.observable();
+			}
+		};
+
 		self.getCitizenActorEmailError = function() {
 			var citizen = self.getFirstCitizenActor();
 			if(citizen != null) {
@@ -1950,6 +1979,23 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 				}
 			});
 			$.each(data.properties().hasServiceCaseActor(), function(i, v) {
+				//First/lastName is checked on all new SRs and will only have errors if citizen required and empty.
+				//Not checked on updates for now, to allow updating Srs for which citizen was not yet required.
+				if (self.isNew) {
+					if (v.Name && v.Name.hasError && v.Name.hasError()) {
+						isValid = false;
+					}
+					if (v.LastName && v.LastName.hasError && v.LastName.hasError()){
+						isValid = false;
+					}
+				}
+				//Email is checked on all new and those updates, where citizen not required in SR
+				if (self.isNew || !self.isCitizenRequiredForSR()) {
+					if(v.hasEmailAddress().label.hasError && v.hasEmailAddress().label.hasError())
+					{
+						isValid = false;
+					}
+				}
 				$.each(v, function(prop, value){
 					if(prop.indexOf("Number") != -1) {
 						$.each(value(), function(j,val) {
@@ -1962,12 +2008,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 						if(!isValid)
 							return false;
 					}
-				});
-				if(!isValid)
-					return false;
-				if(v.hasEmailAddress().label.hasError && v.hasEmailAddress().label.hasError())
-				{
-					isValid = false;
+				});				
+				if(!isValid) {
 					return false;
 				}
 /*
@@ -2386,9 +2428,13 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			        self.updateExistingCase(jsondata, model);
     	};
     	
-    	self.addExtendersToActor = function(el, isFirstCitizen)
+    	self.addExtendersToActor = function(el, isFirstCitizen, isFirstCitizenRequired)
     	{
     		if (isFirstCitizen) {
+				if (isFirstCitizenRequired){
+					el.Name.extend({ required: "Required" });
+					el.LastName.extend({ required: "Required" });
+				}
 				el.hasEmailAddress().label.extend({ email_conditional : ""});
     		} else {
 				el.hasEmailAddress().label.extend({ email : ""});
@@ -2439,7 +2485,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
     	self.isCustomerLocked = function() {
 			if(self.isLockedStatus())
 			{
-    			if(self.isPWWMCase())
+    			if(self.isSWMCaseType())
     				return false;
     			else
     				return true;
@@ -2458,8 +2504,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
     		var label = $('#serviceActorList option:selected').text();
 			var tempSA = U.visit(new ServiceActor(iri, label, cirm.user.username, self.getServerDateTime().asISODateString(), true), U.makeObservableTrimmed);
 			//START : Extenders for fields which need validation
-           	var isFirstCitizen = (!self.isCustomerLocked() && isCitizenActor(iri) && self.getFirstCitizenActor() == null) ? true : false;
-			self.addExtendersToActor(tempSA, isFirstCitizen);
+			var isFirstCitizen = (!self.isCustomerLocked() && isCitizenActor(iri) && self.getFirstCitizenActor() == null) ? true : false;
+			var isFirstCitizenRequired = isFirstCitizen && self.isCitizenRequiredForSR();
+			self.addExtendersToActor(tempSA, isFirstCitizen, isFirstCitizenRequired);
 			//END 
     		self.data().properties().hasServiceCaseActor.unshift(tempSA);
 			collapseActors(0);
@@ -2508,19 +2555,17 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			}
     	};
     	
-    	self.isPWWMCase = function() {
-    		if(self.srType().providedBy)
-    		{
-    			if(self.srType().providedBy.hasParentAgency && self.srType().providedBy.hasParentAgency.indexOf('Public_Works_Waste_Management') > 0)
-    				return true;
-    			else if(self.srType().providedBy.Department && self.srType().providedBy.Department.indexOf('Public_Works_Waste_Management') > 0)
-    				return true;
-    			else
-    				return false;
-    		}
-    		else
+    	self.isSWMCaseType = function() {
+    		if(self.srType().providedBy && self.srType().providedBy.iri) {
+    			return (self.srType().providedBy.iri.indexOf('#Solid_Waste_Management') > 0);
+    		} else {
     			return false;
-    	};
+    		}
+		};
+		
+		self.isCitizenRequiredForSR = function() {
+			return self.srType && self.srType().isCitizenRequired;
+		}
     	
     	self.activityList = function() {
     		var tempActs = $.grep(self.srType().hasActivity, function(v) {
@@ -2545,7 +2590,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 	    					return true;
 		    			}
 		    			//if PW/WM SR then show 'SWM Urgent Notification' Activity
-		    			else if(self.isPWWMCase() && v.hasLegacyCode && v.hasLegacyCode == "SWMURGN") {
+		    			else if(self.isSWMCaseType() && v.hasLegacyCode && v.hasLegacyCode == "SWMURGN") {
 	    					return true;
 		    			} else {
 		    				//Do not show activity
@@ -2822,7 +2867,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 							return false;
 					}
 	    			//Temp Fix : if PW/WM SR then 'SWM Urgent Notification'
-					else if(self.isPWWMCase() && el.hasLegacyCode && el.hasLegacyCode() == "SWMURGN")
+					else if(self.isSWMCaseType() && el.hasLegacyCode && el.hasLegacyCode() == "SWMURGN")
 					{
 						if(!U.isEmptyString(el.isAutoAssign()))
 							return true;
@@ -2866,7 +2911,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 							return false;
 					}
 					//Temp Fix : if PW/WM SR then 'SWM Urgent Notification'
-					else if(self.isPWWMCase() && el.hasLegacyCode && el.hasLegacyCode() == "SWMURGN")
+					else if(self.isSWMCaseType() && el.hasLegacyCode && el.hasLegacyCode() == "SWMURGN")
 					{
 	    				if(!U.isEmptyString(el.hasCompletedTimestamp()))
 	    					return true;
@@ -2933,8 +2978,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 					if(el.hasLegacyCode && el.hasLegacyCode() == "PERSCNTC" 
 							&& U.isEmptyString(el.hasCompletedTimestamp()))
 						return "OutcomeSelectTemplate";
-	    			//Temp Fix : if PW/WM SR then 'SWM Urgent Notification'
-					else if(self.isPWWMCase() && el.hasLegacyCode && el.hasLegacyCode() == "SWMURGN"
+	    			//Temp Fix : if SWM SR then 'SWM Urgent Notification'
+					else if(self.isSWMCaseType() && el.hasLegacyCode && el.hasLegacyCode() == "SWMURGN"
 							&& U.isEmptyString(el.hasCompletedTimestamp()))
 						return "OutcomeSelectTemplate";
 				}
@@ -3110,11 +3155,14 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 						return v;
 				}
 				if(v.isDisabled) {
-					if(!v.isDisabled())
+					//String property
+					if(v.isDisabled() != 'true') {
 						return v;
+					}
 				}
-				else
+				else {
 					return v;
+				}
 			});
 		};
 		
@@ -3318,7 +3366,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 		    {title:'SR Customers', div:'sr_actors'}, 
 		    {title:'SR Activities', div:'sr_activities'}, 
 		    //{title:'SR Info', div:'sr_info'}, 
-		    {title:'Geo Info', div:'sr_geo_info'}, 
+		    {title:'GIS Info', div:'sr_geo_info'}, 
 		    //{title:'Attachments', div:'sr_images'}
 		    
 		    ];
@@ -4210,8 +4258,10 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
         self.embed = function(parent) {
             $(parent).append(self.markup);
             
-            var ihist = legacy.interactionHistory(); 
-		    ihist.embed($('#callInteractionContainer',self.markup));	
+            //var ihist = legacy.interactionHistory(); 
+		    //ihist.embed($('#callInteractionContainer',self.markup));	
+            var recentSrsByA = legacy.locationHistory();
+            recentSrsByA.embed($('#callInteractionContainer',self.markup));
         }        
 
         // Menu switch on SR details, not sure if this 

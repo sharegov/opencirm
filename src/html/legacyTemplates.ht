@@ -30,6 +30,65 @@
 </div>
 </script>
 
+
+<script id="locationHistoryTemplate" type="text/x-jquery-tmpl">
+<div>
+	<div data-bind="if: !$root.noAddress() && !$root.pending()">
+			<div class="button_group">
+				<input type="button" class="button green_button" data-bind="value:$root.buttonLabel(), click: showLocationHistory"/>
+			</div>
+	</div>
+
+	<div data-bind="if: !$root.noAddress() && $root.pending()">
+	Loading Location history...
+	</div>
+</div>
+</script>
+
+<script id="locationHistoryTemplateDlg" type="text/x-jquery-tmpl">
+	<div id="dialog_Location_History" class="display_none" title="SR Location History">
+			<label data-bind="text: $root.lastFullAddressStr() + ', ' + $root.lastZip_CodeStr()"></label><br/>
+			<br/>
+			<table class="export_table table--even table--links" cellpadding="3" cellspacing="2" width="100%">
+					<thead>
+						<tr>
+							<th width="80px">ID</th>
+							<th>Status</th>
+							<th>Type</th>
+							<th>Created Date</th>
+						</tr>			
+					</thead>
+				<tbody data-bind="foreach: $root.recentSrs">		
+				<tr>
+					<td align="left">
+						<a href="#" data-bind="event: {click: $root.populateSH}">
+							<label data-bind="text: hasCaseNumber"></label> 								
+						</a>
+					</td>
+					<td>
+						<label data-bind="text: hasStatus"></label><br/> 
+					</td>
+					<td>
+						<label data-bind="text: label"></label><br/>
+					</td>
+					<td>
+						<label data-bind="text: hasDateCreated"></label><br/>
+					</td>
+				</tr>
+				</tbody>
+			</table>
+		<br/>
+		<div  data-bind="if: $root.recentSrs().length > 0 ">
+			<label data-bind="text: $root.recentSrs().length"></label> of <label data-bind="text: $root.totalSrs"></label> SRs shown.
+		</div>
+		<div data-bind="if: $root.recentSrs().length == 0 ">
+			<label> No SRs found.</label>
+		</div> 
+		</div>
+</script>
+
+
+
 <script id="marqueeAdminTemplate" type="text/x-jquery-tmpl">
 <div class="grid_breaker">
 
@@ -1034,6 +1093,10 @@
 		
 		.export_table td, .export_table th {
 		border-right:1px solid #ccc;
+		}
+		
+		.export_table td:last-child, .export_table th:last-child {
+			border-right-color: transparent;
 		}
 		</style>
 

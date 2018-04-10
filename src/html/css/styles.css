@@ -190,6 +190,27 @@ input.color_red {
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#970B0E', endColorstr='#970B0E',GradientType=0 ) !important; /* IE6-9 */
 }
 
+/* green */
+
+.green_button {
+	color: #fff;
+	border: solid 1px #388E3C;
+	background: #388E3C;
+	background: -webkit-gradient(linear, left top, left bottom, from(#4CAF50), to(#388E3C) );
+	background: -moz-linear-gradient(top, #4CAF50, #388E3C);
+	filter: progid :   DXImageTransform.Microsoft.gradient (   startColorstr='#4CAF50', endColorstr =   '#388E3C' ) !important;
+}
+
+.green_button:hover {
+	color: #fff;
+	border: solid 1px #2E7D32;
+	background: #2E7D32;
+	background: -webkit-gradient(linear, left top, left bottom, from(#4CAF50), to(#2E7D32) );
+	background: -moz-linear-gradient(top, #4CAF50, #2E7D32);
+	filter: progid :   DXImageTransform.Microsoft.gradient (   startColorstr='#4CAF50', endColorstr =   '#2E7D32' ) !important;
+}
+
+
 /*
 .red_button:active {
 	color: #ccc;
@@ -872,4 +893,26 @@ td:hover {
     right:0;
     z-index:3001;
     border-bottom:2px solid #fff;
+}
+
+/*
+	Erc's Changes/Additionals
+
+*/
+
+.table--even tr:nth-child(even){
+	background-color: #eee;
+}
+
+.table--even td:hover {
+	background-color: transparent;
+}
+
+.table--links a {
+	color: #369;
+}
+
+.table--links a:hover,
+.table--links a:hover > label {
+	cursor: pointer;
 }

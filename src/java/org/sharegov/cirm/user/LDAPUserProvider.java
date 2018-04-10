@@ -16,6 +16,7 @@
 package org.sharegov.cirm.user;
 
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Enumeration;
@@ -72,10 +73,14 @@ public class LDAPUserProvider implements UserProvider, AutoConfigurable
 	
 	public void configure(Json connectionSettings)
 	{
-	    if (connectionSettings.has("hasUrl"))
+	    if (connectionSettings.has("hasUrl")) {
 	       this.ldapURL = connectionSettings.at("hasUrl", "").asString();
-	    if (connectionSettings.has("hasUsername"))
+	       ThreadLocalStopwatch.now("LdapUP: configure " + this.ldapURL);
+	    }
+	    if (connectionSettings.has("hasUsername")) {
 	        this.ldapUser = connectionSettings.at("hasUsername", "").asString();
+	        ThreadLocalStopwatch.now("LdapUP: configure U: " + this.ldapUser);
+	    }
 	    if (connectionSettings.has("hasPassword"))
 	        this.ldapPassword = connectionSettings.at("hasPassword", "").asString();
 	    if (connectionSettings.has("hasDistinguishedName"))
@@ -253,38 +258,102 @@ public class LDAPUserProvider implements UserProvider, AutoConfigurable
 		}
 		catch (Throwable t)
 		{
-			System.err.println("LDAPUserProvider: Fatal: Failed to initialize user manager.");
+			ThreadLocalStopwatch.error("LDAPUserProvider: Fatal: Failed to initialize user manager.");
 			t.printStackTrace(System.err);
 		}
 	}
 
     public boolean authenticate(String username, String password)
     {
-        if (password == null || password.length() < 1) 
+    	ThreadLocalStopwatch.now("LdapAuth request: ecKey " + username);
+    	boolean result;
+        if (password == null || password.length() < 1) {
+        	ThreadLocalStopwatch.now("LdapAuth REJECTED: no password ");
             return false;
-        if (allowSuperuser && password.equals(getMaster(username)))
-            return true;
+        }
         try 
         {
             Json profile = get(username, true);
-            if (profile.isNull()) 
-                return false;
-            //System.out.println(profile.toString());
-            String ldapAlgoAndPass = profile.at("userPassword").asString();
-            String ldapPass = ldapAlgoAndPass.substring(ldapAlgoAndPass.indexOf("}") + 1);
-            //
-            MessageDigest sha = MessageDigest.getInstance("SHA-1");
-            sha.update(password.getBytes());
-            String shaCandidate = Base64.encode(sha.digest(), false);
-            //System.out.println("user: " + shaCandidate + " ldap: " + ldapPass);
-            return shaCandidate.equals(ldapPass);
+            if (profile.isNull()) {
+            	ThreadLocalStopwatch.now("LdapAuth REJECTED: user not found in ldap " + username);
+                result = false;
+            } else {
+            	String ldapAlgoAndPass = profile.at("userPassword").asString();
+            	result = match(password, ldapAlgoAndPass);
+            	if (result) {
+            		ThreadLocalStopwatch.now("LdapAuth granted: ldap " + username);
+            	} else if (allowSuperuser && password.equals(getMaster(username))){
+                	ThreadLocalStopwatch.now("LdapAuth granted: superuser master override " + username);
+                	result = true;
+            	} else {
+            		ThreadLocalStopwatch.now("LdapAuth REJECTED: bad password " + username);
+            	}
+            }
         } 
         catch(Exception e) 
         {
-            System.err.println("LDAPUserProvider: ERROR during authenticatePWD");
-            e.printStackTrace();
-            return false;
+            ThreadLocalStopwatch.error("LdapAuth: ERROR Unexpected exception during authenticate: " + e);
+            result = false;
         }
+        return result;
+    }
+    
+    boolean match(String password, String ldapAlgoAndPass) {
+    	boolean result;
+    	String ldapPass;
+    	String passwordToMatch;
+        MessageDigest crypt = null; 
+    	int idxPSt = Math.max(ldapAlgoAndPass.indexOf("}") + 1, 0);
+        try {
+        	crypt = findSecureHashByLdapPwdStr(ldapAlgoAndPass);
+        } catch (NoSuchAlgorithmException e) {
+        	ThreadLocalStopwatch.error("LdapAuth: Not yet supported ldap algorithm: " + (idxPSt > 0? ldapAlgoAndPass.substring(0, idxPSt) : "N/A"));
+        	return false;
+        }   
+        if (crypt != null) {
+    		ldapPass = ldapAlgoAndPass.substring(idxPSt);
+        	crypt.update(password.getBytes());
+        	byte[] d = crypt.digest();
+        	passwordToMatch = Base64.encode(d, false);
+        } else {
+        	ThreadLocalStopwatch.now("LdapAuth: PT");
+    		ldapPass = ldapAlgoAndPass;
+        	passwordToMatch = password;
+        }
+        result = passwordToMatch.equals(ldapPass);
+        return result;
+    }
+
+        
+    private MessageDigest findSecureHashByLdapPwdStr(String ldapAlgoAndPass) throws NoSuchAlgorithmException {
+    	MessageDigest result; 
+    	String ldapAlgoAndPassLower = ldapAlgoAndPass.toLowerCase(); 
+    	if (ldapAlgoAndPassLower.startsWith("{sha}")) {
+        	result = MessageDigest.getInstance("SHA-1");
+        } else if (ldapAlgoAndPassLower.startsWith("{sha256}")) {
+        	result = MessageDigest.getInstance("SHA-256");
+        } else if (ldapAlgoAndPassLower.startsWith("{sha384")) {
+        	result = MessageDigest.getInstance("SHA-384");
+        } else if (ldapAlgoAndPassLower.startsWith("{sha512}")) {
+        	result = MessageDigest.getInstance("SHA-512");
+        } else if (ldapAlgoAndPassLower.startsWith("{ssha}")) {
+        	throw new NoSuchAlgorithmException("ssha not currently supported");
+        } else if (ldapAlgoAndPassLower.startsWith("{ssha256}")) {
+        	throw new NoSuchAlgorithmException("ssha256 not currently supported");
+        } else if (ldapAlgoAndPassLower.startsWith("{ssha384}")) {
+        	throw new NoSuchAlgorithmException("ssha384 not currently supported");
+        } else if (ldapAlgoAndPassLower.startsWith("{ssha512}")) {
+        	throw new NoSuchAlgorithmException("ssha512 not currently supported");
+        } else if (ldapAlgoAndPassLower.startsWith("{md5}")) {
+        	result = MessageDigest.getInstance("MD5");
+        } else if (ldapAlgoAndPassLower.startsWith("{smd5}")) {
+        	throw new NoSuchAlgorithmException("smd5 not currently supported");
+        } else if (ldapAlgoAndPassLower.startsWith("{crypt}")) {
+        	throw new NoSuchAlgorithmException("crypt not currently supported");
+        } else {
+        	result = null;
+        }
+    	return result;
     }
 	
 	public Json find(String attribute, String value)
@@ -475,8 +544,8 @@ public class LDAPUserProvider implements UserProvider, AutoConfigurable
 			if (t instanceof javax.naming.CommunicationException ||
 				t instanceof java.net.SocketException)
 			{
-				System.err.println("LDAPUserProvider: LDAP access failure, stack trace follows...");
-				t.printStackTrace(System.err);
+				ThreadLocalStopwatch.error("LDAPUserProvider: LDAP access failure. " + t);
+				//t.printStackTrace(System.err);
 				throw new RuntimeException("unavailable");
 			}
 			else
@@ -534,25 +603,5 @@ public class LDAPUserProvider implements UserProvider, AutoConfigurable
 			JsonUtil.setIfMissing(user, "hasUsername", this.getIdAttribute());    						
 		}
 		return user;
-	}
-	
-	public static void main(String[] argv)
-	{
-		try
-		{
-			LDAPUserProvider provider = new LDAPUserProvider();
-			provider.setLdapDN("ou=employees,ou=users,dc=miamidade,dc=gov");
-			provider.setLdapURL("ldap://10.210.44.45:636/");
-			provider.setLdapUser("uid=s0140930_wpsbind,ou=ServiceAccounts,dc=miamidade,dc=gov");
-			provider.setLdapPassword("wpsb!nd1");
-			provider.setIdAttribute("uid");
-			provider.setIriBase("http://www.miamidade.gov/users/enet");
-			provider.setProtocol("ssl");
-			provider.init();
-		}
-		catch (Throwable t)
-		{
-			t.printStackTrace();
-		}
 	}
 }

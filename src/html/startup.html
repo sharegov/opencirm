@@ -214,13 +214,11 @@ function (rest, U, cirm, legacy, sreditor, answerhub, store) {
     		$("#all_clear_dialog").dialog({ height: 150, width: 350, modal: true, buttons: {
 				"Yes" : function() {
 					answerHubModel.topicSearch.clear();
-					answerHubModel.addressSearch.address.clear();
+					$(document).trigger(legacy.InteractionEvents.AddressClear, []);
 					$(document).trigger(legacy.InteractionEvents.SHClear, []);
 					$(document).trigger(legacy.InteractionEvents.ElectionsClear, []);
-					$(document).trigger(legacy.InteractionEvents.WCSClear, []);
 					$(document).trigger(legacy.InteractionEvents.ASDClear, []);
 					$(document).trigger(legacy.InteractionEvents.AdvSrchClear, []);
-					$(document).trigger(legacy.InteractionEvents.AdvSrchAddrClear, []);
 					$(document).trigger(legacy.InteractionEvents.resetServiceHubToSRMain, []);
 					patchPlaceholdersforIE();
 					$("#all_clear_dialog").dialog('close');

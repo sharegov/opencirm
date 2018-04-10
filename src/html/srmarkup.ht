@@ -138,10 +138,10 @@
 			<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
 			<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
 			<div class="grid_3 alpha">
-				<input data-bind="value: $root.getCitizenActorField('Name'), attr:{disabled: $root.isCustomerLocked()}" placeholder="First Name / Company Name"/>
+				<input data-bind="value: $root.getCitizenActorField('Name'), attr:{disabled: $root.isCustomerLocked()}, css: { error: $root.getCitizenActorNameError()}" placeholder="First Name / Company Name"/>
 			</div>
 			<div class="grid_3 omega">
-				<input data-bind="value: $root.getCitizenActorField('LastName'), attr:{disabled: $root.isCustomerLocked()}" placeholder="Last Name"/>
+				<input data-bind="value: $root.getCitizenActorField('LastName'), attr:{disabled: $root.isCustomerLocked()}, css: { error: $root.getCitizenActorLastNameError()}" placeholder="Last Name"/>
 			</div>
 			<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
 	        <div class="grid_3 alpha">
@@ -150,9 +150,12 @@
 	        <div class="grid_2">
 				<input data-bind="inputmask: { value: $root.getCitizenActorCellPhone() , mask:'999-999-9999', autoUnmask: true} , valueUpdate: 'keyup' , attr:{disabled: $root.isCustomerLocked()}, css: { error: $root.getCitizenActorCellPhoneError()}" placeholder="Phone Number"/>
 			</div>
-			<div class="grid_2 omega">
+			<div class="grid_2 omega" data-bind="visible: !$root.isCitizenRequiredForSR()">
 				<input type="checkbox" style="width:18px;display:inline;" data-bind="checked: $root.getCitizenActorField('isAnonymous'), event:{change: $root.changeCitizenAnonymous()}, attr:{disabled: $root.isCustomerLocked()}, click: $root.showAnonymousAlert"/>
 				<label>Anonymous</label>
+			</div>
+			<div class="grid_2 omega" data-bind="visible: $root.isCitizenRequiredForSR()">
+				<label>Contact info<br/>required</label>
 			</div>
 			<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
 			<div class="grid_7 alpha omega" data-bind="visible: $root.hasSelectableCitizenNotificationPrefs() !== true">
@@ -234,10 +237,10 @@
 				<div class="sr_aa">
 					<h5>Customer Name:</h5>
 					<div class="grid_4 alpha">
-						<input data-bind="value: Name, attr:{disabled: $root.isCustomerLocked()}" placeholder="First Name / Company Name"/>
+						<input data-bind="value: Name, attr:{disabled: $root.isCustomerLocked()}, css: { error: Name.hasError }" placeholder="First Name / Company Name"/>
 					</div>
 					<div class="grid_3 omega">
-						<input data-bind="value: LastName, attr:{disabled: $root.isCustomerLocked()}" placeholder="Last Name"/>
+						<input data-bind="value: LastName, attr:{disabled: $root.isCustomerLocked()}, css: { error: LastName.hasError }" placeholder="Last Name"/>
 					</div>
 					<div class="clear" style="margin-bottom:10px;">&nbsp;</div>
 					<h5>Contact Information:</h5>
