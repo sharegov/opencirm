@@ -29,6 +29,7 @@ import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchResult;
+
 import mjson.Json;
 import org.sharegov.cirm.AutoConfigurable;
 import org.sharegov.cirm.utils.Base64;
@@ -311,10 +312,17 @@ public class LDAPUserProvider implements UserProvider, AutoConfigurable
         	return false;
         }   
         if (crypt != null) {
+        	byte[] candidate;
     		ldapPass = ldapAlgoAndPass.substring(idxPSt);
+    		String ldapAlgo = ldapAlgoAndPass.substring(0, idxPSt);
         	crypt.update(password.getBytes());
-        	byte[] d = crypt.digest();
-        	passwordToMatch = Base64.encode(d, false);
+        	if (isSeededSHA(ldapAlgo)) {
+        		//sshaXXX
+        		candidate = getCandidateSameSeed(crypt, ldapAlgo, ldapPass);
+        	} else {
+        		candidate = crypt.digest();
+        	}        	
+        	passwordToMatch = Base64.encode(candidate, false);
         } else {
         	ThreadLocalStopwatch.now("LdapAuth: PT");
     		ldapPass = ldapAlgoAndPass;
@@ -324,7 +332,48 @@ public class LDAPUserProvider implements UserProvider, AutoConfigurable
         return result;
     }
 
-        
+    private byte[] getCandidateSameSeed(MessageDigest initializedCrypt, String ldapAlgo, String ldapPass) {
+    	byte[] result;
+    	ThreadLocalStopwatch.now("LdapAuth: Seeded SHA: " + ldapAlgo);
+		byte[] ldapSeed = getSeed(ldapAlgo, ldapPass); 
+		ThreadLocalStopwatch.now("LdapAuth: Seed length: " + ldapSeed.length);
+		initializedCrypt.update(ldapSeed);
+		byte [] candPass = initializedCrypt.digest();
+		result = new byte[candPass.length + ldapSeed.length];
+		System.arraycopy(candPass, 0, result, 0, candPass.length);
+		System.arraycopy(ldapSeed, 0, result, candPass.length, ldapSeed.length);
+		return result;
+    }
+
+    private boolean isSeededSHA(String ldapAlgo) {
+    	String ldapAlgoAndPassLower = ldapAlgo.toLowerCase(); 
+    	return ldapAlgoAndPassLower.startsWith("{ssha");
+    }
+
+    private byte[] getSeed(String ldapAlgo, String ldapPassAndSeed) {
+    	int passLen = getSeededPassLen(ldapAlgo);
+    	if (passLen <= 1) throw new IllegalStateException("ldapAlgo : " + ldapAlgo + " could not determine byte length");
+    	byte[] passAndSeed = Base64.decode(ldapPassAndSeed);
+    	byte[] seed = new byte[passAndSeed.length - passLen];
+    	System.arraycopy(passAndSeed, passLen, seed, 0, seed.length);
+    	return seed;
+    }
+    
+    private int getSeededPassLen(String ldapAlgo) {
+    	String ldapAlgoLower = ldapAlgo.toLowerCase();
+    	int result = -1;
+    	if (ldapAlgoLower.equals("{ssha}")) {
+    		result = 20;
+    	} else if (ldapAlgoLower.equals("{ssha256}")) {
+    		result = 32;
+    	} else if (ldapAlgoLower.equals("{ssha384}")) {
+    		result = 48;
+    	} else if (ldapAlgoLower.equals("{ssha512}")) {
+    		result = 64;
+    	}
+    	return result;
+    }
+
     private MessageDigest findSecureHashByLdapPwdStr(String ldapAlgoAndPass) throws NoSuchAlgorithmException {
     	MessageDigest result; 
     	String ldapAlgoAndPassLower = ldapAlgoAndPass.toLowerCase(); 
@@ -337,13 +386,13 @@ public class LDAPUserProvider implements UserProvider, AutoConfigurable
         } else if (ldapAlgoAndPassLower.startsWith("{sha512}")) {
         	result = MessageDigest.getInstance("SHA-512");
         } else if (ldapAlgoAndPassLower.startsWith("{ssha}")) {
-        	throw new NoSuchAlgorithmException("ssha not currently supported");
+        	result = MessageDigest.getInstance("SHA-1");
         } else if (ldapAlgoAndPassLower.startsWith("{ssha256}")) {
-        	throw new NoSuchAlgorithmException("ssha256 not currently supported");
+        	result = MessageDigest.getInstance("SHA-256");
         } else if (ldapAlgoAndPassLower.startsWith("{ssha384}")) {
-        	throw new NoSuchAlgorithmException("ssha384 not currently supported");
+        	result = MessageDigest.getInstance("SHA-384");
         } else if (ldapAlgoAndPassLower.startsWith("{ssha512}")) {
-        	throw new NoSuchAlgorithmException("ssha512 not currently supported");
+        	result = MessageDigest.getInstance("SHA-512");
         } else if (ldapAlgoAndPassLower.startsWith("{md5}")) {
         	result = MessageDigest.getInstance("MD5");
         } else if (ldapAlgoAndPassLower.startsWith("{smd5}")) {
