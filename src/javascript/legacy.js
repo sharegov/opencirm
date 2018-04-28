@@ -25,8 +25,6 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
     var legacyTemplates = $(legacyHtml);
 
     var InteractionEvents = {
-            StartCall : "StartCall",
-            EndCall: "EndCall",
             UserAction: "UserAction",
             ServiceRequestTypeClick:"ServiceRequestTypeClick",
             AddressValidated: "AddressValidated",
@@ -236,139 +234,6 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
 		return locationHistoryObj;
 	}
     
-    
-    //
-    // Deprecated Service Call Model
-    //
-    function ServiceCallModel() {
-        var self = this; 
-        self.callOngoing = ko.observable(false);
-        self.actions = ko.observableArray();
-        self.resolution = ko.observable("");
-        self.lastAction = ko.computed(function() {
-                if (self.actions().length == 0)
-                    return "";
-                var a = self.actions()[self.actions().length-1];
-                //console.log('action ', self.actions(), a);
-                return a.hasName + ":" + a.hasValue;                    
-         }, self);
-        
-        self.addAction = function (name, data) {
-            if (!self.callOngoing())
-                return;            
-            if (self.actions == null)
-                throw new Error("No call started yet.");
-            var a = {
-                    type:'ServiceCallAction',
-                    occurAt:new Date().asISODateString(),
-                    hasName:name,
-                    hasValue:data
-            };
-            self.actions.push(a);          
-            return a;
-        };
-        
-        $(document).bind(InteractionEvents.UserAction, function(event, name, data) {
-                self.addAction(name, data);
-        });
-        $(document).bind(InteractionEvents.ServiceRequestTypeClick, function(event, type) {
-                self.addAction("Create SR", U.IRI.name(type));                
-        });
-        
-        self.startCall = function() {
-            if (self.callOngoing())
-                return;            
-            self.actions.removeAll();
-            self.startAt = new Date();
-            self.callOngoing(true);            
-            self.addAction("START CALL", "");
-        };
-        
-        self.endCall = function() {
-            if (!self.callOngoing())
-                return;            
-            self.endAt = new Date();
-//            var resolution = $('#callResolution', self.dom).val();
-            if (!self.resolution()) {
-                alert('Please select call resolution first!');
-                return;
-            }
-            self.addAction("END CALL", self.resolution());
-            // Save to database.
-            var x = {
-                startAt:self.startAt.asISODateString(),
-                endAt:self.endAt.asISODateString(),
-                hasMember:ko.toJS(self.actions),
-                hasUsername:cirm.user.username
-            };
-            // TODO: maybe we should block here until the full call interaction history is saved?
-            cirm.op.postObject('/create/ServiceCall', x, function(r) {
-                    var msg = "Call history saved:";
-                    $.each(x.hasMember, function(i,a) {
-                            msg += a.hasName + " " + a.hasValue;
-                            if (a.hasName != "END CALL")
-                                msg += ",";
-                    });
-                    $.each($('.interaction_success'), function (i,el) {
-                            if ($(el).parent().is(':visible'))
-                                $(el).html(msg)
-                                   .fadeIn(1000)
-                                   .delay(5000)
-                                   .animate({height:0, opacity:0}, 3000);
-                    });
-            });
-            self.actions.removeAll();            
-            self.callOngoing(false);
-            self.resolution("");
-            $(document).trigger(InteractionEvents.EndCall, []);            
-            self.startCall();           
-        };
-        
-        self.actionDescription = function(a) {
-            var result = a.hasName;
-            if (a.hasValue) result += " - " + a.hasValue;
-            var d = new Date(a.occurAt);
-            return result + " - " + d.format("mmmm dS, h:MM:ss TT");
-        };            
-        
-        // changing resolution dropdown automatically ends the call with that resolution
-        self.resolution.subscribe(function (newValue) {
-               self.endCall();
-        }, self);
-        return this;
-    }
-    
-    var serviceCallModel = null;
-    function getServiceCallModel() { 
-        if (serviceCallModel == null)
-            serviceCallModel = new ServiceCallModel();
-        return serviceCallModel;
-    }
-    
-    function interactionHistory() {
-        var self = {};
-        self.dom = $.tmpl($('#callActionsTemplate', legacyTemplates))[0];        
-        self.model = getServiceCallModel();        
-        self.embed = function(parent) {
-            ko.applyBindings(self.model, self.dom);
-            var txtNote = $('#txtCallActionNotetype', self.dom);
-            txtNote.autoResize({
-                    onResize : function() { $(this).css({opacity:0.8}); },
-                    animateCallback : function() { $(this).css({opacity:1}); },
-                    animateDuration : 300,
-                    extraSpace : 30 })
-                .keyup(function(event) {
-                        if(event.keyCode == 13){
-                            self.model.addAction("Note", txtNote.val());
-                            txtNote.val('').change();
-                        }
-                });
-              $(parent).append(self.dom);
-              self.model.startCall();              
-              return self;
-        }        
-        return self;
-    }
     
     //
     // Marquee Messages
@@ -3520,7 +3385,6 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "text!../html/legacyTemplates
     
     var M = {
     	locationHistory: locationHistory,
-        interactionHistory: interactionHistory,
         marquee:marquee,
         marqueeAdmin:marqueeAdmin,
         wcs:wcs,

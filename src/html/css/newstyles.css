@@ -500,18 +500,6 @@ input.color_red {
 	margin-bottom: 10px;
 }
 
-.interaction_success {
-	display:none;
-	margin-bottom:10px;
-	border-radius:4px;
-	-moz-border-radius:4px;
-	background-color:#CFC;
-}
-
-.interaction_success span {
-	display:block;
-	padding:5px;
-}
 
 /* content page styles */
 .grid_breaker {

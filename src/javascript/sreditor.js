@@ -1060,29 +1060,6 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 				}
 			}
 		});
-		
-		$(document).bind(legacy.InteractionEvents.EndCall, function(event){
-			if(!U.isEmptyString(self.data().type()) && U.isEmptyString(self.data().boid()))  {
-				$("#sh_dialog_alert")[0].innerText = "Do you want to save the current Service Request?";
-				$("#sh_dialog_alert").dialog({ height: 150, width: 350, modal: true, buttons: {
-					"Save" : function() {
-						$("#sh_dialog_alert").dialog('close');
-						self.doSubmit(self);
-					},
-					"Clear": function() {
-					  	$("#sh_dialog_alert").dialog('close');
-						self.clearSR();
-					},
-					"Cancel": function() {
-					  	$("#sh_dialog_alert").dialog('close');
-					}
-				  } 
-				});
-			}
-			else {
-				self.clearSR();
-			}
-		});
 
 
         self.loadFromServerByCaseNumber = function(lookup_boid) {
@@ -4257,11 +4234,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
         
         self.embed = function(parent) {
             $(parent).append(self.markup);
-            
-            //var ihist = legacy.interactionHistory(); 
-		    //ihist.embed($('#callInteractionContainer',self.markup));	
             var recentSrsByA = legacy.locationHistory();
-            recentSrsByA.embed($('#callInteractionContainer',self.markup));
+            recentSrsByA.embed($('#locationHistoryContainer',self.markup));
         }        
 
         // Menu switch on SR details, not sure if this 

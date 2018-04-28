@@ -4,11 +4,6 @@
 
 <form>
 
-<!--
-<input id="btnStartCall" type="button" data-bind="click: startCall" value="Start Call">
-
-<ul  data-bind="foreach: actions"><li data-bind="text: $root.actionDescription($data)"></li></ul>
--->
 <b>Interaction Notes:</b><br>
 <span data-bind="text:lastAction"/>
 <textarea id="txtCallActionNotetype" rows="3" data-bind="visible: true"></textarea>
@@ -20,10 +15,6 @@
 <option value="providednumber">Provided Number to Call</option>
 <option value="srcreate">Sevice Request Opened</option>
 </select>
-
-<!--
-<input id="btnEndCall" type="button" data-bind="click: endCall, visible: callOngoing" value="End Call">
--->
 
 </form>
 
