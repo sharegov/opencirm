@@ -883,12 +883,8 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 			$(document).trigger(legacy.InteractionEvents.UserAction, ['PredefinedSearch', t.hasName()]);			
 			self.model.topicSearch.searchKnowledgeBase(t.hasText());
 		}).embed($('#popularSearchContainer',self.markup));
-		    
-		    //var ihist = legacy.interactionHistory(); 
-		    //ihist.embed($('#callInteractionContainer',self.markup));	
 			var recentSrsByA = legacy.locationHistory();
-			recentSrsByA.embed($('#callInteractionContainer',self.markup));
-		    
+			recentSrsByA.embed($('#locationHistoryContainer',self.markup));
 		}
 		
 		// Menu switch on SR details, not sure if this

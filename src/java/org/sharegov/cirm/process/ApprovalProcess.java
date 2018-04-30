@@ -106,14 +106,18 @@ public class ApprovalProcess
 	{
 
 		// TODO finish impl.
-		// if SR intake method is IPHONE, ANDROID, OR WEB INTAKE
+		// if SR intake method is IPHONE, ANDROID, WEB INTAKE, ZAPATA or APPEOCA.
 		// and SR status is O-PENDNG
 		// and there is no prior status history
 		// then current state is APPROVAL_PENDING.
 		Json bo = sr.has("bo")? sr.at("bo") : sr;
-		if(bo.at("properties").at("legacy:hasIntakeMethod").at("iri").asString().endsWith("IPHONE")
-				|| bo.at("properties").at("legacy:hasIntakeMethod").at("iri").asString().endsWith("ANDROID")
-					|| bo.at("properties").at("legacy:hasIntakeMethod").at("iri").asString().endsWith("WEB"))
+		String intakeIri = bo.at("properties").at("legacy:hasIntakeMethod").at("iri").asString();
+		if(intakeIri.endsWith("IPHONE")
+				|| intakeIri.endsWith("ANDROID")
+				|| intakeIri.endsWith("WEB")
+				|| intakeIri.endsWith("ZAPATA")
+				|| intakeIri.endsWith("APPEOCA")
+			)
 		{
 			if(bo.at("properties").at("legacy:hasStatus").at("iri").asString().endsWith("O-PENDNG"))
 			{

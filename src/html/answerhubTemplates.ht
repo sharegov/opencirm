@@ -246,9 +246,8 @@
 					<input type="button" id="geo_info_property" data-bind="click: addressSearch.showPropertyInfo" value="Property Info"></input>
           		 </div>
               </div>             
-              
-           <div class="interaction_success"><span>Populate this div with any information</span></div>
-           <div id='callInteractionContainer'></div>          
+                      
+           <div id='locationHistoryContainer'></div>          
                              	
            </div>
            </div>
