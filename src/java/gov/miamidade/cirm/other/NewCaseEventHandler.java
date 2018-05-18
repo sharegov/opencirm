@@ -17,6 +17,7 @@ package gov.miamidade.cirm.other;
 
 import gov.miamidade.cirm.MDRefs;
 
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,9 +45,9 @@ public class NewCaseEventHandler implements EventTrigger
 	public static final boolean USE_DELAY_SEND_SR_TO_DEPARTMENT = true;
 	
 	/**
-	 * Send all WEB intake cases immediately. 
+	 * Send all digital intake cases immediately. 
 	 */
-	public final static String DELAY_EXEMPT_INTAKE_METHOD = "WEB";
+	public final static String[] DELAY_EXEMPT_INTAKE_METHODS = new String[] {"WEB", "IPHONE", "ANDROID", "APPEOCA", "BLKBERY", "ZAPATA"};
 	
     private static Logger logger = Logger.getLogger("gov.miamidade.cirm.other");
     
@@ -135,10 +136,11 @@ public class NewCaseEventHandler implements EventTrigger
     			int hashIdx = intakeMethodStr.indexOf("#");
     			if (hashIdx > 0) {
     				intakeMethodStr = intakeMethodStr.substring(hashIdx + 1, intakeMethodStr.length());
+    				intakeMethodStr = intakeMethodStr.toUpperCase();
     			}
-    			result = intakeMethodStr.equalsIgnoreCase(DELAY_EXEMPT_INTAKE_METHOD);
+    			result = Arrays.asList(DELAY_EXEMPT_INTAKE_METHODS).contains(intakeMethodStr);
     			if (result) {
-    				ThreadLocalStopwatch.now("NewCaseEventHandler: WEB intake SR detected, sending immediately");
+    				ThreadLocalStopwatch.now("NewCaseEventHandler: " + intakeMethodStr + " digital intake SR detected, sending immediately");
     			}
     		} else {
     			throw new IllegalStateException();
