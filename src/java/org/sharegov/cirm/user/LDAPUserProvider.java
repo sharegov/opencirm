@@ -457,7 +457,12 @@ public class LDAPUserProvider implements UserProvider, AutoConfigurable
 					if (key == null)
 						key = e.getKey();
 					filter.append("(");
-					filter.append(key).append("=").append(e.getValue().asString()).append("*");
+					if (idAttribute != null && idAttribute.equals(key)) {
+						//hilpold: never search wildcard for id
+						filter.append(key).append("=").append(e.getValue().asString());
+					} else {
+						filter.append(key).append("=").append(e.getValue().asString()).append("*");
+					}
 					filter.append(")");
 				}
 			}
