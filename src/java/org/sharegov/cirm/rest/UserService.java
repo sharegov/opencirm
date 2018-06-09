@@ -243,23 +243,29 @@ public class UserService extends RestService implements AutoConfigurable
 	@Path("/authenticate")
 	public Json authenticate(Json form)
 	{		
-	    if (!form.has("provider") || form.is("provider", ""))
+		ThreadLocalStopwatch.startTop("START UserService /authenticate");
+	    if (!form.has("provider") || form.is("provider", "")) {
 	        form.set("provider", desc.at("authenticatesWith").at("hasName"));
+	    }
 		if (form.is("provider", authenticateProvider()))
 		{
-			if (!form.has("password") || form.is("password", ""))
+			if (!form.has("password") || form.is("password", "")) {
 				return ko("Please provide a password.");
+			}
 			Json userdata = userProfile(form);
-			if (userdata.is("error", "No profile"))
+			if (userdata.is("error", "No profile")) {
 				return ko("User not found or invalid password.");
-			else if (!userdata.is("ok", true))
+			}
+			else if (!userdata.is("ok", true)) {
 				return userdata;
+			}
 			else if (!StartUp.getConfig().is("ignorePasswords", true))
 			{			  
 				if (!provider(form.at("provider").asString()).authenticate(
 				        userdata.at("profile").at("hasUsername").asString(), 
-				        form.at("password").asString()))
+				        form.at("password").asString())) {
 					return ko("User not found or invalid password.");
+				}
 			}
 			if (dbg())
 			{
@@ -272,8 +278,9 @@ public class UserService extends RestService implements AutoConfigurable
 			return ok().set("user", prepareReturn(userdata.at("profile")));
 		}
 		// other realms/providers...
-		else
+		else {
 			return ko("Unknown realm");
+		}
 	}
 	
 	/**
