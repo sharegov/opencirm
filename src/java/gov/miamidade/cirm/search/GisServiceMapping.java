@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import mjson.Json;
 
 import org.sharegov.cirm.StartUp;
+import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
 public class GisServiceMapping
 {
@@ -35,6 +36,7 @@ public class GisServiceMapping
 	
 	private void load(File f)
 	{
+		ThreadLocalStopwatch.now("LOADING SR GEO RULES FROM FILE: " + f.getAbsolutePath());
 		final Pattern pattern = Pattern.compile("\"([^\"]*)\"|(?<=,|^)([^,]*)(?=,|$)");
 		BufferedReader reader = null;
 		try 
@@ -55,7 +57,7 @@ public class GisServiceMapping
 					continue;
 				if (!cols.get(5).trim().equalsIgnoreCase("Y")) //6-26-2013 sabbas - If REQD is not Y, no rule.
 					continue;
-					
+				ThreadLocalStopwatch.now("Creating SR GEO RULE: " + cols.get(0) + " (" + cols.get(6) + ").(" + cols.get(7) + ") rule( " + cols.get(8) + ")");	
 				srtype2rule.put(cols.get(0), GisServiceRule.make(cols.get(6), cols.get(7), cols.get(8)));
 			}
 		}

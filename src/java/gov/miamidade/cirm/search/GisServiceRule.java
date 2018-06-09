@@ -168,10 +168,27 @@ public class GisServiceRule
 		       }
 			};
 		}
-		else if (valueExpression.trim().charAt(0) == '{' || valueExpression.trim().charAt(0) == '[')
+		else if (valueExpression.trim().charAt(0) == '{' || valueExpression.trim().charAt(0) == '[') {
 			evaluator = new JsonEvaluator(valueExpression);
-		else
+		}
+		else if ("VALUE == 30".equals(valueExpression)) {
+			evaluator = new Mapping<Object, Boolean>() {
+		       public Boolean eval(Object x)
+		       {
+	              if (!(x instanceof String)) 
+	              {
+	                     System.err.println("ERROR: GisServiceRule: VALUE = 30 did not receive a String to validate against: " + x);
+	                     return false;
+	              }
+	              Matcher m = Pattern.compile("(^[0-9]+).*").matcher((String)x); 
+	              Integer number = (m.find())? Integer.parseInt(m.group(1)) : null;
+	              return number != null && number == 30;
+		       }
+			};
+		}
+		else {
 			throw new RuntimeException("Unknown rule expression:" + valueExpression);
+		}
 		return new GisServiceRule(serviceName, fieldName, valueExpression, evaluator);
 	}
 }
