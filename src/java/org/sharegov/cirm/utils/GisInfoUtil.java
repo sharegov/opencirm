@@ -37,7 +37,7 @@ public class GisInfoUtil {
 		try {
 			folioJson = locationInfo.at("address").at("propertyInfo").at("parcelFolioNumber");
 		} catch (Exception e) {
-			ThreadLocalStopwatch.error("ERROR: Folio not found in locationInfo at address.propertyInfo.parcelFolioNumber with exc: " + e);
+			ThreadLocalStopwatch.error("WARN: Folio not found in locationInfo at address.propertyInfo.parcelFolioNumber with exc: " + e);
 		};		
 		if (folioJson != null) {
     		try {
