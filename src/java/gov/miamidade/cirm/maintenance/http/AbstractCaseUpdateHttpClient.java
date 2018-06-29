@@ -154,7 +154,7 @@ public abstract class AbstractCaseUpdateHttpClient {
 				validateLine(line, HAS_HEADER_LINE && result.isEmpty());
 			} catch (Exception e) {
 				ThreadLocalStopwatch.error("Validation exception in row " + (result.size() + 1) + " File " + getFileUri());
-				throw new IllegalStateException("File Validation failed");
+				throw new IllegalStateException("File Validation failed", e);
 			}
 			result.add(line);
 		}
@@ -193,8 +193,8 @@ public abstract class AbstractCaseUpdateHttpClient {
 				throw e;
 			}
 			String col3Str = lineTok.nextToken();
-			if (col3Str.length() < 7) {
-				throw new IllegalStateException("Column 3 (Case type) less than 7 characters: " + col3Str);
+			if (col3Str.length() < 5) {
+				throw new IllegalStateException("Column 3 (Case type) less than 5 characters: " + col3Str);
 			}
 			for (char c : col3Str.toCharArray()) {
 				if (Character.isWhitespace(c) || Character.isLowerCase(c)) {
