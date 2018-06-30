@@ -141,6 +141,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
           duplicateCount: -1,
 		  duplicateDetails: {},
 		  showEditAsAdmin: false,
+		  isEditAsAdmin: false,
           defaultSCAnswerUpdateTimeoutMins:"",
           emailData:{"subject":"", "to":"", "cc":"", "bcc":"","comments":""},
           currentServerTime: {}
@@ -1143,12 +1144,18 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			} catch(err) {
 				console.log(err);
 			}
+			try {
+				self.isEditAsAdmin(false);
+			} catch(err) {
+				console.log(err);
+			}
 			self.showEditAsAdmin(doShow);
 		};
 
 				
 		self.editAsAdmin = function() {
 			try {
+				self.isEditAsAdmin(true);
 				unlockEntryFields();
 			} catch(err){
 				console.log("editAsAdmin err " + err);
@@ -1265,6 +1272,12 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 		};
 
 		function isServiceFieldUpdateWithinTimeout(el) {
+			var isAdminEditMode = false;
+			try {
+				isAdminEditMode = self.isEditAsAdmin();
+			} catch(err) {
+				console.log(err);
+			}
 			/*
 			1) Determine effective hasUpdateTimeoutMins value 
 				1. check if serviceField has the updateTime obj prop
@@ -1280,6 +1293,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			else if(self.isPendingApproval) {
 				isAnswerUpdateAllowed = true;
 			} 
+			else if(isAdminEditMode) {
+				isAnswerUpdateAllowed = true;
+			}
 			else if(!U.isEmptyString(self.currentServerTime)) {
 				var comparableTime = "";
 				if(self.data().properties().hasDateCreated === undefined)
