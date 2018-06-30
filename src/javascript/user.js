@@ -157,6 +157,20 @@ define(['jquery', 'rest', 'U','store!'], function($, rest, U, store) {
         isNewAllowed : function(object) {
         	return user.isAllowed("BO_New", object);
         },
+        isAdminOr311MgrUser : function() {
+            if (!user.access) return false;
+			var isAdminOr311Mgr = false;
+			var accessArr = U.ensureArray(user.access);
+            $.each(accessArr, function(idx, usergroup) {
+                if(usergroup.iri && (usergroup.iri == "http://www.miamidade.gov/ontology#CirmAdmin"
+                || usergroup.iri == "http://www.miamidade.gov/ontology#Cirm311Mgr")) 
+            	{
+            		isAdminOr311Mgr = true;
+            		return;
+                }
+            });
+        	return isAdminOr311Mgr;
+        },
         setLocalInfo: function(username, info) {
             if (store.cirmdb()) {
                 store.kv().put("localinfo_" + username, JSON.stringify(info));

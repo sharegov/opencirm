@@ -657,6 +657,7 @@
 			<div id="dup_checking" class="display_none">checking for related SRs..</div>
 			<input type="button" class="red_button" data-bind="visible: duplicateCount() > 0, click: showDuplicates, value:'Related SRs ('+duplicateCount()+')'">
            <input id="save" name="Save" type="button" data-bind="value:saveButtonLabel, click: doSubmit, attr:{disabled: $root.isSaveDisabled()}">
+		   <input type="button" class="red_button" data-bind="visible: showEditAsAdmin(), click: editAsAdmin, value:'Edit As Admin'">
            <div id='locationHistoryContainer'></div>
         </div>
         
