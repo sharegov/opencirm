@@ -69,8 +69,7 @@ import org.sharegov.cirm.utils.ThreadLocalStopwatch;
  * Methods dealing with departmental integration. 
  * </p>
  * 
- * @author boris
- *
+ * @author boris, hilpold
  */
 @Path("legacy/departments")
 @Produces("application/json")
@@ -347,63 +346,96 @@ public class DepartmentIntegration extends RestService
     }
     
     /**
-     * Schedules a time machine task to send a case to a department respecting hasAnswerUpdateTimeout.
-     * TM task name will be: sendCase_" + serviceCase.at("boid") + "_ToDepartment.
-     * 
-     * @param serviceCase
+     * Sends a case to MDC department via MQ, City via Http, or schedules a time machine task to send a case to a department respecting hasAnswerUpdateTimeout.
+     * City cases use differnt callbacks and COm client for immediate send.<br>
+     * delayMinutes param -1 triggers type check for answerUpdate <br>
+     * delayMinutes param 0 always sends immediate <br>
+     * delayMinutes param >0 always uses TM to delay by given amount <br>
+     * <br>
+     * TM task name will be: sendCase_" + serviceCase.at("boid") + "_ToDepartment.<br>
+     * <br>
+     * @param serviceCase in new case format
      * @param locationInfo
-     * @param minutes
+     * @param delayMinutes -1..use type delay or 0, 0..immediate, > 0..use time machine delay
      * @return
      */
-    public Json delaySendToDepartment(Json serviceCase, Json locationInfo, int minutes)
+    public Json sendToDepartmentOrCity(Json serviceCase, Json locationInfo, int delayMinutes)
     {
-        String relativePath = "/legacy/departments/sendnew";
-        if (serviceCase.at("hasLegacyInterface").is("hasLegacyCode", "COM-CITY"))
-        {
-            relativePath = "/other/cityofmiami/sendnew";
-//          minutes = 1;
+        boolean isCityCase = serviceCase.at("hasLegacyInterface").is("hasLegacyCode", "COM-CITY"); 
+
+        if (delayMinutes < 0) {
+        	//Negative minutes param -> try to use answer timeout in type or type ServiceCase or 0
+        	Json type = OWL.toJSON(OWL.individual("legacy:" + serviceCase.at("type").asString()));
+        	if (!type.has("hasAnswerUpdateTimeout")) {
+        		//Use configured default timeout, if configured
+        		type = OWL.toJSON(OWL.individual("legacy:ServiceCase"));
+        	}
+        	if (type.has("hasAnswerUpdateTimeout") && type.at("hasAnswerUpdateTimeout").has("hasValue")) {
+        		delayMinutes = type.at("hasAnswerUpdateTimeout").at("hasValue").asInteger();
+        		if (delayMinutes < 0) {
+        			delayMinutes = 0;
+        		}
+        	} else {
+        		delayMinutes = 0;        		
+        	}
         }
-        Json type = OWL.toJSON(OWL.individual("legacy:" + serviceCase.at("type").asString()));
-        if (!type.has("hasAnswerUpdateTimeout"))
-            type = OWL.toJSON(OWL.individual("legacy:ServiceCase"));
-        if (!type.has("hasAnswerUpdateTimeout"))
-        {
-            this.sendToDepartment(serviceCase, locationInfo);
-            srStatsReporter.succeeded("delaySendToDepartment", serviceCase);
-            return ok();
-        }       
-        Json timeMachine = OWL.toJSON((OWLIndividual)Refs.configSet.resolve().get("TimeMachineConfig"));
-        Json thisService = OWL.toJSON((OWLIndividual)Refs.configSet.resolve().get("OperationsRestService"));
-        Calendar cal = Calendar.getInstance();          
-        cal.add(Calendar.MINUTE, minutes > -1 ? minutes : type.at("hasAnswerUpdateTimeout").at("hasValue").asInteger());
-        if (minutes == 0)
-        {
-            this.sendToDepartment(serviceCase, locationInfo);
-            return ok();            
+        //Final delayMinutes determined, check immediate 
+        if (delayMinutes <= 0) {
+        	try {
+            	if (isCityCase) {
+            		//Using Http slow AND TX with update
+            		String caseNumber = serviceCase.at("hasCaseNumber").asString();
+            		Json result = this.sendToCityOfMiami(caseNumber);
+            		if (!result.is("ok", true)) throw new IllegalStateException("Sending to Com failed.");
+            	} else {
+            		//Using MQ fast
+            		this.sendToDepartment(serviceCase, locationInfo);
+            	}
+                return ok();
+        	} catch(Exception e) {
+        		String msg = "Error during immediate send to department or City. isCityCase? " + isCityCase + " " + e; 
+        		ThreadLocalStopwatch.error(msg);
+        		System.out.println("SR  was " + serviceCase);
+        		e.printStackTrace();
+        		return ko(msg);
+        	}
+        } else {
+        	//Schedule with delay > 0 mins in Time machine
+        	String relativePath;
+            if (isCityCase) {
+                relativePath = "/other/cityofmiami/sendnew";
+            } else {
+            	relativePath = "/legacy/departments/sendnew";
+            }
+            Json timeMachine = OWL.toJSON((OWLIndividual)Refs.configSet.resolve().get("TimeMachineConfig"));
+            Json thisService = OWL.toJSON((OWLIndividual)Refs.configSet.resolve().get("OperationsRestService"));
+            Calendar cal = Calendar.getInstance();          
+            cal.add(Calendar.MINUTE, delayMinutes);
+    
+            Json taskSpec = object(); 
+            Json restCall = object("url",  
+                     thisService.at("hasUrl").asString()  + relativePath,
+                                   "method", "POST",
+                                   "content", object("caseNumber", serviceCase.at("boid"),
+                                                     "initiatedAt", System.currentTimeMillis()));
+            taskSpec.set("restCall",restCall)
+                    .set("group", "cirm_service_hub")
+                    .set("name", "sendCase_" + serviceCase.at("boid") + "_ToDepartment")
+                    .set("state", "NORMAL")
+                    .set("description", "Send new service case with BOID " + serviceCase.at("boid") + " to departments for further processing.")
+                    .set("scheduleType", "SIMPLE")
+                    .set("startTime", object()
+                        .set("day_of_month", cal.get(Calendar.DATE))
+                        .set("month", cal.get(Calendar.MONTH) + 1)
+                        .set("year", cal.get(Calendar.YEAR))
+                        .set("hour", cal.get(Calendar.HOUR_OF_DAY))
+                        .set("minute", cal.get(Calendar.MINUTE))
+                        .set("second", cal.get(Calendar.SECOND))
+            );
+            Json tmResult;
+            tmResult = GenUtils.httpPostJson(timeMachine.at("hasUrl").asString() +  "/task", taskSpec);
+            return ok().set("task", tmResult);
         }
-        Json taskSpec = object(); 
-        Json restCall = object("url",  
-                 thisService.at("hasUrl").asString()  + relativePath,
-                               "method", "POST",
-                               "content", object("caseNumber", serviceCase.at("boid"),
-                                                 "initiatedAt", System.currentTimeMillis()));
-        taskSpec.set("restCall",restCall)
-                .set("group", "cirm_service_hub")
-                .set("name", "sendCase_" + serviceCase.at("boid") + "_ToDepartment")
-                .set("state", "NORMAL")
-                .set("description", "Send new service case with BOID " + serviceCase.at("boid") + " to departments for further processing.")
-                .set("scheduleType", "SIMPLE")
-                .set("startTime", object()
-                    .set("day_of_month", cal.get(Calendar.DATE))
-                    .set("month", cal.get(Calendar.MONTH) + 1)
-                    .set("year", cal.get(Calendar.YEAR))
-                    .set("hour", cal.get(Calendar.HOUR_OF_DAY))
-                    .set("minute", cal.get(Calendar.MINUTE))
-                    .set("second", cal.get(Calendar.SECOND))
-        );
-        Json tmResult;
-        tmResult = GenUtils.httpPostJson(timeMachine.at("hasUrl").asString() +  "/task", taskSpec);
-        return ok().set("task", tmResult);
     }
     
     public Json formatNewCaseForDepartments(Json data, Json locationInfo)
@@ -619,9 +651,7 @@ public class DepartmentIntegration extends RestService
             }});
         	if (result.has("SendToCom") && result.is("SendToCom", true)) {
             	//Send to City of Miami directly using web service
-        		CityOfMiamiClient cityClient = new CityOfMiamiClient();
-        		result = cityClient.sendCaseToCity(Json.object("caseNumber", result.at("caseNumber")));
-                //return ok().set("bo", bo.toJSON());
+        		result = sendToCityOfMiami(result.at("caseNumber").asString());
         	}
         } catch (Throwable t) 
         {
@@ -629,6 +659,19 @@ public class DepartmentIntegration extends RestService
         	result = ko(t);
         }
         return result;
+    }
+    
+    /**
+     * Sends a case using CityOfMiami client.
+     * Warning: also loads and updates case (e.g X-Err).
+     * @param caseNumber
+     * @return
+     */
+    private Json sendToCityOfMiami(String caseNumber) {
+		Json result;
+    	CityOfMiamiClient cityClient = new CityOfMiamiClient();
+		result = cityClient.sendCaseToCity(Json.object("caseNumber", caseNumber));
+		return result;
     }
     
 	/**

@@ -110,7 +110,7 @@ public class TimeMachineSimpleJobTestTask implements Runnable {
 		serviceCase.set("boid", boid); //From Basic Search cirm
 		Json locationInfo = null;
 		DepartmentIntegration d = new DepartmentIntegration();
-		Json result = d.delaySendToDepartment(serviceCase, locationInfo, 10);
+		Json result = d.sendToDepartmentOrCity(serviceCase, locationInfo, 10);
 		if (result.is("ok", false)) {
 			ThreadLocalStopwatch.fail("Failed submitting case to time machine");
 		}

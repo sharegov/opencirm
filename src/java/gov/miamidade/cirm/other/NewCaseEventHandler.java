@@ -28,12 +28,13 @@ import org.sharegov.cirm.event.EventTrigger;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
 /**
- * Handler for new Service Requests created in CiRM (311HUb UI) that may need sending to departmental interfaces and
+ * Handler for new Service Requests created in CiRM (311HUb UI) that may need sending to departmental interfaces (or City) and
  * live reporting (if enabled).
  * <br> 
  * Sending to live reporting will be immediate. 
  * <br> 
- * Sending to department will be delayed for a fix grace period using the time machine. if scheduling fails, a case 
+ * Digital intake SRs are always sent immediately.<br>
+ * Sending to department will be delayed for a type configured grace period using the time machine. If scheduling fails, a case 
  * would be sent immediately.
  * <br>
  *  
@@ -60,7 +61,7 @@ public class NewCaseEventHandler implements EventTrigger
         	sendNewCaseToReporting(data);
         	ThreadLocalStopwatch.now("NewCaseEventHandler sendNewCaseToReporting completed");
         }
-        sendNewCaseToDepartmentInterfaceIfNeeded(data);
+        sendNewCaseToDepartmentOrComIfNeeded(data);
         ThreadLocalStopwatch.now("NewCaseEventHandler sendNewCaseToDepartmentInterfaceIfNeeded completed");
         ThreadLocalStopwatch.stop("END NewCaseEventHandler");        
     }
@@ -83,34 +84,40 @@ public class NewCaseEventHandler implements EventTrigger
     }
     
     /**
-     * 
      * Modifies the newSR (adds property case.hasLegacyInterface)
      * @param newSR
      * @return true if case needed to be sent, false otherwise
      */
-    private boolean sendNewCaseToDepartmentInterfaceIfNeeded(Json newSR) {
+    private boolean sendNewCaseToDepartmentOrComIfNeeded(Json newSR) {
     	DepartmentIntegration D = new DepartmentIntegration();
         Json deptInterface = D.getDepartmentInterfaceCode(newSR.at("case").at("type").asString());
         boolean needsToBeSent = !(deptInterface == null || deptInterface.isNull()); 
         if (needsToBeSent) 
         {
         	newSR.at("case").set("hasLegacyInterface", deptInterface);
-            if (USE_DELAY_SEND_SR_TO_DEPARTMENT && !isDelayExempt(newSR)) // send immediately or delay...for debugging purposes (normally we delay)
+            if (USE_DELAY_SEND_SR_TO_DEPARTMENT) // send immediately or delay...for debugging purposes (normally we delay)
             {
-                Json delay = D.delaySendToDepartment(newSR.at("case"), newSR.at("locationInfo"), -1); 
+            	int delayMinutes = -1; //Use type answer delay or ServiceCase answer delay or 0
+            	if (isDelayExempt(newSR)) 
+            	{
+            		//No delay, send immediately to MDC dept or City. Do not use TM.
+            		delayMinutes = 0;
+            	}
+                Json delay = D.sendToDepartmentOrCity(newSR.at("case"), newSR.at("locationInfo"), delayMinutes); 
                 if (!delay.is("ok", true))
                 {
                     ThreadLocalStopwatch.now("Delay failed, IMMEDIATE DEPT SEND NewCaseEventHandler");
                     logger.warning("Unable to schedule send case to department: " + 
                                     delay + ", sending immediately...");
-                    D.sendToDepartment(newSR.at("case"), newSR.at("locationInfo"));
+                    //D.sendToDepartment(newSR.at("case"), newSR.at("locationInfo"));
+                    D.sendToDepartmentOrCity(newSR.at("case"), newSR.at("locationInfo"), 0); 
                 }
             }
             else 
-            {
+            {            	
             	//Don't delay use immediate send not allowing for calltakers to fix an SR after save
             	//Use for testing only.
-            	D.sendToDepartment(newSR.at("case"), newSR.at("locationInfo"));
+            	D.sendToDepartmentOrCity(newSR.at("case"), newSR.at("locationInfo"), 0); 
             }
         }
         return needsToBeSent;
@@ -149,5 +156,5 @@ public class NewCaseEventHandler implements EventTrigger
     		ThreadLocalStopwatch.error("ERROR: NewCaseEventHandler: Could not determine intake method of SR: " + newSR);
     	}
     	return result;
-    }
+    }    
 }
