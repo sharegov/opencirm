@@ -329,11 +329,12 @@ public class RelationalStoreImpl implements RelationalStore
 //						//DBGUtils.printPoolDataSourceInfo(pds);
 //					}
 //				}
-				if (toBeWrapped.getHoldability() == ResultSet.HOLD_CURSORS_OVER_COMMIT)
-				{
-					// System.out.println("HOLD CURSORS ON COMMIT WAS DEFAULT. CHANGING TO CLOSE ON COMMIT.");
-					toBeWrapped.setHoldability(ResultSet.CLOSE_CURSORS_AT_COMMIT);
-				}
+// Issue since driver update to Ora 12.2.0.1 (SQLFeatureNotSupportedException: Unsupported holdability value)				
+//				if (toBeWrapped.getHoldability() == ResultSet.HOLD_CURSORS_OVER_COMMIT)
+//				{
+//					// System.out.println("HOLD CURSORS ON COMMIT WAS DEFAULT. CHANGING TO CLOSE ON COMMIT.");
+//					toBeWrapped.setHoldability(ResultSet.CLOSE_CURSORS_AT_COMMIT);
+//				}
 				// Snapshot Isolation MVCC for Oracle?
 				if (toBeWrapped.getTransactionIsolation() != TRANSACTION_ISOLATION_LEVEL)
 				{

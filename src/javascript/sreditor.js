@@ -139,7 +139,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
           gisInfoLabel:"Gis Info",
           activeProfile: {},
           duplicateCount: -1,
-          duplicateDetails: {},
+		  duplicateDetails: {},
+		  showEditAsAdmin: false,
+		  isEditAsAdmin: false,
           defaultSCAnswerUpdateTimeoutMins:"",
           emailData:{"subject":"", "to":"", "cc":"", "bcc":"","comments":""},
           currentServerTime: {}
@@ -623,6 +625,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 	                    self.listeners.push(l);
 				});
 			}
+			self.updateShowEditAsAdmin();
 			self.dupChecker();
 			patchPlaceholdersforIE();
 	    };
@@ -1060,29 +1063,6 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 				}
 			}
 		});
-		
-		$(document).bind(legacy.InteractionEvents.EndCall, function(event){
-			if(!U.isEmptyString(self.data().type()) && U.isEmptyString(self.data().boid()))  {
-				$("#sh_dialog_alert")[0].innerText = "Do you want to save the current Service Request?";
-				$("#sh_dialog_alert").dialog({ height: 150, width: 350, modal: true, buttons: {
-					"Save" : function() {
-						$("#sh_dialog_alert").dialog('close');
-						self.doSubmit(self);
-					},
-					"Clear": function() {
-					  	$("#sh_dialog_alert").dialog('close');
-						self.clearSR();
-					},
-					"Cancel": function() {
-					  	$("#sh_dialog_alert").dialog('close');
-					}
-				  } 
-				});
-			}
-			else {
-				self.clearSR();
-			}
-		});
 
 
         self.loadFromServerByCaseNumber = function(lookup_boid) {
@@ -1154,6 +1134,35 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			}
 		};
 		
+		self.updateShowEditAsAdmin = function() {	
+			var doShow = false;
+			try {
+				doShow = cirm.user.isAdminOr311MgrUser()
+				&& !self.isNew
+				&& !self.isPendingApproval
+				&& ($("#editorDiv :disabled").length > 0);
+			} catch(err) {
+				console.log(err);
+			}
+			try {
+				self.isEditAsAdmin(false);
+			} catch(err) {
+				console.log(err);
+			}
+			self.showEditAsAdmin(doShow);
+		};
+
+				
+		self.editAsAdmin = function() {
+			try {
+				self.isEditAsAdmin(true);
+				unlockEntryFields();
+			} catch(err){
+				console.log("editAsAdmin err " + err);
+			};
+		};
+
+				
 		self.isSaveDisabled = function() {
 			var updateTypeAllowed = true;
 			if (self.data() && self.data().type()) 
@@ -1263,6 +1272,12 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 		};
 
 		function isServiceFieldUpdateWithinTimeout(el) {
+			var isAdminEditMode = false;
+			try {
+				isAdminEditMode = self.isEditAsAdmin();
+			} catch(err) {
+				console.log(err);
+			}
 			/*
 			1) Determine effective hasUpdateTimeoutMins value 
 				1. check if serviceField has the updateTime obj prop
@@ -1278,6 +1293,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			else if(self.isPendingApproval) {
 				isAnswerUpdateAllowed = true;
 			} 
+			else if(isAdminEditMode) {
+				isAnswerUpdateAllowed = true;
+			}
 			else if(!U.isEmptyString(self.currentServerTime)) {
 				var comparableTime = "";
 				if(self.data().properties().hasDateCreated === undefined)
@@ -2259,13 +2277,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			jsondata.properties.actorEmails = emailCustomers;
 		};
 
-    	self.postNewCase = function (jsondata, model) {
-           
-            
-            
-            
-            
-            
+    	self.postNewCase = function (jsondata, model) { 
     		jsondata.properties.hasDateCreated = self.getServerDateTime().asISODateString();
             jsondata.properties.isCreatedBy = cirm.user.username;
             var send = prefixMaker(jsondata);
@@ -2287,9 +2299,6 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
                     }
                     self.removeDuplicates();
                     setModel(result.bo, model, model.srType(), type, true, false);
-               
-                    
-                   
                     //2149 Optional Image upload - disabled meta until next week
                     //Enabled again
                     try {
@@ -2312,7 +2321,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
     	
     	};
     	
-    	  self.updateExistingCase = function (jsondata, model) {
+    	self.updateExistingCase = function (jsondata, model) {
           jsondata.properties.hasDateLastModified = self.getServerDateTime().asISODateString();
           jsondata.properties.isModifiedBy = cirm.user.username;
           var send = prefixMaker(jsondata);
@@ -3330,7 +3339,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
                         self.data().properties().hasYCoordinate(tempY);
                         self.removeAddressExtenders(self.data());
                         self.clearEmail();
-                        $("#sh_dialog_clear").dialog('close');
+						$("#sh_dialog_clear").dialog('close');
+						self.updateShowEditAsAdmin();
                         patchPlaceholdersforIE();
                         if (type != undefined)
                             self.startNewServiceRequest(type);
@@ -3356,6 +3366,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 			self.originalData(emptyModel.originalData);
 			self.clearAddress();
 			self.clearEmail();
+			self.updateShowEditAsAdmin();
 		});
 
 		
@@ -3722,6 +3733,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 					if(data.approvalState == 'APPROVAL_PENDING')
 					{
 						model.isPendingApproval = true;
+						model.updateShowEditAsAdmin();
 						unlockEntryFields();
 						$("#sh_dialog_alert")[0].innerText = "The following Service Request has been identified as a self-service request and is 'Pending Approval'. Please review the request and make appropriate changes. When complete, set the status to 'Open' then save.";
 						$("#sh_dialog_alert").dialog({ height: 150, width: 500, modal: true, buttons: {
@@ -4257,11 +4269,8 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
         
         self.embed = function(parent) {
             $(parent).append(self.markup);
-            
-            //var ihist = legacy.interactionHistory(); 
-		    //ihist.embed($('#callInteractionContainer',self.markup));	
             var recentSrsByA = legacy.locationHistory();
-            recentSrsByA.embed($('#callInteractionContainer',self.markup));
+            recentSrsByA.embed($('#locationHistoryContainer',self.markup));
         }        
 
         // Menu switch on SR details, not sure if this 

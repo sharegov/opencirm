@@ -279,16 +279,25 @@ public class LDAPUserProvider implements UserProvider, AutoConfigurable
             	ThreadLocalStopwatch.now("LdapAuth REJECTED: user not found in ldap " + username);
                 result = false;
             } else {
-            	String ldapAlgoAndPass = profile.at("userPassword").asString();
-            	result = match(password, ldapAlgoAndPass);
-            	if (result) {
-            		ThreadLocalStopwatch.now("LdapAuth granted: ldap " + username);
-            	} else if (allowSuperuser && password.equals(getMaster(username))){
-                	ThreadLocalStopwatch.now("LdapAuth granted: superuser master override " + username);
-                	result = true;
-            	} else {
-            		ThreadLocalStopwatch.now("LdapAuth REJECTED: bad password " + username);
-            	}
+                String empStatus = null;
+                if (profile.has("mdcEmployeeStatus") && profile.at("mdcEmployeeStatus").isString()) {
+                	empStatus = profile.at("mdcEmployeeStatus").asString();
+                }
+                if (empStatus != null && !empStatus.startsWith("A")) {
+                	ThreadLocalStopwatch.now("LdapAuth REJECTED: mdcEmployeeStatus not eligible: " + empStatus);
+                	result = false;
+                } else {
+                	String ldapAlgoAndPass = profile.at("userPassword").asString();
+                	result = match(password, ldapAlgoAndPass);
+                	if (result) {
+                		ThreadLocalStopwatch.now("LdapAuth granted: ldap " + username);
+                	} else if (allowSuperuser && password.equals(getMaster(username))){
+                    	ThreadLocalStopwatch.now("LdapAuth granted: superuser master override " + username);
+                    	result = true;
+                	} else {
+                		ThreadLocalStopwatch.now("LdapAuth REJECTED: bad password " + username);
+                	}
+                }
             }
         } 
         catch(Exception e) 
@@ -457,7 +466,12 @@ public class LDAPUserProvider implements UserProvider, AutoConfigurable
 					if (key == null)
 						key = e.getKey();
 					filter.append("(");
-					filter.append(key).append("=").append(e.getValue().asString()).append("*");
+					if (idAttribute != null && idAttribute.equals(key)) {
+						//hilpold: never search wildcard for id
+						filter.append(key).append("=").append(e.getValue().asString());
+					} else {
+						filter.append(key).append("=").append(e.getValue().asString()).append("*");
+					}
 					filter.append(")");
 				}
 			}
