@@ -77,6 +77,7 @@ import org.w3c.dom.Document;
 
 public class GenUtils
 {
+	public static final int HTTP_POST_SOCKET_TIMEOUT_MS = 15 * 60 * 1000;
 	public static final String TIMETASK_NOTRANS_MARKER = "NOTRANS";
 	private static final ThreadLocal<SimpleDateFormat> ISO_DATE_FORMATS = new ThreadLocal<SimpleDateFormat>();
 	public static final String isoDatePattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
@@ -341,7 +342,7 @@ public class GenUtils
 			// disable retries from within the HTTP client			 
 			client.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
 					new DefaultHttpMethodRetryHandler(0, false));
-			client.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, 0);
+			client.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, HTTP_POST_SOCKET_TIMEOUT_MS);
 			int statusCode = client.executeMethod(method);
 			if (statusCode != HttpStatus.SC_OK)
 				throw new RuntimeException("HTTP Error " + statusCode
