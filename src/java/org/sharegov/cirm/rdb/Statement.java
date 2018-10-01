@@ -49,5 +49,16 @@ public class Statement
 	public void setTypes(List<OWLNamedIndividual> types)
 	{
 		this.types = types;
-	} 
+	}
+	
+	/**
+	 * Prints the SQL with ? replaced by parameters
+	 */
+	public String toString() {
+		String sql = getSql().SQL();
+		for (Object o : getParameters()) {
+			sql = sql.replaceFirst("\\?", "'"+ o.toString() + "'");
+		}
+		return sql;
+	}
 }
