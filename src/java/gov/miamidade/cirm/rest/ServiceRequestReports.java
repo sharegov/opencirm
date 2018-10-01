@@ -80,7 +80,7 @@ import org.sharegov.cirm.rest.LegacyEmulator;
  * closed 
  * or voided after either yesterday 8:30PM or the previous time machine fire time. 
  * The report file will be saved to an FTP location.
- * An email will be sent on success or failure to CIAO-CIRMTT@miamidade.gov after each report generation.
+ * An EMAIL_STATUS will be sent on success or failure to CIAO-CIRMTT@miamidade.gov after each report generation.
  * 
  * Previous fire time will be determined from the json data passed into POST /reports/bluecartReport.
  * 
@@ -102,9 +102,9 @@ public class ServiceRequestReports
 	private Map<String, Integer> blueCartColumnOrder = Collections.emptyMap();
 	private QueryTranslator qt = null;
 	private RelationalStore store = null;
-	private static boolean ftp = true;
-	private static boolean saveLocally = true;
-	private static boolean email = true;
+	private static boolean SAVE_REPORT_FTP = true;
+	private static boolean SAVE_REPORT_DISK = true;
+	private static boolean EMAIL_STATUS = true;
 	private static String emailFrom ="cirm@miamidade.gov";
 	private static String emailTo = "CIAO-CIRMTT@miamidade.gov";
 	private static String recyclingCartsFileName = "RecyclingCarts.txt";
@@ -517,17 +517,19 @@ public class ServiceRequestReports
 				System.out.println("No Recycling Blue Cart Issues Service Requests present for given search criteria.");
 				System.out.println("data passed into the recyclingBlueCartIssuesReport method : " + data.toString());
 			}
-			if(ftp)
-				sendReportToFTPWithOnErrorRetry(result.toString());
-			if(saveLocally)
+			if(SAVE_REPORT_DISK) {
 				saveTextFileLocally(result.toString());
+			}
+			if(SAVE_REPORT_FTP) {
+				sendReportToFTPWithOnErrorRetry(result.toString());
+			}
 			System.out.println("Successfully created the Recycling Blue Cart Issues report.");
 	    	if(missingGisCases.size() > 0)
 	    	{
 	    		System.out.println("*****Cases which needed a GIS ServiceLayers lookup : " 
 	    				+missingGisCases.size() + " : They are : "+missingGisCases);
 	    	}
-		    if(email)
+		    if(EMAIL_STATUS)
 		    {
 	    		String emailSubject = "SUCCESS : Recycling BlueCart Report Generation SUCCESSFUL";
 		    	emailBody.append("Successfully generated the Recyling Blue Cart Report.").append("<br><br>");
@@ -546,7 +548,7 @@ public class ServiceRequestReports
 			System.out.println("******Unable to create Recycling Blue Cart Issues report ******");
 			System.out.println("data passed into the recyclingBlueCartIssuesReport method : " + data.toString());
 			e.printStackTrace();
-	    	if(email)
+	    	if(EMAIL_STATUS)
 	    	{
 				String emailSubject = "FAIL : Recycling BlueCart Report Generation FAILED";
 		    	emailBody.append("Failed to generate the Recyling BlueCart Report.")
