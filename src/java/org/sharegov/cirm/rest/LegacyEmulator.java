@@ -105,6 +105,7 @@ import org.sharegov.cirm.legacy.CirmMessage;
 import org.sharegov.cirm.legacy.CirmMimeMessage;
 import org.sharegov.cirm.legacy.MessageManager;
 import org.sharegov.cirm.legacy.Permissions;
+import org.sharegov.cirm.model.CirmAddress;
 import org.sharegov.cirm.owl.Model;
 import org.sharegov.cirm.process.AddTxnListenerForNewSR;
 import org.sharegov.cirm.process.ApprovalProcess;
@@ -2732,41 +2733,8 @@ public class LegacyEmulator extends RestService
 				json.at("hasCaseNumber").asString() : null;
 		try
 		{
-			String addrType = address.at("addressType").isNull() ? "" : 
-					address.at("addressType").asString();
-			String fullAddr = address.at("fullAddress").isNull() ? "" : 
-					address.at("fullAddress").asString();
-			String city = address.at("Street_Address_City").isNull() ? "" :
-					address.at("Street_Address_City").at("iri").isNull() ? "" : 
-					address.at("Street_Address_City").at("iri").asString();
-			String state = address.at("Street_Address_State").at("iri")
-					.asString();
-			Long zip = address.at("Zip_Code").isNull() ? 0 : 
-					address.at("Zip_Code").asLong();
-			String unit = address.has("Street_Unit_Number") ? address.at(
-					"Street_Unit_Number").asString() : null;
-			String locationName = address.has("hasLocationName") ? address.at(
-					"hasLocationName").asString() : null;
-
-			if (addrType.equals("PointAddress") || addrType.equals("StreetAddress") || addrType.equals("Address"))
-			{
-				Long streetNumber = address.at("Street_Number").asLong();
-				String streetName = address.at("Street_Name").asString();
-				String streetPrfx = address.at("Street_Direction").at("iri")
-						.asString();
-				String streetSufx = address.at("hasStreetType").at("iri")
-						.asString();
-
-				duplicates = duplicateCheck(owlClass(srType), streetNumber,
-						streetName, streetPrfx, streetSufx, unit, locationName,
-						city, state, zip, fullAddr, createdDate, false);
-			}
-			else
-			{
-				duplicates = duplicateCheck(owlClass(srType), (long) 0, null,
-						null, null, unit, locationName, city, state, zip,
-						fullAddr, createdDate, true);
-			}
+			CirmAddress parsedAddress = CirmAddress.createFrom(address);
+			duplicates = duplicateCheck(owlClass(srType), parsedAddress, createdDate);
 			if (DBG) ThreadLocalStopwatch.now("DUPLICATE Query completed");
 			if (duplicates == null)
 			{
@@ -2819,27 +2787,11 @@ public class LegacyEmulator extends RestService
 	 * 
 	 * 
 	 * @param srType
-	 * @param streetNumber
-	 * @param streetName
-	 * @param streetPrefix
-	 * @param streetSuffix
-	 * @param unit
-	 * @param locationName
-	 * @param city
-	 * @param state
-	 * @param zip
+	 * @param CirmAddress
 	 * @return
-	 * @author Syed
+	 * @author Syed, Tom
 	 */
-	private List<Map<String, Object>> duplicateCheck(OWLClass srType,
-			Long streetNumber, String streetName, String streetPrefix,
-			String streetSuffix, String unit, String locationName, String city,
-			String state, Long zip, String fullAddress, String createdDate, 
-			boolean Isintersection)
-			throws Exception
-	{
-		long lo = ((long) streetNumber / 100) * 100;
-		long hi = lo + 99;
+	private List<Map<String, Object>> duplicateCheck(OWLClass srType, CirmAddress cirmAddress, String createdDate) throws Exception {
 		long thresholdDays = -1; // Search only SRs created on (today's date -
 									// thresholdDays) when determining
 									// duplicates.
@@ -2853,63 +2805,57 @@ public class LegacyEmulator extends RestService
 		Set<OWLClass> S = null;
 		if (duplicateCheckRule != null)
 			S = reasoner().getTypes(duplicateCheckRule, true).getFlattened();
-		if (S == null || S.isEmpty())
+		if (S == null || S.isEmpty()) {
+			//No duplicate rule for SR type, return null no query
+			ThreadLocalStopwatch.now("No duplicate rule for " + srType.getIRI().getFragment());
 			return null;
+		}
 		OWLClass type = S.iterator().next();
-		if (type.getIRI().equals(Model.legacy("StreetAddressOnlyCheckRule")))
-		{
-			if (Isintersection == false)
-			{
+		if (type.getIRI().equals(Model.legacy("StreetAddressOnlyCheckRule"))) {
+			if (cirmAddress.isLocation()) {
 				useAddressBuffer = true; // use and address buffer only for
 											// StreetAddressOnlyRule.
 				OWLLiteral addressBufferLiteral = dataProperty(
 						duplicateCheckRule, Model.legacy("hasAddressBuffer").toString());
-				if (addressBufferLiteral != null)
-				{
+				if (addressBufferLiteral != null) {
 					addressBuffer = addressBufferLiteral.parseInteger();
-					if (addressBuffer > 0)
-					{
-						if (addressBuffer > streetNumber)
-							lo = 0;
-						else
-							lo = streetNumber - addressBuffer;
-						hi = streetNumber + addressBuffer;
-					}
+					ThreadLocalStopwatch.now("Using StreetAddressOnlyCheck for " + srType.getIRI().getFragment() 
+							+ " Addrbuffer: " + addressBuffer + " Addr: " + cirmAddress.getFullAddress());
 				}
+			} else {
+				ThreadLocalStopwatch.now("Not using StreetAddressOnlyCheck for " + srType.getIRI().getFragment() 
+						+ " Addr: " + cirmAddress.getFullAddress());
 			}
-
-		}
-		else if (type.getIRI().equals(Model.legacy("FullAddressCheckRule")))
-		{
+		} else if (type.getIRI().equals(Model.legacy("FullAddressCheckRule"))) {
+			ThreadLocalStopwatch.now("Using FullAddressCheckRule for " + srType.getIRI().getFragment() 
+					+ " Addr: " + cirmAddress.getFullAddress());
 			/**
 			 * The default settings check the all address fields so nothing
 			 * extra to do here, except recognizing the rule itself in the else
 			 * condition.
 			 */
-		}
-		else
-		{
+		} else {
 			throw new IllegalStateException("Unknown duplicate check rule:"
 					+ type.getIRI().toString());
 		}
-
 		OWLLiteral thresholdDaysLiteral = dataProperty(duplicateCheckRule,
 				Model.legacy("hasThresholdDays").toString());
-		if (thresholdDaysLiteral != null)
-		{
+		if (thresholdDaysLiteral != null) {
 			thresholdDays = thresholdDaysLiteral.parseInteger();
 		}
 
 		OWLNamedIndividual statusLimitIndividual = objectProperty(
 				duplicateCheckRule, Model.legacy("hasStatusLimit").toString());
-		if (statusLimitIndividual != null)
-		{
+		if (statusLimitIndividual != null) {
 			statusLimit = owlClass(statusLimitIndividual.getIRI());
-		}
-		else
-		{
+		} else {
 			statusLimit = null;
 		}
+
+		//Create Query based on Dup Check Rule and Address
+		String city = cirmAddress.getStreet_Address_City().getIri();
+		Long zip = cirmAddress.getZip_Code(); 
+		//String state = cirmAddress.getStreet_Address_State().getIri();
 
 		Statement statement = new Statement();
 		List<Object> parameters = new ArrayList<Object>();
@@ -2932,20 +2878,13 @@ public class LegacyEmulator extends RestService
 		parameters.add(zip);
 		parameterTypes.add(individual(Concepts.INTEGER));
 		// conditional
-		if (thresholdDays > -1)
-		{
-//			select.AND().WHERE("CREATED_DATE").GREATER_THAN("SYSDATE - ?");
-//			parameters.add(thresholdDays);
-//			parameterTypes.add(individual(Concepts.INTEGER));
+		if (thresholdDays > -1) {
 			select.AND().WHERE("CREATED_DATE");
-			if(createdDate == null)
-			{
+			if(createdDate == null) {
 				select.GREATER_THAN("SYSDATE - ?");
 				parameters.add(thresholdDays);
 				parameterTypes.add(individual(Concepts.INTEGER));
-			}
-			else
-			{
+			} else {
 				select.GREATER_THAN("? - ?");
 				parameters.add(createdDate);
 				parameterTypes.add(individual(Concepts.TIMESTAMP));
@@ -2953,75 +2892,80 @@ public class LegacyEmulator extends RestService
 				parameterTypes.add(individual(Concepts.INTEGER));
 			}
 		}
-		if (useAddressBuffer)
-		{
+		if (useAddressBuffer) {
+			Long streetNumber = cirmAddress.getStreet_Number() != null? cirmAddress.getStreet_Number() : 0L; 
+			String streetName = cirmAddress.getStreet_Name(); 
+			String streetPrefixIri = cirmAddress.getStreet_Direction() != null? cirmAddress.getStreet_Direction().getIri() : null;
+			String streetSuffixIri = cirmAddress.getHasStreetType() != null? cirmAddress.getHasStreetType().getIri() : null; 
+
+			long lowStreetNumber = ((long) streetNumber / 100) * 100;
+			long highStreetNumber = lowStreetNumber + 99;
+			if (addressBuffer > 0) {
+				if (addressBuffer > streetNumber) {
+					lowStreetNumber = 0;
+				} else {
+					lowStreetNumber = streetNumber - addressBuffer;
+				}
+				highStreetNumber = streetNumber + addressBuffer;
+			}
 			select.AND().WHERE("STREET_NUMBER").BETWEEN("?", "?");
-			parameters.add(lo);
+			parameters.add(lowStreetNumber);
 			parameterTypes.add(individual(Concepts.INTEGER));
-			parameters.add(hi);
+			parameters.add(highStreetNumber);
 			parameterTypes.add(individual(Concepts.INTEGER));
 
-			if (streetPrefix != null && !"".equals(streetPrefix))
-			{
+			if (streetPrefixIri != null && !streetPrefixIri.isEmpty()) {
 				select.AND().WHERE("STREET_NAME_PREFIX").EQUALS("?");
-				OWLNamedIndividual streetPrefixIndividual = individual(streetPrefix);
+				OWLNamedIndividual streetPrefixIndividual = individual(streetPrefixIri);
 				parameters.add(streetPrefixIndividual.getIRI().getFragment());
 				parameterTypes.add(individual(Concepts.VARCHAR));
 			}
-			if (streetSuffix != null && !"".equals(streetSuffix))
-			{
+			if (streetSuffixIri != null && !streetSuffixIri.isEmpty()) {
 				select.AND().WHERE("STREET_NAME_SUFFIX").EQUALS("?");
-				OWLNamedIndividual streetSuffixIndividual = individual(streetSuffix);
+				OWLNamedIndividual streetSuffixIndividual = individual(streetSuffixIri);
 				parameters.add(streetSuffixIndividual.getIRI().getFragment());
 				parameterTypes.add(individual(Concepts.VARCHAR));
 			}
-			if (streetName != null && !"".equals(streetName))
-			{
+			if (streetName != null && !streetName.isEmpty()) {
 				select.AND().WHERE("STREET_NAME").EQUALS("?");
 				parameters.add(streetName);
 				parameterTypes.add(individual(Concepts.VARCHAR));
 			}
-		}
-		else
-		{
+		} else {
+			//NO address buffer, direct full address compare
+			String fullAddress = cirmAddress.getFullAddress();
 			select.AND().WHERE("FULL_ADDRESS").EQUALS("?");
 			parameters.add(fullAddress);
 			parameterTypes.add(individual(Concepts.VARCHAR));
+			//Unit (optional)
+			String unit = cirmAddress.getStreet_Unit_Number(); 
+			if (unit != null && !unit.isEmpty()) {
+				select.AND().WHERE("UNIT").EQUALS("?");
+				parameters.add(unit);
+				parameterTypes.add(individual(Concepts.VARCHAR));
+			} else {
+				select.AND().WHERE("UNIT IS NULL");
+			}
+			//Location name
+			String locationName = cirmAddress.getHasLocationName(); 
+			if (locationName != null && !locationName.isEmpty()) {
+				select.AND().WHERE("LOCATION_NAME");
+				parameters.add(locationName);
+				parameterTypes.add(individual(Concepts.VARCHAR));
+			} else {
+				select.AND().WHERE("LOCATION_NAME IS NULL");
+			}
 		}
-
-		if (unit != null && !unit.equals(""))
-		{
-			select.AND().WHERE("UNIT").EQUALS("?");
-			parameters.add(unit);
-			parameterTypes.add(individual(Concepts.VARCHAR));
-		}
-		else
-		{
-			select.AND().WHERE("UNIT IS NULL");
-		}
-		if (locationName != null && !locationName.equals(""))
-		{
-			select.AND().WHERE("LOCATION_NAME");
-			parameters.add(locationName);
-			parameterTypes.add(individual(Concepts.VARCHAR));
-		}
-		else
-		{
-			select.AND().WHERE("LOCATION_NAME IS NULL");
-		}
-		if (statusLimit != null)
-		{
+		
+		if (statusLimit != null) {
 			Set<OWLNamedIndividual> statuses = reasoner().getInstances(
 					statusLimit, false).getFlattened();
-			if (!statuses.isEmpty())
-			{
+			if (!statuses.isEmpty()) {
 				List<String> fragments = new ArrayList<String>(statuses.size());
-				for (OWLNamedIndividual status : statuses)
-				{
+				for (OWLNamedIndividual status : statuses) {
 					fragments.add("'" + status.getIRI().getFragment() + "'");
 				}
-				select.AND().WHERE("SR_STATUS")
-						.IN(fragments.toArray(new String[fragments.size()]));
+				select.AND().WHERE("SR_STATUS").IN(fragments.toArray(new String[fragments.size()]));
 			}
 		}
 		statement.setSql(select);
@@ -3030,8 +2974,7 @@ public class LegacyEmulator extends RestService
 		RelationalStore store = getPersister().getStore();
 		ThreadLocalStopwatch.now("DUPLICATE Query start");
 		if (DBGSQL) {			
-			ThreadLocalStopwatch.now("Query: \r\n" + select.SQL());
-			System.out.println(Arrays.toString(parameters.toArray()));
+			ThreadLocalStopwatch.now("Query: \r\n" + statement.toString());
 			System.out.println(Arrays.toString(parameterTypes.toArray()));
 		}
 		return store.query(statement, Refs.tempOntoManager.resolve().getOWLDataFactory());		
