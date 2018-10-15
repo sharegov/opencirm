@@ -1630,7 +1630,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 		
 		self.dupChecker = function() {
 	    	if(!U.isEmptyString(self.data().properties().hasXCoordinate()) && 
-	    	   !U.isEmptyString(self.data().properties().atAddress().Street_Number()) && 
+	    	   !U.isEmptyString(self.data().properties().atAddress().fullAddress()) && 
 	    	   !U.isEmptyString(self.data().properties().atAddress().Zip_Code()) && 
 	    	   !U.isEmptyString(self.data().type()))
 	    	{
