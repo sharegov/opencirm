@@ -44,9 +44,38 @@ define(['rest', 'U', 'store!'], function(rest, U, store) {
             		else
             			return A;
             }},
-            {"hasName": "caseStatuses", "hasQueryExpression": "legacy:Status"},
-            {"hasName": "casePriorities", "hasQueryExpression": "legacy:Priority"},
-            {"hasName": "caseIntakeMethods", "hasQueryExpression": "legacy:IntakeMethod"},
+            {"hasName": "caseStatuses", "hasQueryExpression": "legacy:Status", 
+            "map": function(A) {
+                A.sort( function(a,b) {  
+                    if(a.label && b.label) return a.label.localeCompare(b.label); else return -1; 
+                   });
+                return A;
+            }},
+            {"hasName": "casePriorities", "hasQueryExpression": "legacy:Priority", 
+            "map": function(A) {
+                A.sort( function(a,b) {  
+                    if(a.label && b.label) return a.label.localeCompare(b.label); else return -1; 
+                   });
+                return A;
+            }},
+            {"hasName": "caseIntakeMethods", "hasQueryExpression": "legacy:IntakeMethod", 
+            "map": function(A) {
+                A.sort( function(a,b) {  
+                    if(a.label && b.label) return a.label.localeCompare(b.label); else return -1; 
+                   });
+                return A;
+            }},
+            {"hasName": "caseIntakeMethodsEnabled", "dependsOn":["caseIntakeMethods"],
+            "map": function(A) {
+                var x = [];
+                $.each(A, function (i,v) {
+                        if(v.isDisabled != 'true') {
+                            x.push(v);
+                        }
+                    }
+                );
+                return x;
+            }},
             {"hasName": "caseIntakeMethodLists", "hasQueryExpression": "legacy:IntakeMethodList"},
             {"hasName": "statesInUS", "hasQueryExpression": "State__U.S._"},
             {"hasName": "typeToXSDMappings", "hasUrl": "/legacy/getHasTypeMappingToXSD"},
