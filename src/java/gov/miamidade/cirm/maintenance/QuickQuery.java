@@ -175,10 +175,13 @@ public class QuickQuery {
 	
 	
 	//21 Servicecase with address validation disabled
-	public static String DLQUERY = "legacy:ServiceCase and legacy:hasValidLocationNotRequired value true ";
-	public static String[] PROPS = new String[] { "iri", "label", "hasJurisdictionCode", "hasValidLocationNotRequired", "isDisabled", "isDisabledCreate", "providedBy.label"};
+//	public static String DLQUERY = "legacy:ServiceCase and legacy:hasValidLocationNotRequired value true ";
+//	public static String[] PROPS = new String[] { "iri", "label", "hasJurisdictionCode", "hasValidLocationNotRequired", "isDisabled", "isDisabledCreate", "providedBy.label"};
 
-
+	//22 Intake methods
+	public static String DLQUERY = "legacy:IntakeMethod";
+	public static String[] PROPS = new String[] { "iri", "label", "hasOrderBy", "isDisabled"};
+	
 	public static String[] VAR3 = new String[]
 	{
 		"BULKYTRA",
