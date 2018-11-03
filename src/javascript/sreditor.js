@@ -153,7 +153,9 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 		
 		self.allStatus.call('push', cirm.refs.caseStatuses);
 		self.allPriority.call('push', cirm.refs.casePriorities);
-		self.allIntake.call('push', cirm.refs.caseIntakeMethods);
+		//Contains all not disabled intake methods sorted + 1 (first in list) for SR having a disabled intake method.
+		//cloning original with slice(0)
+		self.allIntake.call('push', cirm.refs.caseIntakeMethodsEnabled.slice(0));
 		self.allStates.call('push', cirm.refs.statesInUS);
 		self.hasTypeMapping(cirm.refs.typeToXSDMappings);
 		if (cirm.refs.serviceCaseClass && cirm.refs.serviceCaseClass.hasAnswerUpdateTimeout) {
@@ -163,6 +165,35 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 		}
         //END: Basic RequestModel initialization
 		
+		//Updates allIntake array to ensure the current SRs (new or existing) intake method,
+		//which may be disabled is in the array, which normally only contains not-diabled intake methods
+		self.updateAllIntake = function(request) {
+			if (self.allIntake().length === cirm.refs.caseIntakeMethodsEnabled.length + 1) {
+				//We added a disabled intake method before as first elem, now remove.
+				self.allIntake().shift();
+			}
+			var additionalIri = '';
+			try {
+				additionalIri = request.properties().hasIntakeMethod().iri();
+				var found = $.grep(self.allIntake(), function(e, i) {
+						if (e.iri === additionalIri) return true;
+					});
+				if (found.length === 0) {
+					//Add disabled intake method as first to selection
+					var additional = $.grep(cirm.refs.caseIntakeMethods, function(e, i) {
+						if (e.iri === additionalIri) return true;
+					});
+					if (additional.length > 0) {
+						self.allIntake().unshift(additional[0]);
+					} else {
+						console.log("Invalid intake method iri: " + additionalIri);
+					}
+				}
+			} catch(err) {
+				console.log(err);
+			}			
+		}
+
 		//START: define knockoutjs extenders for emptyModel -----------------------------------------
 		ko.extenders.required = function(target, overrideMessage) {
 			self.commonExtenderForAll(target, overrideMessage);
@@ -566,6 +597,7 @@ define(["jquery", "U", "rest", "uiEngine", "store!", "cirm", "legacy", "interfac
 				self.addAddressExtenders(request);				
 				
 			    //End: apply knockoutjs extenders ----------------------------------------------------------------------
+			    self.updateAllIntake(request);
 				self.data(request);
 				
 				if(!self.isNew && !U.isEmptyString(request.properties().atAddress().fullAddress()))
