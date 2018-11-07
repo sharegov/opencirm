@@ -32,6 +32,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import mjson.Json;
+
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
@@ -46,7 +48,10 @@ import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.rdb.DbId;
 
 /**
- * This class exports ontology data to a set of CSV in an exportDirectory
+ * This class exports ontology data to a set of CSV in an exportDirectory.
+ * Logic uses datastuctures inherit in java utils (Lists,Maps) package to avoid 
+ * typing objects which reside the ontology while still being able to represent them
+ * in a semi-structured way (csv, json). 
  * 
  * @author Syed Abbas
  *
@@ -111,48 +116,7 @@ public class ReportingMetadataExport
 	
 	private void dumpMetaIndividuals()
 	{
-		List<List<String>> metaTable =  new ArrayList<List<String>>();
-		Set<OWLEntity> set = new HashSet<OWLEntity>();
-		set.addAll(Refs.defaultOntology.resolve().getIndividualsInSignature(true));
-		set.addAll(Refs.defaultOntology.resolve().getClassesInSignature(true));
-		Map<OWLEntity, DbId> identifiers = Refs.defaultRelationalStoreExt.resolve().selectIDsAndEntitiesByIRIs(set);
-		for(OWLEntity entity : set)
-		{
-			List<String> l = new ArrayList<String>();
-			Long id = null;
-			if(identifiers.containsKey(entity))
-			{
-				id = identifiers.get(entity).getFirst();
-			}
-			l.add(id==null?"":id+"");
-			l.add(entity.getIRI().getFragment());
-			l.add(OWL.getEntityLabel(entity).replace("\"", "\"\""));
-			if(entity.isOWLNamedIndividual())
-			{
-				OWLNamedIndividual ind = entity.asOWLNamedIndividual();
-				Set<OWLClassExpression> types =  ind.getTypes(Refs.defaultOntology.resolve());
-				OWLClass type = OWL.owlClass("Thing");
-				if(!types.isEmpty())
-				{
-					OWLClassExpression exp = types.iterator().next();
-					if(!exp.isAnonymous())
-						type = exp.asOWLClass();
-				}
-				l.add(type.getIRI().getFragment());
-				OWLLiteral nameOrAlias = OWL.dataProperty(ind,"Name");
-				if(nameOrAlias == null)
-					nameOrAlias = OWL.dataProperty(ind,"Alias");
-				l.add(ind.getIRI().getFragment());
-				l.add(nameOrAlias != null? nameOrAlias.getLiteral():"");
-			}
-			else
-			{
-				l.add("");
-				l.add("");
-				l.add("");
-			}
-			metaTable.add(l);
-		}
+		List<List<String>> metaTable = getMetaIndividuals();
 		toCSV(metaTable, new File(getExportDirectory() + "meta_individuals_metadata.csv"));
 	}
 	
@@ -362,89 +326,29 @@ public class ReportingMetadataExport
 	
 	private void dumpAnnotationLabels()
 	{
-		List<List<String>> iriLabels = new ArrayList<List<String>>();
-		for(OWLOntology o : OWL.ontologies())
-		{
-			for(OWLAnnotationAssertionAxiom axiom : o.getAxioms(AxiomType.ANNOTATION_ASSERTION))
-			{
-				if(axiom.getProperty().equals(OWL.annotationProperty("http://www.w3.org/2000/01/rdf-schema#label")))
-				{
-					List<String> iriRow = new ArrayList<String>();
-					iriRow.add(axiom.getSubject().toString());
-					String value = axiom.getValue().toString();
-					iriRow.add(value.substring(0,value.indexOf("\"",1)).replaceAll("\"", ""));
-					iriLabels.add(iriRow);
-				}
-			}
-		}
+		List<List<String>> iriLabels = getAnnotationLabels();
 		toCSV(iriLabels, new File(getExportDirectory() + "irilabels_metadata.csv"));
 	}
 
 	private void dumpSRTypes()
 	{
-		List<List<String>> typeTable = new ArrayList<List<String>>();
-		Map<String,String> owners = new HashMap<String,String>();
-		for(OWLNamedIndividual  type : reasoner().getInstances(OWL.owlClass("legacy:ServiceCase"), false).getFlattened())
-		{
-			List<String> typeRow = new ArrayList<String>();
-			typeRow.add(type.getIRI().getFragment());
-			typeRow.add(OWL.getEntityLabel(type));
-			OWLNamedIndividual providedBy = OWL.objectProperty(type, "legacy:providedBy");
-			String srOwner = "";
-			if(providedBy != null)
-			{
-				srOwner = providedBy.getIRI().getFragment();
-				if(!owners.containsKey(srOwner))
-				{
-					String ownerLabel = OWL.getEntityLabel(providedBy);
-					owners.put(srOwner, ownerLabel);
-				}
-			}
-			typeRow.add(srOwner);
-			double days;
-			OWLLiteral literal = OWL.dataProperty(type, "legacy:hasDurationDays");
-			if(literal != null)
-				days = literal.parseFloat();
-			else
-				days = 0.0;
-			typeRow.add(days+"");
-			typeTable.add(typeRow);
-		}
+		
+		List<Object> srTypes = getSRTypes();
+		List<List<String>> typeTable = (List<List<String>>) srTypes.get(0);
+		List<List<String>> ownersTable = (List<List<String>>) srTypes.get(1);
 		toCSV(typeTable, new File(getExportDirectory() + "sr_types_metadata.csv"));
-		List<List<String>> ownersTable = new ArrayList<List<String>>();
-		for(Map.Entry<String, String> entry : owners.entrySet())
-		{
-			List<String> ownerRow = new ArrayList<String>();
-			ownerRow.add(entry.getKey());
-			ownerRow.add(entry.getValue());
-			ownersTable.add(ownerRow);
-		}
 		toCSV(ownersTable,  new File(getExportDirectory() + "org_unit_by_sr_metadata.csv"));
 	}
 	
 	private void dumpActivities()
 	{
-		List<List<String>> activityTable = new ArrayList<List<String>>();
-		for(OWLNamedIndividual  activity : reasoner().getInstances(OWL.owlClass("legacy:Activity"), false).getFlattened())
-		{
-			List<String> activityRow = new ArrayList<String>();
-			activityRow.add(activity.getIRI().getFragment());
-			activityRow.add(OWL.getEntityLabel(activity));
-			activityTable.add(activityRow);
-		}
+		List<List<String>> activityTable = getActivities();
 		toCSV(activityTable, new File(getExportDirectory() + "sr_activity_metadata.csv"));
 	}
 	
 	private void dumpOutcomes()
 	{
-		List<List<String>> outcomeTable = new ArrayList<List<String>>();
-		for(OWLNamedIndividual  outcome : reasoner().getInstances(OWL.owlClass("legacy:Outcome"), false).getFlattened())
-		{
-			List<String> outcomeRow = new ArrayList<String>();
-			outcomeRow.add(outcome.getIRI().getFragment());
-			outcomeRow.add(getEntityLabel(outcome));
-			outcomeTable.add(outcomeRow);
-		}
+		List<List<String>> outcomeTable = getOutcomes();
 		toCSV(outcomeTable, new File(getExportDirectory() + "sr_outcome_metadata.csv"));
 	}
 	
@@ -473,40 +377,19 @@ public class ReportingMetadataExport
 	
 	private void dumpIntakeMethods()
 	{
-		List<List<String>> intakeMethodTable = new ArrayList<List<String>>();
-		for(OWLNamedIndividual  intakeMethod : reasoner().getInstances(OWL.owlClass("legacy:IntakeMethod"), false).getFlattened())
-		{
-			List<String> intakeMethodRow = new ArrayList<String>();
-			intakeMethodRow.add(intakeMethod.getIRI().getFragment());
-			intakeMethodRow.add(OWL.getEntityLabel(intakeMethod));
-			intakeMethodTable.add(intakeMethodRow);
-		}
+		List<List<String>> intakeMethodTable = getIntakeMethods();
 		toCSV(intakeMethodTable, new File(getExportDirectory() + "intake_method_metadata.csv"));
 	}
 	
 	private void dumpPriority()
 	{
-		List<List<String>> priorityTable = new ArrayList<List<String>>();
-		for(OWLNamedIndividual  priority : reasoner().getInstances(OWL.owlClass("legacy:Priority"), false).getFlattened())
-		{
-			List<String> priorityRow = new ArrayList<String>();
-			priorityRow.add(priority.getIRI().getFragment());
-			priorityRow.add(OWL.getEntityLabel(priority));
-			priorityTable.add(priorityRow);
-		}
+		List<List<String>> priorityTable = getPriority();
 		toCSV(priorityTable, new File(getExportDirectory() + "priority_metadata.csv"));
 	}
 	
 	private void dumpStatus()
 	{
-		List<List<String>> statusTable = new ArrayList<List<String>>();
-		for(OWLNamedIndividual  status : reasoner().getInstances(OWL.owlClass("legacy:Status"), false).getFlattened())
-		{
-			List<String> statusRow = new ArrayList<String>();
-			statusRow.add(status.getIRI().getFragment());
-			statusRow.add(OWL.getEntityLabel(status));
-			statusTable.add(statusRow);
-		}
+		List<List<String>> statusTable = getStatus();
 		toCSV(statusTable, new File(getExportDirectory() + "status_metadata.csv"));
 	}
 	
@@ -634,18 +517,7 @@ public class ReportingMetadataExport
 	
 	private void dumpObservedHolidays()
 	{
-		List<List<String>> holidayTable = new ArrayList<List<String>>();
-		for(OWLNamedIndividual  holiday : reasoner().getInstances(OWL.owlClass("mdc:Observed_County_Holiday"), false).getFlattened())
-		{
-			for(OWLLiteral date : reasoner().getDataPropertyValues(holiday, OWL.dataProperty("mdc:hasDate")))
-			{
-				List<String> holidayRow = new ArrayList<String>();
-				holidayRow.add(holiday.getIRI().getFragment());
-				holidayRow.add(OWL.getEntityLabel(holiday));
-				holidayRow.add(date.getLiteral());
-				holidayTable.add(holidayRow);
-			}
-		}
+		List<List<String>> holidayTable = getObservedHolidays();
 		toCSV(holidayTable, new File(getExportDirectory() + "holidays_metadata.csv"));
 	}
 	
@@ -665,4 +537,299 @@ public class ReportingMetadataExport
 		ReportingMetadataExport e = new ReportingMetadataExport();
 		e.execute();
 	}
+	
+	public List<Object> getSRTypes()
+	{
+		List<List<String>> typeTable = new ArrayList<List<String>>();
+		Map<String,String> owners = new HashMap<String,String>();
+		for(OWLNamedIndividual  type : reasoner().getInstances(OWL.owlClass("legacy:ServiceCase"), false).getFlattened())
+		{
+			List<String> typeRow = new ArrayList<String>();
+			typeRow.add(type.getIRI().getFragment());
+			typeRow.add(OWL.getEntityLabel(type));
+			OWLNamedIndividual providedBy = OWL.objectProperty(type, "legacy:providedBy");
+			String srOwner = "";
+			if(providedBy != null)
+			{
+				srOwner = providedBy.getIRI().getFragment();
+				if(!owners.containsKey(srOwner))
+				{
+					String ownerLabel = OWL.getEntityLabel(providedBy);
+					owners.put(srOwner, ownerLabel);
+				}
+			}
+			typeRow.add(srOwner);
+			typeRow.add(owners.get(srOwner));
+			double days;
+			OWLLiteral literal = OWL.dataProperty(type, "legacy:hasDurationDays");
+			if(literal != null)
+				days = literal.parseFloat();
+			else
+				days = 0.0;
+			typeRow.add(days+"");
+			typeTable.add(typeRow);
+		}
+		List<List<String>> ownersTable = new ArrayList<List<String>>();
+		for(Map.Entry<String, String> entry : owners.entrySet())
+		{
+			List<String> ownerRow = new ArrayList<String>();
+			ownerRow.add(entry.getKey());
+			ownerRow.add(entry.getValue());
+			ownersTable.add(ownerRow);
+		}
+		
+		return new ArrayList<Object>(){
+			{
+				this.add(typeTable);
+				this.add(ownersTable);
+			}
+		};
+	}
+	
+	public List<List<String>> getStatus()
+	{
+		List<List<String>> statusTable = new ArrayList<List<String>>();
+		for(OWLNamedIndividual  status : reasoner().getInstances(OWL.owlClass("legacy:Status"), false).getFlattened())
+		{
+			List<String> statusRow = new ArrayList<String>();
+			statusRow.add(status.getIRI().getFragment());
+			statusRow.add(OWL.getEntityLabel(status));
+			statusTable.add(statusRow);
+		}
+		return statusTable;
+	}
+	
+	public List<List<String>> getPriority()
+	{
+		List<List<String>> priorityTable = new ArrayList<List<String>>();
+		for(OWLNamedIndividual  priority : reasoner().getInstances(OWL.owlClass("legacy:Priority"), false).getFlattened())
+		{
+			List<String> priorityRow = new ArrayList<String>();
+			priorityRow.add(priority.getIRI().getFragment());
+			priorityRow.add(OWL.getEntityLabel(priority));
+			priorityTable.add(priorityRow);
+		}
+		return priorityTable;
+	}
+	
+	public List<List<String>> getIntakeMethods()
+	{
+	
+		List<List<String>> intakeMethodTable = new ArrayList<List<String>>();
+		for(OWLNamedIndividual  intakeMethod : reasoner().getInstances(OWL.owlClass("legacy:IntakeMethod"), false).getFlattened())
+		{
+			List<String> intakeMethodRow = new ArrayList<String>();
+			intakeMethodRow.add(intakeMethod.getIRI().getFragment());
+			intakeMethodRow.add(OWL.getEntityLabel(intakeMethod));
+			intakeMethodTable.add(intakeMethodRow);
+		}
+		return intakeMethodTable;
+	}
+	
+	public List<List<String>> getActivities()
+	{
+		
+		List<List<String>> activityTable = new ArrayList<List<String>>();
+		for(OWLNamedIndividual  activity : reasoner().getInstances(OWL.owlClass("legacy:Activity"), false).getFlattened())
+		{
+			List<String> activityRow = new ArrayList<String>();
+			activityRow.add(activity.getIRI().getFragment());
+			activityRow.add(OWL.getEntityLabel(activity));
+			activityTable.add(activityRow);
+		}
+		
+		return activityTable;
+	}
+	
+	public List<List<String>> getAnnotationLabels()
+	{
+		List<List<String>> iriLabels = new ArrayList<List<String>>();
+		for(OWLOntology o : OWL.ontologies())
+		{
+			for(OWLAnnotationAssertionAxiom axiom : o.getAxioms(AxiomType.ANNOTATION_ASSERTION))
+			{
+				if(axiom.getProperty().equals(OWL.annotationProperty("http://www.w3.org/2000/01/rdf-schema#label")))
+				{
+					List<String> iriRow = new ArrayList<String>();
+					iriRow.add(axiom.getSubject().toString());
+					String value = axiom.getValue().toString();
+					iriRow.add(value.substring(0,value.indexOf("\"",1)).replaceAll("\"", ""));
+					iriLabels.add(iriRow);
+				}
+			}
+		}
+		return iriLabels;
+	}
+
+	public List<List<String>> getOutcomes()
+	{
+		List<List<String>> outcomeTable = new ArrayList<List<String>>();
+		for(OWLNamedIndividual  outcome : reasoner().getInstances(OWL.owlClass("legacy:Outcome"), false).getFlattened())
+		{
+			List<String> outcomeRow = new ArrayList<String>();
+			outcomeRow.add(outcome.getIRI().getFragment());
+			outcomeRow.add(getEntityLabel(outcome));
+			outcomeTable.add(outcomeRow);
+		}
+		return outcomeTable;
+	}
+	
+	public List<List<String>> getUserOrgUnit()
+	{
+		List<List<String>> orgUnitByDeptTable = new ArrayList<List<String>>();
+		OWLClassExpression cle = OWL.parseDL("Dept_Code min 1", reasoner().getRootOntology());
+		
+		for(OWLNamedIndividual  orgUnit : reasoner().getInstances(cle, false).getFlattened())
+		{
+			List<String> orgUnits = new ArrayList<String>();
+			orgUnits.add(orgUnit.getIRI().getFragment());
+			orgUnits.add(OWL.getEntityLabel(orgUnit));
+			orgUnits.add(OWL.dataProperty(orgUnit, "Dept_Code").getLiteral());
+			orgUnitByDeptTable.add(orgUnits);
+		}
+		
+		return orgUnitByDeptTable;
+	}
+	
+	public List<List<String>> getObservedHolidays() 
+	{
+		
+		List<List<String>> holidayTable = new ArrayList<List<String>>();
+		for(OWLNamedIndividual  holiday : reasoner().getInstances(OWL.owlClass("mdc:Observed_County_Holiday"), false).getFlattened())
+		{
+			for(OWLLiteral date : reasoner().getDataPropertyValues(holiday, OWL.dataProperty("mdc:hasDate")))
+			{
+				List<String> holidayRow = new ArrayList<String>();
+				holidayRow.add(holiday.getIRI().getFragment());
+				holidayRow.add(OWL.getEntityLabel(holiday));
+				holidayRow.add(date.getLiteral());
+				holidayTable.add(holidayRow);
+			}
+		}
+		return holidayTable;
+	}
+	
+	public List<List<String>> getMetaIndividuals()
+	{
+	
+		List<List<String>> metaTable =  new ArrayList<List<String>>();
+		Set<OWLEntity> set = new HashSet<OWLEntity>();
+		set.addAll(Refs.defaultOntology.resolve().getIndividualsInSignature(true));
+		set.addAll(Refs.defaultOntology.resolve().getClassesInSignature(true));
+		Map<OWLEntity, DbId> identifiers = Refs.defaultRelationalStoreExt.resolve().selectIDsAndEntitiesByIRIs(set);
+		for(OWLEntity entity : set)
+		{
+			List<String> l = new ArrayList<String>();
+			Long id = null;
+			if(identifiers.containsKey(entity))
+			{
+				id = identifiers.get(entity).getFirst();
+			}
+			l.add(id==null?"":id+"");
+			l.add(entity.getIRI().getFragment());
+			l.add(OWL.getEntityLabel(entity).replace("\"", "\"\""));
+			if(entity.isOWLNamedIndividual())
+			{
+				OWLNamedIndividual ind = entity.asOWLNamedIndividual();
+				Set<OWLClassExpression> types =  ind.getTypes(Refs.defaultOntology.resolve());
+				OWLClass type = OWL.owlClass("Thing");
+				if(!types.isEmpty())
+				{
+					OWLClassExpression exp = types.iterator().next();
+					if(!exp.isAnonymous())
+						type = exp.asOWLClass();
+				}
+				l.add(type.getIRI().getFragment());
+				OWLLiteral nameOrAlias = OWL.dataProperty(ind,"Name");
+				if(nameOrAlias == null)
+					nameOrAlias = OWL.dataProperty(ind,"Alias");
+				l.add(ind.getIRI().getFragment());
+				l.add(nameOrAlias != null? nameOrAlias.getLiteral():"");
+			}
+			else
+			{
+				l.add("");
+				l.add("");
+				l.add("");
+			}
+			metaTable.add(l);
+		}
+		return metaTable;
+		
+	}
+	
+	public Json getSRTypesAsJson()
+	{
+		List<Object> srTypes = getSRTypes();
+		List<List<String>> typeTable = (List<List<String>>) srTypes.get(0);
+		List<List<String>> ownersTable = (List<List<String>>) srTypes.get(1);
+		return Json.array(typeTable);
+	}
+	
+	public Json getSRStatusAsJson()
+	{
+		List<List<String>> statusTable = getStatus();
+		return Json.array(statusTable);
+	}
+	
+	public Json getSRPriorityAsJson()
+	{
+		List<List<String>> priorityTable = getPriority();
+		return Json.array(priorityTable);
+	}
+	
+	public Json getSRIntakeMethodsAsJson()
+	{
+		List<List<String>> intakeMethodsTable = getIntakeMethods();
+		return Json.array(intakeMethodsTable);
+	}
+	
+	public Json getSRActivitiesAsJson()
+	{
+		List<List<String>> activitiesTable = getActivities();
+		return Json.array(activitiesTable);
+	}
+	
+	public Json getSRAnnotationLabelsAsJson()
+	{
+		List<List<String>> annotationLabels = getAnnotationLabels();
+		return Json.array(annotationLabels);
+	}
+	
+	public Json getSRQuestionsAsJson()
+	{
+		List<List<String>> questionsTable = getQuestionsAsSortedList();
+		return Json.array(questionsTable);
+	}
+	
+	public Json getSRChoiceValuesAsJson()
+	{
+		List<List<String>> choiceValuesTable = getChoiceValuesAsSortedList();
+		return Json.array(choiceValuesTable);
+	}
+	
+	public Json getSROutcomesAsJson()
+	{
+		List<List<String>> outcomesTable = getOutcomes();
+		return Json.array(outcomesTable);
+	}
+	
+	public Json getUserOrgUnitAsJson()
+	{
+		List<List<String>> userOrgUnitTable = getUserOrgUnit();
+		return Json.array(userOrgUnitTable);
+	}
+	
+	public Json getObservedHolidaysAsJson()
+	{
+		List<List<String>> observedHolidaysTable = getObservedHolidays();
+		return Json.array(observedHolidaysTable);
+	}
+	
+	public Json getMetaIndividualsAsJson()
+	{
+		List<List<String>> metaIndividualsTable = getMetaIndividuals();
+		return Json.array(metaIndividualsTable);
+	}
+
 }
