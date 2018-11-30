@@ -428,8 +428,10 @@ public class ActivityManager
 					));
 			if (customDueDate != null) {
 				if (suspenseDaysConfiguredValue <= 0 ) {
+					Calendar customDueDateCal = Calendar.getInstance();
+					customDueDateCal.setTime(customDueDate);
 				OWLLiteral customDueDateLiteral = factory.getOWLLiteral(DatatypeFactory.newInstance()
-						.newXMLGregorianCalendar((GregorianCalendar)calcreated)
+						.newXMLGregorianCalendar((GregorianCalendar)customDueDateCal)
 						.toXMLFormat()
 						,OWL2Datatype.XSD_DATE_TIME_STAMP);
 				manager.addAxiom(o,
