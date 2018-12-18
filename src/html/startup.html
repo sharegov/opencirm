@@ -68,7 +68,7 @@ paths: {
 "cirmgis": "mdcgis"
 },
 priority: ["jquery", "jqueryconf", "logincheck"]
-, urlArgs: "cache_bust=" + (new Date()).getTime()
+<!--, urlArgs: "cache_bust=" + (new Date()).getTime() -->
 },  [ "rest", "U", "cirm", "legacy", "sreditor", "answerhub", "store", "interfaceValidation", "jquery", 
     "jquery-ui", "jquery-tmpl", "jquery-autoresize", 
     "jquery-marquee", "jquery-cookie", "jquery-jec",
@@ -335,11 +335,9 @@ function setPropertyInfo(info)
 }
 function addressFromMapCallback(pinfo)
 {                
-    //if (!pinfo.match)
-    //    return;
+	console.log('addressFromMapCallback: \r\n');
 	var clonedProp = $.extend(true, {}, pinfo);;
     answerHubModel.addressSearch.setAddress(clonedProp, false);
-
 }
 function mapInitializedCallback()
 {

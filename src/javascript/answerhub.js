@@ -40,8 +40,11 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 				else if(data.addressApproximation != null)
 					self.zip ( data.addressApproximation.split(",")[1] );
 			}
-			if(data.parsedAddress.unit != undefined && data.parsedAddress.unit.length > 0)
+			if(data.parsedAddress.unit != undefined && data.parsedAddress.unit.length > 0) {
 				self.unit ( data.parsedAddress.unit );
+			} else {
+				self.unit("");
+			}
 			if(data.propertyInfo == null)
 				data.propertyInfo = {};
 			if(data.propertyInfo.parcelFolioNumber != undefined)
@@ -195,14 +198,16 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 				var callback = function () {
 			        self.setAddressOnMap(self.address.fullAddress(), 
 				                                    self.address.zip(),
-				                                    self.address.addressData().propertyInfo,
+				                                    //self.address.addressData() ? self.address.addressData().propertyInfo : null,
 				                                    self.address.unit(),
-				                                    self.address.municipalityId()
+				                                    self.address.municipalityId(),
+				                                    //self.address.addressData() ? self.address.addressData().location : null
+				                                    self.address.addressData()
 				                                );
 			        $(document).unbind("mapInitializedEvent", callback);			        
 			    };
 			    $(document).bind("mapInitializedEvent", callback);
-			    mapWindow = window.open("/html/answerhubmap.html","","width=1024,height=768,alwaysRaised=yes");
+			    mapWindow = window.open("/html/three11-hub-map/index.html","","width=1024,height=768,alwaysRaised=yes");
 			    //IE9 fix for callee exception.
 			    //02.21.2013 wrapped event and listeners as workaround to avoid initial page load
                 $(mapWindow).load(function() {
@@ -218,25 +223,34 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 				self.map().focus();
 				self.setAddressOnMap(self.address.fullAddress(), 
 				                                self.address.zip(),
-				                                self.address.addressData().propertyInfo,
+				                                //self.address.addressData() ? self.address.addressData().propertyInfo : null,
 				                                self.address.unit(),
-				                                self.address.municipalityId());
+				                                self.address.municipalityId(),
+				                                //self.address.addressData() ? self.address.addressData().location : null
+				                                self.address.addressData()
+				                                );
 			}			
 		};
 		
-		self.setAddressOnMap = function(address, zip, propertyInfo, unit, municipalityId)
+		//self.setAddressOnMap = function(address, zip, propertyInfo, unit, municipalityId, location)
+		self.setAddressOnMap = function(address, zip, unit, municipalityId, addressData)
 		{
-			//if(propertyInfo.match) {
-				self.map().address = address;
-				self.map().zip = zip;
-				self.map().propertyInfo = propertyInfo;
-				if(unit != 'MULTI')
-					self.map().unit = unit;
-				else 
-					self.map().unit = "";
-				self.map().municipalityId = municipalityId;
-				self.map().doMap();
-			//}
+			var unitToMap = unit;
+			if(unitToMap == 'MULTI') {
+				unitToMap = null;
+			}
+			
+			var hubAddress = {
+					address: address,
+					zip: zip,
+					//propertyInfo: propertyInfo,
+					unit: unitToMap,
+					municipalityId: municipalityId, //number
+					addressData: addressData
+			}
+			
+			self.map().hubAddress = hubAddress;
+			self.map().sendAddressToMap(hubAddress);
 		};
 		
 		$(document).bind(legacy.InteractionEvents.LaunchMap, function(event, data) {
@@ -314,15 +328,23 @@ define(["jquery", "U", "rest", "uiEngine", "cirm", "legacy", "cirmgis", "text!..
 				}
 				
 				if(self.map()) {
-					self.map().address = self.address.fullAddress();
-					self.map().zip = self.address.zip();
-					self.map().propertyInfo = self.address.addressData().propertyInfo;
-					if(self.address.unit() != 'MULTI')
-						self.map().unit = self.address.unit();
-					else 
-						self.map().unit = "";
-					self.map().municipalityId = self.address.municipalityId();
-					self.map()['doMap'].call(self.map());
+					self.setAddressOnMap(self.address.fullAddress(), 
+                            self.address.zip(),
+                            //self.address.addressData().propertyInfo,
+                            self.address.unit(),
+                            self.address.municipalityId(),
+                            self.address.addressData());
+					
+//					self.map().address = self.address.fullAddress();
+//					self.map().zip = self.address.zip();
+//					self.map().propertyInfo = self.address.addressData().propertyInfo;
+//					self.map().location = self.address.addressData().location;
+//					if(self.address.unit() != 'MULTI')
+//						self.map().unit = self.address.unit();
+//					else 
+//						self.map().unit = "";
+//					self.map().municipalityId = self.address.municipalityId();
+//					self.map()['doMap'].call(self.map());
 				}
 				if(viaResolveAddress == false)
 					self.updateLast5Addr();
