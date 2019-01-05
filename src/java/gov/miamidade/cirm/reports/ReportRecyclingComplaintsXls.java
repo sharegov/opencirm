@@ -39,6 +39,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 
 import mjson.Json;
 
@@ -62,6 +63,7 @@ import org.sharegov.cirm.rdb.RelationalStore;
 import org.sharegov.cirm.rdb.Sql;
 import org.sharegov.cirm.rest.LegacyEmulator;
 import org.sharegov.cirm.utils.GenUtils;
+import org.sharegov.cirm.utils.PhoneNumberUtil;
 import org.sharegov.cirm.utils.ServiceRequestReportUtil;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
@@ -118,6 +120,7 @@ import org.sharegov.cirm.utils.ThreadLocalStopwatch;
  * @author Thomas Hilpold
  */
 @Path("reportRecyclingComplaints") 
+@Produces("application/json")
 public class ReportRecyclingComplaintsXls
 {
 	public static final boolean EMAIL_TEST_MODE = false; //true overrides a MessageManager.isTestMode()==false, false respects MM setting.
@@ -194,6 +197,7 @@ public class ReportRecyclingComplaintsXls
      */
     @GET
     @Path("createAndSend")
+    @Produces("application/json")
     public synchronized Json createAndSend()
     {
 		Json result =  Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
@@ -232,11 +236,12 @@ public class ReportRecyclingComplaintsXls
      */
     @GET
     @Path("create")
+    @Produces("application/json")    
     public synchronized Json create()
     {
 		Json result =  Refs.defaultRelationalStore.resolve().txn(new CirmTransaction<Json>() {
 		public Json call()
-		{			
+		{
 	    	//Date reportDate = new Date(new Date().getTime() - 30L * 24*60*60*1000); DBG for 30 days earlier.
 	    	Date reportDate = new Date(new Date().getTime());
 	    	String tempDir = System.getProperty("java.io.tmpdir");
@@ -463,17 +468,17 @@ public class ReportRecyclingComplaintsXls
 			// Report file 2 Zone 3
 			qZ3 = createQuery(fromTo[0], fromTo[1], 3, store);
 			boidsOrderedR2Z3 = store.customSearch(qZ3);
-			ThreadLocalStopwatch.getWatch().time("Create RecyclingComplaintReports queries finished found Z1Z24 : " 
+			ThreadLocalStopwatch.now("Create RecyclingComplaintReports queries finished found Z1Z24 : " 
 					+ boidsOrderedR1Z12Z4.asJsonList().size() +  " Z3 " + boidsOrderedR2Z3.asJsonList().size());
 			//Create Report Z1Z2Z4
 			File r1 = createReport(boidsOrderedR1Z12Z4, reportDate, REPORTZ1Z2Z4_FILENAME);
 			//Create Report Z3
 			File r2 = createReport(boidsOrderedR2Z3, reportDate, REPORTZ3_FILENAME);
-			ThreadLocalStopwatch.getWatch().time("END Create RecyclingComplaintReports for Z124 and Z3");
+			ThreadLocalStopwatch.now("END Create RecyclingComplaintReports for Z124 and Z3");
 			result = new File[] {r1, r2};
 		} catch (SQLException e)
 		{
-			ThreadLocalStopwatch.getWatch().time("FAILED Create RecyclingComplaintReports for Z124 and Z3");
+			ThreadLocalStopwatch.error("FAILED Create RecyclingComplaintReports for Z124 and Z3");
 			e.printStackTrace();
 		}
     	return result;
@@ -863,10 +868,13 @@ public class ReportRecyclingComplaintsXls
 		colsValues.add(serviceCase.at("properties", Json.object()).at("hasCaseNumber", "N/A").asString());
 		colsValues.add(serviceCase.at("properties", Json.object()).at("atAddress", Json.object()).at("fullAddress", "N/A").asString());
 		colsValues.add(serviceCase.at("properties", Json.object()).at("atAddress", Json.object()).at("Zip_Code", "N/A").asString());
-		String phoneNumber = getServiceAnswer("SWMRECIS_RCIQ9", allAnswers);
-		String extension = getServiceAnswer("SWMRECIS_RCIQ11", allAnswers);
-		if (!extension.isEmpty())
-			phoneNumber = phoneNumber + "x" + extension;
+		// USE CITIZEN MOBILE PHONE
+		String phoneNumber = getCitizenMobile(serviceCase);
+// Old SR type version before 2019.01.04 uses question.
+//		String phoneNumber = getServiceAnswer("SWMRECIS_RCIQ9", allAnswers);
+//		String extension = getServiceAnswer("SWMRECIS_RCIQ11", allAnswers);
+//		if (!extension.isEmpty())
+//			phoneNumber = phoneNumber + "x" + extension;
 		colsValues.add(phoneNumber); //Phone num
 		//SWMRECIS_RCIQ11 Phone Extension
 		String dateCreatedStr = serviceCase.at("properties", Json.object()).at("hasDateCreated", "").asString();
@@ -936,6 +944,31 @@ public class ReportRecyclingComplaintsXls
 		} 
 		return "";
 	}    
+	
+	/**
+	 * Returns the formatted (111-222-3333) mobile phone number of the first citizen found or "".
+	 * @param sr
+	 * @return 
+	 */
+	protected String getCitizenMobile(Json serviceCase)
+	{
+		Json actorArr = serviceCase.at("properties", Json.object()).at("hasServiceCaseActor");
+		final String citizenIri = "http://www.miamidade.gov/cirm/legacy#CITIZEN";
+		if (!actorArr.isArray()) {
+			actorArr = Json.array(actorArr);
+		}
+		for (Json actor : actorArr.asJsonList())
+		{
+	        String actorType = actor.at("hasServiceActor", Json.object()).at("iri", "").asString();
+	        if (citizenIri.equals(actorType)) {
+	        	String citizenCellphone = actor.at("CellPhoneNumber", "").asString();
+	        	String citizenCellphoneFormatted = PhoneNumberUtil.formatPhoneDataForDisplay(citizenCellphone);
+	        	if (citizenCellphoneFormatted == null) citizenCellphoneFormatted = "";
+	        	return citizenCellphoneFormatted;
+	        }
+		} 
+		return "";
+	}
     
     public static void main(String[] a) {
     	System.out.println(new ReportRecyclingComplaintsXls().create());
