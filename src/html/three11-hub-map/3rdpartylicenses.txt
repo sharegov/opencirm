@@ -545,13 +545,13 @@ THE SOFTWARE.
 
 @angular/material/button-toggle
 
-@angular/material/card
-
-@angular/material/form-field
+@angular/material/core
 
 @angular/material/select
 
-@angular/material/core
+@angular/material/card
+
+@angular/material/form-field
 
 @angular/material/progress-spinner
 
