@@ -164,8 +164,6 @@
 		<waitfor maxwait="${maxwaitstart}" maxwaitunit="second" timeoutproperty="timeoutprop">
 					<socket server="s0020269" port="${https-port}"/>
 		</waitfor>
-		<echo message="Sleeping 3 minutes to ensure sequential ontology download during server startup" />
-		<sleep seconds="180" />
 		<!-- 84 -->
 		<antcall target="ha-stop">
 			<param name="server" value="s0020284" />
