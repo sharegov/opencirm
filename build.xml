@@ -116,26 +116,23 @@
             <fileset dir="${build}/org/sharegov/cirm/rest"/>
          </copy>
          -->
-         <copy todir="${dist}/src">
+         <copy todir="${dist}/src" verbose="true">
             <fileset dir="${opencirm}/src">
                 <include name="html/**"/>
                 <include name="javascript/**"/>
                 <include name="resources/**"/>
                 <include name="ontology/County_Working.owl"/>
                 <include name="ontology/legacy.owl"/>
-                <include name="ontology/csr.owl"/>
                 <include name="ontology/srgeoinfo.csv"/>
             </fileset>
          </copy>
-         <copy todir="${dist}/src">
+         <copy todir="${dist}/src" overwrite="true" verbose="true">
             <fileset dir="src">
                 <include name="html/**"/>
                 <include name="javascript/**"/>
                 <include name="resources/**"/>
                 <include name="ontology/County_Working.owl"/>
                 <include name="ontology/legacy.owl"/>
-                <include name="ontology/csr.owl"/>
-                <include name="ontology/srgeoinfo.csv"/>
             </fileset>
          </copy>
    </target>
@@ -238,7 +235,7 @@
      <deploy server="s0142012"/>
    </target>
 
-	<target name="restart-test">
+	<target name="restart-test" description="Restart all test servers one after the other.">
      <restart server="s0020269"/>
      <restart server="s0020284"/>
      <!--
