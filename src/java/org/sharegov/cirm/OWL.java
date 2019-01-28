@@ -22,6 +22,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -107,6 +108,8 @@ import org.sharegov.cirm.utils.Base64;
 import org.sharegov.cirm.utils.CustomOWLOntologyIRIMapper;
 import org.sharegov.cirm.utils.DLQueryParser;
 import org.sharegov.cirm.utils.GenUtils;
+
+import gov.miamidade.utils.MdcHolidays;
 
 /**
  * <p>
@@ -981,8 +984,8 @@ public class OWL
 	
 	/**
 	 * Calculates a date by adding days to a start date. Calendar days are added unless UseWorkWeek is set.
-	 * UseWorkweek will skip Saturdays, Sundays, and ontology configured holidays in the calculation.
-	 * See Ontology class Observed_County_Holiday for configured holidays, which must be updated anually. 
+	 * UseWorkweek will skip Saturdays, Sundays, and MDCHolidays class provided holidays in the calculation.
+	 * (Ontology class Observed_County_Holiday are not used anymore.) 
 	 * 
 	 * If days are null, a clone of start is returned.
 	 * 
@@ -1010,28 +1013,16 @@ public class OWL
 		}
 		else
 		{
-			Set<OWLLiteral> holidays = new HashSet<OWLLiteral>();
-			//Get all holidays
-			for(OWLNamedIndividual holiday: reasoner()
-					.getInstances(owlClass("Observed_County_Holiday"), false).getFlattened())
-			{
-					for(OWLLiteral date: reasoner().getDataPropertyValues(holiday, dataProperty("hasDate")))
-					{
-						if (date != null)
-							holidays.add(date);
-					}
-			}
-
 			//5 day workweek calculation			
 			//Find start workday
-			while (!isWorkDay(c, holidays)) {
+			while (!isWorkDay(c)) {
 				c.add(Calendar.DATE, 1);
 			}
 			//Add day by day, not counting non workdays
 			int workDays = 0;
 			while (workDays < fullDays) {
 				c.add(Calendar.DATE, 1);
-				if (isWorkDay(c, holidays)) {
+				if (isWorkDay(c)) {
 					workDays = workDays + 1;
 				}
 			}
@@ -1048,14 +1039,16 @@ public class OWL
 	 * @param holidays must not be null.
 	 * @return
 	 */
-	public static boolean isWorkDay(Calendar c, Set<OWLLiteral> holidays) {
-		if (holidays == null) throw new IllegalArgumentException("holidays required, was null");
+	public static boolean isWorkDay(Calendar c) {
 		boolean result;
 		int dow = c.get(Calendar.DAY_OF_WEEK);
 		result = (dow != Calendar.SATURDAY && dow != Calendar.SUNDAY);
 		if (result) {
-			OWLLiteral literal = dateLiteral(c.getTime());
-			result = !holidays.contains(literal);
+			int year4 = c.get(Calendar.YEAR);
+			int month12 = c.get(Calendar.MONTH) + 1;
+			int day = c.get(Calendar.DAY_OF_MONTH);
+			LocalDate calDate = LocalDate.of(year4, month12, day);
+			result = !MdcHolidays.isMdcHolidayObserved(calDate);
 		}
 		return result;
 	}

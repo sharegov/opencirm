@@ -34,4 +34,26 @@ public class OWLAddDaysToDateTest {
 		assertTrue(rCal.get(Calendar.MINUTE) == 34);
 	}
 
+	@Test
+	public void test2() {		
+		//Error Example Thu 2021/12/30 + 1 = 2022/1/3 (observed holiday New Year 12/31/2021 for 2022)
+		Calendar start = Calendar.getInstance();
+		start.set(2021, 11, 30, 0, 5); 
+		System.out.print(GenUtils.formatDate(start.getTime()));
+		Date result = OWL.addDaysToDate(start.getTime(), 1, true);
+		System.out.println(" + 1 = " + GenUtils.formatDate(result));
+		Calendar rCal = Calendar.getInstance();
+		rCal.setTime(result);
+		assertTrue(rCal.get(Calendar.DAY_OF_MONTH) == 3);
+		assertTrue(rCal.get(Calendar.MONTH) == 0); //Jan
+		assertTrue(rCal.get(Calendar.YEAR) == 2022);
+		assertTrue(rCal.get(Calendar.HOUR_OF_DAY) == 0);
+		assertTrue(rCal.get(Calendar.MINUTE) == 5);
+	}
+	/*
+	 * Mon 01/18/2021 observed? : true
+Mon 02/15/2021 observed? : true
+Mon 05/31/2021 observed? : true
+/*
+	 */
 }
