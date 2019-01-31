@@ -149,7 +149,7 @@ create table CIRM_GIS_INFO (
 	   GIS_CODENO number(19,0),
 	   GIS_COMDIST number(19,0),
 	   GIS_CMAINT varchar2(8),
-	   GIS_STLGHT varchar2(16),
+	   GIS_STLGHT varchar2(17),
 	   GIS_BULKSERV number(19,0),
 	   GIS_NET_AREA_NAME VARCHAR2(50),
 	   GIS_MIAMI_NEIGHBORHOOD VARCHAR2(40),
