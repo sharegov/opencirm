@@ -110,30 +110,59 @@ public class EnetUserProvider implements UserProvider, AutoConfigurable
             else
             {
                 String deptCodeStr = userdata.at("mdcDepartment").asString().trim();
-                //FIX for COM in LDAP - Fix LDAP set CITYOFMIAMI
-                if ("COM".equals(deptCodeStr)) deptCodeStr = "CITYOFMIAMI"; 
-                OWLLiteral deptCodeLit = dataFactory().getOWLLiteral(deptCodeStr);
-                Set<OWLNamedIndividual> cities = reasoner().getInstances(and(owlClass("City_Organization"), has(dataProperty("Dept_Code"), deptCodeLit)), false).getFlattened();
-                if (cities.isEmpty()) 
-                {
-                    System.err.println("Ontology Error: No city found for Dept_Code:" + deptCodeStr + " Check ontology!! No city based permissions given.");
-                } 
-                else if (cities.size() > 1) 
-                {
-                    System.err.println("Ontology Error: More than one city found for Dept_Code:" + deptCodeStr + " Check ontology!! Resuming by using all.");
-                }
-                // else ok
-                for (OWLNamedIndividual cityInd : cities) 
-                {
-                    groups.add(cityInd.getIRI().toString());
-                    if (userdata.has("mdcDivision")) {
-                        //mdc:City_Organization and mdc:Division_Code value 010 and legacy:hasAccessPolicy some owl:Thing and mdc:Parent_City value mdc:City_of_Miami
-                        int divisonCode = userdata.at("mdcDivision").asInteger();
-                        String query = "mdc:City_Organization and mdc:Division_Code value " + divisonCode 
-                                + " and legacy:hasAccessPolicy some owl:Thing and mdc:Parent_City value mdc:" + cityInd.getIRI().getFragment() + " ";
-                        for (OWLNamedIndividual ind : OWL.queryIndividuals(query))
-                        {
-                            groups.add(ind.getIRI().toString());
+                if ("COM".equals(deptCodeStr)) {
+                    //FIX for COM in LDAP - Fix LDAP set CITYOFMIAMI
+                    if ("COM".equals(deptCodeStr)) deptCodeStr = "CITYOFMIAMI"; 
+                    OWLLiteral deptCodeLit = dataFactory().getOWLLiteral(deptCodeStr);
+                    Set<OWLNamedIndividual> cities = reasoner().getInstances(and(owlClass("City_Organization"), has(dataProperty("Dept_Code"), deptCodeLit)), false).getFlattened();
+                    if (cities.isEmpty()) 
+                    {
+                        System.err.println("Ontology Error: No city found for Dept_Code:" + deptCodeStr + " Check ontology!! No city based permissions given.");
+                    } 
+                    else if (cities.size() > 1) 
+                    {
+                        System.err.println("Ontology Error: More than one city found for Dept_Code:" + deptCodeStr + " Check ontology!! Resuming by using all.");
+                    }
+                    // else ok
+                    for (OWLNamedIndividual cityInd : cities) 
+                    {
+                        groups.add(cityInd.getIRI().toString());
+                        if (userdata.has("mdcDivision")) {
+                            //mdc:City_Organization and mdc:Division_Code value 010 and legacy:hasAccessPolicy some owl:Thing and mdc:Parent_City value mdc:City_of_Miami
+                            int divisonCode = userdata.at("mdcDivision").asInteger();
+                            String query = "mdc:City_Organization and mdc:Division_Code value " + divisonCode 
+                                    + " and legacy:hasAccessPolicy some owl:Thing and mdc:Parent_City value mdc:" + cityInd.getIRI().getFragment() + " ";
+                            for (OWLNamedIndividual ind : OWL.queryIndividuals(query))
+                            {
+                                groups.add(ind.getIRI().toString());
+                            }
+                        }
+                    }
+                } else {
+                	//Other Strings, e.g FDOH
+                    OWLLiteral deptCodeLit = dataFactory().getOWLLiteral(deptCodeStr);
+                    Set<OWLNamedIndividual> govEnterprises = reasoner().getInstances(and(owlClass("Government_Enterprise"), has(dataProperty("Dept_Code"), deptCodeLit)), false).getFlattened();
+                    if (govEnterprises.isEmpty()) 
+                    {
+                        System.err.println("Ontology Error: No Government_Enterprise found for Dept_Code:" + deptCodeStr + " Check ontology!! No Government_Enterprise based permissions given.");
+                    } 
+                    else if (govEnterprises.size() > 1) 
+                    {
+                        System.err.println("Ontology Error: More than one Government_Enterprise found for Dept_Code:" + deptCodeStr + " Check ontology!! Resuming by using all.");
+                    }
+                    // else ok
+                    for (OWLNamedIndividual govEnterpriseInd : govEnterprises) 
+                    {
+                        groups.add(govEnterpriseInd.getIRI().toString());
+                        if (userdata.has("mdcDivision")) {
+                            //mdc:City_Organization and mdc:Division_Code value 010 and legacy:hasAccessPolicy some owl:Thing and mdc:Parent_City value mdc:City_of_Miami
+                            int divisonCode = userdata.at("mdcDivision").asInteger();
+                            String query = "mdc:Government_Enterprise and mdc:Division_Code value " + divisonCode 
+                                    + " and mdc:hasParentAgency value mdc:" + govEnterpriseInd.getIRI().getFragment() + " ";
+                            for (OWLNamedIndividual ind : OWL.queryIndividuals(query))
+                            {
+                                groups.add(ind.getIRI().toString());
+                            }
                         }
                     }
                 }
