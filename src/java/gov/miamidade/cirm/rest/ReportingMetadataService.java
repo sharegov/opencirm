@@ -150,6 +150,15 @@ public class ReportingMetadataService
 	{
 			return export.getMetaIndividualsAsJson();
 	}
+	
+
+	@GET
+	@Path("/srChoiceValues")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Json srChoiceValues()
+	{
+			return export.getSRChoiceValuesAsJson();
+	}
 
 	@GET
 	@Path("/departments/payroll/active")
