@@ -439,6 +439,9 @@ public class ReportingMetadataExport
 				StringBuilder csvRow = new StringBuilder();
 				for(String column: rows)
 				{
+					if(column==null) {
+						column="";
+					}
 					csvRow.append("\"").append(column.replaceAll(",", "\\,")).append("\"").append(",");
 				}
 				csvRow.deleteCharAt(csvRow.length() - 1);
@@ -764,6 +767,14 @@ public class ReportingMetadataExport
 		List<List<String>> typeTable = (List<List<String>>) srTypes.get(0);
 		List<List<String>> ownersTable = (List<List<String>>) srTypes.get(1);
 		return Json.array(typeTable);
+	}
+	
+	public Json getSROrgUnitAsJson()
+	{
+		List<Object> srTypes = getSRTypes();
+		List<List<String>> typeTable = (List<List<String>>) srTypes.get(0);
+		List<List<String>> ownersTable = (List<List<String>>) srTypes.get(1);
+		return Json.array(ownersTable);
 	}
 	
 	public Json getSRStatusAsJson()

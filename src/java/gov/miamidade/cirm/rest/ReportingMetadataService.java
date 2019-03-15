@@ -159,6 +159,14 @@ public class ReportingMetadataService
 	{
 			return export.getSRChoiceValuesAsJson();
 	}
+	
+	@GET
+	@Path("/srOrgUnit")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Json srOrgUnit()
+	{
+			return export.getSROrgUnitAsJson();
+	}
 
 	@GET
 	@Path("/departments/payroll/active")
