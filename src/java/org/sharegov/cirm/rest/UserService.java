@@ -54,6 +54,7 @@ import org.sharegov.cirm.StartUp;
 import org.sharegov.cirm.owl.Model;
 import org.sharegov.cirm.owl.OWLObjectPropertyCondition;
 import org.sharegov.cirm.user.UserProvider;
+import org.sharegov.cirm.utils.SafeUserFilter;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
 
 /**
@@ -168,9 +169,8 @@ public class UserService extends RestService implements AutoConfigurable
 		}
 		else
 		{
-			user.delAt("hasPassword");
-			// TODO: can we get rid of this? the fear that somewhere on the client
-			// it is being used, but it shouldn't be.
+		    SafeUserFilter f = SafeUserFilter.instance();
+		    user = f.makeSafe(user);
 			if (user.has("hasUsername"))
 				user.set("username", user.at("hasUsername"));
 		}
