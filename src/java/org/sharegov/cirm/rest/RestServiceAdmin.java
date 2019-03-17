@@ -38,11 +38,7 @@ public class RestServiceAdmin extends RestService {
         try {
             Json info = Json.object();
             info.set("host", java.net.InetAddress.getLocalHost().getHostName());
-            Json config = StartUp.getConfig();
-            Json safeConfig = Json.object();
-            safeConfig.set("ontologyConfigSet", config.at("ontologyConfigSet"));
-            safeConfig.set("allClientsExempt", config.at("allClientsExempt"));
-            safeConfig.set("isConfigMode", config.at("isConfigMode"));
+            Json safeConfig = getSafeConfig();
             info.set("config", safeConfig);
             // add whatever else may be needed...JVM sys properties, memory data,
             // other stats collected somewhere (in RESTlet filters or whatever)
@@ -50,6 +46,28 @@ public class RestServiceAdmin extends RestService {
         } catch (Throwable t) {
             return ko(t.toString());
         }
+    }
+    
+    /**
+     * Gets a safeconfig json obj by applying only considered safe properties from config.
+     * @return
+     */
+    private Json getSafeConfig() {
+        Json config = StartUp.getConfig();
+        Json safeConfig = Json.object();
+        if (config.has("ontologyConfigSet")) {
+            safeConfig.set("ontologyConfigSet", config.at("ontologyConfigSet"));
+        }
+        if (config.has("allClientsExempt")) {
+            safeConfig.set("allClientsExempt", config.at("allClientsExempt"));
+        }
+        if (config.has("isConfigMode")) {
+            safeConfig.set("isConfigMode", config.at("isConfigMode"));
+        }
+        if (config.has("version")) {
+            safeConfig.set("version", config.at("version"));
+        }
+        return safeConfig;
     }
 
     // @POST
