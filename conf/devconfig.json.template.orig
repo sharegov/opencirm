@@ -1,0 +1,59 @@
+{
+    "workingDir":"c:/cirmservices",
+    "port":80,
+    "ssl":true,
+    "ssl-port":443,
+    "keystore", "cirmTest.jks",
+    "storePass", "password",
+    "keyPass", "password",
+<<<<<<< HEAD
+    "ignorePasswords" : true,
+    "allClientsExempt": true,    
+	"defaultOntologyIRI":"http://www.miamidade.gov/cirm/legacy",
+    "metaDatabaseLocation", "c:/cirmservices/db/",
+	"mainApplication" : "http://www.miamidade.gov/ontology#CIRMApplication",
+    "ontologyConfigSet":"http://www.miamidade.gov/ontology#DevConfigSet",    
+	"network" : { "user", "cirmservice_production",
+				"password","cirmsprod",
+=======
+	"ignorePasswords" : true,
+    "allClientsExempt":true,    
+	"defaultOntologyIRI":"http://www.miamidade.gov/cirm/legacy",
+    "metaDatabaseLocation", "c:/cirmservices/db/",
+	"_____customIRIMappingFile" : "C:/cirmservices/customIRIMap.properties",
+    "mainApplication" : "http://www.miamidade.gov/ontology#CIRMApplication",
+    "ontologyConfigSet":"http://www.miamidade.gov/ontology#DevConfigSet",    
+	"network" : { "user", "cirmservice_production",
+				"password","N/A",
+>>>>>>> mastero
+				"serverUrl","s0144818",
+				"ontoServer","ontology_server_production"},
+    "ontologyPrefixes": {
+    	"legacy:" : "http://www.miamidade.gov/cirm/legacy#",
+		"mdc:" : "http://www.miamidade.gov/ontology#",
+		":" : "http://www.miamidade.gov/ontology#" 
+     },
+<<<<<<< HEAD
+     "cachedReasonerPopulate": false,
+=======
+     "cachedReasonerPopulate": true,
+>>>>>>> mastero
+     "ftpServer":"devnet.miamidade.gov",
+     "ftpCredentials":true,
+     "ftpUsername":"miamidade\\alvarga",
+     "ftpPassword":"Allen2010",
+     "ftpLocation":"test\\phani",
+     "changeset":"@changeset@",
+     "version":"@version@",
+	 "nameBase" : "http://www.miamidade.gov/ontology",
+ 	 "stopExpansionConditionIRI" : [
+					"http://www.miamidade.gov/cirm/legacy#providedBy",
+					"http://www.miamidade.gov/cirm/legacy#hasChoiceValue"
+<<<<<<< HEAD
+					],
+	 "startDepartmentIntegration" : "s0020284.miamidade.gov",
+	 "isConfigMode" : false
+=======
+					]
+>>>>>>> mastero
+}

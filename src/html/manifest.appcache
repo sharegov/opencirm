@@ -1,0 +1,62 @@
+CACHE MANIFEST
+# v439
+#528306
+# CSS
+/html/css/smoothness/jquery-ui-1.8.17.custom.css
+/html/css/grid.css
+/html/css/jquery.rating.css
+/html/css/styles.css
+
+# JavaScript
+/javascript/require.js
+/javascript/knockout-2.0.0.js
+/javascript/swfobject.js
+/javascript/MDCJSLibrary.js
+/javascript/mdcjsajaxmodule.js
+/javascript/mdcjsgismodule.js
+/javascript/date.js
+/javascript/interfaceValidation.js
+/javascript/jquery-1.7.1.min.js
+/javascript/jquery-ui-1.8.17.custom.min.js
+/javascript/jquery.jec-1.3.3.js
+/javascript/jquery.tmpl.min.js
+/javascript/jquery.autoresize.js
+/javascript/jquery.marquee.min.js
+/javascript/jquery.cookie.js
+/javascript/knockout-jquery-ui-widget.js
+/javascript/jquery.upload-1.0.2.js
+/javascript/U.js
+/javascript/rest.js
+/javascript/cirm.js
+/javascript/legacy.js
+/javascript/sreditor.js
+/javascript/answerhub.js
+/javascript/store.js
+/javascript/uiEngine.js
+/javascript/refs.js
+/javascript/text.js
+
+# HTML fragments
+/html/images/arrow-on.png 
+/html/images/md-logo.png
+/html/images/hourglass.cur
+/html/answerhubTemplates.ht
+/html/legacyTemplates.ht
+/html/srmarkup.ht
+/html/css/smoothness/images/ui-bg_flat_75_ffffff_40x100.png  jquery-1.7.1.min.js:4
+/html/css/smoothness/images/ui-icons_222222_256x240.png  jquery-1.7.1.min.js:4
+/html/css/smoothness/images/ui-bg_flat_0_aaaaaa_40x100.png  jquery-1.7.1.min.js:4
+/html/css/smoothness/images/ui-bg_highlight-soft_75_cccccc_1x100.png  jquery-1.7.1.min.js:2
+/go/images/ajax-loader.gif  jquery-1.7.1.min.js:4
+/go/images/excel.png  jquery-1.7.1.min.js:4
+/go/images/pdf.png  jquery-1.7.1.min.js:4
+/go/images/sort.gif  jquery-1.7.1.min.js:4
+/html/images/cross-button.png  jquery-1.7.1.min.js:4
+/html/images/search-glass.png  jquery-1.7.1.min.js:4
+/html/images/tick-button.png  jquery-1.7.1.min.js:4
+/html/css/smoothness/images/ui-bg_glass_75_dadada_1x400.png  jquery-1.7.1.min.js:2
+/html/css/smoothness/images/ui-icons_454545_256x240.png  
+/html/images/search-glass.png
+
+NETWORK:
+*

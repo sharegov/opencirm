@@ -1,0 +1,15 @@
+PREFIX : <http://www.miamidade.gov/ontology#>
+
+SELECT * 
+WHERE {
+  ?property a :OWLObjectProperty .
+  ?property :hasColumnMapping ?column .
+  {
+     ?column a :DBPrimaryKey
+  }
+  UNION 
+  {     
+     ?column a :DBNoKey
+  }
+  ?column :hasTable ?table
+}

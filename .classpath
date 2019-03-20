@@ -2,78 +2,96 @@
 <classpath>
 	<classpathentry kind="src" path="src/java"/>
 	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="lib" path="lib/activation.jar"/>
+	<classpathentry kind="lib" path="lib/aterm-java-1.6.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/commons-httpclient-3.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging-1.0.4.jar"/>
+	<classpathentry kind="lib" path="lib/commons-net-3.2.jar"/>
+	<classpathentry kind="lib" path="lib/connector.jar"/>
+	<classpathentry kind="lib" path="lib/enunciate/apt-jelly-core-2.14.jar"/>
+	<classpathentry kind="lib" path="lib/enunciate/apt-jelly-freemarker-2.14.jar"/>
+	<classpathentry kind="lib" path="lib/enunciate/commons-beanutils-1.7.0.jar"/>
+	<classpathentry kind="lib" path="lib/enunciate/commons-digester-1.7.jar"/>
+	<classpathentry kind="lib" path="lib/enunciate/commons-logging-1.0.4.jar"/>
+	<classpathentry kind="lib" path="lib/enunciate/enunciate-core-1.24.jar"/>
+	<classpathentry kind="lib" path="lib/enunciate/enunciate-core-annotations-1.24.jar"/>
+	<classpathentry kind="lib" path="lib/enunciate/enunciate-core-rt-1.24.jar"/>
+	<classpathentry kind="lib" path="lib/enunciate/enunciate-docs-1.24.jar"/>
+	<classpathentry kind="lib" path="lib/enunciate/freemarker-2.3.14.jar"/>
+	<classpathentry kind="lib" path="lib/enunciate/jackson-core-asl-1.8.3.jar"/>
+	<classpathentry kind="lib" path="lib/enunciate/jackson-mapper-asl-1.8.3.jar"/>
+	<classpathentry kind="lib" path="lib/enunciate/jdom.jar"/>
+	<classpathentry kind="lib" path="lib/enunciate/tools.jar"/>
+	<classpathentry kind="lib" path="lib/hgbdbje-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/hgdb-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/hgdbmanagement-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/hgdbowl-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/hgdbp2p-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/itextpdf-5.3.0.jar"/>
+	<classpathentry kind="lib" path="lib/je-5.0.34.jar"/>
+	<classpathentry kind="lib" path="lib/jena/arq-2.8.7.jar"/>
+	<classpathentry kind="lib" path="lib/jena/icu4j-3.4.4.jar"/>
+	<classpathentry kind="lib" path="lib/jena/iri-0.8.jar"/>
+	<classpathentry kind="lib" path="lib/jena/jena-2.6.4.jar"/>
+	<classpathentry kind="lib" path="lib/jena/log4j-1.2.13.jar"/>
+	<classpathentry kind="lib" path="lib/jena/slf4j-api-1.5.8.jar"/>
+	<classpathentry kind="lib" path="lib/jena/slf4j-log4j12-1.5.8.jar"/>
+	<classpathentry kind="lib" path="lib/jena/xercesImpl-2.7.1.jar"/>
+	<classpathentry kind="lib" path="lib/jgrapht-jdk1.5.jar"/>
+	<classpathentry kind="lib" path="lib/org.apache.commons.io.jar"/>
+	<classpathentry kind="lib" path="lib/owlapi-bin.jar" sourcepath="C:/_311Hub/y. tools/OWL API 3.2.4/owlapi-src.jar"/>
+	<classpathentry kind="lib" path="lib/pellet-cli.jar"/>
+	<classpathentry kind="lib" path="lib/pellet-core.jar"/>
+	<classpathentry kind="lib" path="lib/pellet-datatypes.jar"/>
+	<classpathentry kind="lib" path="lib/pellet-dig.jar"/>
+	<classpathentry kind="lib" path="lib/pellet-el.jar"/>
+	<classpathentry kind="lib" path="lib/pellet-explanation.jar"/>
+	<classpathentry kind="lib" path="lib/pellet-jena.jar"/>
+	<classpathentry kind="lib" path="lib/pellet-modularity.jar"/>
+	<classpathentry kind="lib" path="lib/pellet-owlapi.jar"/>
+	<classpathentry kind="lib" path="lib/pellet-owlapiv3.jar"/>
+	<classpathentry kind="lib" path="lib/pellet-pellint.jar"/>
+	<classpathentry kind="lib" path="lib/pellet-query.jar"/>
+	<classpathentry kind="lib" path="lib/pellet-rules.jar"/>
+	<classpathentry kind="lib" path="lib/poi-3.8-20120326.jar"/>
+	<classpathentry kind="lib" path="lib/rdb/postgresql-9.3-1101.jdbc4.jar"/>
+	<classpathentry kind="lib" path="lib/rdb/sqljdbc4.jar"/>
+	<classpathentry kind="lib" path="lib/rdb/ucp.jar"/>
+	<classpathentry kind="lib" path="lib/relaxngDatatype.jar"/>
+	<classpathentry kind="lib" path="lib/smack-3.1.0.jar"/>
+	<classpathentry kind="lib" path="lib/smackx-3.1.0.jar"/>
+	<classpathentry kind="lib" path="lib/staxon-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/xsdlib.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="lib/restlet/org.restlet.ext.fileupload.jar"/>
+	<classpathentry kind="lib" path="lib/restlet/org.restlet.ext.jaxrs.jar"/>
+	<classpathentry kind="lib" path="lib/restlet/org.restlet.ext.jetty.jar" sourcepath="C:/worklib/restlet-jse-2.3.5/src/org.restlet.ext.jetty"/>
+	<classpathentry kind="lib" path="lib/restlet/org.restlet.jar"/>
+	<classpathentry kind="lib" path="lib/restlet/javax.ws.rs.jar"/>
+	<classpathentry kind="lib" path="lib/jetty/org.eclipse.jetty.client.jar"/>
+	<classpathentry kind="lib" path="lib/jetty/org.eclipse.jetty.http.jar"/>
+	<classpathentry kind="lib" path="lib/jetty/org.eclipse.jetty.io.jar"/>
+	<classpathentry kind="lib" path="lib/jetty/org.eclipse.jetty.server.jar"/>
+	<classpathentry kind="lib" path="lib/jetty/org.eclipse.jetty.spdy.client.jar"/>
+	<classpathentry kind="lib" path="lib/jetty/org.eclipse.jetty.spdy.core.jar"/>
+	<classpathentry kind="lib" path="lib/jetty/org.eclipse.jetty.spdy.http.common.jar"/>
+	<classpathentry kind="lib" path="lib/jetty/org.eclipse.jetty.spdy.http.server.jar"/>
+	<classpathentry kind="lib" path="lib/jetty/org.eclipse.jetty.spdy.server.jar"/>
+	<classpathentry kind="lib" path="lib/jetty/org.eclipse.jetty.util.jar"/>
+	<classpathentry kind="lib" path="lib/restlet/com.sun.jaxb.jar"/>
+	<classpathentry kind="lib" path="lib/restlet/javax.mail.jar"/>
+	<classpathentry kind="lib" path="lib/restlet/org.apache.commons.fileupload.jar"/>
+	<classpathentry kind="lib" path="lib/restlet/org.apache.commons.lang.jar"/>
+	<classpathentry kind="lib" path="lib/restlet/org.json.jar"/>
+	<classpathentry kind="lib" path="lib/restlet/org.simpleframework.xml.jar"/>
+	<classpathentry kind="lib" path="lib/restlet/servlet-api-3.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_60"/>
+	<classpathentry kind="lib" path="lib/mjson-1.3.1.jar"/>
+	<classpathentry kind="lib" path="lib/rdb/ojdbc8.jar"/>
 	<classpathentry kind="lib" path="lib/com.ibm.mq.jar"/>
 	<classpathentry kind="lib" path="lib/com.ibm.mqjms.jar"/>
 	<classpathentry kind="lib" path="lib/jms.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/activation.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/aterm-java-1.6.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/commons-codec-1.3.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/commons-httpclient-3.0.1.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/commons-logging-1.0.4.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/commons-net-3.2.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/connector.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/hgbdbje-1.2.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/hgdb-1.2.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/hgdbmanagement-1.2.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/hgdbowl-1.2.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/hgdbp2p-1.2.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/itextpdf-5.3.0.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/je-5.0.34.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jgrapht-jdk1.5.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/org.apache.commons.io.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/owlapi-bin.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/pellet-cli.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/pellet-core.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/pellet-datatypes.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/pellet-dig.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/pellet-el.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/pellet-explanation.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/pellet-jena.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/pellet-modularity.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/pellet-owlapi.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/pellet-owlapiv3.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/pellet-pellint.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/pellet-query.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/pellet-rules.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/poi-3.8-20120326.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/relaxngDatatype.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/smack-3.1.0.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/smackx-3.1.0.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/staxon-1.0.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/xsdlib.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/rdb/ucp.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/rdb/sqljdbc4.jar"/>
 	<classpathentry kind="lib" path="lib/wrapper.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/opencirm"/>
-	<classpathentry kind="lib" path="/opencirm/lib/restlet/org.restlet.ext.fileupload.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/restlet/org.restlet.ext.jaxrs.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/restlet/org.restlet.ext.jetty.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/restlet/org.restlet.jar" sourcepath="C:/worklib/restlet-framework-java-2.3.4._src.zip">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/C:/worklib/restlet-jse-2.3m4/docs/api/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/opencirm/lib/restlet/javax.ws.rs.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/org.eclipse.jetty.client.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/org.eclipse.jetty.http.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/org.eclipse.jetty.io.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/org.eclipse.jetty.server.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/org.eclipse.jetty.spdy.client.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/org.eclipse.jetty.spdy.core.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/org.eclipse.jetty.spdy.http.common.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/org.eclipse.jetty.spdy.http.server.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/org.eclipse.jetty.spdy.server.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/jetty/org.eclipse.jetty.util.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/restlet/com.sun.jaxb.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/restlet/javax.mail.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/restlet/org.apache.commons.fileupload.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/restlet/org.apache.commons.lang.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/restlet/org.json.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/restlet/org.simpleframework.xml.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/restlet/servlet-api-3.1.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_181"/>
-	<classpathentry kind="lib" path="/opencirm/lib/mjson-1.3.1.jar"/>
-	<classpathentry kind="lib" path="/opencirm/lib/rdb/ojdbc8.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

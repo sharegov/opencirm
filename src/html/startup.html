@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<!--
+  Copyright 2014 Miami-Dade County
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+    http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ -->
+<html lang="en" >
+<head>
+<meta charset="utf-8"/>
+<!-- the following is needed to force IE9 to work in IE9 mode regardless of local user settings -->
+<meta http-equiv="X-UA-Compatible" content="IE=edge" >
+<META HTTP-EQUIV="Cache-Control" CONTENT="max-age=0">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+<META http-equiv="expires" content="0">
+<META HTTP-EQUIV="Expires" CONTENT="Tue, 01 Jan 1980 1:00:00 GMT">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<title>CiRM Services Development</title>
+<link type="text/css" href="/html/css/smoothness/jquery-ui-1.8.17.custom.css" rel="stylesheet" />
+<link type="text/css" href="/html/css/grid.css" rel="stylesheet" />
+<link type="text/css" href="/html/css/jquery.rating.css" rel="stylesheet" />
+<link type="text/css" href="/html/css/styles.css" rel="stylesheet" />
+<link type="text/css" href="/html/css/jquery.dataTables_themeroller.css" rel="stylesheet" />
+<link type="text/css" href="/html/css/jquery.dataTables.css" rel="stylesheet" />
+
+<script type="text/javascript" charset="utf-8" src="/javascript/require.js"></script>
+<script type="text/javascript" charset="utf-8" src="/javascript/knockout-2.0.0.js"></script>
+<script type="text/javascript" src="/javascript/swfobject.js"></script>
+<script type="text/javascript" src="/javascript/MDCJSLibrary.js"></script>
+<script type="text/javascript" src="/javascript/mdcjsajaxmodule.js"></script>
+<script type="text/javascript" src="/javascript/mdcjsgismodule.js"></script>
+<script type="text/javascript" src="/javascript/date.js"></script>
+<script type="text/javascript" src="/javascript/iso8601.js"></script>
+<script type="text/javascript" src="/javascript/cog.js"></script>
+<script type="text/javascript" src="/javascript/cog.utils.js"></script>
+<script type='text/javascript'>
+var modulesInGlobalNamespace = true; // will force every module to put itself as a global 'window' variable
+var answerHubModel = null;
+require.config({
+     waitSeconds: 1800
+});
+
+require({
+baseUrl: "/javascript",
+paths: {
+"jquery":    "jquery-1.7.1.min",
+"jquery-ui": "jquery-ui-1.8.17.custom.min",
+"jquery-jec":"jquery.jec-1.3.3",
+"jquery-upload":"jquery.upload-1.0.2",
+"jquery-tmpl":"jquery.tmpl.min",
+"jquery-autoresize": "jquery.autoresize",
+"jquery-marquee":"jquery.marquee.min",
+"jquery-cookie":"jquery.cookie",
+"jquery-knockout":"knockout-jquery-ui-widget",
+"jquery-datatables":"jquery.dataTables.1.9.0.min",
+"jquery-dt-ko-binding":"knockout.bindings.dataTables",
+"jquery-inputmask": "jquery.inputmask.bundle.min",
+"inputmask-ko-binding": "inputmask.ko.binding",
+"cirmgis": "mdcgis"
+},
+priority: ["jquery", "jqueryconf", "logincheck"]
+, urlArgs: "cache_bust=" + (new Date()).getTime() 
+},  [ "rest", "U", "cirm", "legacy", "sreditor", "answerhub", "store", "interfaceValidation", "jquery", 
+    "jquery-ui", "jquery-tmpl", "jquery-autoresize", 
+    "jquery-marquee", "jquery-cookie", "jquery-jec",
+    "jquery-upload", "jquery-knockout", "jquery-datatables", "jquery-dt-ko-binding", "jquery-inputmask", "inputmask-ko-binding"],
+function (rest, U, cirm, legacy, sreditor, answerhub, store) {     
+		//Check if test system and povide visual differentiation from prod (from Jose Otero)
+    	var hostname = window.location.hostname; 
+    	if (hostname.indexOf('cirm.') != -1 || hostname.indexOf('127.0.0.1') != -1) {
+			$('body').addClass('in-test-mode');
+			$('body').prepend('<div class="warning-bar">You are currently working on a test server.</div>');
+		};
+		//Check user logged in, redirect if not
+        if (! cirm.user.ensureLoggedin()) {
+            alert('Failed to retrieve profile, the user service may be down, please try again later');
+            window.location.href="login.html";
+        }
+        //
+        // Application update event
+        //
+		cirm.events.bind("http://www.miamidade.gov/ontology#CIRMApplication", function () {
+				$('#applicationUpdateDiv').show();        		
+	   	}); 
+        
+        legacy.marquee().embed($('#marqueeContainer'));
+
+		var electionsComponent = legacy.elections();
+		electionsComponent.embed($('#electionsDiv'));
+		$('#birthDate').datepicker();
+
+        // Emptying and filling the mainContent div doesn't work because everything time it is emptied,
+        // all DOM elements loose their event handlers. On the other hand, we need to have state maintained
+        // when users switch from one tab to another, so we need global permanent references to the editor
+        // and answerhub component. Therefore, they are stored in a top-level divs that are hidden and shown.
+        var currentDiv = $('#mainContent');
+        var answerhubComponent = answerhub.makeAnswerHub();
+		// this needs to be global because we are calling a global function that access it
+		window.answerHubModel = answerhubComponent.model;
+		answerhubComponent.embed($('#answerHubDiv'));
+		//pass answer hub address to service hub.
+        var editor = sreditor.edit(null, answerHubModel.addressSearch.address);
+		window.serviceHubModel = editor.model;
+        editor.embed($('#editorDiv'));
+		caseEditor = editor;
+		
+		var wcsComponent = legacy.wcs(answerHubModel.addressSearch.address);
+		wcsComponent.embed($('#wcsDiv'));
+		
+		var asdComponent = legacy.asd();
+		asdComponent.embed($('#asdDiv'));
+		
+		var advSearchComponent = legacy.advancedSearch(new answerhub.AddressModel() ); //answerHubModel.addressSearch.address);
+		advSearchComponent.embed($('#advancedSearchDiv'));
+
+		$('input:button').not('.button_icon').addClass('button blue');
+		
+		patchPlaceholdersforIE();
+		
+        // Top menu handling functions
+        var menuHandlers = {
+            answerHub: function () {
+//                $('#mainContent').empty();
+//                answerhubComponent.embed($('#mainContent'));
+ //               $('input:button').not('.button_icon').addClass('button blue');
+                   currentDiv.hide();
+                   currentDiv = $('#answerHubDiv').show();
+            },
+            serviceHub: function() {
+//                $('#mainContent').empty();
+//                editor.embed($('#mainContent'));
+//               $('input:button').not('.button_icon').addClass('button blue');
+                   currentDiv.hide();
+                   currentDiv = $('#editorDiv').show();                
+            },
+            elections: function() {
+                   currentDiv.hide();
+                   currentDiv = $('#electionsDiv').show();
+            },
+            wcs: function() {
+                   currentDiv.hide();
+                   currentDiv = $('#wcsDiv').show();
+            },
+            asd: function() {
+                   currentDiv.hide();
+                   currentDiv = $('#asdDiv').show();
+            },
+            advancedSearch: function() {
+                   currentDiv.hide();
+                   currentDiv = $('#advancedSearchDiv').show();
+            },
+            help: function() {
+            }
+        };
+        
+        $('.banner a').click(function () {
+        	switchTab(this);
+        });
+
+		function switchTab(tab) {
+			$('.banner a').removeClass('bn_on');
+			$(tab).addClass('bn_on');
+			menuHandlers[$(tab).attr('menuHandler')]();
+			patchPlaceholdersforIE();
+		}
+
+		$(document).bind(legacy.InteractionEvents.showServiceHub, function(event) {
+			switchTab($(".banner li a")[1]);
+		});
+
+		$(document).bind(legacy.InteractionEvents.resetServiceHubToSRMain, function(event) {
+			var actObj = $.map(editor.model.sections, function(v) {
+				if(v.title == 'SR Main')
+					return v;
+			});
+			editor.model.goToSection(actObj[0]);
+		});
+
+		$(document).bind(legacy.InteractionEvents.showServiceActivities, function(event) {
+			switchTab($(".banner li a")[1]);
+			var actObj = $.map(editor.model.sections, function(v) {
+				if(v.title == 'SR Activities')
+					return v;
+			});
+			editor.model.goToSection(actObj[0]);
+		});
+
+        	// Global event handlers to communicate between tabs:
+        $(document).bind(legacy.InteractionEvents.ServiceRequestTypeClick, function (even, iri) { 
+			//console.log('SR type click', editor.model.data());
+            var sr = cirm.refs.serviceCases[iri];                
+            editor.model.startNewServiceRequest(sr.hasLegacyCode);
+            $('[menuHandler=serviceHub]').click();
+        });
+
+        $(document).bind(legacy.InteractionEvents.AddressClear, function(event) {
+			answerHubModel.addressSearch.address.clear();
+			editor.model.clearAddress();
+			$(document).trigger(legacy.InteractionEvents.WCSClear, []);
+			$(document).trigger(legacy.InteractionEvents.AdvSrchAddrClear, []);
+		});
+		
+		$(document).bind(legacy.InteractionEvents.AllTABSClear, function(event) {
+			$("#all_clear_dialog")[0].innerText = "Are you sure you want to clear all the TABS ?"
+    		$("#all_clear_dialog").dialog({ height: 150, width: 350, modal: true, buttons: {
+				"Yes" : function() {
+					answerHubModel.topicSearch.clear();
+					$(document).trigger(legacy.InteractionEvents.AddressClear, []);
+					$(document).trigger(legacy.InteractionEvents.SHClear, []);
+					$(document).trigger(legacy.InteractionEvents.ElectionsClear, []);
+					$(document).trigger(legacy.InteractionEvents.ASDClear, []);
+					$(document).trigger(legacy.InteractionEvents.AdvSrchClear, []);
+					$(document).trigger(legacy.InteractionEvents.resetServiceHubToSRMain, []);
+					patchPlaceholdersforIE();
+					$("#all_clear_dialog").dialog('close');
+				},
+				"No": function() {
+				  	$("#all_clear_dialog").dialog('close');
+				  	return;
+				}
+			  } 
+			});
+		});
+		
+        $(document).bind(legacy.InteractionEvents.AddressValidated, function(event, data, behindTheScenes) {
+
+			var callback = function cb(){
+	    		var address = editor.model.data().properties().atAddress();
+	        	var city = data.getCity();
+	        	//TODO:
+	        	//
+	        	/*
+	        	An issue that remains and requires some thought/decision 
+	        	is how we will resolve an intersection to a Street_Address in the ontology. 
+	        	Either the properties on this type need to be expanded or a new OWLClass needs to be 
+	        	defined because it currently doesn't fit our SH Street_Address model (i.e. searching for NW 87TH AVE & NW 56TH ST, 33178 
+	            returns multiple directions and multiple streetnames and suffixes). We could just ensure those properties in Street_Address 
+	            are non-functional and add the properties more than once with the set of values. Again, someone has to decide. 
+	        	*/
+	        	if(true || data.addressData().parsedAddress.House != undefined && data.addressData().parsedAddress.House.length > 0)
+	        	{
+		        	address.addressType(data.addressData().addressType);
+		        	address.fullAddress(data.fullAddress());
+		        	address.folio(data.folio());
+		        	var direction = data.getDirection();
+		            var streetType = data.getStreetType();
+		            var streetTypeGis = data.addressData().parsedAddress.SufType;
+		            var streetNameGis = data.addressData().parsedAddress.StreetName;
+	  				if (streetTypeGis) {
+			            var streetTypeGisComponents = streetTypeGis.trim().split(" ");
+		   				if (streetTypeGisComponents.length > 1) {
+		   					//Add all sufType words but the last one to street name  (e.g. "Street" for "Street RD")
+		   					//e.g. Street for "Street RD" or A B C for "A B C RD"
+		   					var streetTypeNameGisSuffix = "";
+		   					for (var i = 0; i < streetTypeGisComponents.length - 1; i++) {
+		   						streetTypeNameGisSuffix += " " + streetTypeGisComponents[i];
+		   					}
+	   					streetNameGis = streetNameGis? streetNameGis + streetTypeNameGisSuffix : streetNameGis;
+	   					}
+	  				}
+		            address.Street_Number(data.addressData().parsedAddress.House);
+		            address.Street_Name(streetNameGis);
+		            address.Zip_Code($.trim(data.zip())); 
+		            if(data.addressData().propertyInfo.parcelInfoCondoUnit != undefined && data.addressData().propertyInfo.parcelInfoCondoUnit.length > 0)
+			            address.Street_Unit_Number($.trim(data.addressData().propertyInfo.parcelInfoCondoUnit));
+			        if(data.addressData().propertyInfo.propertyType == "MULTI")
+			        	address.Street_Unit_Number($.trim(data.addressData().propertyInfo.propertyType));
+		            address.Street_Address_City().label(data.municipality());
+		            address.Street_Address_City().iri(city.iri);
+		            if(direction != undefined) {
+		            	address.Street_Direction().label(data.addressData().parsedAddress.PreDir);
+		            	address.Street_Direction().iri(direction.iri);
+		            }
+		            if(streetType != undefined) {
+			            address.hasStreetType().label(data.addressData().parsedAddress.SufType);
+			            address.hasStreetType().iri(streetType.iri);
+			        }
+		        	address.hasLocationName(data.commonLocation.name());
+					editor.model.data().properties().hasXCoordinate(data.coordinates().x);
+					editor.model.data().properties().hasYCoordinate(data.coordinates().y);
+	        	}
+	        	if(!behindTheScenes)
+					editor.model.dupChecker();
+			};
+			
+			if(!behindTheScenes && editor.model.data().type() != "")
+			{
+				var type = editor.model.data().type();
+				editor.model.validateTypeOnXY(type.replace(/[a-zA-Z0-9]+\:/, ""), data.coordinates().x
+						, data.coordinates().y, callback, "The address you are validating is not valid for the Service Request Type currently active in ServiceHub? Clear the S/R if you wish to continue your search.");
+			}
+			else
+			{
+				callback();
+			}
+		});
+
+        $('[menuHandler=answerHub]').click();
+        // TMP - dev, go to an SR right away
+//        $('[menuHandler=serviceHub]').click();
+ //       $('[name="SR Lookup"]', $(editor.markup)).val("32043");
+  //      editor.model.srLookup();
+        // END TMP      
+	    //
+	    // Disable not allowed tabs
+	    // 
+	    if (!cirm.user.isViewAllowed("ElectionsTab")) {
+	    	$('#electionsTabLi').remove();
+	    }
+	    if (!cirm.user.isViewAllowed("WCSTab")) {
+	    	$('#wcsTabLi').remove();
+	    }
+	    if (!cirm.user.isViewAllowed("ASDTab")) {
+	    	$('#asdTabLi').remove();
+	    }
+        
+        cirm.events.startPolling();
+    });
+
+</script>
+<script type="text/javascript">
+function setPropertyInfo(info)
+{
+	answerHubModel.addressSearch.hideProgress("#ah_dialog_address_search");
+	answerHubModel.addressSearch.setPropertyInfo(info);
+}
+function addressFromMapCallback(pinfo)
+{                
+	console.log('addressFromMapCallback: \r\n');
+	var clonedProp = $.extend(true, {}, pinfo);;
+    answerHubModel.addressSearch.setAddress(clonedProp, false);
+}
+function mapInitializedCallback()
+{
+    $(document).trigger("mapInitializedEvent");
+}
+</script>
+<script type="text/javascript">
+function patchPlaceholdersforIE() {
+  	jQuery(function() {
+	jQuery.support.placeholder = false;
+	test = document.createElement('input');
+	if('placeholder' in test) jQuery.support.placeholder = true;
+	});
+	
+	$(function() {
+		if(!$.support.placeholder) {
+			var active = document.activeElement;
+			$(':text').focus(function () { ftnOnFocus(this) }).blur(function () { ftnOnBlur(this) });
+			$(':text').blur();
+			$('textarea').focus(function () { ftnOnFocus(this) }).blur(function () { ftnOnBlur(this) });
+			$('textarea').blur();
+
+			function ftnOnFocus(el)
+			{
+				if ($(el).attr('placeholder') != '' && $(el).val() == $(el).attr('placeholder'))
+					$(el).val('').removeClass('hasPlaceholder');
+			};
+			function ftnOnBlur(el)
+			{
+				if ($(el).attr('placeholder') != '' && ($(el).val() == '' || $(el).val() == $(el).attr('placeholder')))
+					$(el).val($(el).attr('placeholder')).addClass('hasPlaceholder');
+			};
+			
+			$(active).focus();
+			$('form').submit(function () {
+				$(this).find('.hasPlaceholder').each(function() { $(this).val(''); });
+			});
+			
+			// fix for clear button in IE - replace js placeholder without having to focus/blur
+			$('.button_icon').click(function(){
+			
+			//alert($(this).attr('id'))
+			
+			if ($(this).attr('id') == 'address_reset') {
+				
+				//$('.address_reset').removeClass('hasPlaceholder').addClass('hasPlaceholder');
+				$('.address_reset').each(function(){
+					$(this).val($(this).attr('placeholder')).addClass('hasPlaceholder');
+				});
+				
+				} else {
+											 
+			var rtext = $(this).prev().attr('placeholder')
+			$(this).prev().val(rtext).addClass('hasPlaceholder');
+				}
+			
+			});
+		}
+	});
+}
+</script>
+</head>
+<body>
+
+<div class="container_12">
+
+<div class="grid_12" style="margin-top:10px;">
+<h1 id="status_container" class="app_title" style="display:inline; vertical-align:baseline">311 Hub
+<span><div></div> You are currently <span id="app_status">Online</span> at 
+<span id="span_hostname"></span></span>
+</h1>
+<span id='loggedInPanel'></span>
+<img src="/html/images/md-logo.png" width="114" height="54" alt="Miami-Dade County" style="vertical-align:baseline; float:right;">
+</div>
+
+<!-- banner div - includes header background image and navigation -->
+<div class="banner grid_12">
+        <ul>
+            <li><a href="#" menuHandler="answerHub" class="bn_on">Answer Hub</a></li>
+            <li><a href="#" menuHandler="serviceHub">Service Hub</a></li>
+            <li id="electionsTabLi"><a href="#" menuHandler="elections">Elections</a></li>
+            <li id="wcsTabLi"><a href="#" menuHandler="wcs">WCS</a></li>
+            <li id=asdTabLi><a href="#" menuHandler="asd">ASD</a></li>
+            <li><a href="#" menuHandler="advancedSearch">Basic Search</a></li>
+            <li><a href="https://miamidadecounty.co1.qualtrics.com/jfe/form/SV_cOpsxZiUO3pc7Bz" target="_blank" menuHandler="help">Feedback</a></li>
+        </ul>    
+</div>
+
+<div class="clear">&nbsp;</div>
+
+<div id='marqueeContainer'></div>
+
+<div id='mainContent'>
+</div>
+
+<div id='answerHubDiv' style="display:none"></div>
+
+<div id='editorDiv' style="display:none"></div>
+
+<div id='electionsDiv' style="display:none"></div>
+
+<div id='wcsDiv' style="display:none"></div>
+
+<div id='asdDiv' style="display:none"></div>
+
+<div id='advancedSearchDiv' style="display:none"></div>
+
+<div id="applicationUpdateDiv" style="display:none; background: white; bottom:20px; position:absolute; text-align:left; width: 350px; border: 2px solid red; padding: 5px;"> 
+Dear 311HUB user: </br> The server has been updated recently, <br/> 
+please finish your current work and click the reload button below. <br/>
+Kind regards, </br> </br>
+Your 311Hub developer team
+</br> </br>
+<input type="button" class="red_button" style="width: 220px; height: 30px;" value="Reload Application" onClick="document.location.reload(true)">
+</div>
+</div>
+
+<div id='login_dialog' style='display:none'>
+<form id='loginForm'>
+User:<input id='iUsername' name='iUsername' type='text'><br>
+Password:<input id='iPassword' name='iPassword' type='password'><br>
+Realm:<select id='ddProvider' name='ddProvider' disabled="disabled">
+<option value='enet'>E-Net</option>
+<option value='portal'>CiRM</option>
+</select>
+<button type='button' id='btnLogin'>Login</button>
+</div>
+
+</body>
+</html>

@@ -1,8 +1,6 @@
-.classpath
-*.class
-dist/
-/classes/
-
+classes
+src/uploaded/
+/map
+.idea/
 *.iml
-/javadoc/
-export/*.jar
+javadoc/

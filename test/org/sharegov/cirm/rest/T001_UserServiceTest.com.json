@@ -1,0 +1,68 @@
+[
+ 	{
+		"ecKey" : "c0006", 
+		"groups" : [ "City_of_Miami", "COM_STAT"],
+		"FirstName" : "Victor Ochoa",
+		"LastName" : "Fernandez",
+		"email" : "VOCHOA@miamigov.com",
+		"phone" : "(305)416-1783",
+		"mdcDepartment" : "COM",
+		"mdcDivision" : "140",
+		"comment" : "Data from: Onto, ENET"
+	},
+ 	{
+		"ecKey" : "c203184", 
+		"groups" : [ "City_of_Miami", "COM_Agenda"],
+		"FirstName" : "Stephanie",
+		"LastName" : "Soto",
+		"email" : "SMSOTO@miamigov.com",
+		"phone" : "(305)416-2076",
+		"mdcDepartment" : "COM",
+		"mdcDivision" : "010",
+		"comment" : "Data from: Onto, ENET"
+	},
+ 	{
+		"ecKey" : "c203003", 
+		"groups" : [ "City_of_Miami", "COM_Net"],
+		"FirstName" : "Barbara",
+		"LastName" : "Prada",
+		"email" : "BPRADA@miamigov.com",
+		"phone" : "(305)416-2118",
+		"mdcDepartment" : "COM",
+		"mdcDivision" : "300",
+		"comment" : "Data from: Onto, ENET"
+	},
+ 	{
+		"ecKey" : "c203116", 
+		"groups" : [ "City_of_Miami", "COM_Fire-Rescue" ],
+		"FirstName" : "Derrell",
+		"LastName" : "Williams",
+		"email" : "DWILLIAMS@miamigov.com",
+		"phone" : "",
+		"mdcDepartment" : "COM",
+		"mdcDivision" : "220",
+		"comment" : "Data from: Onto, ENET"
+	},
+ 	{
+		"ecKey" : "c203135", 
+		"groups" : [ "City_of_Miami", "COM_Commissioner_District_1" ],
+		"FirstName" : "Wifredo (Willy)",
+		"LastName" : "Gort",
+		"email" : "WGORT@miamigov.com",
+		"phone" : "(305)250-5430",
+		"mdcDepartment" : "COM",
+		"mdcDivision" : "150",
+		"comment" : "Data from: Onto, ENET"
+	},
+ 	{
+		"ecKey" : "c203103", 
+		"groups" : [ "City_of_Miami", "COM_Net"],
+		"FirstName" : "Orlando",
+		"LastName" : "Diez",
+		"email" : "ODIEZ@miamigov.com",
+		"phone" : "(305)416-2089",
+		"mdcDepartment" : "COM",
+		"mdcDivision" : "300",
+		"comment" : "Data from: Onto, ENET"
+	}
+]

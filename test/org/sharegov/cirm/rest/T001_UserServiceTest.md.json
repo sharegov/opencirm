@@ -1,0 +1,46 @@
+[
+	{
+		"ecKey" : "e309888", 
+		"groups" : [ "CirmAdmin", "Communications_Department"],
+		"FirstName" : "Thomas",
+		"LastName" : "Hilpold",
+		"email" : "hilpold@miamidade.gov",
+		"phone" : "(305) 375-4802",
+		"mdcDepartment" : "203",
+		"mdcDivision" : "03",
+		"comment" : "Data from: enet, intranet, ldap group; all groups are mdc. "
+	},
+	{
+		"ecKey" : "e160616", 
+		"groups" : [ "Communications_Department"],
+		"FirstName" : "Syed",
+		"LastName" : "Abbas",
+		"email" : "sabbas@miamidade.gov",
+		"phone" : "(305) 375-2398",
+		"mdcDepartment" : "203",
+		"mdcDivision" : "03",
+		"comment" : "Data from: enet, intranet"
+	},
+	{
+		"ecKey" : "e196895", 
+		"groups" : [ "Cirm311Supervisor", "CirmCOM_CEExternal", "Communications_Department"],
+		"FirstName" : "Elizabeth",
+		"LastName" : "Silva",
+		"email" : "liz.silva@miamidade.gov",
+		"phone" : "(305) 499-8964",
+		"mdcDepartment" : "203",
+		"mdcDivision" : "02",
+		"comment" : "Data from: LDAP, enet, bluebook"
+	},
+	{
+		"ecKey" : "e173047", 
+		"groups" : [ "CirmSWSuper", "Information_Technology_Department"],
+		"FirstName" : "Cesar",
+		"LastName" : "Torres",
+		"email" : "ctorres@miamidade.gov",
+		"phone" : "(305) 375-3727",
+		"mdcDepartment" : "014",
+		"mdcDivision" : "08",
+		"comment" : "Data from: LDAP, enet, intranet"
+	}
+]

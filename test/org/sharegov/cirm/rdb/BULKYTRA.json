@@ -1,0 +1,215 @@
+{
+  "boid": "",
+  "properties": {
+    "hasAttachment": [
+      
+    ],
+    "legacy:hasServiceCaseActor": [
+      {
+        "Name": "Syed",
+        "HomePhoneNumber": "3050000000",
+        "hasEmailAddress": {
+          "type": "EmailAddress",
+          "iri": "mailto:hilpold@miamidade.gov"
+        },
+        "hasDateCreated": "2012-11-21T13:00:00.000-04:00",
+        "CellPhoneNumber": "3051111111",
+        "atAddress": {
+          "Zip_Code": "33150",
+          "Street_Address_State": {
+            "iri": "http://www.miamidade.gov/ontology#Florida"
+          },
+          "Street_Address_City": {
+            "iri": "http://www.miamidade.gov/ontology#Miami_Dade_County"
+          },
+          "fullAddress": "250 NW 100TH TER",
+          "type": "Street_Address"
+        },
+        "type": "legacy:ServiceCaseActor",
+        "LastName": "Abbas",
+        "legacy:hasServiceActor": {
+          "iri": "http://www.miamidade.gov/cirm/legacy#CITIZEN"
+        }
+      },
+      {
+        "Name": "Tom2",
+        "HomePhoneNumber": "9540000000",
+        "hasEmailAddress": {
+          "type": "EmailAddress",
+          "iri": "mailto:hilpold2@miamidade.gov"
+        },
+        "hasDateCreated": "2012-11-20T16:18:14.058-04:00",
+        "CellPhoneNumber": "9541111111",
+        "type": "legacy:ServiceCaseActor",
+        "LastName": "Hilpold2",
+        "legacy:hasServiceActor": {
+          "iri": "http://www.miamidade.gov/cirm/legacy#TENANT"
+        }
+      }
+    ],
+    "isCreatedBy": null,
+    "legacy:hasStatus": {
+      "iri": "http://www.miamidade.gov/cirm/legacy#O-OPEN"
+    },
+    "legacy:hasServiceAnswer": [
+      {
+        "legacy:hasServiceField": {
+          "iri": "http://www.miamidade.gov/cirm/legacy#BULKYTRA_ACCTNUM"
+        },
+        "legacy:hasAnswerValue": {
+          "type": "http://www.w3.org/2001/XMLSchema#string",
+          "literal": 10031302
+        }
+      },
+      {
+        "legacy:hasServiceField": {
+          "iri": "http://www.miamidade.gov/cirm/legacy#BULKYTRA_READQREQ"
+        },
+        "legacy:hasAnswerValue": {
+          "type": "http://www.w3.org/2001/XMLSchema#string",
+          "literal": "http://www.miamidade.gov/cirm/legacy#BULKYTRA_READQREQ_YESNO1_NO"
+        }
+      },
+      {
+        "legacy:hasServiceField": {
+          "iri": "http://www.miamidade.gov/cirm/legacy#BULKYTRA_OTHERLOC"
+        },
+        "legacy:hasAnswerValue": {
+          "type": "http://www.w3.org/2001/XMLSchema#string",
+          "literal": "trash is on the side of puppy hut."
+        }
+      },
+      {
+        "legacy:hasServiceField": {
+          "iri": "http://www.miamidade.gov/cirm/legacy#BULKYTRA_DOESWCSS"
+        },
+        "legacy:hasAnswerValue": {
+          "type": "http://www.w3.org/2001/XMLSchema#string",
+          "literal": "http://www.miamidade.gov/cirm/legacy#BULKYTRA_DOESWCSS_YESNO1_YES"
+        }
+      },
+      {
+        "legacy:hasServiceField": {
+          "iri": "http://www.miamidade.gov/cirm/legacy#BULKYTRA_DOESWCS1"
+        },
+        "legacy:hasAnswerValue": {
+          "type": "http://www.w3.org/2001/XMLSchema#string",
+          "literal": "http://www.miamidade.gov/cirm/legacy#BULKYTRA_DOESWCS1_YESNO1_NO"
+        }
+      },
+      {
+        "legacy:hasServiceField": {
+          "iri": "http://www.miamidade.gov/cirm/legacy#BULKYTRA_ISTHETRA"
+        },
+        "legacy:hasAnswerValue": {
+          "type": "http://www.w3.org/2001/XMLSchema#string",
+          "literal": "http://www.miamidade.gov/cirm/legacy#BULKYTRA_ISTHETRA_YESNO1_NO"
+        }
+      },
+      {
+        "legacy:hasServiceField": {
+          "iri": "http://www.miamidade.gov/cirm/legacy#BULKYTRA_WHERELOC"
+        },
+        "legacy:hasAnswerValue": {
+          "type": "http://www.w3.org/2001/XMLSchema#string",
+          "literal": "http://www.miamidade.gov/cirm/legacy#BULKYTRA_WHERELOC_BTPLOC_BTPFRONT"
+        }
+      },
+      {
+        "legacy:hasServiceField": {
+          "iri": "http://www.miamidade.gov/cirm/legacy#BULKYTRA_ALLTRASH"
+        },
+        "legacy:hasAnswerValue": {
+          "type": "http://www.w3.org/2001/XMLSchema#string",
+          "literal": "http://www.miamidade.gov/cirm/legacy#BULKYTRA_ALLTRASH_YESNO1_NO"
+        }
+      },
+      {
+        "legacy:hasServiceField": {
+          "iri": "http://www.miamidade.gov/cirm/legacy#BULKYTRA_CITIZENC"
+        },
+        "legacy:hasAnswerValue": {
+          "type": "http://www.w3.org/2001/XMLSchema#string",
+          "literal": "http://www.miamidade.gov/cirm/legacy#BULKYTRA_CITIZENC_YESNO1_NO"
+        }
+      },
+      {
+        "legacy:hasServiceField": {
+          "iri": "http://www.miamidade.gov/cirm/legacy#BULKYTRA_PHONENUM"
+        },
+        "legacy:hasAnswerValue": {
+          "type": "http://www.w3.org/2001/XMLSchema#integer",
+          "literal": "9542222222"
+        }
+      },
+      {
+        "legacy:hasServiceField": {
+          "iri": "http://www.miamidade.gov/cirm/legacy#BULKYTRA_IFTENANT"
+        },
+        "legacy:hasAnswerValue": {
+          "type": "http://www.w3.org/2001/XMLSchema#string",
+          "literal": "http://www.miamidade.gov/cirm/legacy#BULKYTRA_IFTENANT_YESNO1_NO"
+        }
+      },
+      {
+        "legacy:hasServiceField": {
+          "iri": "http://www.miamidade.gov/cirm/legacy#BULKYTRA_WHENWILL"
+        },
+        "legacy:hasAnswerValue": {
+          "type": "http://www.w3.org/2001/XMLSchema#dateTimeStamp",
+          "literal": "2012-12-01T16:00:00.000-04:00"
+        }
+      },
+      {
+        "legacy:hasServiceField": {
+          "iri": "http://www.miamidade.gov/cirm/legacy#BULKYTRA_WHATTYPE"
+        },
+        "legacy:hasAnswerValue": [
+          {
+            "type": "http://www.w3.org/2001/XMLSchema#string",
+            "literal": "http://www.miamidade.gov/cirm/legacy#BULKYTRA_WHATTYPE_BTPTYPE_BTPCARP"
+          },
+          {
+            "type": "http://www.w3.org/2001/XMLSchema#string",
+            "literal": "http://www.miamidade.gov/cirm/legacy#BULKYTRA_WHATTYPE_BTPTYPE_BTPAPPLI"
+          }
+        ]
+      }
+    ],
+    "legacy:hasServiceActivity": [
+      
+    ],
+    "hasYCoordinate": 558134.5608673692,
+    "legacy:hasIntakeMethod": {
+      "iri": "http://www.miamidade.gov/cirm/legacy#PHONE"
+    },
+    "hasXCoordinate": 918287.9998626001,
+    "hasRemovedAttachment": [
+      
+    ],
+    "atAddress": {
+      "Street_Address_State": {
+        "iri": "http://www.miamidade.gov/ontology#Florida"
+      },
+      "Zip_Code": "33150",
+      "Street_Address_City": {
+        "iri": "http://www.miamidade.gov/ontology#Miami_Dade_County"
+      },
+      "fullAddress": "250 NW 100TH TER",
+      "Street_Direction": {
+        "iri": "http://www.miamidade.gov/ontology#North_West"
+      },
+      "Street_Name": "100TH",
+      "hasStreetType": {
+        "iri": "http://www.miamidade.gov/ontology#Street_Type_Terrace"
+      },
+      "Street_Number": "250",
+      "type": "Street_Address"
+    },
+    "legacy:hasPriority": {
+      "iri": "http://www.miamidade.gov/cirm/legacy#STANDARD"
+    },
+    "hasDateCreated": "2012-08-15T16:18:44.947-04:00"
+  },
+  "type": "legacy:BULKYTRA"
+}

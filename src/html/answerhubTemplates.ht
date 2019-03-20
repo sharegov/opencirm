@@ -1,0 +1,713 @@
+<div class="app_container">
+
+    <div class="left_column grid_2">
+    
+     <div id="answer_hub_left">
+     <h4>Popular Searches</h4>
+     <div id='popularSearchContainer'>
+     </div>
+          
+     </div> <!-- end answer hub left -->
+     
+     </div>
+    
+    <div class="content_area grid_8"> <!-- middle of application -->
+    
+    <div class="grid_breaker">
+            
+    <div id="answer_hub">
+    
+    	<div class="grid_5 alpha">
+            <span class="input_clear searchbox">
+                <input class="ic_field h24 address_reset" type="text" spellcheck="false" value="" placeholder="Address" style="width:280px" data-bind="value: addressSearch.address.fullAddress, css: {color_green: addressSearch.address.addressData()}, event: {keydown: addressSearch.validateOnTab}">
+                <input class="ic_clear h32 button_icon" id="address_reset" type="button" value="Clear" style="border-top-right-radius:0; -moz-border-radius-topright:0; border-bottom-right-radius:0; -moz-border-radius-bottomright:0;" data-bind="click:addressSearch.address.clearLocation">
+                <input class="submit h32" type="button" value="Search" data-bind="event: {click: function(data,event){addressSearch.searchAddress();}}">
+                <input class="ic_valid button_icon" type="button" value="Clear" data-bind="css: {visibility_visible: addressSearch.address.addressData()}">
+            </span>
+        </div>
+        <div class="grid_2 omega">
+			<input type="button" value="Clear All TABS" data-bind="click: clearAllTabs">
+    	</div>
+        
+        <div class="grid_5 alpha">
+    		<input name="city" type="text" value="" spellcheck="false"  placeholder="City" class="f_left address_reset" style="width:135px" data-bind="value: addressSearch.address.municipality, css: {color_green: addressSearch.address.addressData()}">
+            <select name="state" onChange="" class="f_left" style="width:50px; margin-left:10px; margin-right:10px;">
+                <option>FL</option>
+        	</select>
+            <input name="zip" type="text" value="" placeholder="Zip" class="f_left field_70  address_reset"  style="margin-right:10px;" data-bind="value: addressSearch.address.zip, css: {color_green: addressSearch.address.addressData()}">
+            <input id="ah_unit" name="unit" type="text" value="" placeholder="Unit" class="f_left field_70  address_reset" 
+                data-bind="value: addressSearch.address.unit, css: {color_red: addressSearch.address.addressData() && addressSearch.address.addressData().propertyInfo && addressSearch.address.addressData().propertyInfo.propertyType == 'MULTI'  }">
+        </div>
+        
+        <div class="grid_2 omega">
+			<span class="searchbox">
+                <input class="search  address_reset" type="text" value="" placeholder="Folio" data-bind="value: addressSearch.address.folio, event: {keydown: addressSearch.searchFolioOnEnter}">
+                <input class="submit h23_submit" type="button" value="Search" data-bind="click: $root.addressSearch.searchFolio">
+            </span>
+        </div>
+                
+       <div class="grid_7 alpha omega">
+ 
+        <span class="input_clear">
+                <input class="ic_field h24" type="text" spellcheck="false"  placeholder="Enter Keyword(s):" style="width:472px" data-bind="value: topicSearch.keywords, valueUpdate: 'keydown', event: {keydown: topicSearch.searchOnEnter}">
+                <input class="ic_clear h32 button_icon" type="button" 
+                    value="Clear"  style="border-top-right-radius:0; -moz-border-radius-topright:0; border-bottom-right-radius:0; -moz-border-radius-bottomright:0;" data-bind="click:topicSearch.clear">
+                <input class="submit h32" type="button" value="Search"                
+                    data-bind="click:$root.topicSearch.searchKnowledgeBase"> <!-- need to add data bind to tie click to event -->
+            </span>
+                   	
+        <!-- original markup with X button
+        <span class="input_clear">
+                <input class="ic_field" type="text" spellcheck="false"  value="" placeholder="Enter Keyword(s):" style="width:400px" data-bind="value: topicSearch.keywords, event: {keyup: topicSearch.searchOnEnter}">
+                <input class="ic_clear button_icon" type="button" 
+                    value="Clear" data-bind="click:topicSearch.clear">
+            </span>
+            -->
+            </div>
+            <!--
+            <div class="grid_2 omega">
+
+                <select data-bind="value:topicSearch.maxResults">
+                    <option value="5">5 Results</option>
+                    <option value="10">10 Result</option>
+                    <option value="15">15 Result</option>
+                    <option value="20">20 Result</option>
+                    <option value="30">30 Result</option>
+                    <option value="40">40 Result</option>
+                    <option value="50">50 Result</option>
+                </select>
+    
+        </div>
+        -->
+        
+        <div class="grid_4 alpha">
+            <select name="agency" onChange="" class="f_left" data-bind="options:topicSearch.agencies, optionsText:'name', value:topicSearch.selectedAgency,disable:addressSearch.address.municipality"></select>
+        </div>
+        
+        <div class="grid_3 omega">
+            <select name="department_agency" onChange="" class="f_left"data-bind="options:topicSearch.departments, optionsText:'name', value:topicSearch.selectedDepartment"></select>
+        </div>
+        
+        <div class="grid_7 alpha omega">
+
+        <script type="text/javascript">
+		$(document).ready(function() {
+		
+			$('a.locations_sh').click(function() { 	
+				$('#locations_sh').parent().slideToggle(); 
+				$(this).text($(this).text() == 'Show Common Locations' ? 'Hide Common Locations' : 'Show Common Locations');
+ 			});
+			
+		});	
+        </script>
+        
+        
+        <div class="locations">
+        
+        <a href="#" class="locations_sh">Show Common Locations</a>
+        	
+            <div style="display:none;">
+			<span class="searchbox" id="locations_sh">
+                <input class="search_nowidth" style="width:502px" type="text"  value="" placeholder="Enter Common Locations:" data-bind="value: addressSearch.address.commonLocation.name, event: {keydown: addressSearch.searchCommonLocationOnEnter}">
+                <input class="submit" type="button" value="Search" data-bind="click: $root.addressSearch.searchCommonLocation">
+            </span>
+            </div>
+            
+        </div>
+        </div>
+        
+ <!--
+        <div class="grid_3 alpha">
+            <input type="text" value="" placeholder="SR# Lookup">
+        </div>
+-->            
+
+<!--        
+        <div class="grid_3 omega">
+            <select name="phrase" onChange="" class="f_left">
+                <option>Exact Phrase</option>
+                <option>GA</option>
+                <option>NY</option>
+        	</select>
+        </div>
+ -->    
+ 
+ <!-- Commented out to remove search and clear buttons
+        <div class="grid_2 alpha">
+			<input name="search" type="button" value="Search" data-bind="click: topicSearch.searchKnowledgeBase">
+        </div>
+        
+        <div class="grid_2">
+ 			<input name="clear" type="button" value="Clear" data-bind="click: clear">
+        </div>
+        
+    -->
+        
+        <div id="kb_results" class="grid_7 alpha omega" data-bind="if: topicSearch.topics(), css : {scroller: $root.setScroller(topicSearch.topics())}"> <!-- Begin Search Layout -->
+        	<h4>Search Results</h4>
+		<!--
+        	<span data-bind="text: topicSearch.totalResults"></span> total found.
+		-->        
+	        <div class="grid_4 alpha" data-bind="foreach: topicSearch.topics()">
+	        <!-- search result record-->
+            	<div class="result_record">
+                <span class="result_link">
+                <a target="_blank" data-bind="text: title, attr: { href: url }, click:$root.trackTopicClick"></a></span>
+                
+                <span class="result_abstract" data-bind="text: $data.summary"></span>
+                
+                <!-- commented out to remove agency listing (visually distracting...)
+                <span class="result_agency" data-bind="visible: $data.ontology">Agencies:
+                <span data-bind="foreach: ontology">                
+                <span data-bind="ifnot: $root.isServiceRequest($data) || $root.ontologyLabel($data)=='NO JURISDICTION'">
+                    <span data-bind="text: $root.ontologyLabel($data)"></span>
+                </span>
+                </span>
+                </span>
+                -->
+                <span class="result_agency" data-bind="text: $data.agencyLabel"/>
+                
+                </div>
+                
+                        <!-- FEED BACK OLD COLUMN
+                        <div class="grid_2 omega" style="display:none">
+                        <span class="result_ok">That was it <input name="result_it" type="checkbox" value=""></span>
+                        
+                        <input name="feedback" type="text" value="" placeholder="Feedback">
+                        
+                        <span class="result_rank">
+                        <input name="rating_1" class="star" type="radio" value="1">
+                        <input name="rating_1" class="star" type="radio" value="2">
+                        <input name="rating_1" class="star" type="radio" value="3">
+                        <input name="rating_1" class="star" type="radio" value="4">
+                        <input name="rating_1" class="star" type="radio" value="5">
+                        </span>
+                        
+                        <input name="send_feedback" type="button" value="Send Feedback" style="margin-top:8px;">
+                        
+                        </div>
+                        END FEEDBACK COL-->
+        	</div><!-- END result record -->
+        
+	        <div class="grid_2 omega result_requests">
+	        	<span data-bind="visible: topicSearch.serviceRequests().length > 0"> Service Requests:<br> </span>
+	            <span data-bind="foreach: topicSearch.serviceRequests()">
+	                <a href="#" 
+	                    data-bind="click: $root.ontologyClick, text: $root.ontologyLabel($data)"></a><br>
+	                    <span data-bind="text:require('cirm').refs.serviceCases[$data].hasJurisdictionCode"></span><br><br>
+	            </span>
+	         </div>
+        </div>
+        
+        
+        <div class="clear">&nbsp;</div>
+    
+    </div> <!-- end answer_hub -->
+    
+    </div> <!-- end grid breaker -->
+    
+    </div>
+    
+    <div class="right_column grid_2">
+    <div class="alignment_center">
+        
+        <div id="answer_hub_right">
+            <input name="map" type="button" value="Map" data-bind="click: addressSearch.launchMap">
+            <input value="Last 5 Addresses" type="button" data-bind="click: addressSearch.showLast5Addr">
+            <!--  a href="file://\\Etsddept\311 operations services\TRANSIT" class="button blue" style="width:126px; margin:10px 0 20px 0;">Transit</a-->
+            <!--
+            <input name="Transit" type="button" value="Transit" data-bind="click: $root.openTransitFolder">
+            -->
+
+<!--            
+            <div class="button_group">
+            <input name="request" type="button" value="Request Service Type">
+            </div>
+           
+            <div class="button_group">
+            <input name="Print" type="button" value="Print">
+            </div>
+-->            
+
+			<div class="answer_hub_right_geo display_none" data-bind="css: {display_block: addressSearch.address.addressData()}">
+          		 <!-- original markup
+                 <div class="button_group">
+          		 	<input type="button" id="geo_info_district" data-bind="click: addressSearch.showPropertyInfo" value="District"></input>
+					<input type="button" id="geo_info_property" data-bind="click: addressSearch.showPropertyInfo" value="Property Info"></input>
+					<input type="button" id="geo_info_garbage" data-bind="click: addressSearch.showPropertyInfo" value="Garbage/Recycling"></input>
+					<input type="button" id="geo_info_publicworks" data-bind="click: addressSearch.showPropertyInfo" value="Public Works"></input>
+          		 </div>
+                 -->
+
+                 
+                 <!-- new markup -->
+                 <div class="button_group">
+          		 	<input type="button" id="geo_info_district" data-bind="click: addressSearch.showPropertyInfo" value="GIS Info"></input>
+					<input type="button" id="geo_info_property" data-bind="click: addressSearch.showPropertyInfo" value="Property Info"></input>
+          		 </div>
+              </div>             
+                      
+           <div id='locationHistoryContainer'></div>          
+                             	
+           </div>
+           </div>
+        
+        
+    </div>
+    
+    <div id="map" class="display_none"></div>
+<div id="ah_dialog_address" class="display_none" title="Address not found">
+	<p>No matching address found. Try entering a different address.</p>
+</div>
+<div id="ah_dialog_folio" class="display_none" title="Folio not found">
+	<p>No matching Folio found. Try entering a different Folio Number.</p>
+</div>
+
+<div id="ah_dialog_address_search" class="display_none" title="Searching...">
+	<p>Gathering address data. Patience is a virtue.</p>
+	<div id="ah_progressbar">
+   		<img style="width: 37%;"  src="images/ajax-loader.gif" />
+	</div>
+</div>
+<div id="ah_dialog_addresses_resolve" class="display_none" title="Multiple addresses found">
+	<table class="table_selectable" data-bind="if: addressSearch.addresses().length > 0">
+    <thead>
+        <tr>
+            <th align="left" colspan="2">Please resolve by double click(ing)</th>
+        </tr>
+    </thead>
+    <tbody data-bind="foreach: addressSearch.addresses()">
+    	<tr>
+    		<td data-bind="text: address, event: {dblclick: function(data,event){$parent.addressSearch.resolveAddress(data);}}"></td><td data-bind="text :municipality"></td>
+    	</tr>
+    </tbody>
+	</table>
+</div>
+<div id="ah_dialog_location" class="display_none" title="Common Location not found">
+	<p>No matching locations found. Try entering a different name.</p>
+</div>
+
+<div id="ah_dialog_location_search" class="display_none" title="Searching...">
+	<p>Search for common locations..</p>
+	<div id="ah_progressbar">
+   		<img style="width: 37%;"  src="images/ajax-loader.gif" />
+	</div>
+</div>
+<div id="ah_dialog_locations_resolve" class="display_none" title="Multiple locations found">
+	<table class="table_selectable" data-bind="if: addressSearch.commonLocations().length > 0">
+    <thead>
+    	Please resolve by double click(ing)
+        <tr>
+            <th align="left" colspan="1">Name</th>
+            <th align="left" colspan="2">Layer</th>
+        </tr>
+    </thead>
+    <tbody data-bind="foreach: addressSearch.commonLocations()">
+    	<tr data-bind="event: {dblclick: $parent.addressSearch.resolveCommonLocation}">
+    		<td data-bind="text: name"></td>
+    		<td data-bind="text: layer"></td>
+    	</tr>
+    </tbody>
+	</table>
+</div>
+<div id="ah_dialog_keywords" class="display_none" title="Keywords missing">
+	<p>Please enter one or keywords to search.</p>
+</div>
+
+<div id="ah_dialog_keywords_search" class="display_none" title="Searching...">
+	<p>Searching knowledge base for topics.</p>
+	<div id="ah_progressbar">
+   		<img style="width: 37%;"  src="images/ajax-loader.gif" />
+	</div>
+</div>
+
+<div id="ah_addr_dialog_alert" class="display_none" title="Address Alert"> </div>
+
+<div id="ah_last5_addr" class="display_none" title="Last 5 validated Addresses">
+	<div data-bind="visible: addressSearch.last5Addr().length > 0">
+		<table>
+			<thead>
+				<tr>
+					<th>Address</th>
+					<th>Municipality</th>
+					<th>Zip</th>
+					<th>Folio</th>
+					<th>Unit</th>
+				</tr>
+			</thead>
+			<tbody data-bind="foreach: addressSearch.last5Addr">
+				<tr>
+					<td ><a href="#" data-bind="event: {click: $root.addressSearch.fetchAddress}, text: fullAddress"></td>
+					<td data-bind="text: municipality"></td>
+					<td data-bind="text: zip"></td>
+					<td data-bind="text: folio"></td>
+					<td data-bind="text: unit"></td>
+					<div class="clear">&nbsp;</div>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div data-bind="visible: addressSearch.last5Addr().length == 0">
+		No Addresses searched till now.
+	</div>
+</div>
+
+<div id="ah_dialog_district" class="display_none" title="District" data-bind="if: addressSearch.address.addressData()">
+	<div id="district_details">
+    
+    	<style type="text/css">
+		.modal_infolist {list-style-type:none; margin:0; padding:0;}
+		.modal_infolist li {overflow:auto; padding:3px 0; margin-bottom:2px;}
+		.modal_infolist li:nth-child(odd) {background-color:#ebebeb;}
+        .modal_infolist label {display:block; padding-left:5px; float:left; width:210px; clear:both;}
+		.modal_infolist span {display:block; color:#555; font-weight:bold; float:left;}
+        </style>
+<!--
+        <div id="coordinates">
+            <ul class="modal_infolist">
+        	<li><label>X:</label><span data-bind="text: addressSearch.address.coordinates().x"></span></li>
+			<li><label>Y:</label><span data-bind="text: addressSearch.address.coordinates().y"></span></li>
+			</ul>
+        </div>
+-->
+		<div id="commission">
+			<ul class="modal_infolist">
+			<li><label>County Commissioner Name:</label><span data-bind="text: addressSearch.address.addressData().commissionerName"></span></li>
+    		<li><label>District Number:</label><span data-bind="text: addressSearch.address.addressData().districtNumber"></span></li>
+			<li><label>Municipality Name:</label><span data-bind="text: addressSearch.address.municipality"></span></li>
+			</ul>
+		<div>
+		<div id="hoa">
+			<ul class="modal_infolist">
+			<li><label>House District:</label><span data-bind="text: addressSearch.address.addressData().houseDistrictId"></span></li>
+			<li><label>Senate District:</label><span data-bind="text: addressSearch.address.addressData().senateDistrictId"></span></li>
+			<li><label>Elections Precinct:</label>
+				<span>
+					<div data-bind="text: addressSearch.address.addressData().electionsPrecinctId"></div>
+					<div data-bind="text: addressSearch.address.addressData().pollingLocation"  style="width: 320px;"></div>
+				</span>	
+			</li>
+			</ul>
+		<div>
+		<div id="wastePickup">
+      		<ul class="modal_infolist">		
+            <li><label>Garbage Pickup Day:</label><span data-bind="text: $root.addressSearch.getGarbagePickupDayInfo(addressSearch.address.addressData())"></span></li>
+			<li><label>Garbage Route:</label><span data-bind="text: addressSearch.address.addressData().garbagePickupRoute"></span></li>
+			<li>
+				<label>Recycling Route:</label><span data-bind="text: addressSearch.address.addressData().recyclingRoute"></span>
+				<span>
+					&nbsp; &nbsp; &nbsp;
+					<a data-bind="if:addressSearch.address.addressData().recyclingCalendarUrl, attr:{ href: addressSearch.address.addressData().recyclingCalendarUrl}" target="_blank">Calendar</a>
+				</span>
+			</li>						
+			<li><label>Recycling Pickup Day:</label><span data-bind="text: addressSearch.address.addressData().recyclingWeekDay"></span></li>
+		    <li><label>COM Bulky/Trash Day:</label><span data-bind="text: addressSearch.address.addressData().bulkyTrashPickupDayAlias"></span></li>
+        	</ul>
+		</div>
+        <!-- Public Works -->
+		<div id="publicWorks">
+        	<ul class="modal_infolist">
+			<li><label>Road Maintenance</label><span></span></li>
+			<ul class="modal_infolist" data-bind="foreach: addressSearch.address.addressData().streetsMaintenance">
+				<li><label>Street Name:</label><span data-bind="text: streetName"></span></li>
+				<li><label>Maintenance Code:</label><span data-bind="text: $root.addressSearch.getMaintenanceInfo($data)"></span></li>
+			</ul>
+			<li><label>Street Light Maintenance</label><span></span></li>
+			<ul class="modal_infolist" data-bind="foreach: addressSearch.address.addressData().streetsLightMaintenance">
+				<li><label>Street Name:</label><span data-bind="text: streetName"></span></li>
+				<li><label>Maintenance Code:</label><span data-bind="text: $root.addressSearch.getMaintenanceInfo($data)"></span></li>
+			</ul>
+		    <li><label>COM PW Grid Number:</label><span data-bind="text: addressSearch.address.addressData().publicWorksGridNumber"></span></li>
+            </ul>
+		</div>
+		<div id="wastePickup_continued">
+      		<ul class="modal_infolist">		
+				<li><label>COM City Commissioner Name:</label><span data-bind="text: addressSearch.address.addressData().cityCommissionerName"></span></li>
+    		    <li><label>COM District Number:</label><span data-bind="text: addressSearch.address.addressData().cityDistrictNumber"></span></li>
+				<li><label>COM Net Office Name:</label><span data-bind="text: addressSearch.address.addressData().netOfficeName"></span></li>
+				<li><label>COM Net Office Area:</label><span data-bind="text: addressSearch.address.addressData().netAreaId"></span></li>
+		    	<li><label>COM Code Enforcement Zone:</label>
+		    		<span data-bind="text: $root.addressSearch.getCodeEnforcementZonePhone(addressSearch.address.addressData().codeEnforcementZone)"></span>
+		    	</li>
+  	            <li><label>COM Neighborhood:</label><span data-bind="text: addressSearch.address.addressData().miamiNeighborhood"></span></li>		      
+  	            <li><label>COM Fire District:</label><span data-bind="text: addressSearch.address.addressData().firePreventionBureauDistrict"></span></li>		      
+            </ul>
+		</div>
+		<div id="hurricane">
+			<ul class="modal_infolist">
+			<li><label>Storm Surge Zone:</label><span data-bind="text: addressSearch.address.addressData().hurricaneEvacZone"></span></li>
+			<li><label>Flood Zone:</label><span data-bind="text: addressSearch.address.addressData().floodZone"></span></li>
+			<li><label>Turkey Point Evac Zone:</label><span data-bind="text: addressSearch.address.addressData().turkeyPointAreaId"></span></li>
+			<li><label>Water Service Area:</label><span data-bind="text: $root.addressSearch.getUtilityInfo(addressSearch.address.addressData())"></span></li>
+        	</ul>
+		</div>
+		<div id="hoa_continued">
+        	<ul class="modal_infolist">
+       			<li><label>Homeowners Association:</label><span data-bind="text: addressSearch.address.addressData().propertyInfo.homeOwnerAssociationName"></span></li>
+            </ul>
+		</div>
+
+	</div>
+</div>
+
+<div id="ah_dialog_property" class="display_none" title="Property Information" data-bind="if: addressSearch.address.addressData()">
+	<div id="property_info">
+		<ul id="property_tabs">
+			<li><a href="#property_details">Property Info</a></li>
+			<li><a href="#property_assessment">Assessment Info</a></li>
+			<li><a href="#property_exemption">Exemption Info</a></li>
+			<li><a href="#property_tax">Taxable Value Info</a></li>
+			<li><a href="#property_sale">Sale Info</a></li>
+			<li id="ui-tab-dialog-close"></li>
+		</ul>
+		<div id="property_content">
+			<div id="property_details">
+				<div id="owner">
+					<fieldset>
+						<div><label>Folio Number:</label><span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelFolioNumber"></span>
+						</div>
+						<div>
+						<label>Owner:</label><span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoMailAddress1"></span>
+						</div>
+						<div>
+						<label>Property:</label><span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoPtxAddress"></span>
+						</div>
+					</fieldset>
+				</div>
+				<div id="legal1">
+					<fieldset>
+						<div>
+						<label>Legal Description:</label>
+						<br/>
+						<span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoLegal"></span>
+						<br/>
+						</div>
+					</fieldset>
+				</div>
+				<div id="legal2">
+					<fieldset>
+						<div>
+						<label>Beds/Baths:</label><span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoNumberOfBeds"></span><span>/<span><span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoNumberOfBaths"></span>
+						</div>
+						<div>
+						<label>Living Units:</label><span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoNumberOfUnits"></span>
+						</div>
+						<div>
+						<label>Adj. Square Footage:</label><span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoBldgSqft"></span>
+						</div>
+						<div>
+						<label>Year Built:</label><span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoYearBuilt"></span>
+						</div>
+					</fieldset>
+				</div>
+				<div id="legal3">
+					<fieldset>
+						<div>
+						<label>Primary Zone:</label><span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoPriZone"></span>
+						</div>
+						<div>
+						<label>CLUC/Land use:</label><span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoCluc"></span>
+						</div>
+						<div>
+						<label>Lot Size:</label><span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoLotSize"></span>
+						</div>
+					</fieldset>
+				</div>
+			</div>
+			<div id="property_assessment">
+				<div id="prior">
+					<fieldset>
+						<div>
+							<label data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoAssmtYr1"></label>
+						</div>
+						<div>
+						<label>Land Value:</label><span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoLandValue1"></span>
+						</div>
+						<div>
+						<label>Building Value:</label><span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoBuildingValue1"></span>
+						</div>
+						<div>
+						<label>Market Value:</label><span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoTotalValue1"></span>
+						</div>
+						<div>
+						<label>Assessed Value:</label><span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoAssmtValue1"></span>
+						</div>
+					</fieldset>
+				</div>
+				<div id="current">
+					<fieldset>
+						<div>
+							<label data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoAssmtYr2"></label>
+						</div>
+						<div>
+						<label>Land Value:</label><span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoLandValue2"></span>
+						</div>
+						<div>
+						<label>Building Value:</label><span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoBuildingValue2"></span>
+						</div>
+						<div>
+						<label>Market Value:</label><span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoTotalValue2"></span>
+						</div>
+						<div>
+						<label>Assessed Value:</label><span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoAssmtVal2"></span>
+						</div>
+					</fieldset>
+				</div>
+			</div>
+			<div id="property_exemption">
+				<div id="prior">
+					<fieldset>
+						<div>
+							<label data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoAssmtYr1"></label>
+						</div>
+						<div>
+						<label>Homestead:</label><span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoHexVal1"></span>
+						</div>
+						<div>
+						<label>Homestead 2:</label><span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoSeniorAmt1"></span>
+						</div>
+					</fieldset>
+				</div>
+				<div id="current">
+					<fieldset>
+						<div>
+							<label data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoAssmtYr2"></label>
+						</div>
+						<div>
+						<label>Homestead:</label><span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoHexVal2"></span>
+						</div>
+						<div>
+						<label>Homestead 2:</label><span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoSeniorAmt2"></span>
+						</div>
+					</fieldset>
+				</div>
+			</div>
+			<div id="property_tax"">
+				<div id="prior">
+					<fieldset>
+						<div>
+							<label data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoAssmtYr1"></label>
+						</div>
+						<div>
+							<table>
+								<thead>
+									<tr>
+										<th>Taxing Authority</th>
+										<th>Applied Exemption</th>
+										<th>Taxable Value</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>Regional:</td>
+										<td data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoRegionalExe1"></td>
+										<td data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoRegionalTax1"></td>
+									</tr>
+									<tr>
+										<td>County:</td>
+										<td data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoCountyExe1"></td>
+										<td data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoCountyTax1"></td>
+									</tr>
+									<tr>
+										<td>Assessed Value:</td>
+										<td data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoSchoolBoardExe1"></td>
+										<td data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoSchoolBoardTax1"></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</fieldset>
+				</div>
+				<div id="current">
+					<fieldset>
+						<div>
+							<label data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoAssmtYr2"></label>
+						</div>
+						<div>
+							<table>
+								<thead>
+									<tr>
+										<th>Taxing Authority</th>
+										<th>Applied Exemption</th>
+										<th>Taxable Value</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>Regional:</td>
+										<td data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoRegionalExe2"></td>
+										<td data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoRegionalTax2"></td>
+									</tr>
+									<tr>
+										<td>County:</td>
+										<td data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoCountyExe2"></td>
+										<td data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoCountyTax2"></td>
+									</tr>
+									<tr>
+										<td>Assessed Value:</td>
+										<td data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoSchoolBoardExe2"></td>
+										<td data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoSchoolBoardTax2"></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</fieldset>
+				</div>
+			</div>
+			<div id="property_sale"">
+				<fieldset>
+						<div>
+						<label>Sale Date:</label><span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoDateMm1"></span>/<span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoDateYr1"></span>
+						</div>
+						<div>
+						<label>Sale Amount:</label><span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoAmt1"></span>
+						</div>
+						<div>
+						<label>Sale O/R:</label><span data-bind="text: addressSearch.address.addressData().propertyInfo.parcelInfoSalesOr1"></span>
+						</div>
+				</fieldset>
+			</div>
+		</div>
+	</div>
+</div>
+
+</div>
+<div id="ah_dialog_garbage" class="display_none" title="Garbage/Recycling" data-bind="if: addressSearch.address.addressData()">
+		<div>
+			<table>
+				<thead>
+					<tr>
+						<th>Garbage</th>
+						<th>Recycling</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><label>Route:</label><span data-bind="text: addressSearch.address.addressData().garbagePickupRoute"></span></td>
+						<td><label>Route:</label><span data-bind="text: addressSearch.address.addressData().recyclingRoute"></span></td>
+					</tr>
+					<tr>
+						<td><label>Pickup Day:</label><span data-bind="text: addressSearch.address.addressData().garbagePickupDay"></span></td>						
+						<td><label>Pickup Day:</label><span data-bind="text: addressSearch.address.addressData().recyclingWeekDay"></span></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+</div>
+<div id="ah_dialog_publicworks" class="display_none" title="Public Works" data-bind="if: addressSearch.address.addressData()">
+	<fieldset>
+			<div>
+			<label>Street Light Maintenance:</label><span></span>
+			</div>
+			<div>
+			<label>Road Maintenance:</label><span></span>
+			</div>
+	</fieldset>
+</div>
+<div id="ah_unit_select" class="display_none" title="Unit Number">
+	<div id="confirmMessage">Validate address with this unit number?</div>
+</div>
+
+    </div>
+    
+    

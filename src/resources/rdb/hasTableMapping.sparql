@@ -1,0 +1,12 @@
+PREFIX : <http://www.miamidade.gov/ontology#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+
+SELECT ?class ?table
+WHERE {
+  ?superClass a :OWLClass .
+  ?superClass :hasTableMapping ?table .
+  ?table a :DBTable .
+  ?class rdfs:subClassOf ?superClass .
+  FILTER (?class != owl:Nothing)
+}

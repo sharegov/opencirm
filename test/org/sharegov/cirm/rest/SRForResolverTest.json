@@ -1,0 +1,263 @@
+{
+	"boid": "28719458",
+	"properties": {
+		"hasServiceCaseActor": [{
+			"isModifiedBy": "e300371",
+			"isCreatedBy": "e300371",
+			"hasUpdatedDate": "2014-03-20T12:04:15.000-0400",
+			"hasServiceActor": {
+				"participantEntityTable": "COMPANIES",
+				"label": "Veterinarian",
+				"iri": "http://www.miamidade.gov/cirm/legacy#VET"
+			},
+			"label": "ServiceCaseActor28719459",
+			"atAddress": {
+				"Street_Address_State": {
+					"label": "Florida",
+					"iri": "http://www.miamidade.gov/ontology#Florida"
+				},
+				"label": "Street_Address28719460",
+				"type": "Street_Address",
+				"iri": "http://www.miamidade.gov/ontology#Street_Address28719460"
+			},
+			"type": "ServiceCaseActor",
+			"hasDateCreated": "2014-03-20T12:01:33.000-0400",
+			"iri": "http://www.miamidade.gov/ontology#ServiceCaseActor28719459"
+		},
+		{
+			"Name": "Cristine",
+			"isModifiedBy": "e300371",
+			"isCreatedBy": "e300371",
+			"hasUpdatedDate": "2014-03-20T12:04:15.000-0400",
+			"CellPhoneNumber": "7862183755",
+			"hasServiceActor": {
+				"participantEntityTable": "PERSONS",
+				"label": "Pet Owner",
+				"iri": "http://www.miamidade.gov/cirm/legacy#PETOWNER"
+			},
+			"label": "ServiceCaseActor28719461",
+			"atAddress": {
+				"Street_Address_State": "http://www.miamidade.gov/ontology#Florida",
+				"label": "Street_Address28719462",
+				"type": "Street_Address",
+				"iri": "http://www.miamidade.gov/ontology#Street_Address28719462"
+			},
+			"LastName": "Smith",
+			"type": "ServiceCaseActor",
+			"hasDateCreated": "2014-03-20T12:01:33.000-0400",
+			"iri": "http://www.miamidade.gov/ontology#ServiceCaseActor28719461"
+		},
+		{
+			"isModifiedBy": "e300371",
+			"isCreatedBy": "e300371",
+			"hasUpdatedDate": "2014-03-20T12:04:15.000-0400",
+			"hasServiceActor": {
+				"participantEntityTable": "PERSONS",
+				"label": "Employee",
+				"iri": "http://www.miamidade.gov/cirm/legacy#EMPLOYEE"
+			},
+			"label": "ServiceCaseActor28719463",
+			"atAddress": {
+				"Street_Address_State": "http://www.miamidade.gov/ontology#Florida",
+				"label": "Street_Address28719464",
+				"type": "Street_Address",
+				"iri": "http://www.miamidade.gov/ontology#Street_Address28719464"
+			},
+			"type": "ServiceCaseActor",
+			"hasDateCreated": "2014-03-20T12:01:33.000-0400",
+			"iri": "http://www.miamidade.gov/ontology#ServiceCaseActor28719463"
+		},
+		{
+			"Name": "IBIS",
+			"isModifiedBy": "e300371",
+			"HomePhoneNumber": "3053829377",
+			"isCreatedBy": "e300371",
+			"hasUpdatedDate": "2014-03-20T12:04:15.000-0400",
+			"hasServiceActor": {
+				"participantEntityTable": "PERSONS",
+				"label": "Pet Owner from Chameleon",
+				"iri": "http://www.miamidade.gov/cirm/legacy#CHPETOWN"
+			},
+			"label": "ServiceCaseActor28719465",
+			"atAddress": {
+				"Zip_Code": "33193",
+				"Street_Address_State": "http://www.miamidade.gov/ontology#Florida",
+				"fullAddress": "6604 SW 152 PL",
+				"Street_Address_City": {
+					"Name": "Miami",
+					"label": "Miami",
+					"iri": "http://www.miamidade.gov/ontology#Miami"
+				},
+				"label": "Street_Address28719466",
+				"type": "Street_Address",
+				"iri": "http://www.miamidade.gov/ontology#Street_Address28719466"
+			},
+			"LastName": "SMITH",
+			"type": "ServiceCaseActor",
+			"hasDateCreated": "2014-03-20T12:03:14.000-0400",
+			"iri": "http://www.miamidade.gov/ontology#ServiceCaseActor28719465"
+		}],
+		"hasGisDataId": "28719470",
+		"isCreatedBy": "e300371",
+		"hasServiceAnswer": [{
+			"hasAnswerValue": {
+				"type": "http://www.w3.org/2001/XMLSchema#string",
+				"literal": "d413327, 28"
+			},
+			"hasServiceField": {
+				"label": "If citation issued, what is the number?",
+				"iri": "http://www.miamidade.gov/cirm/legacy#ASDEATH_DEADRCIT"
+			},
+			"label": "temp0"
+		},
+		{
+			"hasAnswerValue": {
+				"type": "http://www.w3.org/2001/XMLSchema#string",
+				"literal": "DOG"
+			},
+			"hasServiceField": {
+				"label": "Chameleon Animal Type:",
+				"iri": "http://www.miamidade.gov/cirm/legacy#ASDEATH_CHAMTYPE"
+			},
+			"label": "temp1"
+		},
+		{
+			"hasAnswerValue": {
+				"type": "http://www.w3.org/2001/XMLSchema#dateTimeStamp",
+				"literal": "2013-02-28T00:00:00.000-0500"
+			},
+			"hasServiceField": {
+				"label": "Chameleon Tag Expiration:",
+				"iri": "http://www.miamidade.gov/cirm/legacy#ASDEATH_CHAMEXP"
+			},
+			"label": "temp2"
+		},
+		{
+			"hasAnswerValue": {
+				"type": "http://www.w3.org/2001/XMLSchema#string",
+				"literal": "MARTINI"
+			},
+			"hasServiceField": {
+				"label": "Chameleon Animal Name:",
+				"iri": "http://www.miamidade.gov/cirm/legacy#ASDEATH_CHAMNAME"
+			},
+			"label": "temp3"
+		},
+		{
+			"hasAnswerValue": {
+				"type": "http://www.w3.org/2001/XMLSchema#string",
+				"literal": "L12-075632"
+			},
+			"hasServiceField": {
+				"label": "Chameleon Tag Number:",
+				"iri": "http://www.miamidade.gov/cirm/legacy#ASDEATH_CHAMTAG"
+			},
+			"label": "temp4"
+		},
+		{
+			"hasAnswerObject": {
+				"label": "No",
+				"iri": "http://www.miamidade.gov/cirm/legacy#ASDEATH_CRTSYRNW_YESNO1_NO"
+			},
+			"hasServiceField": {
+				"label": "Did you receive a courtesy renewal? (Required):",
+				"iri": "http://www.miamidade.gov/cirm/legacy#ASDEATH_CRTSYRNW"
+			},
+			"label": "temp5"
+		},
+		{
+			"hasAnswerObject": {
+				"label": "Gave Away",
+				"iri": "http://www.miamidade.gov/cirm/legacy#ASDEATH_WHYWOULD_ASDCLSR_ASDCLSR2"
+			},
+			"hasServiceField": {
+				"label": "Why would you like the account closed? (Required):",
+				"iri": "http://www.miamidade.gov/cirm/legacy#ASDEATH_WHYWOULD"
+			},
+			"label": "temp6"
+		}],
+		"hasDueDate": "2014-04-19T12:00:33.000-0400",
+		"hasDateLastModified": "2014-03-20T12:06:12.946-0400",
+		"hasIntakeMethod": {
+			"label": "Phone",
+			"iri": "http://www.miamidade.gov/cirm/legacy#PHONE"
+		},
+		"label": "bo",
+		"transient$protected": true,
+		"isModifiedBy": "e300371",
+		"hasYCoordinate": "498245.759",
+		"hasXCoordinate": "839355.77",
+		"hasPriority": {
+			"label": "3-Standard",
+			"iri": "http://www.miamidade.gov/cirm/legacy#STANDARD"
+		},
+		"hasCaseNumber": "14-10280178",
+		"hasDetails": "Citizen reporting that her mom no longer have the dog it was given to Sam Terilli tag number L14-032314. So she is asking that you all close the account.",
+		"hasServiceActivity": [{
+			"isModifiedBy": "e300371",
+			"hasUpdatedDate": "2014-03-20T12:04:09.000-0400",
+			"hasDueDate": "2014-04-09T12:03:10.272-0400",
+			"label": "ServiceActivity28719468",
+			"type": "ServiceActivity",
+			"hasDateCreated": "2014-03-20T12:04:09.000-0400",
+			"iri": "http://www.miamidade.gov/ontology#ServiceActivity28719468",
+			"isAccepted": "false",
+			"hasActivity": {
+				"label": "Chameleon Tag Update",
+				"iri": "http://www.miamidade.gov/cirm/legacy#ASDEATH_TAGUPDAT"
+			}
+		},
+		{
+			"isModifiedBy": "e300371",
+			"hasUpdatedDate": "2014-03-20T12:04:09.000-0400",
+			"label": "ServiceActivity28719469",
+			"type": "ServiceActivity",
+			"hasDateCreated": "2014-03-20T12:04:09.000-0400",
+			"iri": "http://www.miamidade.gov/ontology#ServiceActivity28719469",
+			"isAccepted": "false",
+			"hasActivity": {
+				"label": "Notify Owner Phone",
+				"iri": "http://www.miamidade.gov/cirm/legacy#ASDEATH_NOTIFY"
+			}
+		},
+		{
+			"isCreatedBy": "e300371",
+			"hasUpdatedDate": "2014-03-20T12:06:04.000-0400",
+			"isAssignedTo": "e300371",
+			"hasDetails": "Open sr gave number to collection agency and instruction to send letter to ASD.",
+			"label": "ServiceActivity28719708",
+			"type": "ServiceActivity",
+			"hasDateCreated": "2014-03-20T12:06:04.000-0400",
+			"iri": "http://www.miamidade.gov/ontology#ServiceActivity28719708",
+			"hasActivity": {
+				"label": "Personal Contact",
+				"iri": "http://www.miamidade.gov/cirm/legacy#ASDEATH_PERSCNTC"
+			}
+		}],
+		"atAddress": {
+			"Zip_Code": "33193",
+			"Street_Address_State": "http://www.miamidade.gov/ontology#Florida",
+			"Street_Unit_Number": "02-",
+			"fullAddress": "6604 SW 152ND PL",
+			"Street_Address_City": {
+				"label": "Miami_Dade_County",
+				"iri": "http://www.miamidade.gov/ontology#Miami_Dade_County"
+			},
+			"Street_Name": "152ND",
+			"Street_Number": "6604",
+			"label": "Street_Address28719467",
+			"type": "Street_Address",
+			"iri": "http://www.miamidade.gov/ontology#Street_Address28719467"
+		},
+		"hasDateCreated": "2014-03-20T12:04:09.000-0400",
+		"hasStatus": {
+			"description5": "OPENED",
+			"description4": "CREATE_PRINT_JOB",
+			"description3": "ACCEPT",
+			"label": "Open",
+			"iri": "http://www.miamidade.gov/cirm/legacy#O-OPEN"
+		}
+	},
+	"type": "ASDEATH",
+	"iri": "http://www.miamidade.gov/bo/ASDEATH/28719458#bo"
+}

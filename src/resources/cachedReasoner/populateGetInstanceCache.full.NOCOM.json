@@ -1,0 +1,394 @@
+[
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:City_of_Miami_Shores)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:City_of_Miami)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:City_of_Doral)"
+  },
+  {
+    "direct": false,
+    "classExpression": "legacy:ServiceCase\n and ( inverse (mdc:hasObject) some \n    (mdc:AccessPolicy\n     and (mdc:hasActor value mdc:County_Commission)))"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:City_of_Miami_Gardens)"
+  },
+  {
+    "direct": false,
+    "classExpression": "legacy:ServiceCase\n and ( inverse (mdc:hasObject) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:Asst_Dir_Maintenance_And_Support_Services-51-96)\n     or (mdc:hasActor value mdc:Water_and_Sewer_Department))))"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:Village_of_Key_Biscayne)"
+  },
+  {
+    "direct": false,
+    "classExpression": " inverse (mdc:hasAction) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:Cirm311Supervisor)\n     or (mdc:hasActor value mdc:CirmAdmin)\n     or (mdc:hasActor value mdc:Communications_Department))\n     and (mdc:hasObject value legacy:ServiceCase))"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:Street_Type"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:OWLProperty\n and (mdc:hasColumnMapping some mdc:DBForeignKey)\n and (mdc:hasOne some mdc:OWLClass)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:Direction"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:City_of_Florida_City)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:isJoinedWithTable some mdc:DBTable"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:City_of_Miami_Springs)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:City_of_North_Miami_Beach)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:Town_of_Bay_Harbor_Islands)"
+  },
+  {
+    "direct": false,
+    "classExpression": "legacy:ServiceField"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:City_of_Miami_Beach_Police_Department)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:City_of_Pinecrest)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:City_of_North_Miami)"
+  },
+  {
+    "direct": false,
+    "classExpression": "legacy:ServiceCase\n and ( inverse (mdc:hasObject) some \n    (mdc:AccessPolicy\n     and (mdc:hasActor value mdc:Animal_Services)))"
+  },
+  {
+    "direct": false,
+    "classExpression": "legacy:Status"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:State__U.S._"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:Department_County\n and (mdc:Dept_Code value 93)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:City_of_Opa-Locka)"
+  },
+  {
+    "direct": false,
+    "classExpression": " inverse (mdc:hasAction) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:County_Commission))\n     and (mdc:hasObject value legacy:ServiceCase))"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:Department_County\n and (mdc:Dept_Code value 1)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:Department_County\n and (mdc:Dept_Code value 360)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:City_of_West_Miami)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:DBForeignKey\n and (mdc:hasJoinColumn some mdc:DBColumn)\n and (mdc:hasTable some mdc:DBTable)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:Village_of_El_Portal)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:Division_County\n and (legacy:hasAccessPolicy some owl:Thing)\n and ( inverse (mdc:hasSubAgency) some \n    (mdc:Department_County\n     and (mdc:Dept_Code value 360)))\n and (mdc:Division_Code value 33)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:Division_County\n and (legacy:hasAccessPolicy some owl:Thing)\n and ( inverse (mdc:hasSubAgency) some \n    (mdc:Department_County\n     and (mdc:Dept_Code value 1)))\n and (mdc:Division_Code value 1)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:Federal_Organization\n and (mdc:hasParentAgency value mdc:Federal_Government)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:Department_County\n and (mdc:Dept_Code value 203)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:City_of_Aventura)"
+  },
+  {
+    "direct": false,
+    "classExpression": "legacy:ServiceCase\n and ( inverse (mdc:hasObject) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:CirmCiaoDepartment)\n     or (mdc:hasActor value mdc:Public_Works_Waste_Management))))"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:City_of_Coral_Gables)"
+  },
+  {
+    "direct": false,
+    "classExpression": "legacy:Priority"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:Town_of_Golden_Beach)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:Division_County\n and (legacy:hasAccessPolicy some owl:Thing)\n and ( inverse (mdc:hasSubAgency) some \n    (mdc:Department_County\n     and (mdc:Dept_Code value 203)))\n and (mdc:Division_Code value 2)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:OWLProperty\n and (mdc:hasMany some mdc:OWLClass)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:City_of_Sweetwater)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:County\n or mdc:Miami_Dade_City"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:City_of_Homestead)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:Town_of_Cutler_Bay)"
+  },
+  {
+    "direct": true,
+    "classExpression": "mdc:Federal_Organization"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:GeoLayerAttribute"
+  },
+  {
+    "direct": false,
+    "classExpression": "legacy:IntakeMethod"
+  },
+  {
+    "direct": false,
+    "classExpression": " inverse (mdc:hasAction) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:Public_Works_Waste_Management))\n     and (mdc:hasObject value legacy:ServiceCase))"
+  },
+  {
+    "direct": false,
+    "classExpression": "legacy:ServiceCase\n and ( inverse (mdc:hasObject) some \n    (mdc:AccessPolicy\n     and (mdc:hasActor value mdc:Public_Works_Waste_Management)))"
+  },
+  {
+    "direct": true,
+    "classExpression": "mdc:County_Organization"
+  },
+  {
+    "direct": false,
+    "classExpression": " inverse (mdc:hasAction) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:Communications_Department))\n     and (mdc:hasObject value legacy:ServiceCase))"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:Village_of_Palmetto_Bay)"
+  },
+  {
+    "direct": false,
+    "classExpression": " inverse (mdc:hasAction) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:CirmTMBSPP1External)\n     or (mdc:hasActor value mdc:Finance_Department))\n     and (mdc:hasObject value legacy:ServiceCase))"
+  },
+  {
+    "direct": false,
+    "classExpression": " inverse (mdc:hasAction) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:Animal_Services))\n     and (mdc:hasObject value legacy:ServiceCase))"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:City_of_Miami_Beach)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:City_of_Surfside)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:CIty_of_Sunny_Isles_Beach)"
+  },
+  {
+    "direct": false,
+    "classExpression": "legacy:ServiceCase\n and ( inverse (mdc:hasObject) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:Asst_Dir_Regulatory_Compliance_And_Planni-61-96)\n     or (mdc:hasActor value mdc:Water_and_Sewer_Department))))"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:North_Bay_Village)"
+  },
+  {
+    "direct": true,
+    "classExpression": "mdc:City_Organization"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:Division_County\n and (legacy:hasAccessPolicy some owl:Thing)\n and ( inverse (mdc:hasSubAgency) some \n    (mdc:Department_County\n     and (mdc:Dept_Code value 96)))\n and (mdc:Division_Code value 61)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:City_of_Miami_Lakes)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:Department_County\n and (mdc:Dept_Code value 96)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:Village_of_Biscayne_Park)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:City_of_Miami_Police_Department)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:Division_County\n and (legacy:hasAccessPolicy some owl:Thing)\n and ( inverse (mdc:hasSubAgency) some \n    (mdc:Department_County\n     and (mdc:Dept_Code value 203)))\n and (mdc:Division_Code value 3)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:City_of_South_Miami)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:Village_of_Virginia_Gardens)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:Miami_Shores_Village)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:City_of_Hialeah)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:Division_County\n and (legacy:hasAccessPolicy some owl:Thing)\n and ( inverse (mdc:hasSubAgency) some \n    (mdc:Department_County\n     and (mdc:Dept_Code value 360)))\n and (mdc:Division_Code value 23)"
+  },
+  {
+    "direct": false,
+    "classExpression": "legacy:ServiceCase\n and ( inverse (mdc:hasObject) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:Cirm311Supervisor)\n     or (mdc:hasActor value mdc:CirmAdmin)\n     or (mdc:hasActor value mdc:Communications_Department))))"
+  },
+  {
+    "direct": false,
+    "classExpression": "legacy:ServiceCase\n and ( inverse (mdc:hasObject) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:Cirm311Supervisor)\n     or (mdc:hasActor value mdc:Communications_Department))))"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:Department_County\n and (mdc:Dept_Code value 6)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:State_Organization\n and (mdc:hasParentAgency value mdc:State_of_Florida)"
+  },
+  {
+    "direct": true,
+    "classExpression": "mdc:State_Organization"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:Town_of_Medley)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:Division_County\n and (legacy:hasAccessPolicy some owl:Thing)\n and ( inverse (mdc:hasSubAgency) some \n    (mdc:Department_County\n     and (mdc:Dept_Code value 6)))\n and (mdc:Division_Code value 3)"
+  },
+  {
+    "direct": false,
+    "classExpression": " inverse (mdc:hasAction) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:Parks_Recreation_and_Open_Spaces)\n     or (mdc:hasActor value mdc:RAAM-27-93))\n     and (mdc:hasObject value legacy:ServiceCase))"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:City_of_Palmetto_Bay)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:Division_County\n and (legacy:hasAccessPolicy some owl:Thing)\n and ( inverse (mdc:hasSubAgency) some \n    (mdc:Department_County\n     and (mdc:Dept_Code value 96)))\n and (mdc:Division_Code value 51)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:Division_County\n and (legacy:hasAccessPolicy some owl:Thing)\n and ( inverse (mdc:hasSubAgency) some \n    (mdc:Department_County\n     and (mdc:Dept_Code value 36)))\n and (mdc:Division_Code value 3)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:Division_County\n and (legacy:hasAccessPolicy some owl:Thing)\n and ( inverse (mdc:hasSubAgency) some \n    (mdc:Department_County\n     and (mdc:Dept_Code value 93)))\n and (mdc:Division_Code value 27)"
+  },
+  {
+    "direct": false,
+    "classExpression": " inverse (mdc:hasAction) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:CirmCiaoDepartment)\n     or (mdc:hasActor value mdc:Public_Works_Waste_Management))\n     and (mdc:hasObject value legacy:ServiceCase))"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:City_of_Hialeah_Gardens)"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:Indian_Creek_Village)"
+  },
+  {
+    "direct": false,
+    "classExpression": " inverse (mdc:hasAction) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:Asst_Dir_Maintenance_And_Support_Services-51-96)\n     or (mdc:hasActor value mdc:Water_and_Sewer_Department))\n     and (mdc:hasObject value legacy:ServiceCase))"
+  },
+  {
+    "direct": false,
+    "classExpression": " inverse (mdc:hasAction) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:Asst_Dir_Regulatory_Compliance_And_Planni-61-96)\n     or (mdc:hasActor value mdc:Water_and_Sewer_Department))\n     and (mdc:hasObject value legacy:ServiceCase))"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:City_Organization\n and (mdc:hasParentAgency value mdc:Bal_Harbour_Village)"
+  },
+  {
+    "direct": false,
+    "classExpression": "legacy:ServiceCase\n and ( inverse (mdc:hasObject) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:Parks_Recreation_and_Open_Spaces)\n     or (mdc:hasActor value mdc:RAAM-27-93))))"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:Department_County\n and (mdc:Dept_Code value 36)"
+  },
+  {
+    "direct": false,
+    "classExpression": "legacy:ServiceCase\n and ( inverse (mdc:hasObject) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:CirmTMBSPP1External)\n     or (mdc:hasActor value mdc:Finance_Department))))"
+  },
+  {
+    "direct": false,
+    "classExpression": "mdc:County_Organization\n and (mdc:hasParentAgency value mdc:Miami-Dade_County)"
+  },
+  {
+    "direct": false,
+    "classExpression": " inverse (mdc:hasAction) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:Cirm311Supervisor)\n     or (mdc:hasActor value mdc:Communications_Department))\n     and (mdc:hasObject value legacy:ServiceCase))"
+  },
+  {
+    "direct": false,
+    "classExpression": "legacy:ServiceCase\n and ( inverse (mdc:hasObject) some \n    (mdc:AccessPolicy\n     and (mdc:hasActor value mdc:Communications_Department)))"
+  },
+  {
+	"direct": false,
+	"classExpression": "legacy:ServiceCase\n and ( inverse (mdc:hasObject) some \n    (mdc:AccessPolicy\n     and ((mdc:hasActor value mdc:CirmPWAll)\n     or (mdc:hasActor value mdc:Public_Works_Waste_Management))))"
+  }
+]

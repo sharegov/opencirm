@@ -1,0 +1,44 @@
+Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)
+Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
+Prefix(:=<http://www.miamidade.gov/swrl#>)
+Prefix(mdc:=<http://www.miamidade.gov/ontology#>)
+Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)
+Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
+Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
+Prefix(skos:=<http://www.w3.org/2004/02/skos/core#>)
+
+
+Ontology(<http://www.miamidade.gov/swrl/Mosquito_Control_Call_Back>
+Import(<http://www.miamidade.gov/ontology>)
+
+DLSafeRule(
+  Body
+  (
+    BuiltInAtom(mdc:now Variable(:now))
+    ObjectPropertyAtom(mdc:atAddress Variable(:bo) Variable(:address))
+    ObjectPropertyAtom(mdc:hasIssueCategory Variable(:bo) Variable(:issue))
+    DataPropertyAtom(mdc:hasCallerName Variable(:bo) Variable(:callerName))
+    DataPropertyAtom(mdc:hasPhoneNumber Variable(:bo) Variable(:phoneNumber))
+    
+  )
+  Head(
+    DataPropertyAtom(mdc:hasInquiryDate Variable(:bo) Variable(:now))
+    ObjectPropertyAtom(mdc:hasInquiryStatus Variable(:bo) mdc:InquiryInitiated)
+    BuiltInAtom(mdc:email "mosquitocontrol@miamidade.gov"^^xsd:string "Urgent: Please perform Mosquito Control Callback for this SR.")
+  )
+)
+DLSafeRule(
+  Body
+  (
+    ObjectPropertyAtom(mdc:hasInquiryStatus Variable(:bo) mdc:InquiryInitiated)
+    DataPropertyAtom(mdc:hasInquiryDate Variable(:bo) Variable(:inquiryDate))
+    DataPropertyAtom(mdc:hasCallbackPerformed Variable(:bo) "Yes")
+    BuiltInAtom(mdc:subtractDates Variable(:now) Variable(:inquiryDate) Variable(:businessDays))
+    BuiltInAtom(mdc:greaterThanOrEqual Variable(:businessDays) "5"^^xsd:int)
+   
+   )
+  Head(
+    ObjectPropertyAtom(mdc:hasInquiryStatus Variable(:bo) mdc:InquiryResolved))
+  )
+)
+

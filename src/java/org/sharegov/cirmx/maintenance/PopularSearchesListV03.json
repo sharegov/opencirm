@@ -1,0 +1,111 @@
+{
+  "hasMember": [
+    {
+      "hasName": "ServicesNearYou",
+      "label": "AnswerHubConfiguration166773",
+      "hasOrdinal": "0",
+      "type": "AnswerHubConfiguration",
+      "hasText": "\"Services Near You\" +\"County Services Esrimap\"",
+      "iri": "http://www.miamidade.gov/ontology#AnswerHubConfiguration166773"
+    },
+    {
+      "hasName": "Easy Card and Ticket ",
+      "label": "AnswerHubConfiguration166774",
+      "hasOrdinal": "1",
+      "type": "AnswerHubConfiguration",
+      "hasText": "\"Transit Easy Card and Ticket Info\" +\"Transit Easy Card\" +\"Easy Tickets\" +\"TVM\"",
+      "iri": "http://www.miamidade.gov/ontology#AnswerHubConfiguration166774"
+    },
+    {
+      "hasName": "Transit Airport Station",
+      "label": "AnswerHubConfiguration166775",
+      "hasOrdinal": "2",
+      "type": "AnswerHubConfiguration",
+      "hasText": "\"Transit Airport Station\" ",
+      "iri": "http://www.miamidade.gov/ontology#AnswerHubConfiguration166775"
+    },
+    {
+      "hasName": "TRIM Notice ",
+      "label": "AnswerHubConfiguration166776",
+      "hasOrdinal": "3",
+      "type": "AnswerHubConfiguration",
+      "hasText": "\"TRIM Notice\" +\"TRIM Notice is a PA Number\"",
+      "iri": "http://www.miamidade.gov/ontology#AnswerHubConfiguration166776"
+    },
+    {
+      "hasName": "Property Tax Information",
+      "label": "AnswerHubConfiguration166777",
+      "hasOrdinal": "4",
+      "type": "AnswerHubConfiguration",
+      "hasText": "\"Property Tax Information\" +\"TXCAMENU\" +Historical",
+      "iri": "http://www.miamidade.gov/ontology#AnswerHubConfiguration166777"
+    },
+    {
+      "hasName": "County Parks Directory",
+      "label": "AnswerHubConfiguration166778",
+      "hasOrdinal": "5",
+      "type": "AnswerHubConfiguration",
+      "hasText": "\"Parks\" +\"County Parks Directory\"+\"Open Parks Facility/Service Concern\" ",
+      "iri": "http://www.miamidade.gov/ontology#AnswerHubConfiguration166778"
+    },
+    {
+      "hasName": "Property Appraiser PSR",
+      "label": "AnswerHubConfiguration166779",
+      "hasOrdinal": "6",
+      "type": "AnswerHubConfiguration",
+      "hasText": "\"PSR\" +\"Property Appraiser Public Service Request PSR\" +\"Public Service Request\" -Classification",
+      "iri": "http://www.miamidade.gov/ontology#AnswerHubConfiguration166779"
+    },
+    {
+      "hasName": "Tax Collector TSR",
+      "label": "AnswerHubConfiguration166780",
+      "hasOrdinal": "7",
+      "type": "AnswerHubConfiguration",
+      "hasText": "\"TSR\" +\"Tax Collector's Service Request TSR\" +\"Tax Collector Service\"  -delinquent",
+      "iri": "http://www.miamidade.gov/ontology#AnswerHubConfiguration166780"
+    },
+    {
+      "hasName": "Mosquito Control",
+      "label": "AnswerHubConfiguration166781",
+      "hasOrdinal": "8",
+      "type": "AnswerHubConfiguration",
+      "hasText": "\"Mosquito Control Concerns\" +\"Mosquito Control Staff\" +\"Mosquito Season\"",
+      "iri": "http://www.miamidade.gov/ontology#AnswerHubConfiguration166781"
+    },
+    {
+      "hasName": "Topic Missing or Error to Report",
+      "label": "AnswerHubConfiguration166782",
+      "hasOrdinal": "9",
+      "type": "AnswerHubConfiguration",
+      "hasText": "\"311 Missing Topic\" +\"311 Process Improvement\" -\"Solid Waste\"",
+      "iri": "http://www.miamidade.gov/ontology#AnswerHubConfiguration166782"
+    },
+    {
+      "hasName": "Boris, COM building",
+      "label": "AnswerHubConfiguration166783",
+      "hasOrdinal": "10",
+      "type": "AnswerHubConfiguration",
+      "hasText": "http://kb.miamidade.gov:8400/pkbi/content/kbarticle_1336596.html",
+      "iri": "http://www.miamidade.gov/ontology#AnswerHubConfiguration166783"
+    },
+    {
+      "hasName": "Easy Card Sales Outlets",
+      "label": "AnswerHubConfiguration166784",
+      "hasOrdinal": "11",
+      "type": "AnswerHubConfiguration",
+      "hasText": "\"EASY Card Sales Outlets and TVMs\"",
+      "iri": "http://www.miamidade.gov/ontology#AnswerHubConfiguration166784"
+    },
+    {
+      "hasName": "Bulky Trash Issues",
+      "label": "AnswerHubConfiguration166785",
+      "hasOrdinal": "12",
+      "type": "AnswerHubConfiguration",
+      "hasText": "\"Bulky Trash Request\" +\"Bulky Trash Complaint\"",
+      "iri": "http://www.miamidade.gov/ontology#AnswerHubConfiguration166785"
+    }
+  ],
+  "label": "PopularSearchesList",
+  "type": "AnswerHubConfiguration",
+  "iri": "http://www.miamidade.gov/ontology#PopularSearchesList"
+}

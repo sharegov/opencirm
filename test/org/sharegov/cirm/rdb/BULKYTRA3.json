@@ -1,0 +1,43 @@
+{
+  "boid": "",
+  "properties": {
+    "legacy:hasServiceCaseActor": [
+      {
+        "Name": "Syed",
+        "atAddress": {
+          "Zip_Code": "33150",
+          "Street_Address_State": {
+            "iri": "http://www.miamidade.gov/ontology#Florida"
+          },
+          "type": "Street_Address"
+        },
+        "type": "legacy:ServiceCaseActor",
+        "legacy:hasServiceActor": {
+          "iri": "http://www.miamidade.gov/cirm/legacy#CITIZEN"
+        }
+      },
+      {
+        "Name": "Phani",
+        "HomePhoneNumber": "9540000000",
+        "hasDateCreated": "2012-01-01T00:00:00.00-04:00",
+        "CellPhoneNumber": "9541111111",
+        "type": "legacy:ServiceCaseActor",
+        "LastName": "Hilpold2",
+        "legacy:hasServiceActor": {
+          "iri": "http://www.miamidade.gov/cirm/legacy#TENANT"
+        }
+      }
+    ],
+    "legacy:hasServiceActivity": [
+      
+    ],
+    "atAddress": {
+      "Street_Address_State": {
+        "iri": "http://www.miamidade.gov/ontology#Florida"
+      },
+      "type": "Street_Address"
+    },
+    "hasDateCreated": "2012-01-01T00:18:44.947-04:00"
+  },
+  "type": "legacy:BULKYTRA"
+}
