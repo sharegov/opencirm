@@ -76,7 +76,7 @@ public class StartUp extends ServerResource
 	public final static String PRODUCTION_MODE_IDENTIFIER = "http://www.miamidade.gov/ontology#ProdConfigSet";
 	public final static String MODE_CONFIG_PARAM = "ontologyConfigSet";
 	public final static Json DEFAULT_CONFIG = Json.object()
-			.set("workingDir", "C:/work/opencirm")
+			.set("workingDir", "C:/work/311Hub")
 			.set("mainApplication", "http://www.miamidade.gov/ontology#CIRMApplication") 
 			.set("port", 8182)
 			.set("ignorePasswords", true)

@@ -64,7 +64,7 @@
 		</copy>
 	</target>
 	
-	<target name="docgen" depends="init" description="Generate JavaDocs for CiRM Serevices">
+	<target name="docgen" depends="init" description="Generate JavaDocs for 311Hub">
 	    <javadoc sourcepath="src/java" destdir="${javadoc}" classpathref="compile-classpath"/>
 	</target>
 	
@@ -128,6 +128,7 @@
         <fileset dir="${dist}">
           <exclude name="bin\wrapper.exe"/>
           <exclude name="bin\wrapper.dll"/>
+          <exclude name="bin\*.pfx"/>
         </fileset>
       </copy>
     </sequential>
@@ -167,10 +168,6 @@
 	<target name="updateClients-test" description="Browser clients will receive an event that tells them to reload their application.">
 		<updateClients server="s0020269"/>
 		<updateClients server="s0020284"/>		
-	</target>
-
-	<target name="updateClients-public" description="Browser clients will receive an event that tells them to reload their application.">
-		<updateClients server="s0142012"/>		
 	</target>
 
   <macrodef name="restart" description="Restarts a server, fills ServiceCase cache and sends a client update event to all its clients.">

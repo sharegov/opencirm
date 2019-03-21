@@ -2,7 +2,6 @@
 <project basedir="." name="CiRM Services" default="">
 	<description>CiRM Services Build and Deployment File</description>
     <property name="versionSuffix" value=""/> <!-- e.g. "beta" or "rc" -->
-    <property name="opencirm" value="../opencirm"/>
     <property name="build" value="classes"/>    
     <property name="dist" value="dist"/>
     <property name="backup" value="backup"/>

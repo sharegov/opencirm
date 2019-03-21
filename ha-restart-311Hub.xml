@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." name="311Hub HA 3-2 Restart" default="ha-restart-test-with-fresh-ontodb">
+	<description>311Hub HA 3-2 Restart - 30 min restart with 2 servers available at all times.</description>
+	<property name="debug" value="on" />
+	<property name="maxwaitstart" value="3600" />
+	<property name="https-port" value="443" />
+
+	<macrodef name="updateClients" description="Triggers a client update event on the server.">
+		<attribute name="server" />
+		<sequential>
+			<waitfor maxwait="15" maxwaitunit="minute">
+				<http requestMethod="POST" url="https://@{server}.miamidade.gov/manage/applicationUpdated" />
+			</waitfor>
+		</sequential>
+	</macrodef>
+
+	<target name="updateClients-prod" description="Browser clients will receive an event that tells them to reload their application.">
+		<updateClients server="s2030050" />
+		<updateClients server="s2030051" />
+		<updateClients server="s2030057" />
+		<updateClients server="s2030059" />
+		<updateClients server="s2030060" />
+	</target>
+
+	<target name="updateClients-test" description="Browser clients will receive an event that tells them to reload their application.">
+		<updateClients server="s0020269" />
+		<updateClients server="s0020284" />
+	</target>
+
+	<target name="delete-ontology-db" description="Delete ontology DB at specified 'server'">
+		<echo message="Delete ontology DB at ${server}" />
+		<delete dir="\\${server}\311Hub\db" />
+		<mkdir dir="\\${server}\311Hub\db" />
+	</target>
+
+	<target name="health-check-off" description="Rename healthcheck.htm file to take server offline (use -Dserver=servername)">
+		<echo message="health-check-off ${server}" />
+		<move file="\\${server}\311Hub\src\html\healthcheck.htm" tofile="\\${server}\311Hub\src\html\healthcheck.offline.htm" />
+	</target>
+
+	<target name="health-check-on" description="Rename healthcheck.htm file to take server offline (use -Dserver=servername)">
+		<echo message="health-check-off ${server}" />
+		<move file="\\${server}\311Hub\src\html\healthcheck.offline.htm" tofile="\\${server}\311Hub\src\html\healthcheck.htm" />
+	</target>
+
+	<target name="ha-stop" description="Stop server with disabling/reenabling healthcheck. (Server param)">
+		<echo message="Stopping ${server}" />
+		<antcall target="health-check-off">
+			<param name="server" value="${server}" />
+		</antcall>
+		<sleep seconds="30" />
+		<exec executable="sc.exe">
+			<arg value="\\${server}" />
+			<arg value="stop" />
+			<arg value="311Hub" />
+		</exec>
+		<sleep seconds="30" />
+		<antcall target="health-check-on">
+			<param name="server" value="${server}" />
+		</antcall>
+	</target>
+
+	<target name="start" description="Start server (Server param)">
+		<echo message="Starting ${server}" />
+		<exec executable="sc.exe">
+			<arg value="\\${server}" />
+			<arg value="start" />
+			<arg value="311Hub" />
+		</exec>
+	</target>
+
+	<target name="ha-restart-prod-with-fresh-ontodb" description="Refreshes all 5 machines in 3/2 pattern.">
+		<echo message="311Hub Prod refresh starting..." />
+		<!-- 50, 51, and 57 -->
+		<echo message="HA Restart 50, 51, 57 and waiting until 50 and 51 up..." />
+		<antcall target="ha-stop">
+			<param name="server" value="s2030050" />
+		</antcall>
+		<antcall target="delete-ontology-db">
+			<param name="server" value="s2030050" />
+		</antcall>
+		<antcall target="start">
+			<param name="server" value="s2030050" />
+		</antcall>
+		<antcall target="ha-stop">
+			<param name="server" value="s2030051" />
+		</antcall>
+		<antcall target="delete-ontology-db">
+			<param name="server" value="s2030051" />
+		</antcall>
+		<antcall target="ha-stop">
+			<param name="server" value="s2030057" />
+		</antcall>
+		<antcall target="delete-ontology-db">
+			<param name="server" value="s2030057" />
+		</antcall>
+		<antcall target="start">
+			<param name="server" value="s2030051" />
+		</antcall>
+		<echo message="Sleeping 2.5 minutes to ensure sequential ontology download during server startup" />
+		<sleep seconds="150" />
+		<antcall target="start">
+			<param name="server" value="s2030057" />
+		</antcall>
+		<echo message="Wait until server 50 up...${maxwaitstart} seconds" />
+		<waitfor maxwait="${maxwaitstart}" maxwaitunit="second" timeoutproperty="timeoutprop">
+					<socket server="s2030050" port="${https-port}"/>
+		</waitfor>
+		<echo message="Wait until server 51 up...${maxwaitstart} seconds" />
+		<waitfor maxwait="${maxwaitstart}" maxwaitunit="second" timeoutproperty="timeoutprop">
+					<socket server="s2030051" port="${https-port}"/>
+		</waitfor>
+		<echo message="HA Restart 50, 51 are up. Continue with 59 and 60" />
+		<!-- 59 and 60 -->
+		<antcall target="ha-stop">
+			<param name="server" value="s2030059" />
+		</antcall>
+		<antcall target="delete-ontology-db">
+			<param name="server" value="s2030059" />
+		</antcall>
+		<antcall target="start">
+			<param name="server" value="s2030059" />
+		</antcall>
+		<antcall target="ha-stop">
+			<param name="server" value="s2030060" />
+		</antcall>
+		<antcall target="delete-ontology-db">
+			<param name="server" value="s2030060" />
+		</antcall>		
+		<echo message="Sleeping 2.5 minutes to ensure sequential ontology download during server startup" />
+		<sleep seconds="150" />
+		<antcall target="start">
+			<param name="server" value="s2030060" />
+		</antcall>
+		<echo message="Wait until server 59 up...${maxwaitstart} seconds" />
+		<waitfor maxwait="${maxwaitstart}" maxwaitunit="second" timeoutproperty="timeoutprop">
+					<socket server="s2030059" port="${https-port}"/>
+		</waitfor>
+		<echo message="Wait until server 60 up...${maxwaitstart} seconds" />
+		<waitfor maxwait="${maxwaitstart}" maxwaitunit="second" timeoutproperty="timeoutprop">
+					<socket server="s2030060" port="${https-port}"/>
+		</waitfor>
+		<echo message="Wait until server 57 up...${maxwaitstart} seconds" />
+		<waitfor maxwait="${maxwaitstart}" maxwaitunit="second" timeoutproperty="timeoutprop">
+					<socket server="s2030057" port="${https-port}"/>
+		</waitfor>
+		<echo message="HA Restart Complete all servers 50, 51, 57, 59 and 60 are up." />
+		<echo message="Now Send please reload to UI users." />
+	</target>
+
+	<target name="ha-restart-test-with-fresh-ontodb" description="Restart test servers (69 and 84) after deleting their ontologies local DBs (which forces a clean reload of onto data)">	
+		<echo message="Wait until server up...${maxwaitstart} seconds" />
+		<echo message="311Hub Test refresh starting..." />
+		<antcall target="ha-stop">
+			<param name="server" value="s0020269" />
+		</antcall>
+		<antcall target="delete-ontology-db">
+			<param name="server" value="s0020269" />
+		</antcall>
+		<antcall target="start">
+			<param name="server" value="s0020269" />
+		</antcall>
+		<echo message="Wait until server up...${maxwaitstart} seconds" />
+		<waitfor maxwait="${maxwaitstart}" maxwaitunit="second" timeoutproperty="timeoutprop">
+					<socket server="s0020269" port="${https-port}"/>
+		</waitfor>
+		<!-- 84 -->
+		<antcall target="ha-stop">
+			<param name="server" value="s0020284" />
+		</antcall>
+		<antcall target="delete-ontology-db">
+			<param name="server" value="s0020284" />
+		</antcall>
+		<antcall target="start">
+			<param name="server" value="s0020284" />
+		</antcall>
+		<echo message="Wait until server up...${maxwaitstart} seconds" />
+		<waitfor maxwait="${maxwaitstart}" maxwaitunit="second" timeoutproperty="timeoutprop">
+				<socket server="s0020284" port="${https-port}"/>
+		</waitfor>
+		<updateClients server="s0020284" />		
+		<echo message="311Hub Test refresh completed" />
+	</target>
+
+
+	<target name="stop-departmental-interface" unless="noDepartmentalInterface" description="Call REST service to start processing incoming message from departments.">
+		<echo message="Starting departmental interface on server ${server}" />
+		<waitfor maxwait="2" maxwaitunit="minute">
+			<http url="http://${server}/legacy/departments/stop" requestMethod="POST" />
+		</waitfor>
+	</target>
+
+</project>
