@@ -16,6 +16,7 @@
 package org.sharegov.cirm.legacy;
 
 import java.util.Date;
+import mjson.Json;
 
 /**
  * @author Thomas Hilpold
@@ -30,4 +31,6 @@ public interface CirmMessage {
 	void addExplanation(String explanation); 
 
 	String getExplanation(); 
+	
+	Json toJson();
 }

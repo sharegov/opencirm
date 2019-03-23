@@ -1,9 +1,12 @@
 package org.sharegov.cirm.legacy;
 
 import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import mjson.Json;
 
 /**
  * Cirm SMS Message
@@ -62,4 +65,15 @@ public class CirmSmsMessage implements CirmMessage {
 		result.append("Created " + SimpleDateFormat.getDateTimeInstance().format(getCreationTime()) + "\r\n");
 		return result.toString();
 	}
+	
+    @Override
+    public Json toJson() {
+        Json msg = Json.object();
+        msg.set("type", "SMS");
+        msg.set("to", Json.array(getPhone()));
+        msg.set("body", getTxt());
+        String createdOnStr = OffsetDateTime.ofInstant(getCreationTime().toInstant(), ZoneId.systemDefault()).toString();
+        msg.set("createdOn", createdOnStr);
+        return msg;
+    }
 }
