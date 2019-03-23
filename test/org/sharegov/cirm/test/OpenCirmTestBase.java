@@ -4,7 +4,6 @@ package org.sharegov.cirm.test;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.hypergraphdb.app.owl.versioning.RevisionID;
 import org.hypergraphdb.app.owl.versioning.VersionedOntology;
 import org.hypergraphdb.app.owl.versioning.distributed.VDHGDBOntologyRepository;
@@ -13,7 +12,6 @@ import org.junit.BeforeClass;
 import org.semanticweb.owlapi.model.IRI;
 import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.StartUp;
-import org.sharegov.cirm.legacy.ServiceCaseManager;
 
 /**
  * Abstract OpenCirm test base class, from which all opencirm test suites and all opencirm tests should inherit.
