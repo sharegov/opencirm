@@ -35,7 +35,6 @@ import javax.jms.QueueSender;
 import javax.jms.QueueSession;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-import javax.resource.spi.IllegalStateException;
 import mjson.Json;
 
 import org.semanticweb.owlapi.model.OWLIndividual;
