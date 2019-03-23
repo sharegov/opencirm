@@ -37,7 +37,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import javax.jms.JMSException;
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.Message.RecipientType;
@@ -49,7 +49,6 @@ import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -92,6 +91,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
 import de.odysseus.staxon.json.JsonXMLInputFactory;
+import gov.miamidade.cirm.other.JMSClient;
 
 /**
  * MessageManager is responsible to creating email and sms CirmMessages through it's template engine.<br>
@@ -132,7 +132,7 @@ public class MessageManager
 	public static boolean DBGXML = false;
 	public static boolean DISABLE_SEND = false;
 	private static boolean INCLUDE_EXPLANATION_IN_EMAIL = true;
-
+	public static boolean USE_IBM_MQ = true;
 	/**
 	 * Send test emails to the DEFAULT_TO_ADDRESS instead of 
 	 * 
@@ -784,7 +784,7 @@ public class MessageManager
 			if (validUnSent != null && validUnSent.length > 0)
 			{
 				logger.log(Level.WARNING, "Attempting to send recovery email to valid unsent: \r\n" + toStr(validUnSent) + "...");
-				MimeMessage recoveryMsg = new MimeMessage(session);
+				CirmMimeMessage recoveryMsg = new CirmMimeMessage(session);
 				try {
 					String body = (String) msg.getContent();
 					body = body + "<br><br><br><br>For Sysadmin: <br> Recovered message could not be send to: " + toStr(invalid);
@@ -830,7 +830,11 @@ public class MessageManager
 		{
 			t = t.getCause();
 		}
-		return (SendFailedException) t;
+		if (!(t instanceof SendFailedException)) {
+		    return null;
+		} else {
+		    return (SendFailedException) t;
+		}
 	}
 
 	private String getNonVerboseBOObjectId(OWLNamedIndividual boInd)
@@ -1010,7 +1014,7 @@ public class MessageManager
 		{
 			if (from != null && to != null)
 			{
-				MimeMessage msg = new MimeMessage(session);
+			    CirmMimeMessage msg = new CirmMimeMessage(session);
 				InternetAddress sender = new InternetAddress(from);
 				String[] tos = to.trim().split(";");
 				InternetAddress[] recipients = new InternetAddress[tos.length];
@@ -1078,7 +1082,7 @@ public class MessageManager
 		ensureInit();
 		try
 		{
-			MimeMessage msg = new MimeMessage(session);
+		    CirmMimeMessage msg = new CirmMimeMessage(session);
 			InternetAddress sender = new InternetAddress(from);
 			InternetAddress[] toA = toRecipients(to);
 			InternetAddress[] ccA = toRecipients(cc);
@@ -1105,7 +1109,7 @@ public class MessageManager
 		{
 			if (from != null && to != null)
 			{
-				MimeMessage msg = new MimeMessage(session);
+				CirmMimeMessage msg = new CirmMimeMessage(session);
 				InternetAddress sender = new InternetAddress(from);
 				String[] tos = to.trim().split(";");
 				InternetAddress[] recipients = new InternetAddress[tos.length];
@@ -1125,7 +1129,7 @@ public class MessageManager
 		}
 	}
 
-	private void sendEmail(MimeMessage msg)
+	private void sendEmail(CirmMimeMessage msg)
 	{
 		try
 		{
@@ -1134,7 +1138,11 @@ public class MessageManager
 				ThreadLocalStopwatch.now("sendEmail: Not sending message that had zero recipients");
 			} else {
 				if(!DISABLE_SEND) {
-					Transport.send(msg);
+				    if (USE_IBM_MQ) {
+				        sendEmailViaMessageQueue(msg);
+				    } else {
+				        sendEmailViaTransport(msg);
+				    }
 					ThreadLocalStopwatch.now("sendEmail: One Email sent to " + recipients.length + " recipients");
 				}
 			}
@@ -1144,6 +1152,14 @@ public class MessageManager
 			ThreadLocalStopwatch.error("Transport error: " + ex);
 			throw new RuntimeException(ex);
 		}
+	}
+	
+	private void sendEmailViaMessageQueue(CirmMimeMessage msg) throws JMSException {
+	    JMSClient.connectAndSendDirect(msg);
+	}
+
+	private void sendEmailViaTransport(CirmMimeMessage msg) throws MessagingException {
+        Transport.send(msg);
 	}
 
 	public boolean isInitialized()

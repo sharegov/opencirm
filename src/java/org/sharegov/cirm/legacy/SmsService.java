@@ -1,9 +1,10 @@
 package org.sharegov.cirm.legacy;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
-
+import javax.jms.JMSException;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.sharegov.cirm.OWL;
@@ -11,7 +12,7 @@ import org.sharegov.cirm.Refs;
 import org.sharegov.cirm.utils.GenUtils;
 import org.sharegov.cirm.utils.PhoneNumberUtil;
 import org.sharegov.cirm.utils.ThreadLocalStopwatch;
-
+import gov.miamidade.cirm.other.JMSClient;
 import mjson.Json;
 
 /**
@@ -34,8 +35,9 @@ import mjson.Json;
  */
 public class SmsService {
 	
-	public static boolean DBG = true;
-	
+    public static boolean DBG = true;
+    public static boolean USE_IBM_MQ = MessageManager.USE_IBM_MQ;
+    
 	/**
 	 * Allows multiple messages defined in one message body.
 	 */
@@ -114,6 +116,7 @@ public class SmsService {
 	 * @param message
 	 */
 	public void sendSMS(CirmSmsMessage message) {
+	    USE_IBM_MQ = MessageManager.USE_IBM_MQ;
 		String phoneMult = message.getPhone();
 		String text = message.getTxt();
 		if (phoneMult == null || phoneMult.isEmpty()) {
@@ -194,7 +197,11 @@ public class SmsService {
 			}
 			for (String txtPart : textParts) {
 				try {
-					sendSmsToOnePhone(onePhoneNumber, txtPart);
+				    if (USE_IBM_MQ) {
+                        sendSmsToOnePhoneViaIbmMqJms(onePhoneNumber, txtPart);
+				    } else {
+                        sendSmsToOnePhoneViaApi(onePhoneNumber, txtPart);
+				    }
 					successActual++;
 				} catch (Exception e) {
 					ThreadLocalStopwatch.error("ERROR: SmsService: Error during sending, message to " + onePhoneNumber
@@ -225,12 +232,24 @@ public class SmsService {
 
 	}
 
+    private void sendSmsToOnePhoneViaIbmMqJms(String onePhone, String text) {
+        CirmSmsMessage oneSms = new CirmSmsMessage();
+        oneSms.setCreationTime(new Date());
+        oneSms.setPhone(onePhone);
+        oneSms.setTxt(text);
+        try {
+            JMSClient.connectAndSendDirect(oneSms);
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }
+    }
+
 	/**
 	 * Sends 
 	 * @param onePhone
 	 * @param text
 	 */
-	private void sendSmsToOnePhone(String onePhone, String text) {
+	private void sendSmsToOnePhoneViaApi(String onePhone, String text) {
 		if (USE_MAX_TXT_LENGHT && text.length() > MAX_TXT_LENGHT) {
 			throw new IllegalArgumentException("SmsService: Text exceeds max length " + MAX_TXT_LENGHT + " was " + text);
 		}

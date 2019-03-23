@@ -31,7 +31,8 @@ public class JMSConfig
 	private int port;
 	private String inQueueName;
 	private String outQueueName;
-	private String outReportingQueueName;
+    private String outReportingQueueName;
+    private String outMessagingQueueName;
 	private boolean authenticate = false;
 	private String user ="";
 	private String pwd ="";
@@ -113,7 +114,15 @@ public class JMSConfig
 		this.outReportingQueueName = outReportingQueueName;
 	}
 
-	public int getPort()
+	public String getOutMessagingQueueName() {
+        return outMessagingQueueName;
+    }
+
+    public void setOutMessagingQueueName(String outMessagingQueueName) {
+        this.outMessagingQueueName = outMessagingQueueName;
+    }
+
+    public int getPort()
 	{
 		return port;
 	}
@@ -162,8 +171,10 @@ public class JMSConfig
 		result.append(inQueueName);
 		result.append("; outQueueName=");
 		result.append(outQueueName);
-		result.append("; outReportingQueueName=");
-		result.append(outReportingQueueName);
+        result.append("; outReportingQueueName=");
+        result.append(outReportingQueueName);
+        result.append("; outMessagingQueueName=");
+        result.append(outMessagingQueueName);
 		result.append("]");
 		return result.toString();
 	}
